@@ -1,0 +1,15 @@
+#  SUP_AUTOMATION_SERVER_INCLUDE_DIRS - include directories
+#  SUP_AUTOMATION_SERVER_LIBRARIES    - libraries to link against
+
+get_filename_component(SUP_AUTOMATION_SERVER_CMAKE_DIR "${CMAKE_CURRENT_LIST_FILE}" PATH)
+
+if(TARGET sup-automation-server::sup-automation-server)
+else()
+  message(STATUS "sup-automation-server-config.cmake including ${SUP_AUTOMATION_SERVER_CMAKE_DIR}/sup-automation-server-targets.cmake")
+  include("${SUP_AUTOMATION_SERVER_CMAKE_DIR}/sup-automation-server-targets.cmake")
+endif()
+
+set(SUP_AUTOMATION_SERVER_LIBRARIES sup-automation-server::sup-automation-server)
+
+message(STATUS "sup-automation-server-config.cmake in ${CMAKE_CURRENT_LIST_FILE}")
+message(STATUS "SUP_AUTOMATION_SERVER_LIBRARIES ${SUP_AUTOMATION_SERVER_LIBRARIES}")
