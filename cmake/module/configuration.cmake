@@ -25,7 +25,7 @@ else()
 endif()
 
 # Build settings
-if(COVERAGE)
+if(COA_COVERAGE)
   # On coverage builds  alsways skip building docs and build tests
   set(COA_BUILD_DOCUMENTATION OFF)
   set(COA_BUILD_TESTS ON)
