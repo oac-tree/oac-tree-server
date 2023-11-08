@@ -1,8 +1,8 @@
 extensions = [ "breathe" ]
-breathe_projects = { "sup-automation-server": "@CMAKE_CURRENT_BINARY_DIR@/xml" }
-breathe_default_project = "sup-automation-server"
+breathe_projects = { "sup-auto-server": "@CMAKE_CURRENT_BINARY_DIR@/xml" }
+breathe_default_project = "sup-auto-server"
 
-project = "sup-automation-server"
+project = "sup-auto-server"
 author = "Walter Van Herck"
 copyright = "ITER Organization"
 version = "@PROJECT_VERSION@"

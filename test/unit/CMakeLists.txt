@@ -19,7 +19,7 @@ target_link_libraries(unit-tests
   PRIVATE
     GTest::GTest
     GTest::Main
-    sup-automation-server
+    sup-auto-server
 )
 
 set_target_properties(unit-tests PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${TEST_OUTPUT_DIRECTORY})

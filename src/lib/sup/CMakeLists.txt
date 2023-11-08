@@ -1,1 +1,1 @@
-add_subdirectory(automation-server)
+add_subdirectory(auto-server)
