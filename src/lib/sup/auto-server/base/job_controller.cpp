@@ -19,16 +19,41 @@
  * of the distribution package.
  ******************************************************************************/
 
+#include "job_controller.h"
+
 namespace sup
 {
-namespace automation_server
+namespace auto_server
 {
 
-/**
- * @brief Dummy function.
- */
-inline bool DummyFunction() { return true; }
+JobController::JobController(sup::sequencer::Procedure& proc, sup::sequencer::UserInterface& ui)
+{
+  (void)proc;
+  (void)ui;
+}
 
-}  // namespace automation_server
+JobController::~JobController() = default;
+
+bool JobController::Start()
+{
+  return true;
+}
+
+bool JobController::Pause()
+{
+  return true;
+}
+
+bool JobController::Step()
+{
+  return true;
+}
+
+bool JobController::Terminate()
+{
+  return true;
+}
+
+}  // namespace auto_server
 
 }  // namespace sup

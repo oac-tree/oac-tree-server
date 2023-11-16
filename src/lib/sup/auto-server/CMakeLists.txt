@@ -22,10 +22,7 @@ target_link_libraries(sup-auto-server
   PRIVATE
     sup-utils::sup-xml)
 
-target_sources(sup-auto-server
-  PRIVATE
-  dummy.cpp
-)
+add_subdirectory(base)
 
 # -- Installation --
 install(TARGETS sup-auto-server EXPORT sup-auto-server-targets LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR})
