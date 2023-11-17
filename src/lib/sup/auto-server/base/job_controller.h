@@ -25,11 +25,21 @@
 #include <sup/sequencer/procedure.h>
 #include <sup/sequencer/user_interface.h>
 
+#include <future>
+
 namespace sup
 {
 namespace auto_server
 {
 
+/**
+ * @brief Asynchronous wrapper around sup::sequencer::Runner.
+ *
+ * The JobController's responsibility is to asynchronously handle control commands related to a
+ * procedure's execution. The main difference with the existing Runner in the Sequencer, which is
+ * encapsulated here, is that starting or resuming execution will spawn a thread to handle the
+ * procedure's execution.
+*/
 class JobController
 {
 public:
@@ -37,13 +47,22 @@ public:
 
   ~JobController();
 
-  bool Start();
-  bool Pause();
-  bool Step();
-  bool Terminate();
-};
+  void Start();
+  void Pause();
+  void Resume();
+  void Step();
+  void Terminate();
 
-bool ReturnTrue();
+private:
+  /**
+   * @brief Track the JobController's execution loop.
+   */
+  std::future<void> m_loop_future;
+
+  std::atomic<bool> m_terminate;
+
+  void ExecutionLoop();
+};
 
 }  // namespace auto_server
 
