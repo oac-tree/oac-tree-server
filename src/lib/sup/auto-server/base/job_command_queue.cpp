@@ -49,7 +49,7 @@ bool JobCommandQueue::IsEmpty() const
   return m_command_queue.empty();
 }
 
-bool JobCommandQueue::TryPop(JobCommand command)
+bool JobCommandQueue::TryPop(JobCommand& command)
 {
   std::lock_guard<std::mutex> lk{m_mtx};
   if (m_command_queue.empty())

@@ -61,7 +61,7 @@ public:
    * @param command Output parameter that will hold the popped command if successful.
    * @return true when successful. False indicates the queue was empty.
    */
-  bool TryPop(JobCommand command);
+  bool TryPop(JobCommand& command);
 
   /**
    * @brief Blocks until a command can be retrieved from the queue and returns that command.
