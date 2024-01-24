@@ -8,7 +8,7 @@
  *
  * Author        : Walter Van Herck (IO)
  *
- * Copyright (c) : 2010-2023 ITER Organization,
+ * Copyright (c) : 2010-2024 ITER Organization,
  *                 CS 90 046
  *                 13067 St. Paul-lez-Durance Cedex
  *                 France
@@ -21,17 +21,26 @@
 
 #include "job_controller.h"
 
+#include <sup/sequencer/exceptions.h>
+#include <sup/sequencer/log_severity.h>
+
 namespace sup
 {
 namespace auto_server
 {
+using namespace sup::sequencer;
 
-JobController::JobController(sup::sequencer::Procedure& proc, sup::sequencer::UserInterface& ui)
-  : m_loop_future{}
+JobController::JobController(Procedure& proc, UserInterface& ui)
+  : m_proc{proc}
+  , m_ui{ui}
+  , m_runner{m_ui}
+  , m_loop_future{}
   , m_terminate{false}
 {
-  (void)proc;
-  (void)ui;
+  // Procedure MUST already be setup (since it's instruction tree cached should already have been built)
+  // Setup the procedure and send high severity log to ui if this fails
+  Setup();
+  m_runner.SetProcedure(std::addressof(m_proc));
   // The ExecutionLoop is called here using std::async and will keep running until destruction of
   // this JobController.
 }
@@ -47,22 +56,41 @@ void JobController::Start()
 
 void JobController::Pause()
 {
+  // TODO
   return;
 }
 
 void JobController::Resume()
 {
+  // TODO
   return;
 }
 
 void JobController::Step()
 {
+  // TODO
   return;
 }
 
 void JobController::Terminate()
 {
   return;
+}
+
+bool JobController::Setup()
+{
+  try
+  {
+    m_proc.Setup();
+  }
+  catch(const MessageException& exception)
+  {
+    std::string message = "JobController::Setup(): exception thrown in Procedure::Setup(): " +
+                          std::string(exception.what());
+    m_ui.Log(log::SUP_SEQ_LOG_CRIT, message);
+    return false;
+  }
+  return true;
 }
 
 void JobController::ExecutionLoop()

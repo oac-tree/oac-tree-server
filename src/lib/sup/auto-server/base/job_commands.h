@@ -19,15 +19,23 @@
  * of the distribution package.
  ******************************************************************************/
 
-#include "instruction_tree_cache.h"
+#ifndef SUP_AUTO_SERVER_JOB_COMMANDS_H_
+#define SUP_AUTO_SERVER_JOB_COMMANDS_H_
 
 namespace sup
 {
 namespace auto_server
 {
-
-bool ReturnTrue() { return true; }
+enum class JobCommand
+{
+  kStart = 0,
+  kStep,
+  kPause,
+  kReset
+};
 
 }  // namespace auto_server
 
 }  // namespace sup
+
+#endif  // SUP_AUTO_SERVER_JOB_COMMANDS_H_

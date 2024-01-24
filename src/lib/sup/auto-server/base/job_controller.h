@@ -8,7 +8,7 @@
  *
  * Author        : Walter Van Herck (IO)
  *
- * Copyright (c) : 2010-2023 ITER Organization,
+ * Copyright (c) : 2010-2024 ITER Organization,
  *                 CS 90 046
  *                 13067 St. Paul-lez-Durance Cedex
  *                 France
@@ -23,6 +23,7 @@
 #define SUP_AUTO_SERVER_JOB_CONTROLLER_H_
 
 #include <sup/sequencer/procedure.h>
+#include <sup/sequencer/runner.h>
 #include <sup/sequencer/user_interface.h>
 
 #include <future>
@@ -54,12 +55,17 @@ public:
   void Terminate();
 
 private:
+  sup::sequencer::Procedure& m_proc;
+  sup::sequencer::UserInterface& m_ui;
+  sup::sequencer::Runner m_runner;
   /**
    * @brief Track the JobController's execution loop.
    */
   std::future<void> m_loop_future;
 
   std::atomic<bool> m_terminate;
+
+  bool Setup();
 
   void ExecutionLoop();
 };
