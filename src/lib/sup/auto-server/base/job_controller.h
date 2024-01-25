@@ -78,22 +78,57 @@ private:
 
   JobCommandQueue m_command_queue;
 
-  using CommandHandlerFunction = bool (JobController::*)(JobCommand);
+  /**
+   * @brief Action to perform after handling a command.
+   */
+  enum class Action
+  {
+    kContinue = 0,
+    kStep,
+    kRun,
+    kExit
+  };
+
+  using CommandHandlerFunction = Action (JobController::*)(JobCommand);
   CommandHandlerFunction m_command_handler;
   /**
    * @brief Track the JobController's execution loop.
    */
   std::future<void> m_loop_future;
 
-  std::atomic<bool> m_terminate;
-
   void SetState(JobState state);
 
   void Launch();
 
-  bool HandleInitial(JobCommand command);
+  Action HandleCommand(JobCommand command);
+
+  Action HandleInitial(JobCommand command);
+
+  Action HandleFinished(JobCommand command);
+
+  Action HandleRunning(JobCommand command);
 
   void ExecutionLoop();
+
+  void RunProcedure();
+
+  void ProcessCommandsWhenRunning();
+
+  void StepProcedure();
+};
+
+/**
+ * @brief Class that is used as an empty callback during stepwise execution. This prevents that
+ * there could be two consecutive command handling loops. See `JobController::ExecutionLoop` and
+ * the callback used during continuous execution.
+ */
+class EmptyTickCallback
+{
+public:
+  EmptyTickCallback();
+  ~EmptyTickCallback();
+
+  void operator()(const sup::sequencer::Procedure& proc) const;
 };
 
 }  // namespace auto_server

@@ -37,7 +37,6 @@ JobController::JobController(Procedure& proc, UserInterface& ui)
   , m_command_queue{}
   , m_command_handler{}
   , m_loop_future{}
-  , m_terminate{false}
 {
   // Procedure MUST already be setup (since it's instruction tree cached should already have been built)
   SetState(JobState::kInitial);
@@ -75,9 +74,15 @@ void JobController::SetState(JobState state)
       m_command_handler = &JobController::HandleInitial;
       break;
     case JobState::kPaused:
+      // same handler as initial state:
+      m_command_handler = &JobController::HandleInitial;
+      break;
     case JobState::kFinished:
+      m_command_handler = &JobController::HandleFinished;
+      break;
     case JobState::kStepping:
     case JobState::kRunning:
+      m_command_handler = &JobController::HandleRunning;
       break;
     default:
       break;
@@ -90,28 +95,100 @@ void JobController::Launch()
   m_loop_future = std::async(std::launch::async, &JobController::ExecutionLoop, this);
 }
 
-bool JobController::HandleInitial(JobCommand command)
+JobController::Action JobController::HandleCommand(JobCommand command)
+{
+  return (this->*m_command_handler)(command);
+}
+
+JobController::Action JobController::HandleInitial(JobCommand command)
 {
   (void)command;
-  return false;
+  return Action::kContinue;
+}
+
+JobController::Action JobController::HandleFinished(JobCommand command)
+{
+  (void)command;
+  return Action::kContinue;
+}
+
+JobController::Action JobController::HandleRunning(JobCommand command)
+{
+  switch (command)
+  {
+  case JobCommand::kStart:
+    break;
+  case JobCommand::kStep:
+  case JobCommand::kPause:
+    m_runner.Pause();
+    SetState(JobState::kPaused);
+    break;
+  case JobCommand::kReset:
+    // TODO: implement a reset for the runner/procedure
+    return Action::kExit;
+  default:
+    break;
+  }
+  return Action::kContinue;
 }
 
 void JobController::ExecutionLoop()
 {
-  while (!m_terminate)
+  while (true)
   {
-    // If no commands in queue and procedure is not running (continuous execution, not step-by-step):
-    //   wait for command stack non-empty
-    // Pop command from queue and process it; if appropriate, keep popping and processing
-    // (e.g. Step should result in a procedure execution step before processing other commands)
-    // If execution step required (determined by current state):
-    //   If procedure has no synchronous instructions waiting, i.e. it has ExecutionStatus::RUNNING,
-    //   perform a short timeout (see e.g. main.cpp in sequencer-daemon)
-    //   m_proc.ExecuteSingle(m_ui)
+    auto command = m_command_queue.WaitForNextCommand();
+    auto action = HandleCommand(command);
+    switch (action)
+    {
+      case Action::kContinue:
+        continue;
+      case Action::kStep:
+        StepProcedure();
+        break;
+      case Action::kRun:
+        RunProcedure();
+        break;
+      case Action::kExit:
+        return;
+    }
   }
   // Cleanup: termination should only be used during JobController's destruction so make sure the
   // procedure is halted and finished. All remaining commands in the queue are dumped too.
 }
+
+void JobController::RunProcedure()
+{
+  auto tick_callback = [this](const sup::sequencer::Procedure& proc){
+    ProcessCommandsWhenRunning();
+    // handle commands and timeout on async running
+    return;
+  };
+  m_runner.SetTickCallback(tick_callback);
+  m_runner.ExecuteProcedure();
+}
+
+void JobController::ProcessCommandsWhenRunning()
+{
+  JobCommand command = JobCommand::kStart;
+  if (m_command_queue.TryPop(command))
+  {
+    auto action = HandleRunning(command);
+  }
+}
+
+void JobController::StepProcedure()
+{
+  m_runner.SetTickCallback(EmptyTickCallback{});
+  m_runner.ExecuteSingle();
+  SetState(JobState::kPaused);
+}
+
+EmptyTickCallback::EmptyTickCallback() = default;
+
+EmptyTickCallback::~EmptyTickCallback() = default;
+
+void EmptyTickCallback::operator()(const sup::sequencer::Procedure&) const
+{}
 
 }  // namespace auto_server
 
