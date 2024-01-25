@@ -1,5 +1,10 @@
 # JobController states
 
+To do:
+
+* Add aborted/terminated state and command that leads to this (abort?). The result of this command would be that the execution is halted as soon as possible instead of waiting for the currently executing leaf instructions to finish. Resuming execution would not be possible in this case.
+* Add destroy command that halts execution and breaks the while loop in `JobController`'s execution thread. This is required during destruction of `JobController` and may not be exposed to the public API.
+
 ## Runner idle
 
 ### Procedure not started or paused

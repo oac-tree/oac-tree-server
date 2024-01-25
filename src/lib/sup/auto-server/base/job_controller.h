@@ -22,6 +22,9 @@
 #ifndef SUP_AUTO_SERVER_JOB_CONTROLLER_H_
 #define SUP_AUTO_SERVER_JOB_CONTROLLER_H_
 
+#include "job_command_queue.h"
+#include "job_states.h"
+
 #include <sup/sequencer/procedure.h>
 #include <sup/sequencer/runner.h>
 #include <sup/sequencer/user_interface.h>
@@ -48,16 +51,35 @@ public:
 
   ~JobController();
 
+  /**
+   * @brief Run the procedure in a continuous manner if allowed.
+   */
   void Start();
-  void Pause();
-  void Resume();
+
+  /**
+   * @brief Execute a single step of the procedure if allowed.
+   */
   void Step();
-  void Terminate();
+
+  /**
+   * @brief Interrupt the procedure's execution.
+   */
+  void Pause();
+
+  /**
+   * @brief Reset the procedure to its initial state.
+   */
+  void Reset();
 
 private:
   sup::sequencer::Procedure& m_proc;
   sup::sequencer::UserInterface& m_ui;
   sup::sequencer::Runner m_runner;
+
+  JobCommandQueue m_command_queue;
+
+  using CommandHandlerFunction = bool (JobController::*)(JobCommand);
+  CommandHandlerFunction m_command_handler;
   /**
    * @brief Track the JobController's execution loop.
    */
@@ -65,7 +87,11 @@ private:
 
   std::atomic<bool> m_terminate;
 
-  bool Setup();
+  void SetState(JobState state);
+
+  void Launch();
+
+  bool HandleInitial(JobCommand command);
 
   void ExecutionLoop();
 };

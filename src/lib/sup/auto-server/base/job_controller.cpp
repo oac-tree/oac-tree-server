@@ -34,15 +34,14 @@ JobController::JobController(Procedure& proc, UserInterface& ui)
   : m_proc{proc}
   , m_ui{ui}
   , m_runner{m_ui}
+  , m_command_queue{}
+  , m_command_handler{}
   , m_loop_future{}
   , m_terminate{false}
 {
   // Procedure MUST already be setup (since it's instruction tree cached should already have been built)
-  // Setup the procedure and send high severity log to ui if this fails
-  Setup();
-  m_runner.SetProcedure(std::addressof(m_proc));
-  // The ExecutionLoop is called here using std::async and will keep running until destruction of
-  // this JobController.
+  SetState(JobState::kInitial);
+  Launch();
 }
 
 // Terminate procedure's execution here
@@ -50,47 +49,51 @@ JobController::~JobController() = default;
 
 void JobController::Start()
 {
-  // push start command to command queue (with lock). Similar for all other commands
-  return;
-}
-
-void JobController::Pause()
-{
-  // TODO
-  return;
-}
-
-void JobController::Resume()
-{
-  // TODO
-  return;
+  m_command_queue.Push(JobCommand::kStart);
 }
 
 void JobController::Step()
 {
-  // TODO
-  return;
+  m_command_queue.Push(JobCommand::kStep);
 }
 
-void JobController::Terminate()
+void JobController::Pause()
 {
-  return;
+  m_command_queue.Push(JobCommand::kPause);
 }
 
-bool JobController::Setup()
+void JobController::Reset()
 {
-  try
+  m_command_queue.Push(JobCommand::kReset);
+}
+
+void JobController::SetState(JobState state)
+{
+  switch (state)
   {
-    m_proc.Setup();
+    case JobState::kInitial:
+      m_command_handler = &JobController::HandleInitial;
+      break;
+    case JobState::kPaused:
+    case JobState::kFinished:
+    case JobState::kStepping:
+    case JobState::kRunning:
+      break;
+    default:
+      break;
   }
-  catch(const MessageException& exception)
-  {
-    std::string message = "JobController::Setup(): exception thrown in Procedure::Setup(): " +
-                          std::string(exception.what());
-    m_ui.Log(log::SUP_SEQ_LOG_CRIT, message);
-    return false;
-  }
-  return true;
+}
+
+void JobController::Launch()
+{
+  m_runner.SetProcedure(std::addressof(m_proc));
+  m_loop_future = std::async(std::launch::async, &JobController::ExecutionLoop, this);
+}
+
+bool JobController::HandleInitial(JobCommand command)
+{
+  (void)command;
+  return false;
 }
 
 void JobController::ExecutionLoop()
