@@ -96,6 +96,11 @@ private:
    */
   std::future<void> m_loop_future;
 
+  /**
+   * @brief Halts the procedure/runner and exits the execution loop.
+   */
+  void Destroy();
+
   void SetState(JobState state);
 
   void Launch();
@@ -103,6 +108,8 @@ private:
   Action HandleCommand(JobCommand command);
 
   Action HandleInitial(JobCommand command);
+
+  Action HandlePaused(JobCommand command);
 
   Action HandleFinished(JobCommand command);
 

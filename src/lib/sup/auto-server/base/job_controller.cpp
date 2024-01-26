@@ -44,7 +44,10 @@ JobController::JobController(Procedure& proc, UserInterface& ui)
 }
 
 // Terminate procedure's execution here
-JobController::~JobController() = default;
+JobController::~JobController()
+{
+  Destroy();
+}
 
 void JobController::Start()
 {
@@ -66,6 +69,12 @@ void JobController::Reset()
   m_command_queue.Push(JobCommand::kReset);
 }
 
+void JobController::Destroy()
+{
+  m_runner.Halt();
+  // TODO: break the loop!
+}
+
 void JobController::SetState(JobState state)
 {
   switch (state)
@@ -81,6 +90,8 @@ void JobController::SetState(JobState state)
       m_command_handler = &JobController::HandleFinished;
       break;
     case JobState::kStepping:
+      // Nothing to do here. State will switch immediately to paused after step.
+      break;
     case JobState::kRunning:
       m_command_handler = &JobController::HandleRunning;
       break;
@@ -102,9 +113,42 @@ JobController::Action JobController::HandleCommand(JobCommand command)
 
 JobController::Action JobController::HandleInitial(JobCommand command)
 {
-  (void)command;
+  switch (command)
+  {
+    case JobCommand::kStart:
+      SetState(JobState::kRunning);
+      return Action::kRun;
+    case JobCommand::kStep:
+      SetState(JobState::kStepping);
+      return Action::kStep;
+    case JobCommand::kPause:
+    case JobCommand::kReset:
+    default:
+      break;
+  }
   return Action::kContinue;
 }
+
+JobController::Action JobController::HandlePaused(JobCommand command)
+{
+  switch (command)
+  {
+    case JobCommand::kStart:
+      SetState(JobState::kRunning);
+      return Action::kRun;
+    case JobCommand::kStep:
+      SetState(JobState::kStepping);
+      return Action::kStep;
+    case JobCommand::kPause:
+      break;
+    case JobCommand::kReset:
+    default:
+      break;
+  }
+  return Action::kContinue;
+}
+
+
 
 JobController::Action JobController::HandleFinished(JobCommand command)
 {
