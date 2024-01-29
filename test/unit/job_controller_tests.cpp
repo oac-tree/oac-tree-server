@@ -50,6 +50,13 @@ protected:
   JobControllerTest() = default;
   virtual ~JobControllerTest() = default;
 
+  std::function<void(JobState)> GetStateCallback()
+  {
+    return [this](JobState state){
+      OnStateChange(state);
+    };
+  }
+
   void OnStateChange(JobState state)
   {
     {
@@ -77,12 +84,22 @@ TEST_F(JobControllerTest, Constructed)
   DefaultUserInterface ui;
   auto proc = ParseProcedureString(
     sup::UnitTestHelper::CreateProcedureString(kTestExternalProcedureBody));
-  auto cb = [this](JobState state){
-    OnStateChange(state);
-  };
-  JobController controller{*proc, ui, cb};
+  JobController controller{*proc, ui, GetStateCallback()};
   EXPECT_TRUE(WaitForState(JobState::kInitial));
   controller.Start();
   EXPECT_TRUE(WaitForState(JobState::kRunning));
   EXPECT_TRUE(WaitForState(JobState::kSucceeded, 2));
+}
+
+TEST_F(JobControllerTest, Halted)
+{
+  DefaultUserInterface ui;
+  auto proc = ParseProcedureString(
+    sup::UnitTestHelper::CreateProcedureString(kTestExternalProcedureBody));
+  JobController controller{*proc, ui, GetStateCallback()};
+  EXPECT_TRUE(WaitForState(JobState::kInitial));
+  controller.Start();
+  EXPECT_TRUE(WaitForState(JobState::kRunning));
+  controller.Halt();
+  EXPECT_TRUE(WaitForState(JobState::kHalted));
 }
