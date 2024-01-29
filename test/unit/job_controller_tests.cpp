@@ -59,6 +59,14 @@ protected:
     m_cv.notify_one();
   }
 
+  bool WaitForState(JobState state, int seconds = 1)
+  {
+    std::unique_lock<std::mutex> lk{m_mtx};
+    return m_cv.wait_for(lk, std::chrono::seconds(seconds), [this, state](){
+      return m_state == state;
+    });
+  }
+
   JobState m_state;
   std::mutex m_mtx;
   std::condition_variable m_cv;
@@ -73,12 +81,8 @@ TEST_F(JobControllerTest, Constructed)
     OnStateChange(state);
   };
   JobController controller{*proc, ui, cb};
-  std::unique_lock<std::mutex> lk{m_mtx};
-  EXPECT_TRUE(m_cv.wait_for(lk, std::chrono::seconds(1), [this](){
-    return m_state == JobState::kInitial;
-  }));
+  EXPECT_TRUE(WaitForState(JobState::kInitial));
   controller.Start();
-  EXPECT_TRUE(m_cv.wait_for(lk, std::chrono::seconds(1), [this](){
-    return m_state == JobState::kRunning;
-  }));
+  EXPECT_TRUE(WaitForState(JobState::kRunning));
+  EXPECT_TRUE(WaitForState(JobState::kSucceeded, 2));
 }
