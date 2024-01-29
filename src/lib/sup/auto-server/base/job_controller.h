@@ -102,6 +102,8 @@ private:
    */
   std::future<void> m_loop_future;
 
+  std::atomic_bool m_keep_alive;
+
   /**
    * @brief Halts the procedure/runner and exits the execution loop.
    */
@@ -128,6 +130,13 @@ private:
   void ProcessCommandsWhenRunning();
 
   void StepProcedure();
+
+  /**
+   * @brief Check if procedure is finished (success/failure) and switch states accordingly.
+   *
+   * @return true when procedure was finished.
+   */
+  bool SwitchStateOnFinished();
 };
 
 /**

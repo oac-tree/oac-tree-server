@@ -37,13 +37,13 @@ JobController::JobController(Procedure& proc, UserInterface& ui)
   , m_command_queue{}
   , m_command_handler{}
   , m_loop_future{}
+  , m_keep_alive{true}
 {
   // Procedure MUST already be setup (since it's instruction tree cached should already have been built)
   SetState(JobState::kInitial);
   Launch();
 }
 
-// Terminate procedure's execution here
 JobController::~JobController()
 {
   Terminate();
@@ -77,6 +77,8 @@ void JobController::Halt()
 
 void JobController::Terminate()
 {
+  // Note that m_keep_alive is NOT set to false here, but in the state handling functions, which
+  // are executed in the same thread as the execution loop!
   m_runner.Halt();
   m_command_queue.Push(JobCommand::kTerminate);
 }
@@ -136,6 +138,7 @@ JobController::Action JobController::HandleInitial(JobCommand command)
     case JobCommand::kHalt:
       break;
     case JobCommand::kTerminate:
+      m_keep_alive.store(false);
       return Action::kExit;
     default:
       break;
@@ -160,6 +163,7 @@ JobController::Action JobController::HandleRunning(JobCommand command)
       SetState(JobState::kHalted);
       break;
     case JobCommand::kTerminate:
+      m_keep_alive.store(false);
       return Action::kExit;
     default:
       break;
@@ -185,6 +189,7 @@ JobController::Action JobController::HandlePaused(JobCommand command)
       SetState(JobState::kHalted);
       break;
     case JobCommand::kTerminate:
+      m_keep_alive.store(false);
       return Action::kExit;
     default:
       break;
@@ -209,6 +214,7 @@ JobController::Action JobController::HandleFinished(JobCommand command)
     case JobCommand::kHalt:
       break;
     case JobCommand::kTerminate:
+      m_keep_alive.store(false);
       return Action::kExit;
     default:
       break;
@@ -218,7 +224,7 @@ JobController::Action JobController::HandleFinished(JobCommand command)
 
 void JobController::ExecutionLoop()
 {
-  while (true)
+  while (m_keep_alive)
   {
     auto command = m_command_queue.WaitForNextCommand();
     auto action = HandleCommand(command);
@@ -254,22 +260,16 @@ void JobController::RunProcedure()
 
 void JobController::ProcessCommandsWhenRunning()
 {
+  if (SwitchStateOnFinished())
+  {
+    return;
+  }
   JobCommand command = JobCommand::kStart;
   if (m_command_queue.TryPop(command))
   {
     auto action = HandleCommand(command);
-    switch (action)
-    {
-      case Action::kContinue:
-        break;
-      case Action::kStep:
-        break;
-      case Action::kRun:
-        break;
-      case Action::kExit:
-        // TODO: change so that the execution loop is terminated.
-        return;
-    }
+    // Ignore action, all necessary actions are already taken by HandleCommand.
+    (void)action;
   }
 }
 
@@ -277,7 +277,28 @@ void JobController::StepProcedure()
 {
   m_runner.SetTickCallback(EmptyTickCallback{});
   m_runner.ExecuteSingle();
+  if (SwitchStateOnFinished())
+  {
+    return;
+  }
   SetState(JobState::kPaused);
+}
+
+bool JobController::SwitchStateOnFinished()
+{
+  if (m_runner.IsFinished())
+  {
+    if (m_proc.GetStatus() == ExecutionStatus::SUCCESS)
+    {
+      SetState(JobState::kSucceeded);
+    }
+    else
+    {
+      SetState(JobState::kFailed);
+    }
+    return true;
+  }
+  return false;
 }
 
 EmptyTickCallback::EmptyTickCallback() = default;
