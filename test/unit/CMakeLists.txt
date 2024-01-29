@@ -4,7 +4,8 @@ target_compile_features(unit-tests PRIVATE cxx_std_11)
 
 target_sources(unit-tests
   PRIVATE
-    dummy_tests.cpp
+    job_controller_tests.cpp
+    unit_test_helper.cpp
 )
 
 target_include_directories(unit-tests

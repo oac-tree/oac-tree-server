@@ -30,10 +30,11 @@ namespace auto_server
 {
 using namespace sup::sequencer;
 
-JobController::JobController(Procedure& proc, UserInterface& ui)
+JobController::JobController(Procedure& proc, UserInterface& ui, std::function<void(JobState)> cb)
   : m_proc{proc}
   , m_ui{ui}
   , m_runner{m_ui}
+  , m_state_cb{cb}
   , m_command_queue{}
   , m_command_handler{}
   , m_loop_future{}
@@ -87,6 +88,10 @@ void JobController::Terminate()
 
 void JobController::SetState(JobState state)
 {
+  if (m_state_cb)
+  {
+    m_state_cb(state);
+  }
   switch (state)
   {
     case JobState::kInitial:

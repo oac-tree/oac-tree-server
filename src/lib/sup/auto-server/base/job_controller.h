@@ -47,7 +47,15 @@ namespace auto_server
 class JobController
 {
 public:
-  explicit JobController(sup::sequencer::Procedure& proc, sup::sequencer::UserInterface& ui);
+  /**
+   * @brief Constructor.
+   *
+   * @param proc Procedure that needs to be correctly setup.
+   * @param ui UserInterface object.
+   * @param cb Callback function object for state changes.
+   */
+  explicit JobController(sup::sequencer::Procedure& proc, sup::sequencer::UserInterface& ui,
+                         std::function<void(JobState)> cb = {});
 
   ~JobController();
 
@@ -81,6 +89,8 @@ private:
   sup::sequencer::Procedure& m_proc;
   sup::sequencer::UserInterface& m_ui;
   sup::sequencer::Runner m_runner;
+
+  std::function<void(JobState)> m_state_cb;
 
   JobCommandQueue m_command_queue;
 
