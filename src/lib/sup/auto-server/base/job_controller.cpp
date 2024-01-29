@@ -81,6 +81,8 @@ void JobController::Terminate()
   // are executed in the same thread as the execution loop!
   m_runner.Halt();
   m_command_queue.Push(JobCommand::kTerminate);
+  m_loop_future.wait();
+  m_proc.Reset(m_ui);
 }
 
 void JobController::SetState(JobState state)
@@ -91,8 +93,7 @@ void JobController::SetState(JobState state)
       m_command_handler = &JobController::HandleInitial;
       break;
     case JobState::kPaused:
-      // same handler as initial state:
-      m_command_handler = &JobController::HandleInitial;
+      m_command_handler = &JobController::HandlePaused;
       break;
     case JobState::kStepping:
       // Nothing to do here. State will switch immediately to paused after step.
@@ -208,7 +209,7 @@ JobController::Action JobController::HandleFinished(JobCommand command)
     case JobCommand::kPause:
       break;
     case JobCommand::kReset:
-      // TODO: Reset procedure!
+      m_proc.Reset(m_ui);
       SetState(JobState::kInitial);
       break;
     case JobCommand::kHalt:
