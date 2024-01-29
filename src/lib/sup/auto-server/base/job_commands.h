@@ -31,7 +31,9 @@ enum class JobCommand
   kStart = 0,
   kStep,
   kPause,
-  kReset
+  kReset,
+  kHalt,
+  kTerminate
 };
 
 }  // namespace auto_server

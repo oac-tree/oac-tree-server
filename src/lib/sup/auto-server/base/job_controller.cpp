@@ -46,7 +46,7 @@ JobController::JobController(Procedure& proc, UserInterface& ui)
 // Terminate procedure's execution here
 JobController::~JobController()
 {
-  Destroy();
+  Terminate();
 }
 
 void JobController::Start()
@@ -69,10 +69,16 @@ void JobController::Reset()
   m_command_queue.Push(JobCommand::kReset);
 }
 
-void JobController::Destroy()
+void JobController::Halt()
 {
   m_runner.Halt();
-  // TODO: break the loop!
+  m_command_queue.Push(JobCommand::kHalt);
+}
+
+void JobController::Terminate()
+{
+  m_runner.Halt();
+  m_command_queue.Push(JobCommand::kTerminate);
 }
 
 void JobController::SetState(JobState state)
@@ -86,14 +92,16 @@ void JobController::SetState(JobState state)
       // same handler as initial state:
       m_command_handler = &JobController::HandleInitial;
       break;
-    case JobState::kFinished:
-      m_command_handler = &JobController::HandleFinished;
-      break;
     case JobState::kStepping:
       // Nothing to do here. State will switch immediately to paused after step.
       break;
     case JobState::kRunning:
       m_command_handler = &JobController::HandleRunning;
+      break;
+    case JobState::kSucceeded:
+    case JobState::kFailed:
+    case JobState::kHalted:
+      m_command_handler = &JobController::HandleFinished;
       break;
     default:
       break;
@@ -122,7 +130,37 @@ JobController::Action JobController::HandleInitial(JobCommand command)
       SetState(JobState::kStepping);
       return Action::kStep;
     case JobCommand::kPause:
+      break;
     case JobCommand::kReset:
+      break;
+    case JobCommand::kHalt:
+      break;
+    case JobCommand::kTerminate:
+      return Action::kExit;
+    default:
+      break;
+  }
+  return Action::kContinue;
+}
+
+JobController::Action JobController::HandleRunning(JobCommand command)
+{
+  switch (command)
+  {
+    case JobCommand::kStart:
+      break;
+    case JobCommand::kStep:
+    case JobCommand::kPause:
+      m_runner.Pause();
+      SetState(JobState::kPaused);
+      break;
+    case JobCommand::kReset:
+      break;
+    case JobCommand::kHalt:
+      SetState(JobState::kHalted);
+      break;
+    case JobCommand::kTerminate:
+      return Action::kExit;
     default:
       break;
   }
@@ -142,36 +180,38 @@ JobController::Action JobController::HandlePaused(JobCommand command)
     case JobCommand::kPause:
       break;
     case JobCommand::kReset:
+      break;
+    case JobCommand::kHalt:
+      SetState(JobState::kHalted);
+      break;
+    case JobCommand::kTerminate:
+      return Action::kExit;
     default:
       break;
   }
   return Action::kContinue;
 }
 
-
-
 JobController::Action JobController::HandleFinished(JobCommand command)
-{
-  (void)command;
-  return Action::kContinue;
-}
-
-JobController::Action JobController::HandleRunning(JobCommand command)
 {
   switch (command)
   {
-  case JobCommand::kStart:
-    break;
-  case JobCommand::kStep:
-  case JobCommand::kPause:
-    m_runner.Pause();
-    SetState(JobState::kPaused);
-    break;
-  case JobCommand::kReset:
-    // TODO: implement a reset for the runner/procedure
-    return Action::kExit;
-  default:
-    break;
+    case JobCommand::kStart:
+      break;
+    case JobCommand::kStep:
+      break;
+    case JobCommand::kPause:
+      break;
+    case JobCommand::kReset:
+      // TODO: Reset procedure!
+      SetState(JobState::kInitial);
+      break;
+    case JobCommand::kHalt:
+      break;
+    case JobCommand::kTerminate:
+      return Action::kExit;
+    default:
+      break;
   }
   return Action::kContinue;
 }
@@ -204,7 +244,8 @@ void JobController::RunProcedure()
 {
   auto tick_callback = [this](const sup::sequencer::Procedure& proc){
     ProcessCommandsWhenRunning();
-    // handle commands and timeout on async running
+    TimeoutWhenRunning timeout{TickTimeoutMs(proc)};
+    timeout(proc);
     return;
   };
   m_runner.SetTickCallback(tick_callback);
@@ -216,7 +257,19 @@ void JobController::ProcessCommandsWhenRunning()
   JobCommand command = JobCommand::kStart;
   if (m_command_queue.TryPop(command))
   {
-    auto action = HandleRunning(command);
+    auto action = HandleCommand(command);
+    switch (action)
+    {
+      case Action::kContinue:
+        break;
+      case Action::kStep:
+        break;
+      case Action::kRun:
+        break;
+      case Action::kExit:
+        // TODO: change so that the execution loop is terminated.
+        return;
+    }
   }
 }
 

@@ -30,9 +30,11 @@ enum class JobState
 {
   kInitial = 0,
   kPaused,
-  kFinished,
   kStepping,
-  kRunning
+  kRunning,
+  kSucceeded,
+  kFailed,
+  kHalted
 };
 
 }  // namespace auto_server

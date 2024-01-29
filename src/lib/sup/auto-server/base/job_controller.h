@@ -71,6 +71,12 @@ public:
    */
   void Reset();
 
+  /**
+   * @brief Halt the procedure. This prevents continuing it afterwards. The procedure has to be
+   * reset to be able to run again.
+   */
+  void Halt();
+
 private:
   sup::sequencer::Procedure& m_proc;
   sup::sequencer::UserInterface& m_ui;
@@ -99,7 +105,7 @@ private:
   /**
    * @brief Halts the procedure/runner and exits the execution loop.
    */
-  void Destroy();
+  void Terminate();
 
   void SetState(JobState state);
 
@@ -109,11 +115,11 @@ private:
 
   Action HandleInitial(JobCommand command);
 
+  Action HandleRunning(JobCommand command);
+
   Action HandlePaused(JobCommand command);
 
   Action HandleFinished(JobCommand command);
-
-  Action HandleRunning(JobCommand command);
 
   void ExecutionLoop();
 
