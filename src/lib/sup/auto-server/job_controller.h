@@ -22,8 +22,8 @@
 #ifndef SUP_AUTO_SERVER_JOB_CONTROLLER_H_
 #define SUP_AUTO_SERVER_JOB_CONTROLLER_H_
 
-#include "job_command_queue.h"
-#include "job_states.h"
+#include <sup/auto-server/job_command_queue.h>
+#include <sup/auto-server/job_states.h>
 
 #include <sup/sequencer/procedure.h>
 #include <sup/sequencer/runner.h>

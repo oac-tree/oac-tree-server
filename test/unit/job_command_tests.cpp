@@ -21,7 +21,7 @@
 
 #include "unit_test_helper.h"
 
-#include <sup/auto-server/base/job_commands.h>
+#include <sup/auto-server/job_commands.h>
 
 #include <gtest/gtest.h>
 

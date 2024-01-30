@@ -19,7 +19,7 @@
  * of the distribution package.
  ******************************************************************************/
 
-#include "job_controller.h"
+#include <sup/auto-server/job_controller.h>
 
 #include <sup/sequencer/exceptions.h>
 #include <sup/sequencer/log_severity.h>

@@ -19,7 +19,7 @@
  * of the distribution package.
  ******************************************************************************/
 
-#include "job_commands.h"
+#include <sup/auto-server/job_commands.h>
 
 namespace sup
 {

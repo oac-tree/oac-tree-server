@@ -3,6 +3,8 @@ add_library(sup-auto-server::sup-auto-server ALIAS sup-auto-server) # alias for 
 
 target_compile_features(sup-auto-server PRIVATE cxx_std_11)
 
+add_subdirectory(base)
+
 set_target_properties(sup-auto-server PROPERTIES
   VERSION ${LIBVERSION}
   SOVERSION ${LIBSOVERSION}
@@ -20,14 +22,15 @@ target_link_libraries(sup-auto-server
   PUBLIC
     sequencer::sequencer
     sup-dto::sup-dto
-  PRIVATE
-    )
-
-add_subdirectory(base)
+)
 
 # -- Installation --
 install(TARGETS sup-auto-server EXPORT sup-auto-server-targets LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR})
 
 install(FILES
+  job_command_queue.h
+  job_commands.h
+  job_controller.h
+  job_states.h
   DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/sup/auto-server
 )

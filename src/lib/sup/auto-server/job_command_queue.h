@@ -22,7 +22,7 @@
 #ifndef SUP_AUTO_SERVER_JOB_COMMAND_QUEUE_H_
 #define SUP_AUTO_SERVER_JOB_COMMAND_QUEUE_H_
 
-#include "job_commands.h"
+#include <sup/auto-server/job_commands.h>
 
 #include <condition_variable>
 #include <deque>

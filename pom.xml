@@ -95,18 +95,17 @@
                         </package>
                         <package name="devel">
                             <!-- CMAKE -->
-                            <!-- <include type="file" source="lib/cmake/sup-dto" target="lib/cmake/sup-dto">
+                            <include type="file" source="lib/cmake/sup-auto-server" target="lib/cmake/sup-auto-server">
                                 <include>*.cmake</include>
-                            </include> -->
+                            </include>
                             <!--  Libraries  -->
                             <include type="file" source="lib" target="lib">
-                                <include>*.a</include>
                                 <include>*.so</include>
                             </include>
                             <!--  Public API headers  -->
-                            <!-- <include type="file" source="include/sup/dto" target="include/sup/dto">
+                            <include type="file" source="include/sup/auto-server" target="include/sup/auto-server">
                                 <include>*.h</include>
-                            </include> -->
+                            </include>
                             <!-- Package dependencies -->
                             <requires version="current">%{codac_rpm_prefix}-${project.artifactId}</requires>
                         </package>

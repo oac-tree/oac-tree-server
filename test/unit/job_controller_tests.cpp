@@ -21,7 +21,7 @@
 
 #include "unit_test_helper.h"
 
-#include <sup/auto-server/base/job_controller.h>
+#include <sup/auto-server/job_controller.h>
 
 #include <sup/sequencer/sequence_parser.h>
 #include <sup/sequencer/user_interface.h>

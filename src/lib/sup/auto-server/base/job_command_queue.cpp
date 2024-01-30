@@ -19,7 +19,7 @@
  * of the distribution package.
  ******************************************************************************/
 
-#include "job_command_queue.h"
+#include <sup/auto-server/job_command_queue.h>
 
 namespace sup
 {
