@@ -36,7 +36,7 @@ enum class JobCommand
   kTerminate
 };
 
-bool operator<(JobCommand left, JobCommand right);
+bool operator<=(JobCommand left, JobCommand right);
 
 }  // namespace auto_server
 

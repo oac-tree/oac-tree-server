@@ -50,15 +50,14 @@ public:
   void Push(JobCommand command);
 
   /**
-   * @brief Push new command to queue with priority: remove all commands from the queue first that
-   * have lower or equal priority. If the queue can be completely emptied, execute the passed
-   * function, push the given command and return true. Otherwise, return false immediately upon
-   * encountering a command with higher priority.
+   * @brief Push new command to queue with priority: if the first command in the queue has lower
+   * priority than the given command, execute the passed function, push the given command to the
+   * front and return true. Otherwise, return false.
    *
    * @param command Command to push.
-   * @param func Function to execute if queue was successfully emptied.
+   * @param func Function to execute if the command was successfully pushed.
    *
-   * @return true when queue was completely emptied and only the new command was added afterwards.
+   * @return true when the command was successfully pushed to the front of the queue.
    */
   bool PriorityPush(JobCommand command, std::function<void()> func);
 

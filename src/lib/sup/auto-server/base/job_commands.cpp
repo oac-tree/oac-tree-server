@@ -26,9 +26,9 @@ namespace sup
 namespace auto_server
 {
 
-bool operator<(JobCommand left, JobCommand right)
+bool operator<=(JobCommand left, JobCommand right)
 {
-  return static_cast<int>(left) < static_cast<int>(right);
+  return static_cast<int>(left) <= static_cast<int>(right);
 }
 
 }  // namespace auto_server

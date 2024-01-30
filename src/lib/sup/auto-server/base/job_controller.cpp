@@ -72,16 +72,20 @@ void JobController::Reset()
 
 void JobController::Halt()
 {
-  m_runner.Halt();
-  m_command_queue.Push(JobCommand::kHalt);
+  auto halt_func = [this](){
+    m_runner.Halt();
+  };
+  // The halt command needs to be handled first (except when there's a terminate pending).
+  m_command_queue.PriorityPush(JobCommand::kHalt, halt_func);
 }
 
 void JobController::Terminate()
 {
-  // Note that m_keep_alive is NOT set to false here, but in the state handling functions, which
-  // are executed in the same thread as the execution loop!
-  m_runner.Halt();
-  m_command_queue.Push(JobCommand::kTerminate);
+  auto terminate_func = [this](){
+    m_runner.Halt();
+  };
+  // The terminate command needs to be handled first.
+  m_command_queue.PriorityPush(JobCommand::kTerminate, terminate_func);
   m_loop_future.wait();
   m_proc.Reset(m_ui);
 }
@@ -142,6 +146,7 @@ JobController::Action JobController::HandleInitial(JobCommand command)
     case JobCommand::kReset:
       break;
     case JobCommand::kHalt:
+      SetState(JobState::kHalted);
       break;
     case JobCommand::kTerminate:
       m_keep_alive.store(false);
@@ -248,8 +253,6 @@ void JobController::ExecutionLoop()
         return;
     }
   }
-  // Cleanup: termination should only be used during JobController's destruction so make sure the
-  // procedure is halted and finished. All remaining commands in the queue are dumped too.
 }
 
 void JobController::RunProcedure()
