@@ -69,6 +69,13 @@ public:
   bool IsEmpty() const;
 
   /**
+   * @brief Query the size of the command queue.
+   *
+   * @return Number of commands currently in the queue.
+   */
+  std::size_t GetSize() const;
+
+  /**
    * @brief Try to pop a command from the queue.
    *
    * @param command Output parameter that will hold the popped command if successful.

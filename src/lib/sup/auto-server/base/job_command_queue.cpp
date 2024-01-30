@@ -67,6 +67,12 @@ bool JobCommandQueue::IsEmpty() const
   return m_command_queue.empty();
 }
 
+std::size_t JobCommandQueue::GetSize() const
+{
+  std::lock_guard<std::mutex> lk{m_mtx};
+  return m_command_queue.size();
+}
+
 bool JobCommandQueue::TryPop(JobCommand& command)
 {
   std::lock_guard<std::mutex> lk{m_mtx};
