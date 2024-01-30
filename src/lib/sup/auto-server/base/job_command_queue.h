@@ -26,6 +26,7 @@
 
 #include <condition_variable>
 #include <deque>
+#include <functional>
 #include <mutex>
 
 namespace sup
@@ -47,6 +48,19 @@ public:
    * @param command Command to push.
    */
   void Push(JobCommand command);
+
+  /**
+   * @brief Push new command to queue with priority: remove all commands from the queue first that
+   * have lower or equal priority. If the queue can be completely emptied, execute the passed
+   * function, push the given command and return true. Otherwise, return false immediately upon
+   * encountering a command with higher priority.
+   *
+   * @param command Command to push.
+   * @param func Function to execute if queue was successfully emptied.
+   *
+   * @return true when queue was completely emptied and only the new command was added afterwards.
+   */
+  bool PriorityPush(JobCommand command, std::function<void()> func);
 
   /**
    * @brief Query if command queue is empty.

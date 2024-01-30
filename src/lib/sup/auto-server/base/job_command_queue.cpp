@@ -43,6 +43,29 @@ void JobCommandQueue::Push(JobCommand command)
   m_cv.notify_one();
 }
 
+bool JobCommandQueue::PriorityPush(JobCommand command, std::function<void()> func)
+{
+  {
+    std::lock_guard<std::mutex> lk{m_mtx};
+    while(!m_command_queue.empty())
+    {
+      auto first_command = m_command_queue.front();
+      if (command < first_command)
+      {
+        return false;
+      }
+      m_command_queue.pop_front();
+    }
+    if (func)
+    {
+      func();
+    }
+    m_command_queue.push_back(command);
+  }
+  m_cv.notify_one();
+  return true;
+}
+
 bool JobCommandQueue::IsEmpty() const
 {
   std::lock_guard<std::mutex> lk{m_mtx};

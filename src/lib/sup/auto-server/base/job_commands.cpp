@@ -19,27 +19,18 @@
  * of the distribution package.
  ******************************************************************************/
 
-#ifndef SUP_AUTO_SERVER_JOB_COMMANDS_H_
-#define SUP_AUTO_SERVER_JOB_COMMANDS_H_
+#include "job_commands.h"
 
 namespace sup
 {
 namespace auto_server
 {
-enum class JobCommand
-{
-  kStart = 0,
-  kStep,
-  kPause,
-  kReset,
-  kHalt,
-  kTerminate
-};
 
-bool operator<(JobCommand left, JobCommand right);
+bool operator<(JobCommand left, JobCommand right)
+{
+  return static_cast<int>(left) < static_cast<int>(right);
+}
 
 }  // namespace auto_server
 
 }  // namespace sup
-
-#endif  // SUP_AUTO_SERVER_JOB_COMMANDS_H_
