@@ -19,8 +19,6 @@
  * of the distribution package.
  ******************************************************************************/
 
-#include "unit_test_helper.h"
-
 #include <sup/auto-server/job_commands.h>
 
 #include <gtest/gtest.h>
