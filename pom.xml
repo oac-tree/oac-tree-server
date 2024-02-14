@@ -103,9 +103,9 @@
                                 <include>*.so</include>
                             </include>
                             <!--  Public API headers  -->
-                            <include type="file" source="include/sup/auto-server" target="include/sup/auto-server">
+                            <!-- <include type="file" source="include/sup/auto-server" target="include/sup/auto-server">
                                 <include>*.h</include>
-                            </include>
+                            </include> -->
                             <!-- Package dependencies -->
                             <requires version="current">%{codac_rpm_prefix}-${project.artifactId}</requires>
                         </package>
