@@ -4,9 +4,7 @@ target_compile_features(unit-tests PRIVATE cxx_std_11)
 
 target_sources(unit-tests
   PRIVATE
-    job_command_queue_tests.cpp
-    job_command_tests.cpp
-    job_controller_tests.cpp
+    dummy.cpp
     unit_test_helper.cpp
 )
 

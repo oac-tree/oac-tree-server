@@ -4,7 +4,7 @@
  *
  * Project       : SUP - AUTOMATION-SERVER
  *
- * Description   : SUP automation server
+ * Description   : Unit test code
  *
  * Author        : Walter Van Herck (IO)
  *
@@ -19,26 +19,18 @@
  * of the distribution package.
  ******************************************************************************/
 
-#ifndef SUP_AUTO_SERVER_JOB_STATES_H_
-#define SUP_AUTO_SERVER_JOB_STATES_H_
+#include "unit_test_helper.h"
 
-namespace sup
+#include <gtest/gtest.h>
+
+class DummyTest : public ::testing::Test
 {
-namespace auto_server
-{
-enum class JobState
-{
-  kInitial = 0,
-  kPaused,
-  kStepping,
-  kRunning,
-  kSucceeded,
-  kFailed,
-  kHalted
+protected:
+  DummyTest() = default;
+  virtual ~DummyTest() = default;
 };
 
-}  // namespace auto_server
-
-}  // namespace sup
-
-#endif  // SUP_AUTO_SERVER_JOB_STATES_H_
+TEST_F(DummyTest, Trivialities)
+{
+  EXPECT_TRUE(2 > 0);
+}

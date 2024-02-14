@@ -28,9 +28,5 @@ target_link_libraries(sup-auto-server
 install(TARGETS sup-auto-server EXPORT sup-auto-server-targets LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR})
 
 install(FILES
-  job_command_queue.h
-  job_commands.h
-  job_controller.h
-  job_states.h
   DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/sup/auto-server
 )
