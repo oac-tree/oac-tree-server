@@ -21,12 +21,34 @@
 
 #include "instruction_tree_cache.h"
 
+#include <deque>
+
 namespace sup
 {
 namespace auto_server
 {
 
-bool ReturnTrue() { return true; }
+InstructionTreeCache::InstructionTreeCache(const sequencer::Instruction* root_instruction)
+  : m_instruction_paths{}
+  , m_proc_anyvalue{}
+{}
+
+InstructionTreeCache::~InstructionTreeCache() = default;
+
+std::string InstructionTreeCache::GetInstructionPath(const sequencer::Instruction* instruction) const
+{
+  auto iter = m_instruction_paths.find(instruction);
+  if (iter == m_instruction_paths.end())
+  {
+    return {};
+  }
+  return iter->second;
+}
+
+dto::AnyValue InstructionTreeCache::GetInitialProcedureAnyValue() const
+{
+  return m_proc_anyvalue;
+}
 
 }  // namespace auto_server
 

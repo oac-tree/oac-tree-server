@@ -19,10 +19,8 @@
  * of the distribution package.
  ******************************************************************************/
 
-#ifndef SUP_AUTO_SERVER_INSTRUCTION_TREE_CACHE_H_
-#define SUP_AUTO_SERVER_INSTRUCTION_TREE_CACHE_H_
-
-#include <sup/dto/anyvalue.h>
+#ifndef SUP_AUTO_SERVER_INSTRUCTION_TREE_UTILS_H_
+#define SUP_AUTO_SERVER_INSTRUCTION_TREE_UTILS_H_
 
 #include <map>
 #include <string>
@@ -36,22 +34,15 @@ class Instruction;
 
 namespace auto_server
 {
-class InstructionTreeCache
+namespace utils
 {
-public:
-  explicit InstructionTreeCache(const sequencer::Instruction* root_instruction);
-  ~InstructionTreeCache();
+std::map<const sequencer::Instruction*, std::string> CreateInstructionPaths(
+  const sequencer::Instruction* root);
 
-  std::string GetInstructionPath(const sequencer::Instruction* instruction) const;
-
-  dto::AnyValue GetInitialProcedureAnyValue() const;
-private:
-  std::map<const sequencer::Instruction*, std::string> m_instruction_paths;
-  dto::AnyValue m_proc_anyvalue;
-};
+}  // namespace utils
 
 }  // namespace auto_server
 
 }  // namespace sup
 
-#endif  // SUP_AUTO_SERVER_INSTRUCTION_TREE_CACHE_H_
+#endif  // SUP_AUTO_SERVER_INSTRUCTION_TREE_UTILS_H_
