@@ -21,7 +21,7 @@
 
 #include "unit_test_helper.h"
 
-#include <sup/auto-server/base/instruction_tree_utils.h>
+#include <sup/auto-server/base/instruction_tree_cache.h>
 
 #include <sup/sequencer/sequence_parser.h>
 
@@ -58,11 +58,11 @@ R"RAW(
 <Workspace/>
 )RAW"};
 
-class InstructionTreeUtilsTest : public ::testing::Test
+class InstructionTreeCacheTest : public ::testing::Test
 {
 protected:
-  InstructionTreeUtilsTest() = default;
-  virtual ~InstructionTreeUtilsTest() = default;
+  InstructionTreeCacheTest() = default;
+  virtual ~InstructionTreeCacheTest() = default;
 
 };
 
@@ -71,7 +71,7 @@ namespace
 void DumpInstructionMap(const std::map<const sup::sequencer::Instruction*, std::string>& instr_map);
 }
 
-TEST_F(InstructionTreeUtilsTest, CreateInstructionPaths)
+TEST_F(InstructionTreeCacheTest, CreateInstructionPaths)
 {
   const auto procedure_string = sup::UnitTestHelper::CreateProcedureString(kProcedureBody);
   auto proc = sup::sequencer::ParseProcedureString(procedure_string);
@@ -79,7 +79,8 @@ TEST_F(InstructionTreeUtilsTest, CreateInstructionPaths)
   EXPECT_NO_THROW(proc->Setup());
   auto root_instr = proc->RootInstruction();
   ASSERT_NE(root_instr, nullptr);
-  auto instruction_map = utils::CreateInstructionPaths(root_instr);
+  InstructionTreeCache tree_cache{root_instr};
+  auto instruction_map = tree_cache.GetInstructionPaths();
   EXPECT_EQ(instruction_map.size(), 16);
   DumpInstructionMap(instruction_map);
 }

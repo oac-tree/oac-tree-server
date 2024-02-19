@@ -44,8 +44,11 @@ public:
 
   std::string GetInstructionPath(const sequencer::Instruction* instruction) const;
 
+  std::map<const sequencer::Instruction*, std::string> GetInstructionPaths() const;
+
   dto::AnyValue GetInitialProcedureAnyValue() const;
 private:
+  void InitializeCache(const sequencer::Instruction* root_instruction);
   std::map<const sequencer::Instruction*, std::string> m_instruction_paths;
   dto::AnyValue m_proc_anyvalue;
 };

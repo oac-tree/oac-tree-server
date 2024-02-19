@@ -32,53 +32,6 @@ namespace auto_server
 namespace utils
 {
 
-struct InstructionNode
-{
-  const sequencer::Instruction* instruction;
-  std::string path;
-  size_t idx;
-};
-
-std::string PushInstructionNode(std::deque<InstructionNode>& stack,
-                                std::set<std::string>& path_names,
-                                const sequencer::Instruction* instruction,
-                                const std::string& parent_path)
-{
-  auto instr_path = CreateUniquePath(instruction, parent_path, path_names);
-  InstructionNode node{ instruction, instr_path, 0 };
-  stack.push_back(node);
-  return instr_path;
-}
-
-std::map<const sequencer::Instruction*, std::string> CreateInstructionPaths(
-  const sequencer::Instruction* root)
-{
-  if (root == nullptr)
-  {
-    std::string message = "CreateInstructionPaths(): called with nullptr";
-    // TODO: throw appropriate exception
-    throw 0;
-  }
-  std::map<const sequencer::Instruction*, std::string> result;
-  std::set<std::string> path_names;
-  std::deque<InstructionNode> stack;
-  result[root] = PushInstructionNode(stack, path_names, root, "");
-  while (!stack.empty())
-  {
-    auto& node = stack.back();
-    auto children = node.instruction->ChildInstructions();
-    if (node.idx >= children.size())
-    {
-      stack.pop_back();
-      continue;
-    }
-    auto child = children[node.idx];
-    ++node.idx;
-    result[child] = PushInstructionNode(stack, path_names, child, node.path);
-  }
-  return result;
-}
-
 std::string CreateUniquePath(const sequencer::Instruction* instruction,
                              const std::string& prefix,
                              std::set<std::string>& used_names)

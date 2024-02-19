@@ -40,9 +40,6 @@ namespace utils
 
 const std::string kChildrenField = "children";
 
-std::map<const sequencer::Instruction*, std::string> CreateInstructionPaths(
-  const sequencer::Instruction* root);
-
 std::string CreateUniquePath(const sequencer::Instruction* instruction,
                              const std::string& prefix,
                              std::set<std::string>& used_names);
