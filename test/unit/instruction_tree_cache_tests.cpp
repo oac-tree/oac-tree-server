@@ -69,6 +69,7 @@ protected:
 
 namespace
 {
+// This helper function dumps the InstructionCache to std::cout for debugging purposes.
 void DumpInstructionTreeCache(const InstructionTreeCache& tree_cache);
 }
 
@@ -93,7 +94,6 @@ TEST_F(InstructionTreeCacheTest, CreateInstructionPaths)
     }
     EXPECT_TRUE(tree_anyvalue.HasField(entry.second));
   }
-  // DumpInstructionTreeCache(tree_cache);
 }
 
 namespace
