@@ -21,6 +21,8 @@
 
 #include "instruction_tree_cache.h"
 
+#include "instruction_tree_utils.h"
+
 #include <deque>
 
 namespace sup
@@ -29,7 +31,7 @@ namespace auto_server
 {
 
 InstructionTreeCache::InstructionTreeCache(const sequencer::Instruction* root_instruction)
-  : m_instruction_paths{}
+  : m_instruction_paths{utils::CreateInstructionPaths(root_instruction)}
   , m_proc_anyvalue{}
 {}
 

@@ -24,6 +24,15 @@
 #include <sup/sequencer/instruction.h>
 
 #include <deque>
+#include <set>
+
+namespace
+{
+using namespace sup::sequencer;
+std::string CreateUniquePath(const Instruction* instruction,
+                             const std::string& prefix,
+                             std::set<std::string>& used_names);
+}  // unnamed namespace
 
 namespace sup
 {
@@ -39,13 +48,6 @@ struct InstructionNode
   size_t idx;
 };
 
-InstructionNode CreateInstructionNode(const sequencer::Instruction* instruction,
-                                      const std::string& prefix)
-{
-  std::string path = prefix + "."; // TODO: + instruction name??
-  return { instruction, path, 0 };
-}
-
 std::map<const sequencer::Instruction*, std::string> CreateInstructionPaths(
   const sequencer::Instruction* root)
 {
@@ -56,17 +58,27 @@ std::map<const sequencer::Instruction*, std::string> CreateInstructionPaths(
     throw 0;
   }
   std::map<const sequencer::Instruction*, std::string> result;
+  std::set<std::string> path_names;
+  auto root_path = CreateUniquePath(root, "", path_names);
+  InstructionNode root_node{ root, root_path, 0 };
+  result[root] = root_path;
   std::deque<InstructionNode> stack;
-  stack.push_back(CreateInstructionNode(root, "root"));
+  stack.push_back(root_node);
   while (!stack.empty())
   {
-    auto node = stack.back();
-    stack.pop_back();
-    result.emplace(node.instruction, node.path);
-    for (auto instr : node.instruction->ChildInstructions())
+    auto& node = stack.back();
+    auto children = node.instruction->ChildInstructions();
+    if (node.idx >= children.size())
     {
-      stack.push_back(CreateInstructionNode(instr, node.path));
+      stack.pop_back();
+      continue;
     }
+    auto child = children[node.idx];
+    ++node.idx;
+    auto child_path = CreateUniquePath(child, node.path, path_names);
+    InstructionNode child_node{ child, child_path, 0 };
+    result[child] = child_path;
+    stack.push_back(child_node);
   }
   return result;
 }
@@ -76,3 +88,25 @@ std::map<const sequencer::Instruction*, std::string> CreateInstructionPaths(
 }  // namespace auto_server
 
 }  // namespace sup
+
+namespace
+{
+std::string CreateUniquePath(const Instruction* instruction,
+                             const std::string& prefix,
+                             std::set<std::string>& used_names)
+{
+  auto instr_type = instruction->GetType();
+  std::string field_base = prefix + "." + instr_type;
+  size_t index = 0;
+  std::string suggestion = field_base + std::to_string(index);
+  auto iter = used_names.find(suggestion);
+  while (iter != used_names.end())
+  {
+    index++;
+    suggestion = field_base + std::to_string(index);
+    iter = used_names.find(suggestion);
+  }
+  used_names.insert(suggestion);
+  return suggestion;
+}
+}  // unnamed namespace
