@@ -50,7 +50,7 @@ public:
 private:
   void InitializeCache(const sequencer::Instruction* root_instruction);
   std::map<const sequencer::Instruction*, std::string> m_instruction_paths;
-  dto::AnyValue m_proc_anyvalue;
+  dto::AnyValue m_instr_tree_anyvalue;
 };
 
 }  // namespace auto_server

@@ -21,6 +21,7 @@
 
 #include "unit_test_helper.h"
 
+#include <sup/auto-server/exceptions.h>
 #include <sup/auto-server/instruction_tree_cache.h>
 
 #include <sup/dto/anyvalue_helper.h>
@@ -73,7 +74,7 @@ namespace
 void DumpInstructionTreeCache(const InstructionTreeCache& tree_cache);
 }
 
-TEST_F(InstructionTreeCacheTest, CreateInstructionPaths)
+TEST_F(InstructionTreeCacheTest, Construction)
 {
   const auto procedure_string = sup::UnitTestHelper::CreateProcedureString(kProcedureBody);
   auto proc = sup::sequencer::ParseProcedureString(procedure_string);
@@ -86,14 +87,35 @@ TEST_F(InstructionTreeCacheTest, CreateInstructionPaths)
   auto tree_anyvalue = tree_cache.GetInitialInstructionTreeAnyValue();
   EXPECT_FALSE(sup::dto::IsEmptyValue(tree_anyvalue));
   EXPECT_EQ(instruction_map.size(), 16);
+  std::set<std::string> instr_paths;
   for (const auto& entry : instruction_map)
   {
+    std::string path;
+    EXPECT_NO_THROW(path = tree_cache.FindInstructionPath(entry.first));
+    instr_paths.insert(path);
     if (entry.second.empty())
     {
       continue;
     }
     EXPECT_TRUE(tree_anyvalue.HasField(entry.second));
   }
+  EXPECT_EQ(instruction_map.size(), instr_paths.size());
+}
+
+TEST_F(InstructionTreeCacheTest, Exceptions)
+{
+  // InstructionTreeCache constructor throws when given a nullptr
+  EXPECT_THROW(InstructionTreeCache{nullptr}, InvalidOperationException);
+
+  // InstructionTreeCache::FindInstructionPath throws for unknown instruction
+  const auto procedure_string = sup::UnitTestHelper::CreateProcedureString(kProcedureBody);
+  auto proc = sup::sequencer::ParseProcedureString(procedure_string);
+  ASSERT_NE(proc.get(), nullptr);
+  EXPECT_NO_THROW(proc->Setup());
+  auto root_instr = proc->RootInstruction();
+  ASSERT_NE(root_instr, nullptr);
+  InstructionTreeCache tree_cache{root_instr};
+  EXPECT_THROW(tree_cache.FindInstructionPath(nullptr), InvalidOperationException);
 }
 
 namespace

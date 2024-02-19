@@ -62,7 +62,7 @@ namespace auto_server
 
 InstructionTreeCache::InstructionTreeCache(const sequencer::Instruction* root_instruction)
   : m_instruction_paths{}
-  , m_proc_anyvalue{kInstructionAnyValue}
+  , m_instr_tree_anyvalue{kInstructionAnyValue}
 {
   InitializeCache(root_instruction);
 }
@@ -88,7 +88,7 @@ InstructionTreeCache::GetInstructionPaths() const
 
 dto::AnyValue InstructionTreeCache::GetInitialInstructionTreeAnyValue() const
 {
-  return m_proc_anyvalue;
+  return m_instr_tree_anyvalue;
 }
 
 void InstructionTreeCache::InitializeCache(const sequencer::Instruction* root_instruction)
@@ -100,7 +100,7 @@ void InstructionTreeCache::InitializeCache(const sequencer::Instruction* root_in
   }
   std::set<std::string> path_names;
   std::deque<InstructionNode> stack;
-  m_instruction_paths[root_instruction] = PushRootNode(stack, m_proc_anyvalue, root_instruction);
+  m_instruction_paths[root_instruction] = PushRootNode(stack, m_instr_tree_anyvalue, root_instruction);
   while (!stack.empty())
   {
     auto& node = stack.back();
