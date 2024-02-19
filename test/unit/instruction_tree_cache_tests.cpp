@@ -100,6 +100,7 @@ TEST_F(InstructionTreeCacheTest, Construction)
     EXPECT_TRUE(tree_anyvalue.HasField(entry.second));
   }
   EXPECT_EQ(instruction_map.size(), instr_paths.size());
+  // DumpInstructionTreeCache(tree_cache);
 }
 
 TEST_F(InstructionTreeCacheTest, Exceptions)

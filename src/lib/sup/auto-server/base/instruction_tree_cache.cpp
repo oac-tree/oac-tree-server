@@ -51,7 +51,6 @@ std::string PushRootNode(std::deque<InstructionNode>& stack,
                          const sup::sequencer::Instruction* root_instruction);
 
 std::string PushInstructionNode(std::deque<InstructionNode>& stack,
-                                std::set<std::string>& path_names,
                                 const sup::sequencer::Instruction* instruction);
 }  // unnamed namespace
 
@@ -98,7 +97,6 @@ void InstructionTreeCache::InitializeCache(const sequencer::Instruction* root_in
     std::string message = "InstructionTreeCache::InitializeCache(): called with nullptr";
     throw InvalidOperationException(message);
   }
-  std::set<std::string> path_names;
   std::deque<InstructionNode> stack;
   m_instruction_paths[root_instruction] = PushRootNode(stack, m_instr_tree_anyvalue, root_instruction);
   while (!stack.empty())
@@ -112,7 +110,7 @@ void InstructionTreeCache::InitializeCache(const sequencer::Instruction* root_in
     }
     auto child = children[node.idx];
     ++node.idx;
-    m_instruction_paths[child] = PushInstructionNode(stack, path_names, child);
+    m_instruction_paths[child] = PushInstructionNode(stack, child);
   }
 }
 
@@ -135,12 +133,12 @@ std::string PushRootNode(std::deque<InstructionNode>& stack,
 }
 
 std::string PushInstructionNode(std::deque<InstructionNode>& stack,
-                                std::set<std::string>& path_names,
                                 const sup::sequencer::Instruction* instruction)
 {
   auto& parent_node = stack.back();
   std::string parent_path = parent_node.path;
-  auto instr_path = utils::CreateUniqueField(instruction, parent_path, path_names);
+  auto current_member_names = parent_node.anyvalue[utils::kChildrenField].MemberNames();
+  auto instr_path = utils::CreateUniqueField(instruction, current_member_names);
   auto full_instr_path = utils::CreateFullInstructionPath(parent_path, instr_path);
   parent_node.anyvalue[utils::kChildrenField].AddMember(instr_path, kInstructionAnyValue);
   InstructionNode node{ instruction, parent_node.anyvalue[utils::kChildrenField][instr_path],

@@ -23,6 +23,7 @@
 
 #include <sup/sequencer/instruction.h>
 
+#include <algorithm>
 #include <deque>
 
 namespace sup
@@ -40,20 +41,18 @@ std::string CreateFullInstructionPath(const std::string& prefix, const std::stri
 }
 
 std::string CreateUniqueField(const sequencer::Instruction* instruction,
-                             const std::string& prefix,
-                             std::set<std::string>& used_names)
+                              const std::vector<std::string>& used_names)
 {
   auto instr_type = instruction->GetType();
   size_t index = 0;
   std::string suggestion = instr_type + std::to_string(index);
-  auto iter = used_names.find(CreateFullInstructionPath(prefix, suggestion));
+  auto iter = std::find(used_names.begin(), used_names.end(), suggestion);
   while (iter != used_names.end())
   {
     index++;
     suggestion = instr_type + std::to_string(index);
-    iter = used_names.find(CreateFullInstructionPath(prefix, suggestion));
+    iter = std::find(used_names.begin(), used_names.end(), suggestion);
   }
-  used_names.insert(CreateFullInstructionPath(prefix, suggestion));
   return suggestion;
 }
 

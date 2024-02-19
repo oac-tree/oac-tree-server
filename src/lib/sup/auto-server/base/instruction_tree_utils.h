@@ -22,7 +22,7 @@
 #ifndef SUP_AUTO_SERVER_INSTRUCTION_TREE_UTILS_H_
 #define SUP_AUTO_SERVER_INSTRUCTION_TREE_UTILS_H_
 
-#include <set>
+#include <vector>
 #include <string>
 
 namespace sup
@@ -45,8 +45,7 @@ const std::string kChildrenField = "children";
 std::string CreateFullInstructionPath(const std::string& prefix, const std::string& instr_name);
 
 std::string CreateUniqueField(const sequencer::Instruction* instruction,
-                             const std::string& prefix,
-                             std::set<std::string>& used_names);
+                              const std::vector<std::string>& used_names);
 
 }  // namespace utils
 
