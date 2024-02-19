@@ -71,7 +71,7 @@ namespace
 void DumpInstructionMap(const std::map<const sup::sequencer::Instruction*, std::string>& instr_map);
 }
 
-TEST_F(InstructionTreeUtilsTest, Trivialities)
+TEST_F(InstructionTreeUtilsTest, CreateInstructionPaths)
 {
   const auto procedure_string = sup::UnitTestHelper::CreateProcedureString(kProcedureBody);
   auto proc = sup::sequencer::ParseProcedureString(procedure_string);
