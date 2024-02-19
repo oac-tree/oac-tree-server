@@ -27,6 +27,21 @@
 
 #include <deque>
 
+namespace
+{
+struct InstructionNode
+{
+  const sup::sequencer::Instruction* instruction;
+  std::string path;
+  size_t idx;
+};
+
+std::string PushInstructionNode(std::deque<InstructionNode>& stack,
+                                std::set<std::string>& path_names,
+                                const sup::sequencer::Instruction* instruction,
+                                const std::string& parent_path);
+}  // unnamed namespace
+
 namespace sup
 {
 namespace auto_server
@@ -62,25 +77,6 @@ dto::AnyValue InstructionTreeCache::GetInitialProcedureAnyValue() const
   return m_proc_anyvalue;
 }
 
-struct InstructionNode
-{
-  const sequencer::Instruction* instruction;
-  std::string path;
-  size_t idx;
-};
-
-std::string PushInstructionNode(std::deque<InstructionNode>& stack,
-                                std::set<std::string>& path_names,
-                                const sequencer::Instruction* instruction,
-                                const std::string& parent_path)
-{
-  auto instr_path = utils::CreateUniquePath(instruction, parent_path, path_names);
-  InstructionNode node{ instruction, instr_path, 0 };
-  stack.push_back(node);
-  return instr_path;
-}
-
-
 void InstructionTreeCache::InitializeCache(const sequencer::Instruction* root_instruction)
 {
   if (root_instruction == nullptr)
@@ -111,3 +107,20 @@ void InstructionTreeCache::InitializeCache(const sequencer::Instruction* root_in
 }  // namespace auto_server
 
 }  // namespace sup
+
+namespace
+{
+using namespace sup::auto_server;
+
+std::string PushInstructionNode(std::deque<InstructionNode>& stack,
+                                std::set<std::string>& path_names,
+                                const sup::sequencer::Instruction* instruction,
+                                const std::string& parent_path)
+{
+  auto instr_path = utils::CreateUniquePath(instruction, parent_path, path_names);
+  InstructionNode node{ instruction, instr_path, 0 };
+  stack.push_back(node);
+  return instr_path;
+}
+}  // unnamed namespace
+

@@ -22,7 +22,6 @@
 #ifndef SUP_AUTO_SERVER_INSTRUCTION_TREE_UTILS_H_
 #define SUP_AUTO_SERVER_INSTRUCTION_TREE_UTILS_H_
 
-#include <map>
 #include <set>
 #include <string>
 
