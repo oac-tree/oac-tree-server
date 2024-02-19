@@ -23,6 +23,7 @@
 
 #include <sup/auto-server/base/instruction_tree_cache.h>
 
+#include <sup/dto/anyvalue_helper.h>
 #include <sup/sequencer/sequence_parser.h>
 
 #include <gtest/gtest.h>
@@ -68,7 +69,7 @@ protected:
 
 namespace
 {
-void DumpInstructionMap(const std::map<const sup::sequencer::Instruction*, std::string>& instr_map);
+void DumpInstructionTreeCache(const InstructionTreeCache& tree_cache);
 }
 
 TEST_F(InstructionTreeCacheTest, CreateInstructionPaths)
@@ -81,17 +82,34 @@ TEST_F(InstructionTreeCacheTest, CreateInstructionPaths)
   ASSERT_NE(root_instr, nullptr);
   InstructionTreeCache tree_cache{root_instr};
   auto instruction_map = tree_cache.GetInstructionPaths();
+  auto tree_anyvalue = tree_cache.GetInitialProcedureAnyValue();
+  EXPECT_FALSE(sup::dto::IsEmptyValue(tree_anyvalue));
   EXPECT_EQ(instruction_map.size(), 16);
-  DumpInstructionMap(instruction_map);
+  for (const auto& entry : instruction_map)
+  {
+    if (entry.second.empty())
+    {
+      continue;
+    }
+    EXPECT_TRUE(tree_anyvalue.HasField(entry.second));
+  }
+  DumpInstructionTreeCache(tree_cache);
 }
 
 namespace
 {
-void DumpInstructionMap(const std::map<const sup::sequencer::Instruction*, std::string>& instr_map)
+void DumpInstructionTreeCache(const InstructionTreeCache& tree_cache)
 {
+  std::cout << "Map of instruction paths:" << std::endl;
+  std::cout << "=========================" << std::endl;
+  auto instr_map = tree_cache.GetInstructionPaths();
   for (const auto& entry : instr_map)
   {
     std::cout << entry.second << std::endl;
   }
+  std::cout << std::endl;
+  std::cout << "Dump of AnyValue:" << std::endl;
+  std::cout << "=================" << std::endl;
+  std::cout << sup::dto::PrintAnyValue(tree_cache.GetInitialProcedureAnyValue()) << std::endl;
 }
 }

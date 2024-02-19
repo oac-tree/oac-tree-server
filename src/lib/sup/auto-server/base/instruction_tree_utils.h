@@ -37,9 +37,14 @@ namespace auto_server
 namespace utils
 {
 
+const std::string kInstructionNodeType = "sup::instructionNode/v1.0";
+const std::string kExecStatusField = "exec_status";
+const std::string kBreakpointField = "breakpoint";
 const std::string kChildrenField = "children";
 
-std::string CreateUniquePath(const sequencer::Instruction* instruction,
+std::string CreateFullInstructionPath(const std::string& prefix, const std::string& instr_name);
+
+std::string CreateUniqueField(const sequencer::Instruction* instruction,
                              const std::string& prefix,
                              std::set<std::string>& used_names);
 
