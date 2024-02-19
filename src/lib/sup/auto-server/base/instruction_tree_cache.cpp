@@ -19,8 +19,9 @@
  * of the distribution package.
  ******************************************************************************/
 
-#include "instruction_tree_cache.h"
+#include <sup/auto-server/instruction_tree_cache.h>
 
+#include <sup/auto-server/exceptions.h>
 #include "instruction_tree_utils.h"
 
 #include <sup/sequencer/instruction.h>
@@ -68,12 +69,13 @@ InstructionTreeCache::InstructionTreeCache(const sequencer::Instruction* root_in
 
 InstructionTreeCache::~InstructionTreeCache() = default;
 
-std::string InstructionTreeCache::GetInstructionPath(const sequencer::Instruction* instruction) const
+std::string InstructionTreeCache::FindInstructionPath(const sequencer::Instruction* instruction) const
 {
   auto iter = m_instruction_paths.find(instruction);
   if (iter == m_instruction_paths.end())
   {
-    return {};
+    std::string message = "InstructionTreeCache::FindInstructionPath(): unknown instruction";
+    throw InvalidOperationException(message);
   }
   return iter->second;
 }
@@ -84,7 +86,7 @@ InstructionTreeCache::GetInstructionPaths() const
   return m_instruction_paths;
 }
 
-dto::AnyValue InstructionTreeCache::GetInitialProcedureAnyValue() const
+dto::AnyValue InstructionTreeCache::GetInitialInstructionTreeAnyValue() const
 {
   return m_proc_anyvalue;
 }
@@ -94,8 +96,7 @@ void InstructionTreeCache::InitializeCache(const sequencer::Instruction* root_in
   if (root_instruction == nullptr)
   {
     std::string message = "InstructionTreeCache::InitializeCache(): called with nullptr";
-    // TODO: throw appropriate exception
-    throw 0;
+    throw InvalidOperationException(message);
   }
   std::set<std::string> path_names;
   std::deque<InstructionNode> stack;
@@ -137,10 +138,6 @@ std::string PushInstructionNode(std::deque<InstructionNode>& stack,
                                 std::set<std::string>& path_names,
                                 const sup::sequencer::Instruction* instruction)
 {
-  if (stack.empty())
-  {
-    throw 0;
-  }
   auto& parent_node = stack.back();
   std::string parent_path = parent_node.path;
   auto instr_path = utils::CreateUniqueField(instruction, parent_path, path_names);

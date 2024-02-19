@@ -19,42 +19,40 @@
  * of the distribution package.
  ******************************************************************************/
 
-#ifndef SUP_AUTO_SERVER_INSTRUCTION_TREE_CACHE_H_
-#define SUP_AUTO_SERVER_INSTRUCTION_TREE_CACHE_H_
+#ifndef SUP_AUTO_SERVER_EXCEPTIONS_H_
+#define SUP_AUTO_SERVER_EXCEPTIONS_H_
 
-#include <sup/dto/anyvalue.h>
-
-#include <map>
+#include <exception>
 #include <string>
 
 namespace sup
 {
-namespace sequencer
-{
-class Instruction;
-}  // namespace sequencer
-
 namespace auto_server
 {
-class InstructionTreeCache
+
+  /**
+ * @brief Base Exception class with message.
+ */
+class MessageException : public std::exception
 {
 public:
-  explicit InstructionTreeCache(const sequencer::Instruction* root_instruction);
-  ~InstructionTreeCache();
-
-  std::string GetInstructionPath(const sequencer::Instruction* instruction) const;
-
-  std::map<const sequencer::Instruction*, std::string> GetInstructionPaths() const;
-
-  dto::AnyValue GetInitialProcedureAnyValue() const;
+  explicit MessageException(std::string message);
+  const char* what() const noexcept override;
 private:
-  void InitializeCache(const sequencer::Instruction* root_instruction);
-  std::map<const sequencer::Instruction*, std::string> m_instruction_paths;
-  dto::AnyValue m_proc_anyvalue;
+  std::string m_message;
+};
+
+/**
+ * @brief Exception thrown when performing an operation that is not allowed.
+ */
+class InvalidOperationException : public MessageException
+{
+public:
+  explicit InvalidOperationException(const std::string& message);
 };
 
 }  // namespace auto_server
 
 }  // namespace sup
 
-#endif  // SUP_AUTO_SERVER_INSTRUCTION_TREE_CACHE_H_
+#endif  // SUP_AUTO_SERVER_EXCEPTIONS_H_

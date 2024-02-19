@@ -21,7 +21,7 @@
 
 #include "unit_test_helper.h"
 
-#include <sup/auto-server/base/instruction_tree_cache.h>
+#include <sup/auto-server/instruction_tree_cache.h>
 
 #include <sup/dto/anyvalue_helper.h>
 #include <sup/sequencer/sequence_parser.h>
@@ -82,7 +82,7 @@ TEST_F(InstructionTreeCacheTest, CreateInstructionPaths)
   ASSERT_NE(root_instr, nullptr);
   InstructionTreeCache tree_cache{root_instr};
   auto instruction_map = tree_cache.GetInstructionPaths();
-  auto tree_anyvalue = tree_cache.GetInitialProcedureAnyValue();
+  auto tree_anyvalue = tree_cache.GetInitialInstructionTreeAnyValue();
   EXPECT_FALSE(sup::dto::IsEmptyValue(tree_anyvalue));
   EXPECT_EQ(instruction_map.size(), 16);
   for (const auto& entry : instruction_map)
@@ -93,7 +93,7 @@ TEST_F(InstructionTreeCacheTest, CreateInstructionPaths)
     }
     EXPECT_TRUE(tree_anyvalue.HasField(entry.second));
   }
-  DumpInstructionTreeCache(tree_cache);
+  // DumpInstructionTreeCache(tree_cache);
 }
 
 namespace
@@ -110,6 +110,6 @@ void DumpInstructionTreeCache(const InstructionTreeCache& tree_cache)
   std::cout << std::endl;
   std::cout << "Dump of AnyValue:" << std::endl;
   std::cout << "=================" << std::endl;
-  std::cout << sup::dto::PrintAnyValue(tree_cache.GetInitialProcedureAnyValue()) << std::endl;
+  std::cout << sup::dto::PrintAnyValue(tree_cache.GetInitialInstructionTreeAnyValue()) << std::endl;
 }
 }
