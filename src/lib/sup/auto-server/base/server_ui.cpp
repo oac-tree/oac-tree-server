@@ -43,7 +43,9 @@ void ServerUserInterface::UpdateInstructionStatus(const sequencer::Instruction* 
 {
   auto path = m_instr_tree_cache.FindInstructionPath(instruction);
   auto status = instruction->GetStatus();
-  m_tree_anyvalue[path][utils::kExecStatusField] = static_cast<sup::dto::uint16>(status);
+  auto& instr_node = path.empty() ? m_tree_anyvalue
+                                  : m_tree_anyvalue[path];
+  instr_node[utils::kExecStatusField] = static_cast<sup::dto::uint16>(status);
   m_pv_server.UpdateInstructionTreePV(m_tree_anyvalue);
 }
 
