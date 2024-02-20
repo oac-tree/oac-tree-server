@@ -25,6 +25,7 @@
 #include <sup/auto-server/instruction_tree_cache.h>
 
 #include <sup/dto/anyvalue_helper.h>
+#include <sup/sequencer/instruction.h>
 #include <sup/sequencer/sequence_parser.h>
 
 #include <gtest/gtest.h>
@@ -117,6 +118,32 @@ TEST_F(InstructionTreeCacheTest, Exceptions)
   ASSERT_NE(root_instr, nullptr);
   InstructionTreeCache tree_cache{root_instr};
   EXPECT_THROW(tree_cache.FindInstructionPath(nullptr), InvalidOperationException);
+}
+
+TEST_F(InstructionTreeCacheTest, PathFormat)
+{
+  // Check format of paths.
+  const auto procedure_string = sup::UnitTestHelper::CreateProcedureString(kProcedureBody);
+  auto proc = sup::sequencer::ParseProcedureString(procedure_string);
+  ASSERT_NE(proc.get(), nullptr);
+  EXPECT_NO_THROW(proc->Setup());
+  auto root_instr = proc->RootInstruction();
+  ASSERT_NE(root_instr, nullptr);
+  InstructionTreeCache tree_cache{root_instr};
+
+  // Check that path for root instruction is just the empty string:
+  EXPECT_EQ(tree_cache.FindInstructionPath(root_instr), std::string{});
+
+  // Check some child instruction paths:
+  auto children_1 = root_instr->ChildInstructions();
+  ASSERT_EQ(children_1.size(), 4);
+  auto first_seq = children_1[0];
+  EXPECT_EQ(tree_cache.FindInstructionPath(first_seq), std::string{"children.Sequence0"});
+  auto children_2 = first_seq->ChildInstructions();
+  ASSERT_EQ(children_2.size(), 3);
+  auto third_wait = children_2[2];
+  EXPECT_EQ(tree_cache.FindInstructionPath(third_wait),
+            std::string{"children.Sequence0.children.Wait2"});
 }
 
 namespace
