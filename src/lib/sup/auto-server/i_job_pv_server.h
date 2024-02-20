@@ -22,8 +22,8 @@
 #ifndef SUP_AUTO_SERVER_I_JOB_PV_SERVER_H_
 #define SUP_AUTO_SERVER_I_JOB_PV_SERVER_H_
 
-#include <sup/dto/anyvalue.h>
 #include <sup/sequencer/instruction.h>
+#include <sup/sequencer/breakpoint.h>
 
 namespace sup
 {
@@ -41,6 +41,9 @@ public:
 
   virtual void UpdateInstructionStatusPV(const sequencer::Instruction* instruction,
                                          sequencer::ExecutionStatus status) = 0;
+
+  virtual void UpdateInstructionBreakpointPV(const sequencer::Instruction* instruction,
+                                             sequencer::Breakpoint::Status status) = 0;
 };
 
 }  // namespace auto_server

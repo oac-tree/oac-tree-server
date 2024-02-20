@@ -50,6 +50,17 @@ void CoutPVServer::UpdateInstructionStatusPV(const sequencer::Instruction* instr
   std::cout << std::endl;
 }
 
+void CoutPVServer::UpdateInstructionBreakpointPV(const sequencer::Instruction* instruction,
+                                                 sequencer::Breakpoint::Status status)
+{
+  ++m_instr_update_count;
+  std::cout << "Instruction breakpoint updated:" << std::endl;
+  std::cout << "===============================" << std::endl;
+  std::cout << static_cast<const void*>(instruction) << std::endl;
+  std::cout << static_cast<sup::dto::uint32>(status) << std::endl;
+  std::cout << std::endl;
+}
+
 sup::dto::uint32 CoutPVServer::GetInstructionUpdateCount() const
 {
   return m_instr_update_count;
