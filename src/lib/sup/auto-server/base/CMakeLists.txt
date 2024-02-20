@@ -3,4 +3,5 @@ target_sources(sup-auto-server
   exceptions.cpp
   instruction_tree_cache.cpp
   instruction_tree_utils.cpp
+  server_ui.cpp
 )
