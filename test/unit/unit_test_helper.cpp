@@ -21,12 +21,29 @@
 
 #include "unit_test_helper.h"
 
+#include <sup/dto/anyvalue_helper.h>
+
 #include <fstream>
+#include <iostream>
 
 namespace sup
 {
+namespace auto_server
+{
 namespace UnitTestHelper
 {
+
+CoutPVServer::CoutPVServer() = default;
+
+CoutPVServer::~CoutPVServer() = default;
+
+void CoutPVServer::UpdateInstructionTreePV(const sup::dto::AnyValue& tree_anyvalue)
+{
+  std::cout << "Instruction tree updated:" << std::endl;
+  std::cout << "=========================" << std::endl;
+  std::cout << sup::dto::PrintAnyValue(tree_anyvalue);
+  std::cout << std::endl;
+}
 
 TemporaryTestFile::TemporaryTestFile(std::string filename, std::string contents)
     : m_filename{filename}
@@ -55,5 +72,7 @@ std::string CreateProcedureString(const std::string &body)
 }
 
 }  // namespace UnitTestHelper
+
+}  // namespace auto_server
 
 }  // namespace sup

@@ -29,6 +29,8 @@ install(TARGETS sup-auto-server EXPORT sup-auto-server-targets LIBRARY DESTINATI
 
 install(FILES
   exceptions.h
+  i_job_pv_server.h
   instruction_tree_cache.h
+  server_ui.h
   DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/sup/auto-server
 )

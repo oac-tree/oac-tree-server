@@ -77,7 +77,7 @@ void DumpInstructionTreeCache(const InstructionTreeCache& tree_cache);
 
 TEST_F(InstructionTreeCacheTest, Construction)
 {
-  const auto procedure_string = sup::UnitTestHelper::CreateProcedureString(kProcedureBody);
+  const auto procedure_string = UnitTestHelper::CreateProcedureString(kProcedureBody);
   auto proc = sup::sequencer::ParseProcedureString(procedure_string);
   ASSERT_NE(proc.get(), nullptr);
   EXPECT_NO_THROW(proc->Setup());
@@ -110,7 +110,7 @@ TEST_F(InstructionTreeCacheTest, Exceptions)
   EXPECT_THROW(InstructionTreeCache{nullptr}, InvalidOperationException);
 
   // InstructionTreeCache::FindInstructionPath throws for unknown instruction
-  const auto procedure_string = sup::UnitTestHelper::CreateProcedureString(kProcedureBody);
+  const auto procedure_string = UnitTestHelper::CreateProcedureString(kProcedureBody);
   auto proc = sup::sequencer::ParseProcedureString(procedure_string);
   ASSERT_NE(proc.get(), nullptr);
   EXPECT_NO_THROW(proc->Setup());
@@ -123,7 +123,7 @@ TEST_F(InstructionTreeCacheTest, Exceptions)
 TEST_F(InstructionTreeCacheTest, PathFormat)
 {
   // Check format of paths.
-  const auto procedure_string = sup::UnitTestHelper::CreateProcedureString(kProcedureBody);
+  const auto procedure_string = UnitTestHelper::CreateProcedureString(kProcedureBody);
   auto proc = sup::sequencer::ParseProcedureString(procedure_string);
   ASSERT_NE(proc.get(), nullptr);
   EXPECT_NO_THROW(proc->Setup());

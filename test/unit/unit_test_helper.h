@@ -22,12 +22,26 @@
 #ifndef SUP_AUTO_SERVER_UNIT_TEST_HELPER_H_
 #define SUP_AUTO_SERVER_UNIT_TEST_HELPER_H_
 
+#include <sup/auto-server/i_job_pv_server.h>
+
 #include <string>
 
 namespace sup
 {
+namespace auto_server
+{
 namespace UnitTestHelper
 {
+
+class CoutPVServer : public IJobPVServer
+{
+public:
+  CoutPVServer();
+
+  ~CoutPVServer();
+
+  void UpdateInstructionTreePV(const sup::dto::AnyValue& tree_anyvalue) override;
+};
 
 class TemporaryTestFile
 {
@@ -46,6 +60,8 @@ public:
 std::string CreateProcedureString(const std::string& body);
 
 }  // namespace UnitTestHelper
+
+}  // namespace auto_server
 
 }  // namespace sup
 

@@ -22,6 +22,9 @@
 #ifndef SUP_AUTO_SERVER_SERVER_UI_H_
 #define SUP_AUTO_SERVER_SERVER_UI_H_
 
+#include <sup/auto-server/i_job_pv_server.h>
+#include <sup/auto-server/instruction_tree_cache.h>
+
 #include <sup/sequencer/user_interface.h>
 
 namespace sup
@@ -32,18 +35,24 @@ namespace auto_server
 class ServerUserInterface : public sequencer::UserInterface
 {
 public:
-  ServerUserInterface();
+  ServerUserInterface(const sequencer::Instruction* root_instruction, IJobPVServer& pv_server);
 
   ~ServerUserInterface();
 
   void UpdateInstructionStatus(const sequencer::Instruction* instruction) override;
-  void VariableUpdated(const std::string& name, const sup::dto::AnyValue& value, bool connected) override;
+  void VariableUpdated(const std::string& name, const sup::dto::AnyValue& value,
+                       bool connected) override;
   bool PutValue(const sup::dto::AnyValue& value, const std::string& description) override;
   bool GetUserValue(sup::dto::AnyValue& value, const std::string& description) override;
   int GetUserChoice(const std::vector<std::string>& options,
-                            const sup::dto::AnyValue& metadata) override;
+                    const sup::dto::AnyValue& metadata) override;
   void Message(const std::string& message) override;
   void Log(int severity, const std::string& message) override;
+
+private:
+  const InstructionTreeCache m_instr_tree_cache;
+  sup::dto::AnyValue m_tree_anyvalue;
+  IJobPVServer& m_pv_server;
 };
 
 }  // namespace auto_server
