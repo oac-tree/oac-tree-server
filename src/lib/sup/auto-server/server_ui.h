@@ -35,7 +35,7 @@ namespace auto_server
 class ServerUserInterface : public sequencer::UserInterface
 {
 public:
-  ServerUserInterface(const sequencer::Instruction* root_instruction, IJobPVServer& pv_server);
+  ServerUserInterface(IJobPVServer& pv_server);
 
   ~ServerUserInterface();
 
@@ -50,8 +50,6 @@ public:
   void Log(int severity, const std::string& message) override;
 
 private:
-  const InstructionTreeCache m_instr_tree_cache;
-  sup::dto::AnyValue m_tree_anyvalue;
   IJobPVServer& m_pv_server;
 };
 

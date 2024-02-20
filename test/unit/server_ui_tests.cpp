@@ -62,7 +62,7 @@ TEST_F(ServerUserInterfaceTest, PrintToCout)
   // Construct ui
   auto root_instr = proc->RootInstruction();
   ASSERT_NE(root_instr, nullptr);
-  ServerUserInterface ui{root_instr, m_pv_server};
+  ServerUserInterface ui{m_pv_server};
 
   // Construct JobController and run procedure
   sup::sequencer::JobController controller{*proc, ui, m_monitor};

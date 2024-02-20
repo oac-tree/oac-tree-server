@@ -39,12 +39,14 @@ CoutPVServer::CoutPVServer()
 
 CoutPVServer::~CoutPVServer() = default;
 
-void CoutPVServer::UpdateInstructionTreePV(const sup::dto::AnyValue& tree_anyvalue)
+void CoutPVServer::UpdateInstructionStatusPV(const sequencer::Instruction* instruction,
+                                             sequencer::ExecutionStatus status)
 {
   ++m_instr_update_count;
-  std::cout << "Instruction tree updated:" << std::endl;
-  std::cout << "=========================" << std::endl;
-  std::cout << sup::dto::PrintAnyValue(tree_anyvalue);
+  std::cout << "Instruction status updated:" << std::endl;
+  std::cout << "===========================" << std::endl;
+  std::cout << static_cast<const void*>(instruction) << std::endl;
+  std::cout << sequencer::StatusToString(status) << std::endl;
   std::cout << std::endl;
 }
 

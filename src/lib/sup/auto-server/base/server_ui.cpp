@@ -30,23 +30,16 @@ namespace sup
 namespace auto_server
 {
 
-ServerUserInterface::ServerUserInterface(const sequencer::Instruction* root_instruction,
-                                         IJobPVServer& pv_server)
-  : m_instr_tree_cache{root_instruction}
-  , m_tree_anyvalue{m_instr_tree_cache.GetInitialInstructionTreeAnyValue()}
-  , m_pv_server{pv_server}
+ServerUserInterface::ServerUserInterface(IJobPVServer& pv_server)
+  : m_pv_server{pv_server}
 {}
 
 ServerUserInterface::~ServerUserInterface() = default;
 
 void ServerUserInterface::UpdateInstructionStatus(const sequencer::Instruction* instruction)
 {
-  auto path = m_instr_tree_cache.FindInstructionPath(instruction);
   auto status = instruction->GetStatus();
-  auto& instr_node = path.empty() ? m_tree_anyvalue
-                                  : m_tree_anyvalue[path];
-  instr_node[utils::kExecStatusField] = static_cast<sup::dto::uint16>(status);
-  m_pv_server.UpdateInstructionTreePV(m_tree_anyvalue);
+  m_pv_server.UpdateInstructionStatusPV(instruction, status);
 }
 
 void ServerUserInterface::VariableUpdated(const std::string& name, const sup::dto::AnyValue& value,

@@ -40,7 +40,8 @@ public:
 
   ~CoutPVServer();
 
-  void UpdateInstructionTreePV(const sup::dto::AnyValue& tree_anyvalue) override;
+  void UpdateInstructionStatusPV(const sequencer::Instruction* instruction,
+                                 sequencer::ExecutionStatus status) override;
 
   sup::dto::uint32 GetInstructionUpdateCount() const;
 private:

@@ -23,6 +23,7 @@
 #define SUP_AUTO_SERVER_I_JOB_PV_SERVER_H_
 
 #include <sup/dto/anyvalue.h>
+#include <sup/sequencer/instruction.h>
 
 namespace sup
 {
@@ -38,7 +39,8 @@ class IJobPVServer
 public:
   virtual ~IJobPVServer();
 
-  virtual void UpdateInstructionTreePV(const sup::dto::AnyValue& tree_anyvalue) = 0;
+  virtual void UpdateInstructionStatusPV(const sequencer::Instruction* instruction,
+                                         sequencer::ExecutionStatus status) = 0;
 };
 
 }  // namespace auto_server
