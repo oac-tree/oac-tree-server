@@ -41,6 +41,10 @@ public:
   ~CoutPVServer();
 
   void UpdateInstructionTreePV(const sup::dto::AnyValue& tree_anyvalue) override;
+
+  sup::dto::uint32 GetInstructionUpdateCount() const;
+private:
+  sup::dto::uint32 m_instr_update_count;
 };
 
 class TemporaryTestFile

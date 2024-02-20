@@ -69,4 +69,5 @@ TEST_F(ServerUserInterfaceTest, PrintToCout)
   EXPECT_TRUE(m_monitor.WaitForState(sup::sequencer::JobState::kInitial, 1.0));
   controller.Start();
   EXPECT_TRUE(m_monitor.WaitForState(sup::sequencer::JobState::kSucceeded, 2.0));
+  EXPECT_EQ(m_pv_server.GetInstructionUpdateCount(), 6u);
 }

@@ -33,16 +33,24 @@ namespace auto_server
 namespace UnitTestHelper
 {
 
-CoutPVServer::CoutPVServer() = default;
+CoutPVServer::CoutPVServer()
+  : m_instr_update_count{}
+{}
 
 CoutPVServer::~CoutPVServer() = default;
 
 void CoutPVServer::UpdateInstructionTreePV(const sup::dto::AnyValue& tree_anyvalue)
 {
+  ++m_instr_update_count;
   std::cout << "Instruction tree updated:" << std::endl;
   std::cout << "=========================" << std::endl;
   std::cout << sup::dto::PrintAnyValue(tree_anyvalue);
   std::cout << std::endl;
+}
+
+sup::dto::uint32 CoutPVServer::GetInstructionUpdateCount() const
+{
+  return m_instr_update_count;
 }
 
 TemporaryTestFile::TemporaryTestFile(std::string filename, std::string contents)

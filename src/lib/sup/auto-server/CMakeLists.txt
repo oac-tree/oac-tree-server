@@ -32,5 +32,6 @@ install(FILES
   i_job_pv_server.h
   instruction_tree_cache.h
   server_ui.h
+  sup_auto_protocol.h
   DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/sup/auto-server
 )
