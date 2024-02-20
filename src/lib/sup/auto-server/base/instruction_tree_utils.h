@@ -42,8 +42,28 @@ const std::string kExecStatusField = "exec_status";
 const std::string kBreakpointField = "breakpoint";
 const std::string kChildrenField = "children";
 
+/**
+ * @brief Create a full path into an AnyValue from a prefix and a specific instruction name.
+ *
+ * @note Every instruction in the tree is represented by a structure, containing its status and
+ * a member structure for possible children. The full path contains these intermediate fieldnames
+ * for the 'children' structure.
+ *
+ * @param prefix Path to the parent instruction or empty if instruction was the root.
+ * @param instr_name Unique instruction name within a given parent.
+ * @return Full path from root to the instruction.
+ */
 std::string CreateFullInstructionPath(const std::string& prefix, const std::string& instr_name);
 
+/**
+ * @brief Create a unique fieldname for the given instruction. Uniqueness means that no other child
+ * instruction of its parent has the same name. The name consists of the instruction's type and an
+ * integer index.
+ *
+ * @param instruction Instruction to provide name for.
+ * @param used_names Instruction names already in use in its parent instruction.
+ * @return Unique fieldname.
+ */
 std::string CreateUniqueField(const sequencer::Instruction* instruction,
                               const std::vector<std::string>& used_names);
 
