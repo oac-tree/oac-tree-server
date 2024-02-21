@@ -37,6 +37,12 @@ EPICSJobPVServer::EPICSJobPVServer(const sequencer::Procedure& proc)
 
 EPICSJobPVServer::~EPICSJobPVServer() = default;
 
+void EPICSJobPVServer::UpdateJobStatePV(sequencer::JobState state)
+{
+  (void)state;
+  // TODO: Update EPICS server PV
+}
+
 void EPICSJobPVServer::UpdateInstructionStatusPV(const sequencer::Instruction* instruction,
                                                  sequencer::ExecutionStatus status)
 {

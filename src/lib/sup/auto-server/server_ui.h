@@ -23,7 +23,6 @@
 #define SUP_AUTO_SERVER_SERVER_UI_H_
 
 #include <sup/auto-server/i_job_pv_server.h>
-#include <sup/auto-server/instruction_tree_cache.h>
 
 #include <sup/sequencer/user_interface.h>
 

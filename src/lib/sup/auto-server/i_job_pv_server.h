@@ -23,6 +23,7 @@
 #define SUP_AUTO_SERVER_I_JOB_PV_SERVER_H_
 
 #include <sup/sequencer/instruction.h>
+#include <sup/sequencer/job_states.h>
 
 namespace sup
 {
@@ -37,6 +38,8 @@ class IJobPVServer
 {
 public:
   virtual ~IJobPVServer();
+
+  virtual void UpdateJobStatePV(sequencer::JobState state) = 0;
 
   virtual void UpdateInstructionStatusPV(const sequencer::Instruction* instruction,
                                          sequencer::ExecutionStatus status) = 0;

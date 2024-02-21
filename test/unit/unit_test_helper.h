@@ -41,14 +41,19 @@ public:
 
   ~TestJobPVServer();
 
+  void UpdateJobStatePV(sequencer::JobState state) override;
+
   void UpdateInstructionStatusPV(const sequencer::Instruction* instruction,
                                  sequencer::ExecutionStatus status) override;
   void UpdateInstructionBreakpointPV(const sequencer::Instruction* instruction,
                                      bool breakpoint_set) override;
 
   sup::dto::uint32 GetInstructionUpdateCount(sequencer::ExecutionStatus status) const;
+
+  sequencer::JobState GetJobState() const;
 private:
   std::map<sequencer::ExecutionStatus, sup::dto::uint32> m_status_updates;
+  sequencer::JobState m_job_state;
 };
 
 class TemporaryTestFile

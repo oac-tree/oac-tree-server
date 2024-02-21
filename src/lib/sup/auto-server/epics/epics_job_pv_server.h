@@ -45,6 +45,8 @@ public:
   EPICSJobPVServer(const sequencer::Procedure& proc);
   ~EPICSJobPVServer();
 
+  void UpdateJobStatePV(sequencer::JobState state) override;
+
   void UpdateInstructionStatusPV(const sequencer::Instruction* instruction,
                                  sequencer::ExecutionStatus status) override;
 

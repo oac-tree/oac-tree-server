@@ -35,9 +35,15 @@ namespace UnitTestHelper
 
 TestJobPVServer::TestJobPVServer()
   : m_status_updates{}
+  , m_job_state{sequencer::JobState::kInitial}
 {}
 
 TestJobPVServer::~TestJobPVServer() = default;
+
+void TestJobPVServer::UpdateJobStatePV(sequencer::JobState state)
+{
+  m_job_state = state;
+}
 
 void TestJobPVServer::UpdateInstructionStatusPV(const sequencer::Instruction* instruction,
                                              sequencer::ExecutionStatus status)
@@ -63,6 +69,11 @@ sup::dto::uint32 TestJobPVServer::GetInstructionUpdateCount(sequencer::Execution
     return 0;
   }
   return iter->second;
+}
+
+sequencer::JobState TestJobPVServer::GetJobState() const
+{
+  return m_job_state;
 }
 
 TemporaryTestFile::TemporaryTestFile(std::string filename, std::string contents)
