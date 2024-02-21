@@ -33,13 +33,14 @@ namespace auto_server
 EPICSJobPVServer::EPICSJobPVServer(const sequencer::Procedure& proc)
   : m_instr_tree_cache{proc.RootInstruction()}
   , m_instr_tree_anyvalue{m_instr_tree_cache.GetInitialInstructionTreeAnyValue()}
+  , m_job_state{kJobStateAnyValue}
 {}
 
 EPICSJobPVServer::~EPICSJobPVServer() = default;
 
 void EPICSJobPVServer::UpdateJobStatePV(sequencer::JobState state)
 {
-  (void)state;
+  m_job_state[kJobStateField] = static_cast<sup::dto::uint32>(state);
   // TODO: Update EPICS server PV
 }
 

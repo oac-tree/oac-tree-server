@@ -56,6 +56,7 @@ public:
 private:
   const InstructionTreeCache m_instr_tree_cache;
   sup::dto::AnyValue m_instr_tree_anyvalue;
+  sup::dto::AnyValue m_job_state;
 };
 
 }  // namespace auto_server
