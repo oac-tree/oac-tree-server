@@ -31,6 +31,7 @@
 #include <gtest/gtest.h>
 
 using namespace sup::auto_server;
+using namespace sup::sequencer;
 
 const std::string kShortSequenceBody{
 R"RAW(
@@ -47,15 +48,15 @@ protected:
   ServerUserInterfaceTest() = default;
   virtual ~ServerUserInterfaceTest() = default;
 
-  UnitTestHelper::CoutPVServer m_pv_server;
-  sup::sequencer::utils::SimpleJobStateMonitor m_monitor;
+  UnitTestHelper::TestJobPVServer m_pv_server;
+  utils::SimpleJobStateMonitor m_monitor;
 };
 
 TEST_F(ServerUserInterfaceTest, PrintToCout)
 {
   // Construct procedure
   const auto procedure_string = UnitTestHelper::CreateProcedureString(kShortSequenceBody);
-  auto proc = sup::sequencer::ParseProcedureString(procedure_string);
+  auto proc = ParseProcedureString(procedure_string);
   ASSERT_NE(proc.get(), nullptr);
   EXPECT_NO_THROW(proc->Setup());
 
@@ -65,9 +66,10 @@ TEST_F(ServerUserInterfaceTest, PrintToCout)
   ServerUserInterface ui{m_pv_server};
 
   // Construct JobController and run procedure
-  sup::sequencer::JobController controller{*proc, ui, m_monitor};
-  EXPECT_TRUE(m_monitor.WaitForState(sup::sequencer::JobState::kInitial, 1.0));
+  JobController controller{*proc, ui, m_monitor};
+  EXPECT_TRUE(m_monitor.WaitForState(JobState::kInitial, 1.0));
   controller.Start();
-  EXPECT_TRUE(m_monitor.WaitForState(sup::sequencer::JobState::kSucceeded, 2.0));
-  EXPECT_EQ(m_pv_server.GetInstructionUpdateCount(), 6u);
+  EXPECT_TRUE(m_monitor.WaitForState(JobState::kSucceeded, 2.0));
+  EXPECT_EQ(m_pv_server.GetInstructionUpdateCount(ExecutionStatus::NOT_FINISHED), 3u);
+  EXPECT_EQ(m_pv_server.GetInstructionUpdateCount(ExecutionStatus::SUCCESS), 3u);
 }

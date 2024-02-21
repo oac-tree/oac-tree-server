@@ -33,27 +33,21 @@ namespace auto_server
 namespace UnitTestHelper
 {
 
-CoutPVServer::CoutPVServer()
-  : m_instr_update_count{}
+TestJobPVServer::TestJobPVServer()
+  : m_status_updates{}
 {}
 
-CoutPVServer::~CoutPVServer() = default;
+TestJobPVServer::~TestJobPVServer() = default;
 
-void CoutPVServer::UpdateInstructionStatusPV(const sequencer::Instruction* instruction,
+void TestJobPVServer::UpdateInstructionStatusPV(const sequencer::Instruction* instruction,
                                              sequencer::ExecutionStatus status)
 {
-  ++m_instr_update_count;
-  std::cout << "Instruction status updated:" << std::endl;
-  std::cout << "===========================" << std::endl;
-  std::cout << static_cast<const void*>(instruction) << std::endl;
-  std::cout << sequencer::StatusToString(status) << std::endl;
-  std::cout << std::endl;
+  ++m_status_updates[status];
 }
 
-void CoutPVServer::UpdateInstructionBreakpointPV(const sequencer::Instruction* instruction,
+void TestJobPVServer::UpdateInstructionBreakpointPV(const sequencer::Instruction* instruction,
                                                  bool breakpoint_set)
 {
-  ++m_instr_update_count;
   std::cout << "Instruction breakpoint updated:" << std::endl;
   std::cout << "===============================" << std::endl;
   std::cout << static_cast<const void*>(instruction) << std::endl;
@@ -61,9 +55,14 @@ void CoutPVServer::UpdateInstructionBreakpointPV(const sequencer::Instruction* i
   std::cout << std::endl;
 }
 
-sup::dto::uint32 CoutPVServer::GetInstructionUpdateCount() const
+sup::dto::uint32 TestJobPVServer::GetInstructionUpdateCount(sequencer::ExecutionStatus status) const
 {
-  return m_instr_update_count;
+  auto iter = m_status_updates.find(status);
+  if (iter == m_status_updates.end())
+  {
+    return 0;
+  }
+  return iter->second;
 }
 
 TemporaryTestFile::TemporaryTestFile(std::string filename, std::string contents)

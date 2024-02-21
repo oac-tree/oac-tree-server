@@ -25,6 +25,7 @@
 #include <sup/auto-server/i_job_pv_server.h>
 
 #include <string>
+#include <map>
 
 namespace sup
 {
@@ -33,21 +34,21 @@ namespace auto_server
 namespace UnitTestHelper
 {
 
-class CoutPVServer : public IJobPVServer
+class TestJobPVServer : public IJobPVServer
 {
 public:
-  CoutPVServer();
+  TestJobPVServer();
 
-  ~CoutPVServer();
+  ~TestJobPVServer();
 
   void UpdateInstructionStatusPV(const sequencer::Instruction* instruction,
                                  sequencer::ExecutionStatus status) override;
   void UpdateInstructionBreakpointPV(const sequencer::Instruction* instruction,
                                      bool breakpoint_set) override;
 
-  sup::dto::uint32 GetInstructionUpdateCount() const;
+  sup::dto::uint32 GetInstructionUpdateCount(sequencer::ExecutionStatus status) const;
 private:
-  sup::dto::uint32 m_instr_update_count;
+  std::map<sequencer::ExecutionStatus, sup::dto::uint32> m_status_updates;
 };
 
 class TemporaryTestFile
