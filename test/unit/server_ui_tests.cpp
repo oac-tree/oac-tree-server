@@ -52,7 +52,7 @@ protected:
   utils::SimpleJobStateMonitor m_monitor;
 };
 
-TEST_F(ServerUserInterfaceTest, PrintToCout)
+TEST_F(ServerUserInterfaceTest, InstructionStatusUpdates)
 {
   // Construct procedure
   const auto procedure_string = UnitTestHelper::CreateProcedureString(kShortSequenceBody);
