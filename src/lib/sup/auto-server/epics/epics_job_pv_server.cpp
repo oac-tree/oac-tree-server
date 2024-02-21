@@ -21,6 +21,8 @@
 
 #include "epics_job_pv_server.h"
 
+#include <sup/auto-server/epics/epics_pv_handler.h>
+
 #include <sup/auto-server/sup_auto_protocol.h>
 
 #include <sup/sequencer/procedure.h>
@@ -30,10 +32,11 @@ namespace sup
 namespace auto_server
 {
 
-EPICSJobPVServer::EPICSJobPVServer(const sequencer::Procedure& proc)
+EPICSJobPVServer::EPICSJobPVServer(const std::string& prefix, const sequencer::Procedure& proc)
   : m_instr_tree_cache{proc.RootInstruction()}
   , m_instr_tree_anyvalue{m_instr_tree_cache.GetInitialInstructionTreeAnyValue()}
   , m_job_state{kJobStateAnyValue}
+  , m_pv_handler{new EPICSPVHandler{prefix, m_instr_tree_anyvalue}}
 {}
 
 EPICSJobPVServer::~EPICSJobPVServer() = default;
@@ -41,7 +44,7 @@ EPICSJobPVServer::~EPICSJobPVServer() = default;
 void EPICSJobPVServer::UpdateJobStatePV(sequencer::JobState state)
 {
   m_job_state[kJobStateField] = static_cast<sup::dto::uint32>(state);
-  // TODO: Update EPICS server PV
+  m_pv_handler->UpdateJobState(m_job_state);
 }
 
 void EPICSJobPVServer::UpdateInstructionStatusPV(const sequencer::Instruction* instruction,
@@ -51,7 +54,7 @@ void EPICSJobPVServer::UpdateInstructionStatusPV(const sequencer::Instruction* i
   auto& instr_node = path.empty() ? m_instr_tree_anyvalue
                                   : m_instr_tree_anyvalue[path];
   instr_node[kExecStatusField] = static_cast<sup::dto::uint16>(status);
-  // TODO: Update EPICS server PV
+  m_pv_handler->UpdateInstructionTree(m_instr_tree_anyvalue);
 }
 
 void EPICSJobPVServer::UpdateInstructionBreakpointPV(const sequencer::Instruction* instruction,
@@ -61,7 +64,7 @@ void EPICSJobPVServer::UpdateInstructionBreakpointPV(const sequencer::Instructio
   auto& instr_node = path.empty() ? m_instr_tree_anyvalue
                                   : m_instr_tree_anyvalue[path];
   instr_node[kBreakpointField] = breakpoint_set;
-  // TODO: Update EPICS server PV
+  m_pv_handler->UpdateInstructionTree(m_instr_tree_anyvalue);
 }
 
 }  // namespace auto_server

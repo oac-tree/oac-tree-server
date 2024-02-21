@@ -18,11 +18,14 @@ target_include_directories(sup-auto-server PUBLIC
 )
 
 find_package(sup-dto REQUIRED)
+find_package(sup-epics REQUIRED)
 find_package(sequencer REQUIRED)
 target_link_libraries(sup-auto-server
   PUBLIC
     sequencer::sequencer
     sup-dto::sup-dto
+  PRIVATE
+    sup-epics::sup-epics
 )
 
 # -- Installation --

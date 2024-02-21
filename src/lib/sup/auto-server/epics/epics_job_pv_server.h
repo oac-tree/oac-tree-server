@@ -25,6 +25,8 @@
 #include <sup/auto-server/i_job_pv_server.h>
 #include <sup/auto-server/instruction_tree_cache.h>
 
+#include <memory>
+
 namespace sup
 {
 namespace sequencer
@@ -34,7 +36,7 @@ class Procedure;
 
 namespace auto_server
 {
-
+class EPICSPVHandler;
 /**
  * @brief EPICSJobPVServer implements IJobServer and serves its information over EPICS PvAccess
  * server PVs.
@@ -42,7 +44,7 @@ namespace auto_server
 class EPICSJobPVServer : public IJobPVServer
 {
 public:
-  EPICSJobPVServer(const sequencer::Procedure& proc);
+  EPICSJobPVServer(const std::string& prefix, const sequencer::Procedure& proc);
   ~EPICSJobPVServer();
 
   void UpdateJobStatePV(sequencer::JobState state) override;
@@ -57,6 +59,7 @@ private:
   const InstructionTreeCache m_instr_tree_cache;
   sup::dto::AnyValue m_instr_tree_anyvalue;
   sup::dto::AnyValue m_job_state;
+  std::unique_ptr<EPICSPVHandler> m_pv_handler;
 };
 
 }  // namespace auto_server
