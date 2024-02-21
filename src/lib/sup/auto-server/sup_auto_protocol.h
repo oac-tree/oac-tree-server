@@ -22,6 +22,8 @@
 #ifndef SUP_AUTO_SERVER_SUP_AUTO_PROTOCOL_H_
 #define SUP_AUTO_SERVER_SUP_AUTO_PROTOCOL_H_
 
+#include <sup/dto/anyvalue.h>
+
 #include <string>
 
 namespace sup
@@ -40,6 +42,18 @@ const std::string kInstructionNodeType = "sup::instructionNode/v1.0";
 const std::string kExecStatusField = "exec_status";
 const std::string kBreakpointField = "breakpoint";
 const std::string kChildrenField = "children";
+
+// Basic instruction node AnyValue
+extern const sup::dto::AnyValue kInstructionAnyValue;
+
+// Job state postfix:
+const std::string kJobStateId = "STATE";
+// Job state type name and fields:
+const std::string kJobStateType = "sup::jobState/v1.0";
+const std::string kJobStateField = "state";
+
+// Basic job state AnyValue
+extern const sup::dto::AnyValue kJobStateAnyValue;
 
 }  // namespace auto_server
 

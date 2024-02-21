@@ -6,4 +6,5 @@ target_sources(sup-auto-server
   instruction_tree_utils.cpp
   server_job_state_monitor.cpp
   server_ui.cpp
+  sup_auto_protocol.cpp
 )
