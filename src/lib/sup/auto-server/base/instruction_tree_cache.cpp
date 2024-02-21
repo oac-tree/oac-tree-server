@@ -35,7 +35,7 @@ using namespace sup::auto_server;
 
 const sup::dto::AnyValue kInstructionAnyValue = {{
   { kExecStatusField, static_cast<sup::dto::uint16>(sup::sequencer::ExecutionStatus::NOT_STARTED)},
-  { kBreakpointField, static_cast<sup::dto::uint16>(0) },
+  { kBreakpointField, false },
   { kChildrenField, sup::dto::EmptyStruct() }
 }, kInstructionNodeType };
 

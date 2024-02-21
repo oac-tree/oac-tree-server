@@ -48,12 +48,12 @@ void EPICSJobPVServer::UpdateInstructionStatusPV(const sequencer::Instruction* i
 }
 
 void EPICSJobPVServer::UpdateInstructionBreakpointPV(const sequencer::Instruction* instruction,
-                                                     sequencer::Breakpoint::Status status)
+                                                     bool breakpoint_set)
 {
   auto path = m_instr_tree_cache.FindInstructionPath(instruction);
   auto& instr_node = path.empty() ? m_instr_tree_anyvalue
                                   : m_instr_tree_anyvalue[path];
-  instr_node[kBreakpointField] = static_cast<sup::dto::uint16>(status);
+  instr_node[kBreakpointField] = breakpoint_set;
   // TODO: Update EPICS server PV
 }
 

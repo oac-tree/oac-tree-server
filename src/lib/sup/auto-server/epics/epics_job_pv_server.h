@@ -49,7 +49,7 @@ public:
                                  sequencer::ExecutionStatus status) override;
 
   void UpdateInstructionBreakpointPV(const sequencer::Instruction* instruction,
-                                     sequencer::Breakpoint::Status status) override;
+                                     bool breakpoint_set) override;
 
 private:
   const InstructionTreeCache m_instr_tree_cache;

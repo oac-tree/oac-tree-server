@@ -43,7 +43,7 @@ public:
   void UpdateInstructionStatusPV(const sequencer::Instruction* instruction,
                                  sequencer::ExecutionStatus status) override;
   void UpdateInstructionBreakpointPV(const sequencer::Instruction* instruction,
-                                     sequencer::Breakpoint::Status status) override;
+                                     bool breakpoint_set) override;
 
   sup::dto::uint32 GetInstructionUpdateCount() const;
 private:
