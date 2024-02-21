@@ -24,8 +24,10 @@
 
 #include <sup/auto-server/i_job_pv_server.h>
 
-#include <string>
+#include <condition_variable>
 #include <map>
+#include <mutex>
+#include <string>
 
 namespace sup
 {
@@ -50,10 +52,17 @@ public:
 
   sup::dto::uint32 GetInstructionUpdateCount(sequencer::ExecutionStatus status) const;
 
+  sup::dto::uint32 GetBreakpointUpdateCount() const;
+
+  bool WaitForState(sequencer::JobState state, double seconds) const;
+
   sequencer::JobState GetJobState() const;
 private:
   std::map<sequencer::ExecutionStatus, sup::dto::uint32> m_status_updates;
+  sup::dto::uint32 m_breakpoint_updates;
   sequencer::JobState m_job_state;
+  mutable std::mutex m_mtx;
+  mutable std::condition_variable m_cv;
 };
 
 class TemporaryTestFile

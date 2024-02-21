@@ -23,8 +23,9 @@
 
 #include <sup/dto/anyvalue_helper.h>
 
+#include <chrono>
+#include <cmath>
 #include <fstream>
-#include <iostream>
 
 namespace sup
 {
@@ -35,14 +36,21 @@ namespace UnitTestHelper
 
 TestJobPVServer::TestJobPVServer()
   : m_status_updates{}
+  , m_breakpoint_updates{}
   , m_job_state{sequencer::JobState::kInitial}
+  , m_mtx{}
+  , m_cv{}
 {}
 
 TestJobPVServer::~TestJobPVServer() = default;
 
 void TestJobPVServer::UpdateJobStatePV(sequencer::JobState state)
 {
-  m_job_state = state;
+  {
+    std::lock_guard<std::mutex> lk{m_mtx};
+    m_job_state = state;
+  }
+  m_cv.notify_one();
 }
 
 void TestJobPVServer::UpdateInstructionStatusPV(const sequencer::Instruction* instruction,
@@ -51,14 +59,9 @@ void TestJobPVServer::UpdateInstructionStatusPV(const sequencer::Instruction* in
   ++m_status_updates[status];
 }
 
-void TestJobPVServer::UpdateInstructionBreakpointPV(const sequencer::Instruction* instruction,
-                                                 bool breakpoint_set)
+void TestJobPVServer::UpdateInstructionBreakpointPV(const sequencer::Instruction*, bool)
 {
-  std::cout << "Instruction breakpoint updated:" << std::endl;
-  std::cout << "===============================" << std::endl;
-  std::cout << static_cast<const void*>(instruction) << std::endl;
-  std::cout << std::boolalpha << breakpoint_set << std::endl;
-  std::cout << std::endl;
+  ++m_breakpoint_updates;
 }
 
 sup::dto::uint32 TestJobPVServer::GetInstructionUpdateCount(sequencer::ExecutionStatus status) const
@@ -71,8 +74,23 @@ sup::dto::uint32 TestJobPVServer::GetInstructionUpdateCount(sequencer::Execution
   return iter->second;
 }
 
+sup::dto::uint32 TestJobPVServer::GetBreakpointUpdateCount() const
+{
+  return m_breakpoint_updates;
+}
+
+bool TestJobPVServer::WaitForState(sequencer::JobState state, double seconds) const
+{
+  auto duration = std::chrono::nanoseconds(std::lround(seconds * 1e9));
+  std::unique_lock<std::mutex> lk{m_mtx};
+  return m_cv.wait_for(lk, duration, [this, state](){
+    return m_job_state == state;
+  });
+}
+
 sequencer::JobState TestJobPVServer::GetJobState() const
 {
+  std::lock_guard<std::mutex> lk{m_mtx};
   return m_job_state;
 }
 

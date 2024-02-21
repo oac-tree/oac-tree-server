@@ -22,6 +22,7 @@
 #include "unit_test_helper.h"
 
 #include <sup/auto-server/server_ui.h>
+#include <sup/auto-server/server_job_state_monitor.h>
 
 #include <sup/sequencer/application_utils.h>
 #include <sup/sequencer/instruction.h>
@@ -72,4 +73,34 @@ TEST_F(ServerUserInterfaceTest, InstructionStatusUpdates)
   EXPECT_TRUE(m_monitor.WaitForState(JobState::kSucceeded, 2.0));
   EXPECT_EQ(m_pv_server.GetInstructionUpdateCount(ExecutionStatus::NOT_FINISHED), 3u);
   EXPECT_EQ(m_pv_server.GetInstructionUpdateCount(ExecutionStatus::SUCCESS), 3u);
+}
+
+TEST_F(ServerUserInterfaceTest, JobStateUpdates)
+{
+  // Construct procedure
+  const auto procedure_string = UnitTestHelper::CreateProcedureString(kShortSequenceBody);
+  auto proc = ParseProcedureString(procedure_string);
+  ASSERT_NE(proc.get(), nullptr);
+  EXPECT_NO_THROW(proc->Setup());
+
+  // Construct ui and monitor
+  auto root_instr = proc->RootInstruction();
+  ASSERT_NE(root_instr, nullptr);
+  ServerUserInterface ui{m_pv_server};
+  ServerJobStateMonitor monitor{m_pv_server};
+
+  // Construct JobController and run procedure
+  JobController controller{*proc, ui, monitor};
+  EXPECT_EQ(m_pv_server.GetJobState(), JobState::kInitial);
+  EXPECT_EQ(m_pv_server.GetBreakpointUpdateCount(), 0);
+  controller.SetBreakpoint(root_instr);
+  EXPECT_EQ(m_pv_server.GetBreakpointUpdateCount(), 1u);
+  controller.Start();
+  EXPECT_TRUE(m_pv_server.WaitForState(JobState::kPaused, 1.0));
+  EXPECT_EQ(m_pv_server.GetJobState(), JobState::kPaused);
+  controller.RemoveBreakpoint(root_instr);
+  EXPECT_EQ(m_pv_server.GetBreakpointUpdateCount(), 2u);
+  controller.Start();
+  EXPECT_TRUE(m_pv_server.WaitForState(JobState::kSucceeded, 1.0));
+  EXPECT_EQ(m_pv_server.GetJobState(), JobState::kSucceeded);
 }
