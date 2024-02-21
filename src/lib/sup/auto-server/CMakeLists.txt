@@ -4,6 +4,7 @@ add_library(sup-auto-server::sup-auto-server ALIAS sup-auto-server) # alias for 
 target_compile_features(sup-auto-server PRIVATE cxx_std_11)
 
 add_subdirectory(base)
+add_subdirectory(epics)
 
 set_target_properties(sup-auto-server PROPERTIES
   VERSION ${LIBVERSION}

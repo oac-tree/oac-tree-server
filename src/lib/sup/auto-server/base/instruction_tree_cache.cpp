@@ -22,6 +22,7 @@
 #include <sup/auto-server/instruction_tree_cache.h>
 
 #include <sup/auto-server/exceptions.h>
+#include <sup/auto-server/sup_auto_protocol.h>
 #include "instruction_tree_utils.h"
 
 #include <sup/sequencer/instruction.h>
@@ -33,10 +34,10 @@ namespace
 using namespace sup::auto_server;
 
 const sup::dto::AnyValue kInstructionAnyValue = {{
-  { utils::kExecStatusField, static_cast<sup::dto::uint16>(sup::sequencer::ExecutionStatus::NOT_STARTED)},
-  { utils::kBreakpointField, false },
-  { utils::kChildrenField, sup::dto::EmptyStruct() }
-}, utils::kInstructionNodeType };
+  { kExecStatusField, static_cast<sup::dto::uint16>(sup::sequencer::ExecutionStatus::NOT_STARTED)},
+  { kBreakpointField, static_cast<sup::dto::uint16>(0) },
+  { kChildrenField, sup::dto::EmptyStruct() }
+}, kInstructionNodeType };
 
 struct InstructionNode
 {
@@ -137,11 +138,11 @@ std::string PushInstructionNode(std::deque<InstructionNode>& stack,
 {
   auto& parent_node = stack.back();
   std::string parent_path = parent_node.path;
-  auto current_member_names = parent_node.anyvalue[utils::kChildrenField].MemberNames();
+  auto current_member_names = parent_node.anyvalue[kChildrenField].MemberNames();
   auto instr_path = utils::CreateUniqueField(instruction, current_member_names);
   auto full_instr_path = utils::CreateFullInstructionPath(parent_path, instr_path);
-  parent_node.anyvalue[utils::kChildrenField].AddMember(instr_path, kInstructionAnyValue);
-  InstructionNode node{ instruction, parent_node.anyvalue[utils::kChildrenField][instr_path],
+  parent_node.anyvalue[kChildrenField].AddMember(instr_path, kInstructionAnyValue);
+  InstructionNode node{ instruction, parent_node.anyvalue[kChildrenField][instr_path],
                         full_instr_path, 0 };
   stack.push_back(node);
   return full_instr_path;

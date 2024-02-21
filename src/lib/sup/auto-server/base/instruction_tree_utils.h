@@ -37,11 +37,6 @@ namespace auto_server
 namespace utils
 {
 
-const std::string kInstructionNodeType = "sup::instructionNode/v1.0";
-const std::string kExecStatusField = "exec_status";
-const std::string kBreakpointField = "breakpoint";
-const std::string kChildrenField = "children";
-
 /**
  * @brief Create a full path into an AnyValue from a prefix and a specific instruction name.
  *

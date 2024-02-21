@@ -28,7 +28,6 @@ namespace sup
 {
 namespace auto_server
 {
-
 // Prefix suggestion: e.g. for CC2D loop:
 // "CSW-S2D-AUTO:"
 // Prefix for a specific procedure:
@@ -36,6 +35,11 @@ namespace auto_server
 
 // Instruction tree postfix:
 const std::string kInstructionTreeId = "INST";
+// Instruction tree node fields:
+const std::string kInstructionNodeType = "sup::instructionNode/v1.0";
+const std::string kExecStatusField = "exec_status";
+const std::string kBreakpointField = "breakpoint";
+const std::string kChildrenField = "children";
 
 }  // namespace auto_server
 

@@ -21,6 +21,8 @@
 
 #include "instruction_tree_utils.h"
 
+#include <sup/auto-server/sup_auto_protocol.h>
+
 #include <sup/sequencer/instruction.h>
 
 #include <algorithm>
