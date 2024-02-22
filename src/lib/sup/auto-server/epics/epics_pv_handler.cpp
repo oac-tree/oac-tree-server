@@ -23,6 +23,8 @@
 
 #include <sup/auto-server/sup_auto_protocol.h>
 
+#include <sup/epics/pv_access_server.h>
+
 namespace
 {
 using namespace sup::auto_server;
@@ -40,12 +42,8 @@ EPICSPVHandler::EPICSPVHandler(const std::string& prefix, const sup::dto::AnyVal
   , m_instruction_tree_channel{GetInstructionTreePVName(prefix)}
   , m_update_queue{}
   , m_update_future{}
-  , m_server{}
 {
-  m_server.AddVariable(m_jobstate_channel, kJobStateAnyValue);
-  m_server.AddVariable(m_instruction_tree_channel, instr_tree);
-  m_server.Start();
-  m_update_future = std::async(std::launch::async, &EPICSPVHandler::UpdateLoop, this);
+  m_update_future = std::async(std::launch::async, &EPICSPVHandler::UpdateLoop, this, instr_tree);
 }
 
 EPICSPVHandler::~EPICSPVHandler()
@@ -63,14 +61,18 @@ void EPICSPVHandler::UpdateInstructionTree(const sup::dto::AnyValue& instr_tree)
   m_update_queue.Push(m_instruction_tree_channel, instr_tree);
 }
 
-void EPICSPVHandler::UpdateLoop()
+void EPICSPVHandler::UpdateLoop(const sup::dto::AnyValue& instr_tree)
 {
+  sup::epics::PvAccessServer server;
+  server.AddVariable(m_jobstate_channel, kJobStateAnyValue);
+  server.AddVariable(m_instruction_tree_channel, instr_tree);
+  server.Start();
   bool exit = false;
   while (!exit)
   {
     m_update_queue.WaitForNonEmpty();
     auto queue = m_update_queue.PopCommands();
-    exit = ProcessCommandQueue(queue, m_server);
+    exit = ProcessCommandQueue(queue, server);
   }
 }
 

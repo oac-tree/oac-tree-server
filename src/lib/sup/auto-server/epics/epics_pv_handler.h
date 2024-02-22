@@ -24,8 +24,6 @@
 
 #include "pv_update_queue.h"
 
-#include <sup/epics/pv_access_server.h>
-
 #include <future>
 
 namespace sup
@@ -50,12 +48,11 @@ public:
   void UpdateInstructionTree(const sup::dto::AnyValue& instr_tree);
 
 private:
-  void UpdateLoop();
+  void UpdateLoop(const sup::dto::AnyValue& instr_tree);
   const std::string m_jobstate_channel;
   const std::string m_instruction_tree_channel;
   PVUpdateQueue m_update_queue;
   std::future<void> m_update_future;
-  sup::epics::PvAccessServer m_server;
 };
 
 }  // namespace auto_server
