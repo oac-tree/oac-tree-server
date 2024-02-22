@@ -22,7 +22,11 @@
 #ifndef SUP_AUTO_SERVER_EPICS_PV_HANDLER_H_
 #define SUP_AUTO_SERVER_EPICS_PV_HANDLER_H_
 
+#include "pv_update_queue.h"
+
 #include <sup/epics/pv_access_server.h>
+
+#include <future>
 
 namespace sup
 {
@@ -32,9 +36,8 @@ namespace auto_server
 
 /**
  * @brief EPICSPVHandler is responsible for serving the EPICS PVs associated with the job state and
- * the instruction tree status. The current implementation directly updates the PVs in the same
- * thread. A future version will do so in a dedicated thread by handling a command queue. This will
- * avoid any latency in calling the update methods.
+ * the instruction tree status. The current implementation tries to avoid blocking too long in
+ * update calls by pushing those on a queue that is processed in a separate thread.
  */
 class EPICSPVHandler
 {
@@ -47,8 +50,11 @@ public:
   void UpdateInstructionTree(const sup::dto::AnyValue& instr_tree);
 
 private:
+  void UpdateLoop();
   const std::string m_jobstate_channel;
   const std::string m_instruction_tree_channel;
+  PVUpdateQueue m_update_queue;
+  std::future<void> m_update_future;
   sup::epics::PvAccessServer m_server;
 };
 

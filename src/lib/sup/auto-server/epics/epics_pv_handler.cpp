@@ -23,6 +23,13 @@
 
 #include <sup/auto-server/sup_auto_protocol.h>
 
+namespace
+{
+using namespace sup::auto_server;
+using sup::epics::PvAccessServer;
+bool ProcessCommandQueue(std::deque<PVUpdateCommand>& queue, PvAccessServer& server);
+}  // unnamed namespace
+
 namespace sup
 {
 namespace auto_server
@@ -31,25 +38,62 @@ namespace auto_server
 EPICSPVHandler::EPICSPVHandler(const std::string& prefix, const sup::dto::AnyValue& instr_tree)
   : m_jobstate_channel{GetJobStatePVName(prefix)}
   , m_instruction_tree_channel{GetInstructionTreePVName(prefix)}
+  , m_update_queue{}
+  , m_update_future{}
   , m_server{}
 {
   m_server.AddVariable(m_jobstate_channel, kJobStateAnyValue);
   m_server.AddVariable(m_instruction_tree_channel, instr_tree);
   m_server.Start();
+  m_update_future = std::async(std::launch::async, &EPICSPVHandler::UpdateLoop, this);
 }
 
-EPICSPVHandler::~EPICSPVHandler() = default;
+EPICSPVHandler::~EPICSPVHandler()
+{
+  m_update_queue.PushExit();
+}
 
 void EPICSPVHandler::UpdateJobState(const sup::dto::AnyValue& job_state)
 {
-  m_server.SetValue(m_jobstate_channel, job_state);
+  m_update_queue.Push(m_jobstate_channel, job_state);
 }
 
 void EPICSPVHandler::UpdateInstructionTree(const sup::dto::AnyValue& instr_tree)
 {
-  m_server.SetValue(m_instruction_tree_channel, instr_tree);
+  m_update_queue.Push(m_instruction_tree_channel, instr_tree);
+}
+
+void EPICSPVHandler::UpdateLoop()
+{
+  bool exit = false;
+  while (!exit)
+  {
+    m_update_queue.WaitForNonEmpty();
+    auto queue = m_update_queue.PopCommands();
+    exit = ProcessCommandQueue(queue, m_server);
+  }
 }
 
 }  // namespace auto_server
 
 }  // namespace sup
+
+namespace
+{
+bool ProcessCommandQueue(std::deque<PVUpdateCommand>& queue, PvAccessServer& server)
+{
+  bool exit = false;
+  while (!queue.empty())
+  {
+    auto& command = queue.front();
+    if (command.GetCommandType() == PVUpdateCommand::kExit)
+    {
+      exit = true;
+      continue;
+    }
+    server.SetValue(command.Channel(), command.Value());
+    queue.pop_front();
+  }
+  return exit;
+}
+}  // unnamed namespace
