@@ -90,8 +90,9 @@ bool ProcessCommandQueue(std::deque<PVUpdateCommand>& queue, PvAccessServer& ser
     auto& command = queue.front();
     if (command.GetCommandType() == PVUpdateCommand::kExit)
     {
+      queue.pop_front();
       exit = true;
-      continue;
+      continue;  // Keep on processing this queue before returning the signal to exit.
     }
     server.SetValue(command.Channel(), command.Value());
     queue.pop_front();
