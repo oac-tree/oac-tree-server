@@ -55,6 +55,22 @@ const std::string kJobStateField = "state";
 // Basic job state AnyValue
 extern const sup::dto::AnyValue kJobStateAnyValue;
 
+/**
+ * @brief Create a PV channel name for the job state from a given prefix.
+ *
+ * @param prefix Prefix that needs to be unique among all running jobs in the network.
+ * @return PV channel name for the job state.
+ */
+std::string GetJobStatePVName(const std::string& prefix);
+
+/**
+ * @brief Create a PV channel name for the instruction tree from a given prefix.
+ *
+ * @param prefix Prefix that needs to be unique among all running jobs in the network.
+ * @return PV channel name for the instruction tree.
+ */
+std::string GetInstructionTreePVName(const std::string& prefix);
+
 }  // namespace auto_server
 
 }  // namespace sup

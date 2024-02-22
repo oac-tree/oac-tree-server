@@ -29,11 +29,12 @@ namespace auto_server
 {
 
 EPICSPVHandler::EPICSPVHandler(const std::string& prefix, const sup::dto::AnyValue& instr_tree)
-  : m_prefix{prefix}
+  : m_jobstate_channel{GetJobStatePVName(prefix)}
+  , m_instruction_tree_channel{GetInstructionTreePVName(prefix)}
   , m_server{}
 {
-  m_server.AddVariable(GetJobStatePVName(m_prefix), kJobStateAnyValue);
-  m_server.AddVariable(GetInstructionTreePVName(m_prefix), instr_tree);
+  m_server.AddVariable(m_jobstate_channel, kJobStateAnyValue);
+  m_server.AddVariable(m_instruction_tree_channel, instr_tree);
   m_server.Start();
 }
 
@@ -41,24 +42,13 @@ EPICSPVHandler::~EPICSPVHandler() = default;
 
 void EPICSPVHandler::UpdateJobState(const sup::dto::AnyValue& job_state)
 {
-  m_server.SetValue(GetJobStatePVName(m_prefix), job_state);
+  m_server.SetValue(m_jobstate_channel, job_state);
 }
 
 void EPICSPVHandler::UpdateInstructionTree(const sup::dto::AnyValue& instr_tree)
 {
-  m_server.SetValue(GetInstructionTreePVName(m_prefix), instr_tree);
+  m_server.SetValue(m_instruction_tree_channel, instr_tree);
 }
-
-std::string GetJobStatePVName(const std::string& prefix)
-{
-  return prefix + kJobStateId;
-}
-
-std::string GetInstructionTreePVName(const std::string& prefix)
-{
-  return prefix + kInstructionTreeId;
-}
-
 
 }  // namespace auto_server
 

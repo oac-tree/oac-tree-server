@@ -39,6 +39,16 @@ const sup::dto::AnyValue kJobStateAnyValue = {{
   { kJobStateField, static_cast<sup::dto::uint32>(sup::sequencer::JobState::kInitial)}
 }, kJobStateType };
 
+std::string GetJobStatePVName(const std::string& prefix)
+{
+  return prefix + kJobStateId;
+}
+
+std::string GetInstructionTreePVName(const std::string& prefix)
+{
+  return prefix + kInstructionTreeId;
+}
+
 }  // namespace auto_server
 
 }  // namespace sup

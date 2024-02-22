@@ -31,7 +31,10 @@ namespace auto_server
 {
 
 /**
- * @brief .
+ * @brief EPICSPVHandler is responsible for serving the EPICS PVs associated with the job state and
+ * the instruction tree status. The current implementation directly updates the PVs in the same
+ * thread. A future version will do so in a dedicated thread by handling a command queue. This will
+ * avoid any latency in calling the update methods.
  */
 class EPICSPVHandler
 {
@@ -44,13 +47,10 @@ public:
   void UpdateInstructionTree(const sup::dto::AnyValue& instr_tree);
 
 private:
-  std::string m_prefix;
+  const std::string m_jobstate_channel;
+  const std::string m_instruction_tree_channel;
   sup::epics::PvAccessServer m_server;
 };
-
-std::string GetJobStatePVName(const std::string& prefix);
-
-std::string GetInstructionTreePVName(const std::string& prefix);
 
 }  // namespace auto_server
 
