@@ -45,7 +45,11 @@
 using namespace sup::auto_server;
 using namespace sup::sequencer;
 
-const std::string kPrefix = "SUP-AUTO-TEST:";
+// Using different prefixes speeds up the units tests:
+const std::string kPrefix1 = "SUP-AUTO-TEST1:";
+const std::string kPrefix2 = "SUP-AUTO-TEST2:";
+const std::string kPrefix3 = "SUP-AUTO-TEST3:";
+const std::string kPrefix4 = "SUP-AUTO-TEST4:";
 
 class EPICSPVHandlerTest : public ::testing::Test
 {
@@ -76,7 +80,7 @@ protected:
 
   void UpdateJobState(const sup::epics::PvAccessClientPV::ExtendedValue& val)
   {
-    if (val.connected)
+    if (val.connected && !sup::dto::IsEmptyValue(val.value))
     {
       std::lock_guard<std::mutex> lk{m_mtx};
       m_jobstate = val.value;
@@ -86,7 +90,7 @@ protected:
 
   void UpdateInstrTree(const sup::epics::PvAccessClientPV::ExtendedValue& val)
   {
-    if (val.connected)
+    if (val.connected && !sup::dto::IsEmptyValue(val.value))
     {
       std::lock_guard<std::mutex> lk{m_mtx};
       m_instr_tree = val.value;
@@ -104,7 +108,7 @@ TEST_F(EPICSPVHandlerTest, Construction)
 {
   // Test construction/destruction of EPICSPVHandler
   auto instr_tree = UnitTestHelper::CreateTestInstructionTreeAnyValue();
-  EPICSPVHandler pv_handler{kPrefix, instr_tree};
+  EPICSPVHandler pv_handler{kPrefix1, instr_tree};
   EXPECT_NO_THROW(pv_handler.UpdateInstructionTree(instr_tree));
 }
 
@@ -112,13 +116,13 @@ TEST_F(EPICSPVHandlerTest, UpdateJobState)
 {
   // Test construction/destruction of EPICSPVHandler
   auto instr_tree = UnitTestHelper::CreateTestInstructionTreeAnyValue();
-  EPICSPVHandler pv_handler{kPrefix, instr_tree};
+  EPICSPVHandler pv_handler{kPrefix2, instr_tree};
 
   // Construct client PV for monitoring
   auto pv_callback = [this](const sup::epics::PvAccessClientPV::ExtendedValue& val) {
     UpdateJobState(val);
   };
-  sup::epics::PvAccessClientPV job_state_pv{GetJobStatePVName(kPrefix), pv_callback};
+  sup::epics::PvAccessClientPV job_state_pv{GetJobStatePVName(kPrefix2), pv_callback};
   EXPECT_TRUE(job_state_pv.WaitForValidValue(1.0));
   auto job_state = job_state_pv.GetValue();
   EXPECT_EQ(job_state, kJobStateAnyValue);
@@ -139,13 +143,13 @@ TEST_F(EPICSPVHandlerTest, UpdateInstructionTree)
 {
   // Test construction/destruction of EPICSPVHandler
   auto instr_tree = UnitTestHelper::CreateTestInstructionTreeAnyValue();
-  EPICSPVHandler pv_handler{kPrefix, instr_tree};
+  EPICSPVHandler pv_handler{kPrefix3, instr_tree};
 
   // Construct client PV for monitoring
   auto pv_callback = [this](const sup::epics::PvAccessClientPV::ExtendedValue& val) {
     UpdateInstrTree(val);
   };
-  sup::epics::PvAccessClientPV instr_tree_pv{GetInstructionTreePVName(kPrefix), pv_callback};
+  sup::epics::PvAccessClientPV instr_tree_pv{GetInstructionTreePVName(kPrefix3), pv_callback};
   EXPECT_TRUE(instr_tree_pv.WaitForValidValue(1.0));
   EXPECT_TRUE(WaitForInstrTree(instr_tree));
 
@@ -164,4 +168,48 @@ TEST_F(EPICSPVHandlerTest, UpdateInstructionTree)
   children["Wait1"][kBreakpointField] = true;
   pv_handler.UpdateInstructionTree(instr_tree);
   EXPECT_TRUE(WaitForInstrTree(instr_tree));
+}
+
+TEST_F(EPICSPVHandlerTest, UseJobPVServer)
+{
+  // Construct procedure
+  const auto procedure_string = UnitTestHelper::CreateProcedureString(kShortSequenceBody);
+  auto proc = ParseProcedureString(procedure_string);
+  ASSERT_NE(proc.get(), nullptr);
+  EXPECT_NO_THROW(proc->Setup());
+
+  // Construct ui and monitor
+  auto root_instr = proc->RootInstruction();
+  ASSERT_NE(root_instr, nullptr);
+  EPICSJobPVServer pv_server{kPrefix4, *proc};
+  ServerUserInterface ui{pv_server};
+  ServerJobStateMonitor monitor{pv_server};
+
+    // Construct client PVs for monitoring
+  auto pv_job_callback = [this](const sup::epics::PvAccessClientPV::ExtendedValue& val) {
+    UpdateJobState(val);
+  };
+  sup::epics::PvAccessClientPV job_state_pv{GetJobStatePVName(kPrefix4), pv_job_callback};
+  EXPECT_TRUE(job_state_pv.WaitForValidValue(1.0));
+  auto pv_instr_callback = [this](const sup::epics::PvAccessClientPV::ExtendedValue& val) {
+    UpdateInstrTree(val);
+  };
+  sup::epics::PvAccessClientPV instr_tree_pv{GetInstructionTreePVName(kPrefix4), pv_instr_callback};
+  EXPECT_TRUE(instr_tree_pv.WaitForValidValue(1.0));
+
+  // Construct JobController and run procedure
+  JobController controller{*proc, ui, monitor};
+  auto instr_tree = UnitTestHelper::CreateTestInstructionTreeAnyValue();
+  EXPECT_TRUE(WaitForJobstate(JobState::kInitial));
+  EXPECT_TRUE(WaitForInstrTree(instr_tree));
+  controller.SetBreakpoint(root_instr);
+  instr_tree[kBreakpointField] = true;
+  EXPECT_TRUE(WaitForInstrTree(instr_tree));
+  controller.Start();
+  EXPECT_TRUE(WaitForJobstate(JobState::kPaused));
+  controller.RemoveBreakpoint(root_instr);
+  instr_tree[kBreakpointField] = false;
+  EXPECT_TRUE(WaitForInstrTree(instr_tree));
+  controller.Start();
+  EXPECT_TRUE(WaitForJobstate(JobState::kSucceeded));
 }
