@@ -29,6 +29,15 @@
 #include <mutex>
 #include <string>
 
+const std::string kShortSequenceBody{
+R"RAW(
+  <Sequence>
+    <Wait timeout="0.1"/>
+    <Wait timeout="0.1"/>
+  </Sequence>
+  <Workspace/>
+)RAW"};
+
 namespace sup
 {
 namespace auto_server
@@ -75,11 +84,18 @@ public:
   ~TemporaryTestFile();
 };
 
+
+
 /**
  * Creates a string representing a valid XML of sequencer procedure by enclosing user provided body
  * between appropriate header and footer.
  */
 std::string CreateProcedureString(const std::string& body);
+
+/**
+ * Creates an AnyValue representing the status of a simple instruction tree.
+ */
+sup::dto::AnyValue CreateTestInstructionTreeAnyValue();
 
 }  // namespace UnitTestHelper
 

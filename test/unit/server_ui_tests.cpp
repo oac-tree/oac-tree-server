@@ -34,15 +34,6 @@
 using namespace sup::auto_server;
 using namespace sup::sequencer;
 
-const std::string kShortSequenceBody{
-R"RAW(
-  <Sequence>
-    <Wait timeout="0.1"/>
-    <Wait timeout="0.1"/>
-  </Sequence>
-  <Workspace/>
-)RAW"};
-
 class ServerUserInterfaceTest : public ::testing::Test
 {
 protected:
