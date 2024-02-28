@@ -41,6 +41,8 @@ namespace auto_server
 class PVUpdateCommand
 {
 public:
+  // TODO: hide constructors and expose static factory functions for the different type of commands
+  // add base64update
   enum CommandType
   {
     kUpdate = 0,
