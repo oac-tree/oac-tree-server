@@ -36,7 +36,7 @@ EPICSJobPVServer::EPICSJobPVServer(const std::string& prefix, const sequencer::P
   : m_instr_tree_cache{proc.RootInstruction()}
   , m_instr_tree_anyvalue{m_instr_tree_cache.GetInitialInstructionTreeAnyValue()}
   , m_job_state{kJobStateAnyValue}
-  , m_pv_handler{new EPICSPVHandler{JobPVInfo{prefix, m_instr_tree_anyvalue}}}
+  , m_pv_handler{new EPICSPVHandler{JobPVInfo{prefix, m_instr_tree_anyvalue, 0}}}
 {}
 
 EPICSJobPVServer::~EPICSJobPVServer() = default;

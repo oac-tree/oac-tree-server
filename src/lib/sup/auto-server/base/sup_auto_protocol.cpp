@@ -21,6 +21,7 @@
 
 #include <sup/auto-server/sup_auto_protocol.h>
 
+#include <sup/protocol/base64_variable_codec.h>
 #include <sup/sequencer/execution_status.h>
 #include <sup/sequencer/job_states.h>
 
@@ -35,6 +36,11 @@ const sup::dto::AnyValue kInstructionAnyValue = {{
   { kChildrenField, sup::dto::EmptyStruct() }
 }, kInstructionNodeType };
 
+const sup::dto::AnyValue kVariableAnyValue = {{
+  { sup::protocol::kEncodingField, sup::protocol::kBase64Encoding},
+  { sup::protocol::kValueField, "" }
+}, kVariableType };
+
 const sup::dto::AnyValue kJobStateAnyValue = {{
   { kJobStateField, static_cast<sup::dto::uint32>(sup::sequencer::JobState::kInitial)}
 }, kJobStateType };
@@ -47,6 +53,11 @@ std::string GetJobStatePVName(const std::string& prefix)
 std::string GetInstructionTreePVName(const std::string& prefix)
 {
   return prefix + kInstructionTreeId;
+}
+
+std::string GetVariablePVName(const std::string& prefix, sup::dto::uint32 index)
+{
+  return prefix + kVariableId + std::to_string(index);
 }
 
 }  // namespace auto_server

@@ -42,8 +42,7 @@ EPICSPVHandler::EPICSPVHandler(JobPVInfo job_pv_info)
   , m_update_queue{}
   , m_update_future{}
 {
-  m_update_future = std::async(std::launch::async, &EPICSPVHandler::UpdateLoop,
-                               this, m_job_pv_info.GetInstructionTreeStructure());
+  m_update_future = std::async(std::launch::async, &EPICSPVHandler::UpdateLoop, this);
 }
 
 EPICSPVHandler::~EPICSPVHandler()
@@ -61,11 +60,16 @@ void EPICSPVHandler::UpdateInstructionTree(const sup::dto::AnyValue& instr_tree)
   m_update_queue.Push(m_job_pv_info.GetInstructionTreeChannel(), instr_tree);
 }
 
-void EPICSPVHandler::UpdateLoop(const sup::dto::AnyValue& instr_tree)
+void EPICSPVHandler::UpdateLoop()
 {
   sup::epics::PvAccessServer server;
   server.AddVariable(m_job_pv_info.GetJobStateChannel(), kJobStateAnyValue);
-  server.AddVariable(m_job_pv_info.GetInstructionTreeChannel(), instr_tree);
+  server.AddVariable(m_job_pv_info.GetInstructionTreeChannel(),
+                     m_job_pv_info.GetInstructionTreeStructure());
+  for (sup::dto::uint32 idx = 0; idx < m_job_pv_info.GetNumberOfVariables(); ++idx)
+  {
+    server.AddVariable(m_job_pv_info.GetVariableChannel(idx), kVariableAnyValue);
+  }
   server.Start();
   bool exit = false;
   while (!exit)

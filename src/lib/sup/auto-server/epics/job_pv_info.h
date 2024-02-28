@@ -39,18 +39,22 @@ namespace auto_server
 class JobPVInfo
 {
 public:
-  JobPVInfo(const std::string& prefix, const sup::dto::AnyValue& instr_tree);
+  JobPVInfo(const std::string& prefix, const sup::dto::AnyValue& instr_tree,
+            sup::dto::uint32 n_variables);
   ~JobPVInfo();
 
   std::string GetJobStateChannel() const;
   std::string GetInstructionTreeChannel() const;
 
+  sup::dto::uint32 GetNumberOfVariables() const;
+  std::string GetVariableChannel(sup::dto::uint32 index) const;
+
   sup::dto::AnyValue GetInstructionTreeStructure() const;
 
 private:
-  const std::string m_jobstate_channel;
-  const std::string m_instruction_tree_channel;
+  const std::string m_prefix;
   const sup::dto::AnyValue m_instr_tree;
+  const sup::dto::uint32 m_n_variables;
 };
 
 }  // namespace auto_server

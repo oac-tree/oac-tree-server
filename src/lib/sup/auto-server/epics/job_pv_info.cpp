@@ -28,22 +28,37 @@ namespace sup
 namespace auto_server
 {
 
-JobPVInfo::JobPVInfo(const std::string& prefix, const sup::dto::AnyValue& instr_tree)
-  : m_jobstate_channel{GetJobStatePVName(prefix)}
-  , m_instruction_tree_channel{GetInstructionTreePVName(prefix)}
+JobPVInfo::JobPVInfo(const std::string& prefix, const sup::dto::AnyValue& instr_tree,
+            sup::dto::uint32 n_variables)
+  : m_prefix{prefix}
   , m_instr_tree{instr_tree}
+  , m_n_variables{n_variables}
 {}
 
 JobPVInfo::~JobPVInfo() = default;
 
 std::string JobPVInfo::GetJobStateChannel() const
 {
-  return m_jobstate_channel;
+  return GetJobStatePVName(m_prefix);
 }
 
 std::string JobPVInfo::GetInstructionTreeChannel() const
 {
-  return m_instruction_tree_channel;
+  return GetInstructionTreePVName(m_prefix);
+}
+
+sup::dto::uint32 JobPVInfo::GetNumberOfVariables() const
+{
+  return m_n_variables;
+}
+
+std::string JobPVInfo::GetVariableChannel(sup::dto::uint32 index) const
+{
+  if (index < m_n_variables)
+  {
+    return GetVariablePVName(m_prefix, index);
+  }
+  return {};
 }
 
 sup::dto::AnyValue JobPVInfo::GetInstructionTreeStructure() const

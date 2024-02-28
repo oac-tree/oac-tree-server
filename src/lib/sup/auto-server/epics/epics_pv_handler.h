@@ -49,7 +49,7 @@ public:
   void UpdateInstructionTree(const sup::dto::AnyValue& instr_tree);
 
 private:
-  void UpdateLoop(const sup::dto::AnyValue& instr_tree);
+  void UpdateLoop();
   const JobPVInfo m_job_pv_info;
   PVUpdateQueue m_update_queue;
   std::future<void> m_update_future;

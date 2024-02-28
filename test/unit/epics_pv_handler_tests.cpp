@@ -108,7 +108,7 @@ TEST_F(EPICSPVHandlerTest, Construction)
 {
   // Test construction/destruction of EPICSPVHandler
   auto instr_tree = UnitTestHelper::CreateTestInstructionTreeAnyValue();
-  JobPVInfo job_pv_info{kPrefix1, instr_tree};
+  JobPVInfo job_pv_info{kPrefix1, instr_tree, 0};
   EPICSPVHandler pv_handler{job_pv_info};
   EXPECT_NO_THROW(pv_handler.UpdateInstructionTree(instr_tree));
 }
@@ -117,7 +117,7 @@ TEST_F(EPICSPVHandlerTest, UpdateJobState)
 {
   // Test construction/destruction of EPICSPVHandler
   auto instr_tree = UnitTestHelper::CreateTestInstructionTreeAnyValue();
-  JobPVInfo job_pv_info{kPrefix2, instr_tree};
+  JobPVInfo job_pv_info{kPrefix2, instr_tree, 0};
   EPICSPVHandler pv_handler{job_pv_info};
 
   // Construct client PV for monitoring
@@ -145,7 +145,7 @@ TEST_F(EPICSPVHandlerTest, UpdateInstructionTree)
 {
   // Test construction/destruction of EPICSPVHandler
   auto instr_tree = UnitTestHelper::CreateTestInstructionTreeAnyValue();
-  JobPVInfo job_pv_info{kPrefix3, instr_tree};
+  JobPVInfo job_pv_info{kPrefix3, instr_tree, 10};
   EPICSPVHandler pv_handler{job_pv_info};
 
   // Construct client PV for monitoring

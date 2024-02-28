@@ -46,6 +46,14 @@ const std::string kChildrenField = "children";
 // Basic instruction node AnyValue
 extern const sup::dto::AnyValue kInstructionAnyValue;
 
+// Variable pv identifier
+const std::string kVariableId = "VAR-";
+// Variable fields:
+const std::string kVariableType = "sup::variableType/v1.0";
+
+// Basic Variable AnyValue
+extern const sup::dto::AnyValue kVariableAnyValue;
+
 // Job state postfix:
 const std::string kJobStateId = "STATE";
 // Job state type name and fields:
@@ -70,6 +78,15 @@ std::string GetJobStatePVName(const std::string& prefix);
  * @return PV channel name for the instruction tree.
  */
 std::string GetInstructionTreePVName(const std::string& prefix);
+
+/**
+ * @brief Create a PV channel name for a variable with the given index and prefix.
+ *
+ * @param prefix Prefix that needs to be unique among all running jobs in the network.
+ * @param index Index of the variable inside the workspace.
+ * @return PV channel name for the variable.
+ */
+std::string GetVariablePVName(const std::string& prefix, sup::dto::uint32 index);
 
 }  // namespace auto_server
 
