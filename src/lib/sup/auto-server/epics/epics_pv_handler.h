@@ -22,6 +22,7 @@
 #ifndef SUP_AUTO_SERVER_EPICS_PV_HANDLER_H_
 #define SUP_AUTO_SERVER_EPICS_PV_HANDLER_H_
 
+#include "job_pv_info.h"
 #include "pv_update_queue.h"
 
 #include <future>
@@ -40,7 +41,7 @@ namespace auto_server
 class EPICSPVHandler
 {
 public:
-  EPICSPVHandler(const std::string& prefix, const sup::dto::AnyValue& instr_tree);
+  EPICSPVHandler(JobPVInfo job_pv_info);
   ~EPICSPVHandler();
 
   void UpdateJobState(const sup::dto::AnyValue& job_state);
@@ -49,8 +50,7 @@ public:
 
 private:
   void UpdateLoop(const sup::dto::AnyValue& instr_tree);
-  const std::string m_jobstate_channel;
-  const std::string m_instruction_tree_channel;
+  const JobPVInfo m_job_pv_info;
   PVUpdateQueue m_update_queue;
   std::future<void> m_update_future;
 };
