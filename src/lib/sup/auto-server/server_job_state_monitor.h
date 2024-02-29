@@ -42,6 +42,8 @@ public:
   void OnBreakpointChange(const sequencer::Instruction* instruction,
                           bool breakpoint_set) noexcept override;
 
+  void OnProcedureTick(const sequencer::Procedure& proc) noexcept override;
+
 private:
   IJobPVServer& m_pv_server;
 };

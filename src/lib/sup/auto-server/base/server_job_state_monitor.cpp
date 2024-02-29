@@ -43,6 +43,12 @@ void ServerJobStateMonitor::OnBreakpointChange(const sequencer::Instruction* ins
   m_pv_server.UpdateInstructionBreakpointPV(instruction, breakpoint_set);
 }
 
+void ServerJobStateMonitor::OnProcedureTick(const sequencer::Procedure& proc) noexcept
+{
+  // TODO: update next instruction leaves
+  (void)proc;
+}
+
 }  // namespace auto_server
 
 }  // namespace sup
