@@ -90,6 +90,12 @@
                                 <include>*.so.*</include>
                             </include>
                             <!-- Package dependencies -->
+                            <requires codac="true">sup-dto</requires>
+                            <requires codac="true">sup-epics</requires>
+                            <requires codac="true">sequencer</requires>
+                            <requires codac="true" buildOnly="true">sup-dto-devel</requires>
+                            <requires codac="true" buildOnly="true">sup-epics-devel</requires>
+                            <requires codac="true" buildOnly="true">sequencer-devel</requires>
                             <requires version="current" buildOnly="true">cmake</requires>
                             <requires version="current" buildOnly="true">gtest-devel</requires>
                         </package>
@@ -108,6 +114,9 @@
                             </include>
                             <!-- Package dependencies -->
                             <requires version="current">%{codac_rpm_prefix}-${project.artifactId}</requires>
+                            <requires codac="true">sup-dto-devel</requires>
+                            <requires codac="true">sup-epics-devel</requires>
+                            <requires codac="true">sequencer-devel</requires>
                         </package>
                         <package name="docs">
                             <!--  Public API headers  -->
