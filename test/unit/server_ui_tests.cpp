@@ -95,3 +95,25 @@ TEST_F(ServerUserInterfaceTest, JobStateUpdates)
   EXPECT_TRUE(m_pv_server.WaitForState(JobState::kSucceeded, 1.0));
   EXPECT_EQ(m_pv_server.GetJobState(), JobState::kSucceeded);
 }
+
+TEST_F(ServerUserInterfaceTest, VariableUpdates)
+{
+  // Construct procedure
+  const auto procedure_string = UnitTestHelper::CreateProcedureString(kWorkspaceSequenceBody);
+  auto proc = ParseProcedureString(procedure_string);
+  ASSERT_NE(proc.get(), nullptr);
+  EXPECT_NO_THROW(proc->Setup());
+
+  // Construct ui
+  auto root_instr = proc->RootInstruction();
+  ASSERT_NE(root_instr, nullptr);
+  ServerUserInterface ui{m_pv_server};
+
+  // Construct JobController and run procedure
+  JobController controller{*proc, ui, m_monitor};
+  EXPECT_TRUE(m_monitor.WaitForState(JobState::kInitial, 1.0));
+  controller.Start();
+  EXPECT_TRUE(m_monitor.WaitForState(JobState::kSucceeded, 2.0));
+  EXPECT_EQ(m_pv_server.GetVariableUpdateCount("var1"), 1u);
+  EXPECT_EQ(m_pv_server.GetVariableUpdateCount("var2"), 1u);
+}

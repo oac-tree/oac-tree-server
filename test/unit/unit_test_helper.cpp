@@ -88,6 +88,16 @@ sup::dto::uint32 TestJobPVServer::GetBreakpointUpdateCount() const
   return m_breakpoint_updates;
 }
 
+sup::dto::uint32 TestJobPVServer::GetVariableUpdateCount(const std::string& var_name) const
+{
+  auto iter = m_variable_updates.find(var_name);
+  if (iter == m_variable_updates.end())
+  {
+    return 0;
+  }
+  return iter->second;
+}
+
 bool TestJobPVServer::WaitForState(sequencer::JobState state, double seconds) const
 {
   auto duration = std::chrono::nanoseconds(std::lround(seconds * 1e9));

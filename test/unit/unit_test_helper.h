@@ -38,6 +38,19 @@ R"RAW(
   <Workspace/>
 )RAW"};
 
+const std::string kWorkspaceSequenceBody{
+R"RAW(
+  <Sequence>
+    <Copy inputVar="one" outputVar="var1"/>
+    <Copy inputVar="one" outputVar="var2"/>
+  </Sequence>
+  <Workspace>
+    <Local name="one" type='{"type":"uint32"}' value='1'/>
+    <Local name="var1" type='{"type":"uint32"}' value='0'/>
+    <Local name="var2" type='{"type":"uint32"}' value='0'/>
+  </Workspace>
+)RAW"};
+
 namespace sup
 {
 namespace auto_server
@@ -64,6 +77,8 @@ public:
   sup::dto::uint32 GetInstructionUpdateCount(sequencer::ExecutionStatus status) const;
 
   sup::dto::uint32 GetBreakpointUpdateCount() const;
+
+  sup::dto::uint32 GetVariableUpdateCount(const std::string& var_name) const;
 
   bool WaitForState(sequencer::JobState state, double seconds) const;
 
