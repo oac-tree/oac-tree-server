@@ -31,15 +31,15 @@ namespace sup
 namespace auto_server
 {
 
-VariableMap::VariableMap(const std::string& prefix, const sequencer::Workspace& workspace)
+VariableMap::VariableMap(const sequencer::Workspace& workspace)
   : m_variable_map{}
 {
-  InitializeMap(prefix, workspace);
+  InitializeMap(workspace);
 }
 
 VariableMap::~VariableMap() = default;
 
-std::string VariableMap::FindVariableChannel(const std::string& var_name) const
+sup::dto::uint32 VariableMap::FindVariableIndex(const std::string& var_name) const
 {
   auto iter = m_variable_map.find(var_name);
   if (iter == m_variable_map.end())
@@ -51,7 +51,7 @@ std::string VariableMap::FindVariableChannel(const std::string& var_name) const
   return iter->second;
 }
 
-std::map<std::string, std::string> VariableMap::GetVariableMapping() const
+std::map<std::string, sup::dto::uint32> VariableMap::GetVariableMapping() const
 {
   return m_variable_map;
 }
@@ -61,12 +61,12 @@ sup::dto::uint32 VariableMap::GetNumberOfVariables() const
   return m_variable_map.size();
 }
 
-void VariableMap::InitializeMap(const std::string& prefix, const sequencer::Workspace& workspace)
+void VariableMap::InitializeMap(const sequencer::Workspace& workspace)
 {
   auto var_names = workspace.VariableNames();
   for (sup::dto::uint32 idx = 0; idx < var_names.size(); ++idx)
   {
-    m_variable_map[var_names[idx]] = GetVariablePVName(prefix, idx);
+    m_variable_map[var_names[idx]] = idx;
   }
 }
 

@@ -60,6 +60,11 @@ void EPICSPVHandler::UpdateInstructionTree(const sup::dto::AnyValue& instr_tree)
   m_update_queue.Push(m_job_pv_info.GetInstructionTreeChannel(), instr_tree);
 }
 
+void EPICSPVHandler::UpdateVariable(sup::dto::uint32 index, const sup::dto::AnyValue& var_info)
+{
+  m_update_queue.Push(m_job_pv_info.GetVariableChannel(index), var_info);
+}
+
 void EPICSPVHandler::UpdateLoop()
 {
   sup::epics::PvAccessServer server;

@@ -21,6 +21,8 @@
 
 #include <sup/auto-server/sup_auto_protocol.h>
 
+#include <sup/auto-server/exceptions.h>
+
 #include <sup/protocol/base64_variable_codec.h>
 #include <sup/sequencer/execution_status.h>
 #include <sup/sequencer/job_states.h>
@@ -58,6 +60,21 @@ std::string GetInstructionTreePVName(const std::string& prefix)
 std::string GetVariablePVName(const std::string& prefix, sup::dto::uint32 index)
 {
   return prefix + kVariableId + std::to_string(index);
+}
+
+sup::dto::AnyValue EncodeVariableInfo(const sup::dto::AnyValue& value, bool connected)
+{
+  sup::dto::AnyValue payload = {{
+    { kVariableValueField, value },
+    { kVariableConnectedField, connected }
+  }};
+  auto encoded = sup::protocol::Base64VariableCodec::Encode(payload);
+  if (!encoded.first)
+  {
+    const std::string error = "EncodeVariableInfo(): could not encode the variable's state";
+    throw InvalidOperationException(error);
+  }
+  return encoded.second;
 }
 
 }  // namespace auto_server

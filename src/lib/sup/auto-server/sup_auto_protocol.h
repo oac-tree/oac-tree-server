@@ -50,6 +50,8 @@ extern const sup::dto::AnyValue kInstructionAnyValue;
 const std::string kVariableId = "VAR-";
 // Variable fields:
 const std::string kVariableType = "sup::variableType/v1.0";
+const std::string kVariableValueField = "var_value";
+const std::string kVariableConnectedField = "var_connected";
 
 // Basic Variable AnyValue
 extern const sup::dto::AnyValue kVariableAnyValue;
@@ -87,6 +89,16 @@ std::string GetInstructionTreePVName(const std::string& prefix);
  * @return PV channel name for the variable.
  */
 std::string GetVariablePVName(const std::string& prefix, sup::dto::uint32 index);
+
+/**
+ * @brief Pack a variable's value and connected state into a base64 encoded AnyValue.
+ *
+ * @param value Variable's value.
+ * @param connected Variable's connected status.
+ *
+ * @return Packed and encoded AnyValue.
+ */
+sup::dto::AnyValue EncodeVariableInfo(const sup::dto::AnyValue& value, bool connected);
 
 }  // namespace auto_server
 

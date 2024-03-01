@@ -37,7 +37,7 @@ class Workspace;
 namespace auto_server
 {
 /**
- * @brief VariableMap builds a map from variable names to channel names. The use
+ * @brief VariableMap builds a map from variable names to a unique index. The use
  * of indexed identifiers instead of the variable names themselves prevents possible issues with
  * forbidden characters in the channel names.
  *
@@ -50,10 +50,9 @@ public:
   /**
    * @brief Construct a VariableMap object from the given Workspace.
    *
-   * @param prefix Prefix to use for all channels of the current job.
    * @param workspace Workspace of variables to map.
    */
-  explicit VariableMap(const std::string& prefix, const sequencer::Workspace& workspace);
+  explicit VariableMap(const sequencer::Workspace& workspace);
 
   /**
    * @brief Destructor.
@@ -61,22 +60,22 @@ public:
   ~VariableMap();
 
   /**
-   * @brief Find the variable channel that will be used as part of the channel name from its
+   * @brief Find the variable index that will be used as part of the channel name from its
    * name.
    *
    * @param var_name Variable name.
-   * @return Variable channel.
+   * @return Variable index.
    *
    * @throw InvalidOperationException when variable name is not known.
    */
-  std::string FindVariableChannel(const std::string& var_name) const;
+  sup::dto::uint32 FindVariableIndex(const std::string& var_name) const;
 
   /**
-   * @brief Return the map of variable names to channel names.
+   * @brief Return the map of variable names to their indices.
    *
-   * @return map of variable names to variable channels.
+   * @return map of variable names to variable indices.
    */
-  std::map<std::string, std::string> GetVariableMapping() const;
+  std::map<std::string, sup::dto::uint32> GetVariableMapping() const;
 
   /**
    * @brief Return the number of variables that are mapped.
@@ -89,11 +88,10 @@ private:
   /**
    * @brief Initialization member function, called only during construction.
    *
-   * @param prefix Prefix to use for all channels of the current job.
    * @param workspace Workspace whose variables will be mapped.
    */
-  void InitializeMap(const std::string& prefix, const sequencer::Workspace& workspace);
-  std::map<std::string, std::string> m_variable_map;
+  void InitializeMap(const sequencer::Workspace& workspace);
+  std::map<std::string, sup::dto::uint32> m_variable_map;
 };
 
 }  // namespace auto_server

@@ -45,9 +45,7 @@ void ServerUserInterface::UpdateInstructionStatus(const sequencer::Instruction* 
 void ServerUserInterface::VariableUpdated(const std::string& name, const sup::dto::AnyValue& value,
                                           bool connected)
 {
-  (void)name;
-  (void)value;
-  (void)connected;
+  m_pv_server.UpdateVariable(name, value, connected);
 }
 
 bool ServerUserInterface::PutValue(const sup::dto::AnyValue& value, const std::string& description)

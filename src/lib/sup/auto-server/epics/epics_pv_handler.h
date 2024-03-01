@@ -48,6 +48,8 @@ public:
 
   void UpdateInstructionTree(const sup::dto::AnyValue& instr_tree);
 
+  void UpdateVariable(sup::dto::uint32 index, const sup::dto::AnyValue& var_info);
+
 private:
   void UpdateLoop();
   const JobPVInfo m_job_pv_info;
