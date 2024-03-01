@@ -41,17 +41,17 @@ namespace auto_server
 class PVUpdateCommand
 {
 public:
-  // TODO: hide constructors and expose static factory functions for the different type of commands
-  // add base64update
   enum CommandType
   {
     kUpdate = 0,
     kExit
   };
-  struct ExitTag {};
-  PVUpdateCommand(std::string channel, sup::dto::AnyValue value);
-  PVUpdateCommand(ExitTag tag);
+  static PVUpdateCommand CreateChannelUpdate(const std::string& channel,
+                                             const sup::dto::AnyValue& value);
+  static PVUpdateCommand CreateExitCommand();
+
   ~PVUpdateCommand();
+
   // Move only
   PVUpdateCommand(PVUpdateCommand&& other);
   PVUpdateCommand& operator=(PVUpdateCommand&& other);
@@ -63,6 +63,7 @@ public:
   sup::dto::AnyValue& Value();
 
 private:
+  PVUpdateCommand(CommandType command_type, std::string channel, sup::dto::AnyValue value);
   CommandType m_command_type;
   std::string m_channel;
   sup::dto::AnyValue m_value;

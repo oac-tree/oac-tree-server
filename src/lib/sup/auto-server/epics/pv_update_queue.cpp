@@ -39,7 +39,7 @@ void PVUpdateQueue::Push(const std::string& channel, const sup::dto::AnyValue& v
 {
   {
     std::lock_guard<std::mutex> lk{m_mtx};
-    m_pv_updates.emplace_back(channel, value);
+    m_pv_updates.push_back(PVUpdateCommand::CreateChannelUpdate(channel, value));
   }
   m_cv.notify_one();
 }
@@ -48,7 +48,7 @@ void PVUpdateQueue::PushExit()
 {
   {
     std::lock_guard<std::mutex> lk{m_mtx};
-    m_pv_updates.emplace_back(PVUpdateCommand::ExitTag{});
+    m_pv_updates.push_back(PVUpdateCommand::CreateExitCommand());
   }
   m_cv.notify_one();
 }

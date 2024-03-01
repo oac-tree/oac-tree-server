@@ -26,18 +26,15 @@ namespace sup
 namespace auto_server
 {
 
-PVUpdateCommand::PVUpdateCommand(std::string channel, sup::dto::AnyValue value)
-  : m_command_type{kUpdate}
-  , m_channel{std::move(channel)}
-  , m_value{std::move(value)}
-{}
-
-PVUpdateCommand::PVUpdateCommand(ExitTag tag)
-  : m_command_type{kExit}
-  , m_channel{}
-  , m_value{}
+PVUpdateCommand PVUpdateCommand::CreateChannelUpdate(const std::string& channel,
+                                                            const sup::dto::AnyValue& value)
 {
-  (void)tag;
+  return PVUpdateCommand(kUpdate, channel, value);
+}
+
+PVUpdateCommand PVUpdateCommand::CreateExitCommand()
+{
+  return PVUpdateCommand(kExit, {}, {});
 }
 
 PVUpdateCommand::~PVUpdateCommand() = default;
@@ -66,6 +63,13 @@ sup::dto::AnyValue& PVUpdateCommand::Value()
 {
   return m_value;
 }
+
+PVUpdateCommand::PVUpdateCommand(CommandType command_type, std::string channel,
+                                 sup::dto::AnyValue value)
+  : m_command_type{command_type}
+  , m_channel{std::move(channel)}
+  , m_value{std::move(value)}
+{}
 
 }  // namespace auto_server
 
