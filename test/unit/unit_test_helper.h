@@ -58,6 +58,8 @@ public:
                                  sequencer::ExecutionStatus status) override;
   void UpdateInstructionBreakpointPV(const sequencer::Instruction* instruction,
                                      bool breakpoint_set) override;
+  void UpdateVariable(const std::string& name, const sup::dto::AnyValue& value,
+                      bool connected) override;
 
   sup::dto::uint32 GetInstructionUpdateCount(sequencer::ExecutionStatus status) const;
 
@@ -69,6 +71,7 @@ public:
 private:
   std::map<sequencer::ExecutionStatus, sup::dto::uint32> m_status_updates;
   sup::dto::uint32 m_breakpoint_updates;
+  std::map<std::string, sup::dto::uint32> m_variable_updates;
   sequencer::JobState m_job_state;
   mutable std::mutex m_mtx;
   mutable std::condition_variable m_cv;

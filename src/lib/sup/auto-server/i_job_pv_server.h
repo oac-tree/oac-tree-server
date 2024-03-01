@@ -46,6 +46,9 @@ public:
 
   virtual void UpdateInstructionBreakpointPV(const sequencer::Instruction* instruction,
                                              bool breakpoint_set) = 0;
+
+  virtual void UpdateVariable(const std::string& name, const sup::dto::AnyValue& value,
+                              bool connected) = 0;
 };
 
 }  // namespace auto_server

@@ -34,10 +34,14 @@ namespace auto_server
 
 EPICSJobPVServer::EPICSJobPVServer(const std::string& prefix, const sequencer::Procedure& proc)
   : m_instr_tree_cache{proc.RootInstruction()}
+  , m_variable_map{prefix, proc.GetWorkspace()}
   , m_instr_tree_anyvalue{m_instr_tree_cache.GetInitialInstructionTreeAnyValue()}
   , m_job_state{kJobStateAnyValue}
-  , m_pv_handler{new EPICSPVHandler{JobPVInfo{prefix, m_instr_tree_anyvalue, 0}}}
-{}
+  , m_pv_handler{}
+{
+  JobPVInfo job_pv_info{prefix, m_instr_tree_anyvalue, m_variable_map.GetNumberOfVariables()};
+  m_pv_handler.reset(new EPICSPVHandler{job_pv_info});
+}
 
 EPICSJobPVServer::~EPICSJobPVServer() = default;
 
@@ -65,6 +69,15 @@ void EPICSJobPVServer::UpdateInstructionBreakpointPV(const sequencer::Instructio
                                   : m_instr_tree_anyvalue[path];
   instr_node[kBreakpointField] = breakpoint_set;
   m_pv_handler->UpdateInstructionTree(m_instr_tree_anyvalue);
+}
+
+void EPICSJobPVServer::UpdateVariable(const std::string& name, const sup::dto::AnyValue& value,
+                                      bool connected)
+{
+  (void)value;
+  (void)connected;
+  auto var_channel = m_variable_map.FindVariableChannel(name);
+  // TODO: forward to PV handler
 }
 
 }  // namespace auto_server

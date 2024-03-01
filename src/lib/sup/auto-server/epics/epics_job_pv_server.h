@@ -24,6 +24,7 @@
 
 #include <sup/auto-server/i_job_pv_server.h>
 #include <sup/auto-server/instruction_tree_cache.h>
+#include <sup/auto-server/variable_map.h>
 
 #include <memory>
 
@@ -55,8 +56,11 @@ public:
   void UpdateInstructionBreakpointPV(const sequencer::Instruction* instruction,
                                      bool breakpoint_set) override;
 
+  void UpdateVariable(const std::string& name, const sup::dto::AnyValue& value,
+                      bool connected) override;
 private:
   const InstructionTreeCache m_instr_tree_cache;
+  const VariableMap m_variable_map;
   sup::dto::AnyValue m_instr_tree_anyvalue;
   sup::dto::AnyValue m_job_state;
   std::unique_ptr<EPICSPVHandler> m_pv_handler;

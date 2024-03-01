@@ -37,8 +37,7 @@ class Workspace;
 namespace auto_server
 {
 /**
- * @brief VariableMap builds a map from variable names to variable identifiers. These identifiers
- * will be used as part of the channel name for publishing the variable on the network. The use
+ * @brief VariableMap builds a map from variable names to channel names. The use
  * of indexed identifiers instead of the variable names themselves prevents possible issues with
  * forbidden characters in the channel names.
  *
@@ -62,22 +61,29 @@ public:
   ~VariableMap();
 
   /**
-   * @brief Find the variable identifier that will be used as part of the channel name from its
+   * @brief Find the variable channel that will be used as part of the channel name from its
    * name.
    *
    * @param var_name Variable name.
-   * @return Variable identifier.
+   * @return Variable channel.
    *
    * @throw InvalidOperationException when variable name is not known.
    */
-  std::string FindVariableIdentifier(const std::string& var_name) const;
+  std::string FindVariableChannel(const std::string& var_name) const;
 
   /**
-   * @brief Return the map of variable names to identifiers.
+   * @brief Return the map of variable names to channel names.
    *
-   * @return map of variable names to variable identifiers.
+   * @return map of variable names to variable channels.
    */
   std::map<std::string, std::string> GetVariableMapping() const;
+
+  /**
+   * @brief Return the number of variables that are mapped.
+   *
+   * @return Number of variables mapped.
+   */
+  sup::dto::uint32 GetNumberOfVariables() const;
 
 private:
   /**

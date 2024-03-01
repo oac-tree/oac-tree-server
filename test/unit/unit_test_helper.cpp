@@ -40,6 +40,7 @@ namespace UnitTestHelper
 TestJobPVServer::TestJobPVServer()
   : m_status_updates{}
   , m_breakpoint_updates{}
+  , m_variable_updates{}
   , m_job_state{sequencer::JobState::kInitial}
   , m_mtx{}
   , m_cv{}
@@ -65,6 +66,11 @@ void TestJobPVServer::UpdateInstructionStatusPV(const sequencer::Instruction* in
 void TestJobPVServer::UpdateInstructionBreakpointPV(const sequencer::Instruction*, bool)
 {
   ++m_breakpoint_updates;
+}
+
+void TestJobPVServer::UpdateVariable(const std::string& name, const sup::dto::AnyValue&, bool)
+{
+  ++m_variable_updates[name];
 }
 
 sup::dto::uint32 TestJobPVServer::GetInstructionUpdateCount(sequencer::ExecutionStatus status) const

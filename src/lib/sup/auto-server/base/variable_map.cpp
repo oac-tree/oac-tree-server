@@ -39,12 +39,12 @@ VariableMap::VariableMap(const std::string& prefix, const sequencer::Workspace& 
 
 VariableMap::~VariableMap() = default;
 
-std::string VariableMap::FindVariableIdentifier(const std::string& var_name) const
+std::string VariableMap::FindVariableChannel(const std::string& var_name) const
 {
   auto iter = m_variable_map.find(var_name);
   if (iter == m_variable_map.end())
   {
-    std::string message = "VariableMap::FindVariableIdentifier(): unknown variable name [" +
+    std::string message = "VariableMap::FindVariableChannel(): unknown variable name [" +
       var_name + "]";
     throw InvalidOperationException(message);
   }
@@ -54,6 +54,11 @@ std::string VariableMap::FindVariableIdentifier(const std::string& var_name) con
 std::map<std::string, std::string> VariableMap::GetVariableMapping() const
 {
   return m_variable_map;
+}
+
+sup::dto::uint32 VariableMap::GetNumberOfVariables() const
+{
+  return m_variable_map.size();
 }
 
 void VariableMap::InitializeMap(const std::string& prefix, const sequencer::Workspace& workspace)
