@@ -38,5 +38,6 @@ install(FILES
   server_job_state_monitor.h
   server_ui.h
   sup_auto_protocol.h
+  variable_map.h
   DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/sup/auto-server
 )
