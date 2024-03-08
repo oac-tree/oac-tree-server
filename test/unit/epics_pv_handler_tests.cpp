@@ -52,6 +52,7 @@ const std::string kPrefix1 = "SUP-AUTO-TEST1:";
 const std::string kPrefix2 = "SUP-AUTO-TEST2:";
 const std::string kPrefix3 = "SUP-AUTO-TEST3:";
 const std::string kPrefix4 = "SUP-AUTO-TEST4:";
+const std::string kPrefix5 = "SUP-AUTO-TEST5:";
 
 class EPICSPVHandlerTest : public ::testing::Test
 {
@@ -253,7 +254,7 @@ TEST_F(EPICSPVHandlerTest, UpdateVariable)
 {
   // Test construction/destruction of EPICSPVHandler
   auto instr_tree = UnitTestHelper::CreateTestInstructionTreeAnyValue();
-  JobPVInfo job_pv_info{kPrefix2, instr_tree, 1};
+  JobPVInfo job_pv_info{kPrefix5, instr_tree, 1};
   EPICSPVHandler pv_handler{job_pv_info};
 
   // Construct client PV for monitoring
@@ -261,7 +262,7 @@ TEST_F(EPICSPVHandlerTest, UpdateVariable)
   auto pv_callback = [this, var_name](const sup::epics::PvAccessClientPV::ExtendedValue& val) {
     UpdateVariable(var_name, val);
   };
-  sup::epics::PvAccessClientPV variable_pv{GetVariablePVName(kPrefix2, 0), pv_callback};
+  sup::epics::PvAccessClientPV variable_pv{GetVariablePVName(kPrefix5, 0), pv_callback};
   EXPECT_TRUE(variable_pv.WaitForValidValue(1.0));
   auto var_encoded = variable_pv.GetValue();
   EXPECT_EQ(var_encoded.GetType(), kVariableAnyValue.GetType());
