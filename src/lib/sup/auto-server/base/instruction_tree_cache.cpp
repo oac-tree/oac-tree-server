@@ -54,36 +54,12 @@ namespace sup
 namespace auto_server
 {
 
-InstructionTreeCache::InstructionTreeCache(const sequencer::Instruction* root_instruction)
+InstructionTreeCache::InstructionTreeCache()
   : m_instruction_paths{}
   , m_instr_tree_anyvalue{kInstructionAnyValue}
-{
-  InitializeCache(root_instruction);
-}
+{}
 
 InstructionTreeCache::~InstructionTreeCache() = default;
-
-std::string InstructionTreeCache::FindInstructionPath(const sequencer::Instruction* instruction) const
-{
-  auto iter = m_instruction_paths.find(instruction);
-  if (iter == m_instruction_paths.end())
-  {
-    std::string message = "InstructionTreeCache::FindInstructionPath(): unknown instruction";
-    throw InvalidOperationException(message);
-  }
-  return iter->second;
-}
-
-std::map<const sequencer::Instruction*, std::string>
-InstructionTreeCache::GetInstructionPaths() const
-{
-  return m_instruction_paths;
-}
-
-dto::AnyValue InstructionTreeCache::GetInitialInstructionTreeAnyValue() const
-{
-  return m_instr_tree_anyvalue;
-}
 
 void InstructionTreeCache::InitializeCache(const sequencer::Instruction* root_instruction)
 {
@@ -107,6 +83,28 @@ void InstructionTreeCache::InitializeCache(const sequencer::Instruction* root_in
     ++node.idx;
     m_instruction_paths[child] = PushInstructionNode(stack, child);
   }
+}
+
+std::string InstructionTreeCache::FindInstructionPath(const sequencer::Instruction* instruction) const
+{
+  auto iter = m_instruction_paths.find(instruction);
+  if (iter == m_instruction_paths.end())
+  {
+    std::string message = "InstructionTreeCache::FindInstructionPath(): unknown instruction";
+    throw InvalidOperationException(message);
+  }
+  return iter->second;
+}
+
+std::map<const sequencer::Instruction*, std::string>
+InstructionTreeCache::GetInstructionPaths() const
+{
+  return m_instruction_paths;
+}
+
+dto::AnyValue InstructionTreeCache::GetInitialInstructionTreeAnyValue() const
+{
+  return m_instr_tree_anyvalue;
 }
 
 }  // namespace auto_server

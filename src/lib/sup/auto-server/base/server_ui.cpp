@@ -36,6 +36,11 @@ ServerUserInterface::ServerUserInterface(IJobPVServer& pv_server)
 
 ServerUserInterface::~ServerUserInterface() = default;
 
+void ServerUserInterface::InitializeInstructionTree(const sequencer::Instruction* root)
+{
+  m_pv_server.Initialize(root);
+}
+
 void ServerUserInterface::UpdateInstructionStatus(const sequencer::Instruction* instruction)
 {
   auto status = instruction->GetStatus();

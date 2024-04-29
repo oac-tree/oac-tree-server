@@ -65,6 +65,8 @@ public:
 
   ~TestJobPVServer();
 
+  void Initialize(const sequencer::Instruction* root) override;
+
   void UpdateJobStatePV(sequencer::JobState state) override;
 
   void UpdateInstructionStatusPV(const sequencer::Instruction* instruction,

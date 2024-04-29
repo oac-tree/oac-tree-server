@@ -48,6 +48,8 @@ public:
   EPICSJobPVServer(const std::string& prefix, const sequencer::Procedure& proc);
   ~EPICSJobPVServer();
 
+  void Initialize(const sequencer::Instruction* root) override;
+
   void UpdateJobStatePV(sequencer::JobState state) override;
 
   void UpdateInstructionStatusPV(const sequencer::Instruction* instruction,
@@ -59,7 +61,8 @@ public:
   void UpdateVariable(const std::string& name, const sup::dto::AnyValue& value,
                       bool connected) override;
 private:
-  const InstructionTreeCache m_instr_tree_cache;
+  const std::string m_prefix;
+  InstructionTreeCache m_instr_tree_cache;
   const VariableMap m_variable_map;
   sup::dto::AnyValue m_instr_tree_anyvalue;
   sup::dto::AnyValue m_job_state;

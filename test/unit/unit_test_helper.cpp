@@ -48,6 +48,11 @@ TestJobPVServer::TestJobPVServer()
 
 TestJobPVServer::~TestJobPVServer() = default;
 
+void TestJobPVServer::Initialize(const sequencer::Instruction* root)
+{
+  (void)root;
+}
+
 void TestJobPVServer::UpdateJobStatePV(sequencer::JobState state)
 {
   {
@@ -58,7 +63,7 @@ void TestJobPVServer::UpdateJobStatePV(sequencer::JobState state)
 }
 
 void TestJobPVServer::UpdateInstructionStatusPV(const sequencer::Instruction* instruction,
-                                             sequencer::ExecutionStatus status)
+                                                sequencer::ExecutionStatus status)
 {
   ++m_status_updates[status];
 }
@@ -146,7 +151,8 @@ sup::dto::AnyValue CreateTestInstructionTreeAnyValue()
   proc->Setup();
 
   auto root_instr = proc->RootInstruction();
-  InstructionTreeCache tree_cache{root_instr};
+  InstructionTreeCache tree_cache{};
+  tree_cache.InitializeCache(root_instr);
   return tree_cache.GetInitialInstructionTreeAnyValue();
 }
 

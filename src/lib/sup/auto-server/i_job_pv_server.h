@@ -39,6 +39,8 @@ class IJobPVServer
 public:
   virtual ~IJobPVServer();
 
+  virtual void Initialize(const sequencer::Instruction* root) = 0;
+
   virtual void UpdateJobStatePV(sequencer::JobState state) = 0;
 
   virtual void UpdateInstructionStatusPV(const sequencer::Instruction* instruction,

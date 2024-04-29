@@ -49,16 +49,21 @@ class InstructionTreeCache
 {
 public:
   /**
-   * @brief Construct a new InstructionTreeCache object from the given root of an instruction tree.
-   *
-   * @param root_instruction Root of the instruction tree to parse.
+   * @brief Construct a new empty InstructionTreeCache object.
    */
-  explicit InstructionTreeCache(const sequencer::Instruction* root_instruction);
+  explicit InstructionTreeCache();
 
   /**
    * @brief Destructor.
    */
   ~InstructionTreeCache();
+
+  /**
+   * @brief Initialize the instruction tree from the given root instruction.
+   *
+   * @param root_instruction Root of the instruction tree.
+   */
+  void InitializeCache(const sequencer::Instruction* root_instruction);
 
   /**
    * @brief Find the path into the AnyValue corresponding to a given instruction pointer.
@@ -86,12 +91,6 @@ public:
   dto::AnyValue GetInitialInstructionTreeAnyValue() const;
 
 private:
-  /**
-   * @brief Initialization member function, called only during construction.
-   *
-   * @param root_instruction Root of the instruction tree.
-   */
-  void InitializeCache(const sequencer::Instruction* root_instruction);
   std::map<const sequencer::Instruction*, std::string> m_instruction_paths;
   dto::AnyValue m_instr_tree_anyvalue;
 };

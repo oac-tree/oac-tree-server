@@ -212,7 +212,6 @@ TEST_F(EPICSPVHandlerTest, UseJobPVServer)
   const auto procedure_string = UnitTestHelper::CreateProcedureString(kShortSequenceBody);
   auto proc = ParseProcedureString(procedure_string);
   ASSERT_NE(proc.get(), nullptr);
-  EXPECT_NO_THROW(proc->Setup());
 
   // Construct ui and monitor
   auto root_instr = proc->RootInstruction();
@@ -220,6 +219,9 @@ TEST_F(EPICSPVHandlerTest, UseJobPVServer)
   EPICSJobPVServer pv_server{kPrefix4, *proc};
   ServerUserInterface ui{pv_server};
   ServerJobStateMonitor monitor{pv_server};
+
+  // Construct JobController and connect/initialize ui and state monitor backends
+  JobController controller{*proc, ui, monitor};
 
     // Construct client PVs for monitoring
   auto pv_job_callback = [this](const sup::epics::PvAccessClientPV::ExtendedValue& val) {
@@ -233,8 +235,7 @@ TEST_F(EPICSPVHandlerTest, UseJobPVServer)
   sup::epics::PvAccessClientPV instr_tree_pv{GetInstructionTreePVName(kPrefix4), pv_instr_callback};
   EXPECT_TRUE(instr_tree_pv.WaitForValidValue(1.0));
 
-  // Construct JobController and run procedure
-  JobController controller{*proc, ui, monitor};
+  // Run procedure
   auto instr_tree = UnitTestHelper::CreateTestInstructionTreeAnyValue();
   EXPECT_TRUE(WaitForJobstate(JobState::kInitial));
   EXPECT_TRUE(WaitForInstrTree(instr_tree));

@@ -38,6 +38,7 @@ public:
 
   ~ServerUserInterface();
 
+  void InitializeInstructionTree(const sequencer::Instruction* root) override;
   void UpdateInstructionStatus(const sequencer::Instruction* instruction) override;
   void VariableUpdated(const std::string& name, const sup::dto::AnyValue& value,
                        bool connected) override;

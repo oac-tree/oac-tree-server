@@ -37,6 +37,8 @@ public:
   ServerJobStateMonitor(IJobPVServer& pv_server);
   ~ServerJobStateMonitor();
 
+  void InitializeInstructionTree(const sequencer::Instruction* root) override;
+
   void OnStateChange(sequencer::JobState state) noexcept override;
 
   void OnBreakpointChange(const sequencer::Instruction* instruction,

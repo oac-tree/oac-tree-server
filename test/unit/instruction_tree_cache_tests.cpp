@@ -83,7 +83,8 @@ TEST_F(InstructionTreeCacheTest, Construction)
   EXPECT_NO_THROW(proc->Setup());
   auto root_instr = proc->RootInstruction();
   ASSERT_NE(root_instr, nullptr);
-  InstructionTreeCache tree_cache{root_instr};
+  InstructionTreeCache tree_cache{};
+  tree_cache.InitializeCache(root_instr);
   auto instruction_map = tree_cache.GetInstructionPaths();
   auto tree_anyvalue = tree_cache.GetInitialInstructionTreeAnyValue();
   EXPECT_FALSE(sup::dto::IsEmptyValue(tree_anyvalue));
@@ -107,7 +108,8 @@ TEST_F(InstructionTreeCacheTest, Construction)
 TEST_F(InstructionTreeCacheTest, Exceptions)
 {
   // InstructionTreeCache constructor throws when given a nullptr
-  EXPECT_THROW(InstructionTreeCache{nullptr}, InvalidOperationException);
+  InstructionTreeCache tree_cache{};
+  EXPECT_THROW(tree_cache.InitializeCache(nullptr), InvalidOperationException);
 
   // InstructionTreeCache::FindInstructionPath throws for unknown instruction
   const auto procedure_string = UnitTestHelper::CreateProcedureString(kProcedureBody);
@@ -116,7 +118,7 @@ TEST_F(InstructionTreeCacheTest, Exceptions)
   EXPECT_NO_THROW(proc->Setup());
   auto root_instr = proc->RootInstruction();
   ASSERT_NE(root_instr, nullptr);
-  InstructionTreeCache tree_cache{root_instr};
+  tree_cache.InitializeCache(root_instr);
   EXPECT_THROW(tree_cache.FindInstructionPath(nullptr), InvalidOperationException);
 }
 
@@ -129,7 +131,8 @@ TEST_F(InstructionTreeCacheTest, PathFormat)
   EXPECT_NO_THROW(proc->Setup());
   auto root_instr = proc->RootInstruction();
   ASSERT_NE(root_instr, nullptr);
-  InstructionTreeCache tree_cache{root_instr};
+  InstructionTreeCache tree_cache{};
+  tree_cache.InitializeCache(root_instr);
 
   // Check that path for root instruction is just the empty string:
   EXPECT_EQ(tree_cache.FindInstructionPath(root_instr), std::string{});

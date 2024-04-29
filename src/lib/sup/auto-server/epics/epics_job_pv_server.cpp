@@ -33,17 +33,23 @@ namespace auto_server
 {
 
 EPICSJobPVServer::EPICSJobPVServer(const std::string& prefix, const sequencer::Procedure& proc)
-  : m_instr_tree_cache{proc.RootInstruction()}
+  : m_prefix{prefix}
+  , m_instr_tree_cache{}
   , m_variable_map{proc.GetWorkspace()}
-  , m_instr_tree_anyvalue{m_instr_tree_cache.GetInitialInstructionTreeAnyValue()}
+  , m_instr_tree_anyvalue{}
   , m_job_state{kJobStateAnyValue}
   , m_pv_handler{}
-{
-  JobPVInfo job_pv_info{prefix, m_instr_tree_anyvalue, m_variable_map.GetNumberOfVariables()};
-  m_pv_handler.reset(new EPICSPVHandler{job_pv_info});
-}
+{}
 
 EPICSJobPVServer::~EPICSJobPVServer() = default;
+
+void EPICSJobPVServer::Initialize(const sequencer::Instruction* root)
+{
+  m_instr_tree_cache.InitializeCache(root);
+  m_instr_tree_anyvalue = m_instr_tree_cache.GetInitialInstructionTreeAnyValue();
+  JobPVInfo job_pv_info{m_prefix, m_instr_tree_anyvalue, m_variable_map.GetNumberOfVariables()};
+  m_pv_handler.reset(new EPICSPVHandler{job_pv_info});
+}
 
 void EPICSJobPVServer::UpdateJobStatePV(sequencer::JobState state)
 {
