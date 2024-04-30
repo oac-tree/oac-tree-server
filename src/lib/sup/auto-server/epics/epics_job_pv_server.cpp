@@ -21,7 +21,8 @@
 
 #include "epics_job_pv_server.h"
 
-#include <sup/auto-server/epics/epics_pv_handler.h>
+#include <sup/auto-server/epics/epics_instruction_pv_handler.h>
+#include <sup/auto-server/epics/epics_job_pv_handler.h>
 
 #include <sup/auto-server/sup_auto_protocol.h>
 
@@ -38,7 +39,8 @@ EPICSJobPVServer::EPICSJobPVServer(const std::string& prefix, const sequencer::P
   , m_variable_map{proc.GetWorkspace()}
   , m_instr_tree_anyvalue{}
   , m_job_state{kJobStateAnyValue}
-  , m_pv_handler{}
+  , m_job_pv_handler{new EPICSJobPVHandler(prefix, m_variable_map.GetNumberOfVariables())}
+  , m_instruction_pv_handler{}
 {}
 
 EPICSJobPVServer::~EPICSJobPVServer() = default;
@@ -47,14 +49,13 @@ void EPICSJobPVServer::Initialize(const sequencer::Instruction* root)
 {
   m_instr_tree_cache.InitializeCache(root);
   m_instr_tree_anyvalue = m_instr_tree_cache.GetInitialInstructionTreeAnyValue();
-  JobPVInfo job_pv_info{m_prefix, m_instr_tree_anyvalue, m_variable_map.GetNumberOfVariables()};
-  m_pv_handler.reset(new EPICSPVHandler{job_pv_info});
+  m_instruction_pv_handler.reset(new EPICSInstructionPVHandler(m_prefix, m_instr_tree_anyvalue));
 }
 
 void EPICSJobPVServer::UpdateJobStatePV(sequencer::JobState state)
 {
   m_job_state[kJobStateField] = static_cast<sup::dto::uint32>(state);
-  m_pv_handler->UpdateJobState(m_job_state);
+  m_job_pv_handler->UpdateJobState(m_job_state);
 }
 
 void EPICSJobPVServer::UpdateInstructionStatusPV(const sequencer::Instruction* instruction,
@@ -64,7 +65,7 @@ void EPICSJobPVServer::UpdateInstructionStatusPV(const sequencer::Instruction* i
   auto& instr_node = path.empty() ? m_instr_tree_anyvalue
                                   : m_instr_tree_anyvalue[path];
   instr_node[kExecStatusField] = static_cast<sup::dto::uint16>(status);
-  m_pv_handler->UpdateInstructionTree(m_instr_tree_anyvalue);
+  m_instruction_pv_handler->UpdateInstructionTree(m_instr_tree_anyvalue);
 }
 
 void EPICSJobPVServer::UpdateInstructionBreakpointPV(const sequencer::Instruction* instruction,
@@ -74,7 +75,7 @@ void EPICSJobPVServer::UpdateInstructionBreakpointPV(const sequencer::Instructio
   auto& instr_node = path.empty() ? m_instr_tree_anyvalue
                                   : m_instr_tree_anyvalue[path];
   instr_node[kBreakpointField] = breakpoint_set;
-  m_pv_handler->UpdateInstructionTree(m_instr_tree_anyvalue);
+  m_instruction_pv_handler->UpdateInstructionTree(m_instr_tree_anyvalue);
 }
 
 void EPICSJobPVServer::UpdateVariable(const std::string& name, const sup::dto::AnyValue& value,
@@ -82,7 +83,7 @@ void EPICSJobPVServer::UpdateVariable(const std::string& name, const sup::dto::A
 {
   auto var_index = m_variable_map.FindVariableIndex(name);
   auto var_info = EncodeVariableInfo(value, connected);
-  m_pv_handler->UpdateVariable(var_index, var_info);
+  m_job_pv_handler->UpdateVariable(var_index, var_info);
 }
 
 }  // namespace auto_server

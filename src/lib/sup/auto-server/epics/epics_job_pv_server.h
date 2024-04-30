@@ -37,7 +37,8 @@ class Procedure;
 
 namespace auto_server
 {
-class EPICSPVHandler;
+class EPICSInstructionPVHandler;
+class EPICSJobPVHandler;
 /**
  * @brief EPICSJobPVServer implements IJobServer and serves its information over EPICS PvAccess
  * server PVs.
@@ -66,7 +67,8 @@ private:
   const VariableMap m_variable_map;
   sup::dto::AnyValue m_instr_tree_anyvalue;
   sup::dto::AnyValue m_job_state;
-  std::unique_ptr<EPICSPVHandler> m_pv_handler;
+  std::unique_ptr<EPICSJobPVHandler> m_job_pv_handler;
+  std::unique_ptr<EPICSInstructionPVHandler> m_instruction_pv_handler;
 };
 
 }  // namespace auto_server

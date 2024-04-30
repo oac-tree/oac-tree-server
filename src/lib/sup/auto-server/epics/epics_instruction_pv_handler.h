@@ -19,12 +19,12 @@
  * of the distribution package.
  ******************************************************************************/
 
-#ifndef SUP_AUTO_SERVER_JOB_PV_INFO_H_
-#define SUP_AUTO_SERVER_JOB_PV_INFO_H_
+#ifndef SUP_AUTO_SERVER_EPICS_INSTRUCTION_PV_HANDLER_H_
+#define SUP_AUTO_SERVER_EPICS_INSTRUCTION_PV_HANDLER_H_
 
-#include <sup/dto/anyvalue.h>
+#include "pv_update_queue.h"
 
-#include <string>
+#include <future>
 
 namespace sup
 {
@@ -33,32 +33,28 @@ namespace auto_server
 {
 
 /**
- * @brief JobPVInfo collects the required information to create the PvAccess server PVs for a
- * single job.
+ * @brief EPICSInstructionPVHandler is responsible for serving the EPICS PV associated with the
+ * instruction tree of a single job. The current implementation tries to avoid blocking too long in
+ * update calls by pushing those on a queue that is processed in a separate thread.
  */
-class JobPVInfo
+class EPICSInstructionPVHandler
 {
 public:
-  JobPVInfo(const std::string& prefix, const sup::dto::AnyValue& instr_tree,
-            sup::dto::uint32 n_variables);
-  ~JobPVInfo();
+  EPICSInstructionPVHandler(const std::string& prefix, const sup::dto::AnyValue& instr_tree);
+  ~EPICSInstructionPVHandler();
 
-  std::string GetJobStateChannel() const;
-  std::string GetInstructionTreeChannel() const;
-
-  sup::dto::uint32 GetNumberOfVariables() const;
-  std::string GetVariableChannel(sup::dto::uint32 index) const;
-
-  sup::dto::AnyValue GetInstructionTreeStructure() const;
+  void UpdateInstructionTree(const sup::dto::AnyValue& instr_tree);
 
 private:
+  void UpdateLoop(const sup::dto::AnyValue& instr_tree);
+
+  PVUpdateQueue m_update_queue;
   const std::string m_prefix;
-  const sup::dto::AnyValue m_instr_tree;
-  const sup::dto::uint32 m_n_variables;
+  std::future<void> m_update_future;
 };
 
 }  // namespace auto_server
 
 }  // namespace sup
 
-#endif  // SUP_AUTO_SERVER_JOB_PV_INFO_H_
+#endif  // SUP_AUTO_SERVER_EPICS_INSTRUCTION_PV_HANDLER_H_

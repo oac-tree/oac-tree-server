@@ -28,6 +28,7 @@
 
 #include <condition_variable>
 #include <deque>
+#include <functional>
 #include <mutex>
 #include <string>
 
@@ -77,6 +78,9 @@ private:
   mutable std::mutex m_mtx;
   std::condition_variable m_cv;
 };
+
+using ChannelUpdateFunction = std::function<void(const std::string&, const sup::dto::AnyValue&)>;
+bool ProcessCommandQueue(std::deque<PVUpdateCommand>& queue, const ChannelUpdateFunction& func);
 
 }  // namespace auto_server
 

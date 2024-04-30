@@ -72,6 +72,25 @@ std::deque<PVUpdateCommand> PVUpdateQueue::PopCommands()
   return result;
 }
 
+bool ProcessCommandQueue(std::deque<PVUpdateCommand>& queue, const ChannelUpdateFunction& func)
+{
+  bool exit = false;
+  while (!queue.empty())
+  {
+    auto& command = queue.front();
+    if (command.GetCommandType() == PVUpdateCommand::kExit)
+    {
+      queue.pop_front();
+      exit = true;
+      // TODO: check if continuing is really what we want
+      continue;  // Keep on processing this queue before returning the signal to exit.
+    }
+    func(command.Channel(), command.Value());
+    queue.pop_front();
+  }
+  return exit;
+}
+
 }  // namespace auto_server
 
 }  // namespace sup

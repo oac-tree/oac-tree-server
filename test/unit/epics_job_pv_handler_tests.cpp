@@ -26,7 +26,7 @@
 #include <sup/auto-server/sup_auto_protocol.h>
 
 #include <sup/auto-server/epics/epics_job_pv_server.h>
-#include <sup/auto-server/epics/epics_pv_handler.h>
+#include <sup/auto-server/epics/epics_job_pv_handler.h>
 
 #include <sup/dto/anyvalue_helper.h>
 #include <sup/epics/pv_access_client_pv.h>
@@ -48,20 +48,18 @@ using namespace sup::auto_server;
 using namespace sup::sequencer;
 
 // Using different prefixes speeds up the units tests:
-const std::string kPrefix1 = "SUP-AUTO-TEST1:";
-const std::string kPrefix2 = "SUP-AUTO-TEST2:";
-const std::string kPrefix3 = "SUP-AUTO-TEST3:";
-const std::string kPrefix4 = "SUP-AUTO-TEST4:";
-const std::string kPrefix5 = "SUP-AUTO-TEST5:";
+const std::string kPrefix1 = "SUP-AUTO-JOB_TEST1:";
+const std::string kPrefix2 = "SUP-AUTO-JOB_TEST2:";
+const std::string kPrefix3 = "SUP-AUTO-JOB_TEST3:";
+const std::string kPrefix4 = "SUP-AUTO-JOB_TEST4:";
 
-class EPICSPVHandlerTest : public ::testing::Test
+class EPICSJobPVHandlerTest : public ::testing::Test
 {
 protected:
-  EPICSPVHandlerTest()
+  EPICSJobPVHandlerTest()
     : m_jobstate{kJobStateAnyValue}
-    , m_instr_tree{}
   {}
-  virtual ~EPICSPVHandlerTest() = default;
+  virtual ~EPICSJobPVHandlerTest() = default;
 
   bool WaitForJobstate(JobState state, double seconds = 1.0)
   {
@@ -69,15 +67,6 @@ protected:
     std::unique_lock<std::mutex> lk{m_mtx};
     return m_cv.wait_for(lk, duration, [this, state](){
       return m_jobstate[kJobStateField] == static_cast<sup::dto::uint32>(state);
-    });
-  }
-
-  bool WaitForInstrTree(const sup::dto::AnyValue& val, double seconds = 1.0)
-  {
-    auto duration = std::chrono::nanoseconds(std::lround(seconds * 1e9));
-    std::unique_lock<std::mutex> lk{m_mtx};
-    return m_cv.wait_for(lk, duration, [this, val](){
-      return m_instr_tree == val;
     });
   }
 
@@ -96,22 +85,21 @@ protected:
     });
   }
 
+  bool WaitForInstrTree(const sup::dto::AnyValue& val, double seconds = 1.0)
+  {
+    auto duration = std::chrono::nanoseconds(std::lround(seconds * 1e9));
+    std::unique_lock<std::mutex> lk{m_mtx};
+    return m_cv.wait_for(lk, duration, [this, val](){
+      return m_instr_tree == val;
+    });
+  }
+
   void UpdateJobState(const sup::epics::PvAccessClientPV::ExtendedValue& val)
   {
     if (val.connected && !sup::dto::IsEmptyValue(val.value))
     {
       std::lock_guard<std::mutex> lk{m_mtx};
       m_jobstate = val.value;
-    }
-    m_cv.notify_one();
-  }
-
-  void UpdateInstrTree(const sup::epics::PvAccessClientPV::ExtendedValue& val)
-  {
-    if (val.connected && !sup::dto::IsEmptyValue(val.value))
-    {
-      std::lock_guard<std::mutex> lk{m_mtx};
-      m_instr_tree = val.value;
     }
     m_cv.notify_one();
   }
@@ -130,28 +118,34 @@ protected:
     m_cv.notify_one();
   }
 
+  void UpdateInstrTree(const sup::epics::PvAccessClientPV::ExtendedValue& val)
+  {
+    if (val.connected && !sup::dto::IsEmptyValue(val.value))
+    {
+      std::lock_guard<std::mutex> lk{m_mtx};
+      m_instr_tree = val.value;
+    }
+    m_cv.notify_one();
+  }
+
   sup::dto::AnyValue m_jobstate;
-  sup::dto::AnyValue m_instr_tree;
   std::map<std::string, sup::dto::AnyValue> m_variables;
+  sup::dto::AnyValue m_instr_tree;
   std::mutex m_mtx;
   std::condition_variable m_cv;
 };
 
-TEST_F(EPICSPVHandlerTest, Construction)
+TEST_F(EPICSJobPVHandlerTest, Construction)
 {
-  // Test construction/destruction of EPICSPVHandler
-  auto instr_tree = UnitTestHelper::CreateTestInstructionTreeAnyValue();
-  JobPVInfo job_pv_info{kPrefix1, instr_tree, 0};
-  EPICSPVHandler pv_handler{job_pv_info};
-  EXPECT_NO_THROW(pv_handler.UpdateInstructionTree(instr_tree));
+  // Test construction/destruction of EPICSJobPVHandler
+  EPICSJobPVHandler pv_handler{kPrefix1, 0};
+  EXPECT_NO_THROW(pv_handler.UpdateJobState(m_jobstate));
 }
 
-TEST_F(EPICSPVHandlerTest, UpdateJobState)
+TEST_F(EPICSJobPVHandlerTest, UpdateJobState)
 {
-  // Test construction/destruction of EPICSPVHandler
-  auto instr_tree = UnitTestHelper::CreateTestInstructionTreeAnyValue();
-  JobPVInfo job_pv_info{kPrefix2, instr_tree, 0};
-  EPICSPVHandler pv_handler{job_pv_info};
+  // Test construction/destruction of EPICSJobPVHandler
+  EPICSJobPVHandler pv_handler{kPrefix2, 0};
 
   // Construct client PV for monitoring
   auto pv_callback = [this](const sup::epics::PvAccessClientPV::ExtendedValue& val) {
@@ -174,39 +168,44 @@ TEST_F(EPICSPVHandlerTest, UpdateJobState)
   EXPECT_TRUE(WaitForJobstate(JobState::kSucceeded));
 }
 
-TEST_F(EPICSPVHandlerTest, UpdateInstructionTree)
+TEST_F(EPICSJobPVHandlerTest, UpdateVariable)
 {
-  // Test construction/destruction of EPICSPVHandler
-  auto instr_tree = UnitTestHelper::CreateTestInstructionTreeAnyValue();
-  JobPVInfo job_pv_info{kPrefix3, instr_tree, 10};
-  EPICSPVHandler pv_handler{job_pv_info};
+  // Test construction/destruction of EPICSJobPVHandler
+  EPICSJobPVHandler pv_handler{kPrefix3, 1};
 
   // Construct client PV for monitoring
-  auto pv_callback = [this](const sup::epics::PvAccessClientPV::ExtendedValue& val) {
-    UpdateInstrTree(val);
+  const std::string var_name = "var1";
+  auto pv_callback = [this, var_name](const sup::epics::PvAccessClientPV::ExtendedValue& val) {
+    UpdateVariable(var_name, val);
   };
-  sup::epics::PvAccessClientPV instr_tree_pv{GetInstructionTreePVName(kPrefix3), pv_callback};
-  EXPECT_TRUE(instr_tree_pv.WaitForValidValue(1.0));
-  EXPECT_TRUE(WaitForInstrTree(instr_tree));
+  sup::epics::PvAccessClientPV variable_pv{GetVariablePVName(kPrefix3, 0), pv_callback};
+  EXPECT_TRUE(variable_pv.WaitForValidValue(1.0));
+  auto var_encoded = variable_pv.GetValue();
+  EXPECT_EQ(var_encoded.GetType(), kVariableAnyValue.GetType());
 
-  // Update root instruction status and breakpoint
-  instr_tree[kExecStatusField] =
-    static_cast<sup::dto::uint16>(sup::sequencer::ExecutionStatus::NOT_FINISHED);
-  instr_tree[kBreakpointField] = true;
-  pv_handler.UpdateInstructionTree(instr_tree);
-  EXPECT_TRUE(WaitForInstrTree(instr_tree));
+  // Update variable
+  sup::dto::AnyValue var_update = {{
+    { "setpoint", 42.0 },
+    { "enabled", false }
+  }};
+  auto var_info = EncodeVariableInfo(var_update, true);
+  pv_handler.UpdateVariable(0, var_info);
+  sup::dto::AnyValue payload = {{
+    { kVariableValueField, var_update },
+    { kVariableConnectedField, true }
+  }};
+  EXPECT_TRUE(WaitForVariableValue(var_name, payload));
 
-  // Update child instruction status and breakpoint
-  auto& children = instr_tree[kChildrenField];
-  ASSERT_TRUE(children.HasField("Wait1"));
-  children["Wait1"][kExecStatusField] =
-    static_cast<sup::dto::uint16>(sup::sequencer::ExecutionStatus::FAILURE);
-  children["Wait1"][kBreakpointField] = true;
-  pv_handler.UpdateInstructionTree(instr_tree);
-  EXPECT_TRUE(WaitForInstrTree(instr_tree));
+  // Update variable to empty and not connected
+  sup::dto::AnyValue var_update_empty{};
+  var_info = EncodeVariableInfo(var_update_empty, false);
+  pv_handler.UpdateVariable(0, var_info);
+  payload[kVariableValueField] = var_update_empty;
+  payload[kVariableConnectedField] = false;
+  EXPECT_TRUE(WaitForVariableValue(var_name, payload));
 }
 
-TEST_F(EPICSPVHandlerTest, UseJobPVServer)
+TEST_F(EPICSJobPVHandlerTest, UseJobPVServer)
 {
   // Construct procedure
   const auto procedure_string = UnitTestHelper::CreateProcedureString(kShortSequenceBody);
@@ -249,43 +248,4 @@ TEST_F(EPICSPVHandlerTest, UseJobPVServer)
   EXPECT_TRUE(WaitForInstrTree(instr_tree));
   controller.Start();
   EXPECT_TRUE(WaitForJobstate(JobState::kSucceeded));
-}
-
-TEST_F(EPICSPVHandlerTest, UpdateVariable)
-{
-  // Test construction/destruction of EPICSPVHandler
-  auto instr_tree = UnitTestHelper::CreateTestInstructionTreeAnyValue();
-  JobPVInfo job_pv_info{kPrefix5, instr_tree, 1};
-  EPICSPVHandler pv_handler{job_pv_info};
-
-  // Construct client PV for monitoring
-  const std::string var_name = "var1";
-  auto pv_callback = [this, var_name](const sup::epics::PvAccessClientPV::ExtendedValue& val) {
-    UpdateVariable(var_name, val);
-  };
-  sup::epics::PvAccessClientPV variable_pv{GetVariablePVName(kPrefix5, 0), pv_callback};
-  EXPECT_TRUE(variable_pv.WaitForValidValue(1.0));
-  auto var_encoded = variable_pv.GetValue();
-  EXPECT_EQ(var_encoded.GetType(), kVariableAnyValue.GetType());
-
-  // Update variable
-  sup::dto::AnyValue var_update = {{
-    { "setpoint", 42.0 },
-    { "enabled", false }
-  }};
-  auto var_info = EncodeVariableInfo(var_update, true);
-  pv_handler.UpdateVariable(0, var_info);
-  sup::dto::AnyValue payload = {{
-    { kVariableValueField, var_update },
-    { kVariableConnectedField, true }
-  }};
-  EXPECT_TRUE(WaitForVariableValue(var_name, payload));
-
-  // Update variable to empty and not connected
-  sup::dto::AnyValue var_update_empty{};
-  var_info = EncodeVariableInfo(var_update_empty, false);
-  pv_handler.UpdateVariable(0, var_info);
-  payload[kVariableValueField] = var_update_empty;
-  payload[kVariableConnectedField] = false;
-  EXPECT_TRUE(WaitForVariableValue(var_name, payload));
 }

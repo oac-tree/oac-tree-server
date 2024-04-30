@@ -19,10 +19,9 @@
  * of the distribution package.
  ******************************************************************************/
 
-#ifndef SUP_AUTO_SERVER_EPICS_PV_HANDLER_H_
-#define SUP_AUTO_SERVER_EPICS_PV_HANDLER_H_
+#ifndef SUP_AUTO_SERVER_EPICS_JOB_PV_HANDLER_H_
+#define SUP_AUTO_SERVER_EPICS_JOB_PV_HANDLER_H_
 
-#include "job_pv_info.h"
 #include "pv_update_queue.h"
 
 #include <future>
@@ -34,26 +33,24 @@ namespace auto_server
 {
 
 /**
- * @brief EPICSPVHandler is responsible for serving the EPICS PVs associated with the job state and
- * the instruction tree status. The current implementation tries to avoid blocking too long in
+ * @brief EPICSJobPVHandler is responsible for serving the EPICS PVs associated with the job state
+ * and workspace variables. The current implementation tries to avoid blocking too long in
  * update calls by pushing those on a queue that is processed in a separate thread.
  */
-class EPICSPVHandler
+class EPICSJobPVHandler
 {
 public:
-  EPICSPVHandler(JobPVInfo job_pv_info);
-  ~EPICSPVHandler();
+  EPICSJobPVHandler(const std::string& prefix, sup::dto::uint32 n_variables);
+  ~EPICSJobPVHandler();
 
   void UpdateJobState(const sup::dto::AnyValue& job_state);
-
-  void UpdateInstructionTree(const sup::dto::AnyValue& instr_tree);
 
   void UpdateVariable(sup::dto::uint32 index, const sup::dto::AnyValue& var_info);
 
 private:
-  void UpdateLoop();
-  const JobPVInfo m_job_pv_info;
+  void UpdateLoop(sup::dto::uint32 n_variables);
   PVUpdateQueue m_update_queue;
+  const std::string m_prefix;
   std::future<void> m_update_future;
 };
 
@@ -61,4 +58,4 @@ private:
 
 }  // namespace sup
 
-#endif  // SUP_AUTO_SERVER_EPICS_PV_HANDLER_H_
+#endif  // SUP_AUTO_SERVER_EPICS_JOB_PV_HANDLER_H_
