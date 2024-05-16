@@ -56,6 +56,12 @@ public:
   EPICSServer& operator=(const EPICSServer& other) = delete;
   EPICSServer& operator=(EPICSServer&& other) = delete;
 
+  /**
+   * @brief Update the value of the server AnyValue with the given name.
+   *
+   * @param name Name of the server AnyValue.
+   * @param value New value.
+   */
   void UpdateAnyValue(const std::string& name, const sup::dto::AnyValue& value);
 
 private:
