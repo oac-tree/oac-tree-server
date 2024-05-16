@@ -5,5 +5,6 @@ target_sources(sup-auto-server
   epics_instruction_pv_handler.cpp
   epics_job_pv_handler.cpp
   epics_job_pv_server.cpp
+  epics_server_interface.cpp
   epics_server.cpp
 )

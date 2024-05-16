@@ -21,8 +21,6 @@
 
 #include "epics_server.h"
 
-#include <sup/auto-server/exceptions.h>
-
 #include <sup/epics/pv_access_server.h>
 
 namespace sup
@@ -34,8 +32,6 @@ EPICSServer::EPICSServer(const ServerInterface::NameAnyValueSet& name_value_set)
   : m_update_queue{}
   , m_update_future{}
 {
-  const std::string error = "EPICSServer(): should be constructed with uniquely named values";
-  ValidateUniqueNames(name_value_set, error);
   m_update_future = std::async(std::launch::async, &EPICSServer::UpdateLoop, this, name_value_set);
 }
 

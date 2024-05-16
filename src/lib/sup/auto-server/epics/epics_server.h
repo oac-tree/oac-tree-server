@@ -40,8 +40,21 @@ namespace auto_server
 class EPICSServer
 {
 public:
+  /**
+   * @brief Construct a new EPICSServer object and immediately start serving the provided values.
+   *
+   * @param name_value_set List of name/value pairs to serve.
+   *
+   * @note It is the user's responsibility to ensure the provided names are unique.
+   */
   EPICSServer(const ServerInterface::NameAnyValueSet& name_value_set);
   ~EPICSServer();
+
+  // No copy or move
+  EPICSServer(const EPICSServer& other) = delete;
+  EPICSServer(EPICSServer&& other) = delete;
+  EPICSServer& operator=(const EPICSServer& other) = delete;
+  EPICSServer& operator=(EPICSServer&& other) = delete;
 
   void UpdateAnyValue(const std::string& name, const sup::dto::AnyValue& value);
 

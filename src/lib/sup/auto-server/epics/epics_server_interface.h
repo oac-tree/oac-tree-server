@@ -19,29 +19,41 @@
  * of the distribution package.
  ******************************************************************************/
 
-#include <sup/auto-server/server_interface.h>
-#include <sup/auto-server/exceptions.h>
+#ifndef SUP_AUTO_SERVER_EPICS_SERVER_INTERFACE_H_
+#define SUP_AUTO_SERVER_EPICS_SERVER_INTERFACE_H_
 
-#include <algorithm>
+#include "epics_server.h"
+
+#include <sup/auto-server/server_interface.h>
+
+#include <map>
+#include <memory>
 
 namespace sup
 {
 namespace auto_server
 {
 
-ServerInterface::~ServerInterface() = default;
-
-std::set<std::string> GetNames(const ServerInterface::NameAnyValueSet& name_value_set)
+/**
+ * @brief EPICSServerInterface implements ServerInterface using EPICS PvAccess.
+ */
+class EPICSServerInterface : public ServerInterface
 {
-  std::set<std::string> result;
-  auto func = [](const ServerInterface::NameAnyValuePair& name_value_pair) {
-    return name_value_pair.first;
-  };
-  std::transform(name_value_set.begin(), name_value_set.end(),
-                 std::inserter(result, result.end()), func);
-  return result;
-}
+public:
+  EPICSServerInterface();
+  ~EPICSServerInterface();
+
+  bool ServeAnyValues(const NameAnyValueSet& name_value_set) override;
+  bool UpdateAnyValue(const std::string& name, const sup::dto::AnyValue& value) override;
+
+private:
+  bool ValidateNameValueSet(const NameAnyValueSet& name_value_set) const;
+  std::map<std::string, EPICSServer*> m_name_server_map;
+  std::vector<std::unique_ptr<EPICSServer>> m_set_servers;
+};
 
 }  // namespace auto_server
 
 }  // namespace sup
+
+#endif  // SUP_AUTO_SERVER_EPICS_SERVER_INTERFACE_H_

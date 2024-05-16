@@ -85,17 +85,6 @@ public:
  */
 std::set<std::string> GetNames(const ServerInterface::NameAnyValueSet& name_value_set);
 
-/**
- * @brief Verify that all names in the given list are unique among themselves.
- *
- * @param name_value_set List of name/value pairs.
- * @param error_message Error message to throw when validation fails.
- *
- * @throw InvalidOperationException when at least two names are equal.
- */
-void ValidateUniqueNames(const ServerInterface::NameAnyValueSet& name_value_set,
-                         const std::string& error_message);
-
 }  // namespace auto_server
 
 }  // namespace sup
