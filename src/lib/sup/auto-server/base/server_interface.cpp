@@ -30,13 +30,14 @@ namespace auto_server
 
 ServerInterface::~ServerInterface() = default;
 
-std::vector<std::string> GetNames(const ServerInterface::NameAnyValueSet& name_value_set)
+std::set<std::string> GetNames(const ServerInterface::NameAnyValueSet& name_value_set)
 {
-  std::vector<std::string> result;
+  std::set<std::string> result;
   auto func = [](const ServerInterface::NameAnyValuePair& name_value_pair) {
     return name_value_pair.first;
   };
-  std::transform(name_value_set.begin(), name_value_set.end(), std::back_inserter(result), func);
+  std::transform(name_value_set.begin(), name_value_set.end(),
+                 std::inserter(result, result.end()), func);
   return result;
 }
 

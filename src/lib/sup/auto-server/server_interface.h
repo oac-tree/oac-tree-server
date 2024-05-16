@@ -24,6 +24,7 @@
 
 #include <sup/dto/anyvalue.h>
 
+#include <set>
 #include <string>
 #include <vector>
 #include <utility>
@@ -82,7 +83,7 @@ public:
  * @param name_value_set List of name/value pairs.
  * @return List of names.
  */
-std::vector<std::string> GetNames(const ServerInterface::NameAnyValueSet& name_value_set);
+std::set<std::string> GetNames(const ServerInterface::NameAnyValueSet& name_value_set);
 
 }  // namespace auto_server
 
