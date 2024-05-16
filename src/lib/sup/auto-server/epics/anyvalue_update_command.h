@@ -19,8 +19,8 @@
  * of the distribution package.
  ******************************************************************************/
 
-#ifndef SUP_AUTO_SERVER_PV_UPDATE_COMMAND_H_
-#define SUP_AUTO_SERVER_PV_UPDATE_COMMAND_H_
+#ifndef SUP_AUTO_SERVER_ANYVALUE_UPDATE_COMMAND_H_
+#define SUP_AUTO_SERVER_ANYVALUE_UPDATE_COMMAND_H_
 
 #include <sup/dto/anyvalue.h>
 
@@ -33,12 +33,12 @@ namespace auto_server
 {
 
 /**
- * @brief Class representing an update to a PV. It can also contain an exit command to be able to
- * terminate loops that are waiting for new commands.
+ * @brief Class representing an update to a AnyValue. It can also contain an exit command to be able
+ * to terminate loops that are waiting for new commands.
  *
  * @note The class is move-only.
  */
-class PVUpdateCommand
+class AnyValueUpdateCommand
 {
 public:
   enum CommandType
@@ -46,26 +46,26 @@ public:
     kUpdate = 0,
     kExit
   };
-  static PVUpdateCommand CreateChannelUpdate(const std::string& channel,
-                                             const sup::dto::AnyValue& value);
-  static PVUpdateCommand CreateExitCommand();
+  static AnyValueUpdateCommand CreateValueUpdate(const std::string& name,
+                                                 const sup::dto::AnyValue& value);
+  static AnyValueUpdateCommand CreateExitCommand();
 
-  ~PVUpdateCommand();
+  ~AnyValueUpdateCommand();
 
   // Move only
-  PVUpdateCommand(PVUpdateCommand&& other);
-  PVUpdateCommand& operator=(PVUpdateCommand&& other);
+  AnyValueUpdateCommand(AnyValueUpdateCommand&& other);
+  AnyValueUpdateCommand& operator=(AnyValueUpdateCommand&& other);
 
   CommandType GetCommandType() const;
 
-  std::string& Channel();
+  std::string& Name();
 
   sup::dto::AnyValue& Value();
 
 private:
-  PVUpdateCommand(CommandType command_type, std::string channel, sup::dto::AnyValue value);
+  AnyValueUpdateCommand(CommandType command_type, std::string name, sup::dto::AnyValue value);
   CommandType m_command_type;
-  std::string m_channel;
+  std::string m_name;
   sup::dto::AnyValue m_value;
 };
 
@@ -73,4 +73,4 @@ private:
 
 }  // namespace sup
 
-#endif  // SUP_AUTO_SERVER_PV_UPDATE_COMMAND_H_
+#endif  // SUP_AUTO_SERVER_ANYVALUE_UPDATE_COMMAND_H_

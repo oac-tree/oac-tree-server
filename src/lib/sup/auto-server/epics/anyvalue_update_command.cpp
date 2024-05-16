@@ -19,55 +19,55 @@
  * of the distribution package.
  ******************************************************************************/
 
-#include "pv_update_command.h"
+#include "anyvalue_update_command.h"
 
 namespace sup
 {
 namespace auto_server
 {
 
-PVUpdateCommand PVUpdateCommand::CreateChannelUpdate(const std::string& channel,
+AnyValueUpdateCommand AnyValueUpdateCommand::CreateValueUpdate(const std::string& channel,
                                                             const sup::dto::AnyValue& value)
 {
-  return PVUpdateCommand(kUpdate, channel, value);
+  return AnyValueUpdateCommand(kUpdate, channel, value);
 }
 
-PVUpdateCommand PVUpdateCommand::CreateExitCommand()
+AnyValueUpdateCommand AnyValueUpdateCommand::CreateExitCommand()
 {
-  return PVUpdateCommand(kExit, {}, {});
+  return AnyValueUpdateCommand(kExit, {}, {});
 }
 
-PVUpdateCommand::~PVUpdateCommand() = default;
+AnyValueUpdateCommand::~AnyValueUpdateCommand() = default;
 
-PVUpdateCommand::PVUpdateCommand(PVUpdateCommand&&) = default;
+AnyValueUpdateCommand::AnyValueUpdateCommand(AnyValueUpdateCommand&&) = default;
 
-PVUpdateCommand& PVUpdateCommand::operator=(PVUpdateCommand&& other)
+AnyValueUpdateCommand& AnyValueUpdateCommand::operator=(AnyValueUpdateCommand&& other)
 {
   m_command_type = other.m_command_type;
-  m_channel = std::move(other.m_channel);
+  m_name = std::move(other.m_name);
   m_value = std::move(other.m_value);
   return *this;
 }
 
-PVUpdateCommand::CommandType PVUpdateCommand::GetCommandType() const
+AnyValueUpdateCommand::CommandType AnyValueUpdateCommand::GetCommandType() const
 {
   return m_command_type;
 }
 
-std::string& PVUpdateCommand::Channel()
+std::string& AnyValueUpdateCommand::Name()
 {
-  return m_channel;
+  return m_name;
 }
 
-sup::dto::AnyValue& PVUpdateCommand::Value()
+sup::dto::AnyValue& AnyValueUpdateCommand::Value()
 {
   return m_value;
 }
 
-PVUpdateCommand::PVUpdateCommand(CommandType command_type, std::string channel,
+AnyValueUpdateCommand::AnyValueUpdateCommand(CommandType command_type, std::string channel,
                                  sup::dto::AnyValue value)
   : m_command_type{command_type}
-  , m_channel{std::move(channel)}
+  , m_name{std::move(channel)}
   , m_value{std::move(value)}
 {}
 

@@ -19,10 +19,10 @@
  * of the distribution package.
  ******************************************************************************/
 
-#ifndef SUP_AUTO_SERVER_PV_UPDATE_QUEUE_H_
-#define SUP_AUTO_SERVER_PV_UPDATE_QUEUE_H_
+#ifndef SUP_AUTO_SERVER_ANYVALUE_UPDATE_QUEUE_H_
+#define SUP_AUTO_SERVER_ANYVALUE_UPDATE_QUEUE_H_
 
-#include "pv_update_command.h"
+#include "anyvalue_update_command.h"
 
 #include <sup/dto/anyvalue.h>
 
@@ -39,21 +39,21 @@ namespace auto_server
 {
 
 /**
- * @brief Threadsafe queue for PV update commands.
+ * @brief Threadsafe queue for AnyValue update commands.
 */
-class PVUpdateQueue
+class AnyValueUpdateQueue
 {
 public:
-  PVUpdateQueue();
-  ~PVUpdateQueue();
+  AnyValueUpdateQueue();
+  ~AnyValueUpdateQueue();
 
   /**
    * @brief Push new PV update to queue.
    *
-   * @param channel Channel to update.
+   * @param name Name of AnyValue to update.
    * @param value Value for update.
    */
-  void Push(const std::string& channel, const sup::dto::AnyValue& value);
+  void Push(const std::string& name, const sup::dto::AnyValue& value);
 
   /**
    * @brief Push a command that will terminate any processing loops.
@@ -71,19 +71,19 @@ public:
    * @note This allows the consumer of the queue to process all commands without needing to hold
    * any locks.
    */
-  std::deque<PVUpdateCommand> PopCommands();
+  std::deque<AnyValueUpdateCommand> PopCommands();
 
 private:
-  std::deque<PVUpdateCommand> m_pv_updates;
+  std::deque<AnyValueUpdateCommand> m_value_updates;
   mutable std::mutex m_mtx;
   std::condition_variable m_cv;
 };
 
-using ChannelUpdateFunction = std::function<void(const std::string&, const sup::dto::AnyValue&)>;
-bool ProcessCommandQueue(std::deque<PVUpdateCommand>& queue, const ChannelUpdateFunction& func);
+using ValueUpdateFunction = std::function<void(const std::string&, const sup::dto::AnyValue&)>;
+bool ProcessCommandQueue(std::deque<AnyValueUpdateCommand>& queue, const ValueUpdateFunction& func);
 
 }  // namespace auto_server
 
 }  // namespace sup
 
-#endif  // SUP_AUTO_SERVER_PV_UPDATE_QUEUE_H_
+#endif  // SUP_AUTO_SERVER_ANYVALUE_UPDATE_QUEUE_H_

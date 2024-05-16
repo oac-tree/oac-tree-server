@@ -48,6 +48,7 @@ class ServerInterface
 {
 public:
   using NameAnyValuePair = std::pair<std::string, sup::dto::AnyValue>;
+  using NameAnyValueSet = std::vector<NameAnyValuePair>;
 
   virtual ~ServerInterface();
 
@@ -60,10 +61,10 @@ public:
    * the job and variable states need to be server before procedure setup, while the instruction
    * tree AnyValue can only be created afterwards.
    *
-   * @param value_list List of pairs of names and AnyValues.
+   * @param name_value_set List of pairs of names and AnyValues.
    * @return true when successful. In case of failure, none of the values is assumed to be served.
    */
-  virtual bool ServeAnyValues(const std::vector<NameAnyValuePair>& value_list) = 0;
+  virtual bool ServeAnyValues(const NameAnyValueSet& name_value_set) = 0;
 
   /**
    * @brief Update the value of the served AnyValue with the given name.
@@ -74,6 +75,14 @@ public:
    */
   virtual bool UpdateAnyValue(const std::string& name, const sup::dto::AnyValue& value) = 0;
 };
+
+/**
+ * @brief Get a list of all the names in the list of name/value pairs.
+ *
+ * @param name_value_set List of name/value pairs.
+ * @return List of names.
+ */
+std::vector<std::string> GetNames(const ServerInterface::NameAnyValueSet& name_value_set);
 
 }  // namespace auto_server
 

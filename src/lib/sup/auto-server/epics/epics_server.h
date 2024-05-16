@@ -19,27 +19,40 @@
  * of the distribution package.
  ******************************************************************************/
 
+#ifndef SUP_AUTO_SERVER_EPICS_SERVER_H_
+#define SUP_AUTO_SERVER_EPICS_SERVER_H_
+
+#include "anyvalue_update_queue.h"
+
 #include <sup/auto-server/server_interface.h>
 
-#include <algorithm>
+#include <future>
 
 namespace sup
 {
 namespace auto_server
 {
 
-ServerInterface::~ServerInterface() = default;
-
-std::vector<std::string> GetNames(const ServerInterface::NameAnyValueSet& name_value_set)
+/**
+ * @brief EPICSServer serves a set of PvAccess variables. The corresponding PVs are created during
+ * construction and torn down upon destruction.
+ */
+class EPICSServer
 {
-  std::vector<std::string> result;
-  auto func = [](const ServerInterface::NameAnyValuePair& name_value_pair) {
-    return name_value_pair.first;
-  };
-  std::transform(name_value_set.begin(), name_value_set.end(), std::back_inserter(result), func);
-  return result;
-}
+public:
+  EPICSServer(const ServerInterface::NameAnyValueSet& name_value_set);
+  ~EPICSServer();
+
+  void UpdateAnyValue(const std::string& name, const sup::dto::AnyValue& value);
+
+private:
+  void UpdateLoop(const ServerInterface::NameAnyValueSet& name_value_set);
+  AnyValueUpdateQueue m_update_queue;
+  std::future<void> m_update_future;
+};
 
 }  // namespace auto_server
 
 }  // namespace sup
+
+#endif  // SUP_AUTO_SERVER_EPICS_SERVER_H_

@@ -19,73 +19,73 @@
  * of the distribution package.
  ******************************************************************************/
 
-#include "pv_update_queue.h"
+#include "anyvalue_update_queue.h"
 
 namespace sup
 {
 namespace auto_server
 {
 
-PVUpdateQueue::PVUpdateQueue()
-  : m_pv_updates{}
+AnyValueUpdateQueue::AnyValueUpdateQueue()
+  : m_value_updates{}
   , m_mtx{}
   , m_cv{}
 {}
 
-PVUpdateQueue::~PVUpdateQueue()
+AnyValueUpdateQueue::~AnyValueUpdateQueue()
 {}
 
-void PVUpdateQueue::Push(const std::string& channel, const sup::dto::AnyValue& value)
+void AnyValueUpdateQueue::Push(const std::string& channel, const sup::dto::AnyValue& value)
 {
   {
     std::lock_guard<std::mutex> lk{m_mtx};
-    m_pv_updates.push_back(PVUpdateCommand::CreateChannelUpdate(channel, value));
+    m_value_updates.push_back(AnyValueUpdateCommand::CreateValueUpdate(channel, value));
   }
   m_cv.notify_one();
 }
 
-void PVUpdateQueue::PushExit()
+void AnyValueUpdateQueue::PushExit()
 {
   {
     std::lock_guard<std::mutex> lk{m_mtx};
-    m_pv_updates.push_back(PVUpdateCommand::CreateExitCommand());
+    m_value_updates.push_back(AnyValueUpdateCommand::CreateExitCommand());
   }
   m_cv.notify_one();
 }
 
-void PVUpdateQueue::WaitForNonEmpty()
+void AnyValueUpdateQueue::WaitForNonEmpty()
 {
   std::unique_lock<std::mutex> lk{m_mtx};
   auto pred = [this]{
-    return !m_pv_updates.empty();
+    return !m_value_updates.empty();
   };
   m_cv.wait(lk, pred);
 }
 
-std::deque<PVUpdateCommand> PVUpdateQueue::PopCommands()
+std::deque<AnyValueUpdateCommand> AnyValueUpdateQueue::PopCommands()
 {
-  std::deque<PVUpdateCommand> result;
+  std::deque<AnyValueUpdateCommand> result;
   {
     std::lock_guard<std::mutex> lk{m_mtx};
-    m_pv_updates.swap(result);
+    m_value_updates.swap(result);
   }
   return result;
 }
 
-bool ProcessCommandQueue(std::deque<PVUpdateCommand>& queue, const ChannelUpdateFunction& func)
+bool ProcessCommandQueue(std::deque<AnyValueUpdateCommand>& queue, const ValueUpdateFunction& func)
 {
   bool exit = false;
   while (!queue.empty())
   {
     auto& command = queue.front();
-    if (command.GetCommandType() == PVUpdateCommand::kExit)
+    if (command.GetCommandType() == AnyValueUpdateCommand::kExit)
     {
       queue.pop_front();
       exit = true;
       // TODO: check if continuing is really what we want
       continue;  // Keep on processing this queue before returning the signal to exit.
     }
-    func(command.Channel(), command.Value());
+    func(command.Name(), command.Value());
     queue.pop_front();
   }
   return exit;

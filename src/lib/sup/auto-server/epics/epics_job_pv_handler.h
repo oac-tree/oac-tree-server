@@ -22,7 +22,7 @@
 #ifndef SUP_AUTO_SERVER_EPICS_JOB_PV_HANDLER_H_
 #define SUP_AUTO_SERVER_EPICS_JOB_PV_HANDLER_H_
 
-#include "pv_update_queue.h"
+#include "anyvalue_update_queue.h"
 
 #include <future>
 
@@ -49,7 +49,7 @@ public:
 
 private:
   void UpdateLoop(sup::dto::uint32 n_variables);
-  PVUpdateQueue m_update_queue;
+  AnyValueUpdateQueue m_update_queue;
   const std::string m_prefix;
   std::future<void> m_update_future;
 };
