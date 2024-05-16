@@ -20,6 +20,7 @@
  ******************************************************************************/
 
 #include <sup/auto-server/server_interface.h>
+#include <sup/auto-server/exceptions.h>
 
 #include <algorithm>
 
@@ -39,6 +40,16 @@ std::set<std::string> GetNames(const ServerInterface::NameAnyValueSet& name_valu
   std::transform(name_value_set.begin(), name_value_set.end(),
                  std::inserter(result, result.end()), func);
   return result;
+}
+
+void ValidateUniqueNames(const ServerInterface::NameAnyValueSet& name_value_set,
+                         const std::string& error_message)
+{
+  auto name_set = GetNames(name_value_set);
+  if (name_set.size() != name_value_set.size())
+  {
+    throw InvalidOperationException(error_message);
+  }
 }
 
 }  // namespace auto_server
