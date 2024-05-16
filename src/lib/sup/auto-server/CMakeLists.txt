@@ -35,6 +35,7 @@ install(FILES
   exceptions.h
   i_job_pv_server.h
   instruction_tree_cache.h
+  server_interface.h
   server_job_state_monitor.h
   server_ui.h
   sup_auto_protocol.h

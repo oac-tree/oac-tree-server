@@ -41,14 +41,18 @@ public:
 
   virtual void Initialize(const sequencer::Instruction* root) = 0;
 
+  /**
+   * @brief Handle JobStateMonitor calls
+   */
   virtual void UpdateJobStatePV(sequencer::JobState state) = 0;
-
-  virtual void UpdateInstructionStatusPV(const sequencer::Instruction* instruction,
-                                         sequencer::ExecutionStatus status) = 0;
-
   virtual void UpdateInstructionBreakpointPV(const sequencer::Instruction* instruction,
                                              bool breakpoint_set) = 0;
 
+  /**
+   * @brief Handle UserInterface calls
+   */
+  virtual void UpdateInstructionStatusPV(const sequencer::Instruction* instruction,
+                                         sequencer::ExecutionStatus status) = 0;
   virtual void UpdateVariable(const std::string& name, const sup::dto::AnyValue& value,
                               bool connected) = 0;
 };
