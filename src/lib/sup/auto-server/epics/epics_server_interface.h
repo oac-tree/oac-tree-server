@@ -28,6 +28,7 @@
 
 #include <map>
 #include <memory>
+#include <mutex>
 
 namespace sup
 {
@@ -48,6 +49,9 @@ public:
 
 private:
   bool ValidateNameValueSet(const NameAnyValueSet& name_value_set) const;
+  EPICSServer* FindServer(const std::string& name) const;
+
+  mutable std::mutex m_map_mutex;
   std::map<std::string, EPICSServer*> m_name_server_map;
   std::vector<std::unique_ptr<EPICSServer>> m_set_servers;
 };

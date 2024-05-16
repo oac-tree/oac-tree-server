@@ -27,7 +27,8 @@ namespace auto_server
 {
 
 EPICSServerInterface::EPICSServerInterface()
-  : m_name_server_map{}
+  : m_map_mutex{}
+  , m_name_server_map{}
   , m_set_servers{}
 {}
 
@@ -35,6 +36,8 @@ EPICSServerInterface::~EPICSServerInterface() = default;
 
 bool EPICSServerInterface::ServeAnyValues(const NameAnyValueSet &name_value_set)
 {
+  // Since we are updating the map, we need to hold a lock during the whole operation.
+  std::lock_guard<std::mutex> lk{m_map_mutex};
   if (!ValidateNameValueSet(name_value_set))
   {
     return false;
@@ -49,16 +52,15 @@ bool EPICSServerInterface::ServeAnyValues(const NameAnyValueSet &name_value_set)
   return true;
 }
 
-// TODO: ensure thread safety. These calls could come concurrently and the map iterators may
-// become invalidated.
 bool EPICSServerInterface::UpdateAnyValue(const std::string& name, const sup::dto::AnyValue& value)
 {
-  auto iter = m_name_server_map.find(name);
-  if (iter == m_name_server_map.end())
+  // A mutex lock is only needed during the find operation:
+  auto server = FindServer(name);
+  if (server == nullptr)
   {
     return false;
   }
-  iter->second->UpdateAnyValue(name, value);
+  server->UpdateAnyValue(name, value);
   return true;
 }
 
@@ -78,6 +80,17 @@ bool EPICSServerInterface::ValidateNameValueSet(const NameAnyValueSet& name_valu
     }
   }
   return true;
+}
+
+EPICSServer* EPICSServerInterface::FindServer(const std::string& name) const
+{
+  std::lock_guard<std::mutex> lk{m_map_mutex};
+  auto iter = m_name_server_map.find(name);
+  if (iter == m_name_server_map.end())
+  {
+    return nullptr;
+  }
+  return iter->second;
 }
 
 }  // namespace auto_server
