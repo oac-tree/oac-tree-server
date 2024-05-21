@@ -19,7 +19,7 @@
  * of the distribution package.
  ******************************************************************************/
 
-#include <sup/auto-server/server_ui.h>
+#include <sup/auto-server/server_job_interface.h>
 
 #include <sup/auto-server/base/instruction_tree_utils.h>
 
@@ -30,39 +30,39 @@ namespace sup
 namespace auto_server
 {
 
-ServerUserInterface::ServerUserInterface(IJobPVServer& pv_server)
+ServerJobInterface::ServerJobInterface(IJobPVServer& pv_server)
   : m_pv_server{pv_server}
 {}
 
-ServerUserInterface::~ServerUserInterface() = default;
+ServerJobInterface::~ServerJobInterface() = default;
 
-void ServerUserInterface::UpdateInstructionStatus(const sequencer::Instruction* instruction)
+void ServerJobInterface::UpdateInstructionStatus(const sequencer::Instruction* instruction)
 {
   auto status = instruction->GetStatus();
   m_pv_server.UpdateInstructionStatusPV(instruction, status);
 }
 
-void ServerUserInterface::VariableUpdated(const std::string& name, const sup::dto::AnyValue& value,
+void ServerJobInterface::VariableUpdated(const std::string& name, const sup::dto::AnyValue& value,
                                           bool connected)
 {
   m_pv_server.UpdateVariable(name, value, connected);
 }
 
-bool ServerUserInterface::PutValue(const sup::dto::AnyValue& value, const std::string& description)
+bool ServerJobInterface::PutValue(const sup::dto::AnyValue& value, const std::string& description)
 {
   (void)value;
   (void)description;
   return true;
 }
 
-bool ServerUserInterface::GetUserValue(sup::dto::AnyValue& value, const std::string& description)
+bool ServerJobInterface::GetUserValue(sup::dto::AnyValue& value, const std::string& description)
 {
   (void)value;
   (void)description;
   return false;
 }
 
-int ServerUserInterface::GetUserChoice(const std::vector<std::string>& options,
+int ServerJobInterface::GetUserChoice(const std::vector<std::string>& options,
                                        const sup::dto::AnyValue& metadata)
 {
   (void)options;
@@ -70,15 +70,32 @@ int ServerUserInterface::GetUserChoice(const std::vector<std::string>& options,
   return -1;
 }
 
-void ServerUserInterface::Message(const std::string& message)
+void ServerJobInterface::Message(const std::string& message)
 {
   (void)message;
 }
 
-void ServerUserInterface::Log(int severity, const std::string& message)
+void ServerJobInterface::Log(int severity, const std::string& message)
 {
   (void)severity;
   (void)message;
+}
+
+void ServerJobInterface::OnStateChange(sequencer::JobState state) noexcept
+{
+  m_pv_server.UpdateJobStatePV(state);
+}
+
+void ServerJobInterface::OnBreakpointChange(const sequencer::Instruction* instruction,
+                                            bool breakpoint_set) noexcept
+{
+  m_pv_server.UpdateInstructionBreakpointPV(instruction, breakpoint_set);
+}
+
+void ServerJobInterface::OnProcedureTick(const sequencer::Procedure& proc) noexcept
+{
+  // TODO: update next instruction leaves
+  (void)proc;
 }
 
 }  // namespace auto_server

@@ -21,8 +21,7 @@
 
 #include "unit_test_helper.h"
 
-#include <sup/auto-server/server_ui.h>
-#include <sup/auto-server/server_job_state_monitor.h>
+#include <sup/auto-server/server_job_interface.h>
 
 #include <sup/sequencer/application_utils.h>
 #include <sup/sequencer/instruction.h>
@@ -34,17 +33,16 @@
 using namespace sup::auto_server;
 using namespace sup::sequencer;
 
-class ServerUserInterfaceTest : public ::testing::Test
+class ServerJobInterfaceTest : public ::testing::Test
 {
 protected:
-  ServerUserInterfaceTest() = default;
-  virtual ~ServerUserInterfaceTest() = default;
+  ServerJobInterfaceTest() = default;
+  virtual ~ServerJobInterfaceTest() = default;
 
   UnitTestHelper::TestJobPVServer m_pv_server;
-  utils::SimpleJobStateMonitor m_monitor;
 };
 
-TEST_F(ServerUserInterfaceTest, InstructionStatusUpdates)
+TEST_F(ServerJobInterfaceTest, InstructionStatusUpdates)
 {
   // Construct procedure
   const auto procedure_string = UnitTestHelper::CreateProcedureString(kShortSequenceBody);
@@ -55,18 +53,18 @@ TEST_F(ServerUserInterfaceTest, InstructionStatusUpdates)
   // Construct ui
   auto root_instr = proc->RootInstruction();
   ASSERT_NE(root_instr, nullptr);
-  ServerUserInterface ui{m_pv_server};
+  ServerJobInterface job_ui{m_pv_server};
 
   // Construct JobController and run procedure
-  JobController controller{*proc, ui, m_monitor};
-  EXPECT_TRUE(m_monitor.WaitForState(JobState::kInitial, 1.0));
+  JobController controller{*proc, job_ui};
+  EXPECT_TRUE(m_pv_server.WaitForState(JobState::kInitial, 1.0));
   controller.Start();
-  EXPECT_TRUE(m_monitor.WaitForState(JobState::kSucceeded, 2.0));
+  EXPECT_TRUE(m_pv_server.WaitForState(JobState::kSucceeded, 2.0));
   EXPECT_EQ(m_pv_server.GetInstructionUpdateCount(ExecutionStatus::NOT_FINISHED), 3u);
   EXPECT_EQ(m_pv_server.GetInstructionUpdateCount(ExecutionStatus::SUCCESS), 3u);
 }
 
-TEST_F(ServerUserInterfaceTest, JobStateUpdates)
+TEST_F(ServerJobInterfaceTest, JobStateUpdates)
 {
   // Construct procedure
   const auto procedure_string = UnitTestHelper::CreateProcedureString(kShortSequenceBody);
@@ -77,11 +75,10 @@ TEST_F(ServerUserInterfaceTest, JobStateUpdates)
   // Construct ui and monitor
   auto root_instr = proc->RootInstruction();
   ASSERT_NE(root_instr, nullptr);
-  ServerUserInterface ui{m_pv_server};
-  ServerJobStateMonitor monitor{m_pv_server};
+  ServerJobInterface job_ui{m_pv_server};
 
   // Construct JobController and run procedure
-  JobController controller{*proc, ui, monitor};
+  JobController controller{*proc, job_ui};
   EXPECT_EQ(m_pv_server.GetJobState(), JobState::kInitial);
   EXPECT_EQ(m_pv_server.GetBreakpointUpdateCount(), 0);
   controller.SetBreakpoint(root_instr);
@@ -96,7 +93,7 @@ TEST_F(ServerUserInterfaceTest, JobStateUpdates)
   EXPECT_EQ(m_pv_server.GetJobState(), JobState::kSucceeded);
 }
 
-TEST_F(ServerUserInterfaceTest, VariableUpdates)
+TEST_F(ServerJobInterfaceTest, VariableUpdates)
 {
   // Construct procedure
   const auto procedure_string = UnitTestHelper::CreateProcedureString(kWorkspaceSequenceBody);
@@ -107,13 +104,13 @@ TEST_F(ServerUserInterfaceTest, VariableUpdates)
   // Construct ui
   auto root_instr = proc->RootInstruction();
   ASSERT_NE(root_instr, nullptr);
-  ServerUserInterface ui{m_pv_server};
+  ServerJobInterface job_ui{m_pv_server};
 
   // Construct JobController and run procedure
-  JobController controller{*proc, ui, m_monitor};
-  EXPECT_TRUE(m_monitor.WaitForState(JobState::kInitial, 1.0));
+  JobController controller{*proc, job_ui};
+  EXPECT_TRUE(m_pv_server.WaitForState(JobState::kInitial, 1.0));
   controller.Start();
-  EXPECT_TRUE(m_monitor.WaitForState(JobState::kSucceeded, 2.0));
+  EXPECT_TRUE(m_pv_server.WaitForState(JobState::kSucceeded, 2.0));
   EXPECT_EQ(m_pv_server.GetVariableUpdateCount("var1"), 1u);
   EXPECT_EQ(m_pv_server.GetVariableUpdateCount("var2"), 1u);
 }

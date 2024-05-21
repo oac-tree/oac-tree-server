@@ -5,8 +5,7 @@ target_sources(sup-auto-server
   instruction_tree_cache.cpp
   instruction_tree_utils.cpp
   server_interface.cpp
-  server_job_state_monitor.cpp
-  server_ui.cpp
+  server_job_interface.cpp
   sup_auto_protocol.cpp
   variable_map.cpp
 )

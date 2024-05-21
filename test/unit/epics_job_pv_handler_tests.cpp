@@ -21,8 +21,7 @@
 
 #include "unit_test_helper.h"
 
-#include <sup/auto-server/server_job_state_monitor.h>
-#include <sup/auto-server/server_ui.h>
+#include <sup/auto-server/server_job_interface.h>
 #include <sup/auto-server/sup_auto_protocol.h>
 
 #include <sup/auto-server/epics/epics_job_pv_server.h>
@@ -216,11 +215,10 @@ TEST_F(EPICSJobPVHandlerTest, UseJobPVServer)
   auto root_instr = proc->RootInstruction();
   ASSERT_NE(root_instr, nullptr);
   EPICSJobPVServer pv_server{kPrefix4, *proc};
-  ServerUserInterface ui{pv_server};
-  ServerJobStateMonitor monitor{pv_server};
+  ServerJobInterface job_ui{pv_server};
 
-  // Construct JobController and connect/initialize ui and state monitor backends
-  JobController controller{*proc, ui, monitor};
+  // Construct JobController and connect/initialize job interface backends
+  JobController controller{*proc, job_ui};
   pv_server.Initialize(proc->RootInstruction());
 
     // Construct client PVs for monitoring

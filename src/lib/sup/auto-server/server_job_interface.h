@@ -2,7 +2,7 @@
  * $HeadURL: $
  * $Id: $
  *
- * Project       : SUP - AUTOMATION-SERVERvirtual
+ * Project       : SUP - AUTOMATION-SERVER
  *
  * Description   : SUP automation server
  *
@@ -19,29 +19,38 @@
  * of the distribution package.
  ******************************************************************************/
 
-#ifndef SUP_AUTO_SERVER_SERVER_JOB_STATE_MONITOR_H_
-#define SUP_AUTO_SERVER_SERVER_JOB_STATE_MONITOR_H_
+#ifndef SUP_AUTO_SERVER_SERVER_JOB_INTERFACE_H_
+#define SUP_AUTO_SERVER_SERVER_JOB_INTERFACE_H_
 
 #include <sup/auto-server/i_job_pv_server.h>
 
-#include <sup/sequencer/job_state_monitor.h>
+#include <sup/sequencer/job_interface.h>
 
 namespace sup
 {
 namespace auto_server
 {
 
-class ServerJobStateMonitor : public sequencer::JobStateMonitor
+class ServerJobInterface : public sequencer::JobInterface
 {
 public:
-  ServerJobStateMonitor(IJobPVServer& pv_server);
-  ~ServerJobStateMonitor();
+  ServerJobInterface(IJobPVServer& pv_server);
+
+  ~ServerJobInterface();
+
+  void UpdateInstructionStatus(const sequencer::Instruction* instruction) override;
+  void VariableUpdated(const std::string& name, const sup::dto::AnyValue& value,
+                       bool connected) override;
+  bool PutValue(const sup::dto::AnyValue& value, const std::string& description) override;
+  bool GetUserValue(sup::dto::AnyValue& value, const std::string& description) override;
+  int GetUserChoice(const std::vector<std::string>& options,
+                    const sup::dto::AnyValue& metadata) override;
+  void Message(const std::string& message) override;
+  void Log(int severity, const std::string& message) override;
 
   void OnStateChange(sequencer::JobState state) noexcept override;
-
   void OnBreakpointChange(const sequencer::Instruction* instruction,
                           bool breakpoint_set) noexcept override;
-
   void OnProcedureTick(const sequencer::Procedure& proc) noexcept override;
 
 private:
@@ -52,4 +61,4 @@ private:
 
 }  // namespace sup
 
-#endif  // SUP_AUTO_SERVER_SERVER_JOB_STATE_MONITOR_H_
+#endif  // SUP_AUTO_SERVER_SERVER_JOB_INTERFACE_H_
