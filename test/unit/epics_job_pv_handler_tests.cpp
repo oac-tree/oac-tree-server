@@ -221,6 +221,7 @@ TEST_F(EPICSJobPVHandlerTest, UseJobPVServer)
 
   // Construct JobController and connect/initialize ui and state monitor backends
   JobController controller{*proc, ui, monitor};
+  pv_server.Initialize(proc->RootInstruction());
 
     // Construct client PVs for monitoring
   auto pv_job_callback = [this](const sup::epics::PvAccessClientPV::ExtendedValue& val) {

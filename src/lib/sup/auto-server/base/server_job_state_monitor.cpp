@@ -32,11 +32,6 @@ ServerJobStateMonitor::ServerJobStateMonitor(IJobPVServer& pv_server)
 
 ServerJobStateMonitor::~ServerJobStateMonitor() = default;
 
-void ServerJobStateMonitor::InitializeInstructionTree(const sequencer::Instruction* root)
-{
-  (void)root;
-}
-
 void ServerJobStateMonitor::OnStateChange(sequencer::JobState state) noexcept
 {
   m_pv_server.UpdateJobStatePV(state);
