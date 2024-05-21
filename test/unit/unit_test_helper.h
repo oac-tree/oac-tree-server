@@ -22,11 +22,8 @@
 #ifndef SUP_AUTO_SERVER_UNIT_TEST_HELPER_H_
 #define SUP_AUTO_SERVER_UNIT_TEST_HELPER_H_
 
-#include <sup/auto-server/i_job_pv_server.h>
+#include <sup/dto/anyvalue.h>
 
-#include <condition_variable>
-#include <map>
-#include <mutex>
 #include <string>
 
 const std::string kShortSequenceBody{
@@ -57,43 +54,6 @@ namespace auto_server
 {
 namespace UnitTestHelper
 {
-
-class TestJobPVServer : public IJobPVServer
-{
-public:
-  TestJobPVServer();
-
-  ~TestJobPVServer();
-
-  void Initialize(const sequencer::Instruction* root) override;
-
-  void UpdateJobStatePV(sequencer::JobState state) override;
-
-  void UpdateInstructionStatusPV(const sequencer::Instruction* instruction,
-                                 sequencer::ExecutionStatus status) override;
-  void UpdateInstructionBreakpointPV(const sequencer::Instruction* instruction,
-                                     bool breakpoint_set) override;
-  void UpdateVariable(const std::string& name, const sup::dto::AnyValue& value,
-                      bool connected) override;
-
-  sup::dto::uint32 GetInstructionUpdateCount(sequencer::ExecutionStatus status) const;
-
-  sup::dto::uint32 GetBreakpointUpdateCount() const;
-
-  sup::dto::uint32 GetVariableUpdateCount(const std::string& var_name) const;
-
-  bool WaitForState(sequencer::JobState state, double seconds) const;
-
-  sequencer::JobState GetJobState() const;
-private:
-  std::map<sequencer::ExecutionStatus, sup::dto::uint32> m_status_updates;
-  sup::dto::uint32 m_breakpoint_updates;
-  std::map<std::string, sup::dto::uint32> m_variable_updates;
-  sequencer::JobState m_job_state;
-  mutable std::mutex m_mtx;
-  mutable std::condition_variable m_cv;
-};
-
 class TemporaryTestFile
 {
 private:
@@ -103,8 +63,6 @@ public:
   TemporaryTestFile(std::string filename, std::string contents);
   ~TemporaryTestFile();
 };
-
-
 
 /**
  * Creates a string representing a valid XML of sequencer procedure by enclosing user provided body

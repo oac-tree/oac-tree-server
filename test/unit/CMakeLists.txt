@@ -7,6 +7,7 @@ target_sources(unit-tests
     # epics_instruction_pv_handler_tests.cpp
     # epics_job_pv_handler_tests.cpp
     instruction_tree_cache_tests.cpp
+    job_value_mapper_tests.cpp
     # server_ui_tests.cpp
     unit_test_helper.cpp
 )
