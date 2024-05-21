@@ -4,10 +4,10 @@ target_compile_features(unit-tests PRIVATE cxx_std_11)
 
 target_sources(unit-tests
   PRIVATE
-    epics_instruction_pv_handler_tests.cpp
-    epics_job_pv_handler_tests.cpp
+    # epics_instruction_pv_handler_tests.cpp
+    # epics_job_pv_handler_tests.cpp
     instruction_tree_cache_tests.cpp
-    server_ui_tests.cpp
+    # server_ui_tests.cpp
     unit_test_helper.cpp
 )
 

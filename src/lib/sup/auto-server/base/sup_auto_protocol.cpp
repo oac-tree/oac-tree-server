@@ -32,19 +32,19 @@ namespace sup
 namespace auto_server
 {
 
-const sup::dto::AnyValue kInstructionAnyValue = {{
-  { kExecStatusField, static_cast<sup::dto::uint16>(sup::sequencer::ExecutionStatus::NOT_STARTED)},
+const dto::AnyValue kInstructionAnyValue = {{
+  { kExecStatusField, static_cast<dto::uint16>(sequencer::ExecutionStatus::NOT_STARTED)},
   { kBreakpointField, false },
-  { kChildrenField, sup::dto::EmptyStruct() }
+  { kChildrenField, dto::EmptyStruct() }
 }, kInstructionNodeType };
 
-const sup::dto::AnyValue kVariableAnyValue = {{
-  { sup::protocol::kEncodingField, sup::protocol::kBase64Encoding},
-  { sup::protocol::kValueField, "" }
+const dto::AnyValue kVariableAnyValue = {{
+  { protocol::kEncodingField, protocol::kBase64Encoding},
+  { protocol::kValueField, "" }
 }, kVariableType };
 
-const sup::dto::AnyValue kJobStateAnyValue = {{
-  { kJobStateField, static_cast<sup::dto::uint32>(sup::sequencer::JobState::kInitial)}
+const dto::AnyValue kJobStateAnyValue = {{
+  { kJobStateField, static_cast<dto::uint32>(sequencer::JobState::kInitial)}
 }, kJobStateType };
 
 std::string GetJobStatePVName(const std::string& prefix)
@@ -57,18 +57,25 @@ std::string GetInstructionTreePVName(const std::string& prefix)
   return prefix + kInstructionTreeId;
 }
 
-std::string GetVariablePVName(const std::string& prefix, sup::dto::uint32 index)
+std::string GetVariablePVName(const std::string& prefix, dto::uint32 index)
 {
   return prefix + kVariableId + std::to_string(index);
 }
 
-sup::dto::AnyValue EncodeVariableInfo(const sup::dto::AnyValue& value, bool connected)
+dto::AnyValue GetJobStateValue(sequencer::JobState state)
 {
-  sup::dto::AnyValue payload = {{
+  auto result = kJobStateAnyValue;
+  result[kJobStateField] = static_cast<dto::uint32>(state);
+  return result;
+}
+
+dto::AnyValue EncodeVariableInfo(const dto::AnyValue& value, bool connected)
+{
+  dto::AnyValue payload = {{
     { kVariableValueField, value },
     { kVariableConnectedField, connected }
   }};
-  auto encoded = sup::protocol::Base64VariableCodec::Encode(payload);
+  auto encoded = protocol::Base64VariableCodec::Encode(payload);
   if (!encoded.first)
   {
     const std::string error = "EncodeVariableInfo(): could not encode the variable's state";

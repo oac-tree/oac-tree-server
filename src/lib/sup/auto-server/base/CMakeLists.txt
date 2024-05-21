@@ -4,6 +4,7 @@ target_sources(sup-auto-server
   i_job_server.cpp
   instruction_tree_cache.cpp
   instruction_tree_utils.cpp
+  job_value_mapper.cpp
   server_interface.cpp
   server_job_interface.cpp
   sup_auto_protocol.cpp

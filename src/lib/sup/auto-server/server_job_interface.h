@@ -22,7 +22,9 @@
 #ifndef SUP_AUTO_SERVER_SERVER_JOB_INTERFACE_H_
 #define SUP_AUTO_SERVER_SERVER_JOB_INTERFACE_H_
 
-#include <sup/auto-server/i_job_pv_server.h>
+#include <sup/auto-server/instruction_tree_cache.h>
+#include <sup/auto-server/job_value_mapper.h>
+#include <sup/auto-server/server_interface.h>
 
 #include <sup/sequencer/job_interface.h>
 
@@ -34,9 +36,12 @@ namespace auto_server
 class ServerJobInterface : public sequencer::JobInterface
 {
 public:
-  ServerJobInterface(IJobPVServer& pv_server);
+  ServerJobInterface(const std::string& prefix, const sequencer::Procedure& proc,
+                     ServerInterface& server_interface);
 
   ~ServerJobInterface();
+
+  void InitializeInstructionTree(const sequencer::Instruction* root);
 
   void UpdateInstructionStatus(const sequencer::Instruction* instruction) override;
   void VariableUpdated(const std::string& name, const sup::dto::AnyValue& value,
@@ -54,7 +59,11 @@ public:
   void OnProcedureTick(const sequencer::Procedure& proc) noexcept override;
 
 private:
-  IJobPVServer& m_pv_server;
+  ServerInterface::NameAnyValueSet GetValueSet() const;
+  const JobValueMapper m_job_value_mapper;
+  InstructionTreeCache m_instr_tree_cache;
+  sup::dto::AnyValue m_instr_tree_anyvalue;
+  ServerInterface& m_server_interface;
 };
 
 }  // namespace auto_server

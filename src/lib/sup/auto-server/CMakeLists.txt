@@ -35,9 +35,9 @@ install(FILES
   exceptions.h
   i_job_pv_server.h
   instruction_tree_cache.h
+  job_value_mapper.h
   server_interface.h
   server_job_interface.h
   sup_auto_protocol.h
-  variable_map.h
   DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/sup/auto-server
 )

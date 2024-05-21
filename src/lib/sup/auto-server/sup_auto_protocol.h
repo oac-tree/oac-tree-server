@@ -23,6 +23,7 @@
 #define SUP_AUTO_SERVER_SUP_AUTO_PROTOCOL_H_
 
 #include <sup/dto/anyvalue.h>
+#include <sup/sequencer/job_states.h>
 
 #include <string>
 
@@ -89,6 +90,14 @@ std::string GetInstructionTreePVName(const std::string& prefix);
  * @return PV channel name for the variable.
  */
 std::string GetVariablePVName(const std::string& prefix, sup::dto::uint32 index);
+
+/**
+ * @brief Create an AnyValue representing the given job state.
+ *
+ * @param state Job state to encode in AnyValue.
+ * @return AnyValue representing the given job state.
+ */
+sup::dto::AnyValue GetJobStateValue(sup::sequencer::JobState state);
 
 /**
  * @brief Pack a variable's value and connected state into a base64 encoded AnyValue.
