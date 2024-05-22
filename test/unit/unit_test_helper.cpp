@@ -37,16 +37,69 @@ namespace auto_server
 namespace UnitTestHelper
 {
 
-TemporaryTestFile::TemporaryTestFile(std::string filename, std::string contents)
-    : m_filename{filename}
+TestServerInterface::TestServerInterface()
+    : m_value_map{}
+{}
+
+TestServerInterface::~TestServerInterface() = default;
+
+bool TestServerInterface::ServeAnyValues(const NameAnyValueSet& name_value_set)
 {
-  std::ofstream file_out(m_filename);
-  file_out.write(contents.c_str(), contents.size());
+  for (const auto& name : GetNames(name_value_set))
+  {
+    if (HasAnyValue(name))
+    {
+      return false;
+    }
+  }
+  for (const auto& name_value_pair : name_value_set)
+  {
+    m_value_map[name_value_pair.first] = name_value_pair.second;
+  }
+  return true;
 }
 
-TemporaryTestFile::~TemporaryTestFile()
+bool TestServerInterface::UpdateAnyValue(const std::string& name, const sup::dto::AnyValue& value)
 {
-  std::remove(m_filename.c_str());
+  auto iter = m_value_map.find(name);
+  if (iter == m_value_map.end())
+  {
+    return false;
+  }
+  iter->second = value;
+  return true;
+}
+
+bool TestServerInterface::HasAnyValue(const std::string& name) const
+{
+  auto iter = m_value_map.find(name);
+  return iter != m_value_map.end();
+}
+
+sup::dto::AnyValue TestServerInterface::GetAnyValue(const std::string& name) const
+{
+  auto iter = m_value_map.find(name);
+  if (iter == m_value_map.end())
+  {
+    return {};
+  }
+  return iter->second;
+}
+
+std::size_t TestServerInterface::GetSize() const
+{
+  return m_value_map.size();
+}
+
+std::ostream& operator<<(std::ostream& stream, const TestServerInterface& server_if)
+{
+  for (const auto& name_value_pair : server_if.m_value_map)
+  {
+    stream << name_value_pair.first << std::endl;
+    stream << sup::dto::PrintAnyValue(name_value_pair.second);
+    stream << std::endl << std::endl;
+  }
+  return stream;
 }
 
 std::string CreateProcedureString(const std::string &body)

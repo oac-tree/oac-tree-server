@@ -22,8 +22,11 @@
 #ifndef SUP_AUTO_SERVER_UNIT_TEST_HELPER_H_
 #define SUP_AUTO_SERVER_UNIT_TEST_HELPER_H_
 
+#include <sup/auto-server/server_interface.h>
+
 #include <sup/dto/anyvalue.h>
 
+#include <map>
 #include <string>
 
 const std::string kShortSequenceBody{
@@ -54,14 +57,24 @@ namespace auto_server
 {
 namespace UnitTestHelper
 {
-class TemporaryTestFile
+class TestServerInterface : public ServerInterface
 {
-private:
-  std::string m_filename;
-
 public:
-  TemporaryTestFile(std::string filename, std::string contents);
-  ~TemporaryTestFile();
+  TestServerInterface();
+  ~TestServerInterface();
+
+  bool ServeAnyValues(const NameAnyValueSet& name_value_set) override;
+  bool UpdateAnyValue(const std::string& name, const sup::dto::AnyValue& value) override;
+
+  bool HasAnyValue(const std::string& name) const;
+
+  sup::dto::AnyValue GetAnyValue(const std::string& name) const;
+
+  std::size_t GetSize() const;
+
+  friend std::ostream& operator<<(std::ostream& stream, const TestServerInterface& server_if);
+private:
+  std::map<std::string, sup::dto::AnyValue> m_value_map;
 };
 
 /**
