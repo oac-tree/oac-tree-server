@@ -26,7 +26,9 @@
 
 #include <sup/dto/anyvalue.h>
 
+#include <condition_variable>
 #include <map>
+#include <mutex>
 #include <string>
 
 const std::string kShortSequenceBody{
@@ -72,9 +74,15 @@ public:
 
   std::size_t GetSize() const;
 
+  bool WaitForValue(const std::string& name, const sup::dto::AnyValue& value, double seconds) const;
+
   friend std::ostream& operator<<(std::ostream& stream, const TestServerInterface& server_if);
 private:
+  bool HasAnyValueImpl(const std::string& name) const;
+  sup::dto::AnyValue GetAnyValueImpl(const std::string& name) const;
   std::map<std::string, sup::dto::AnyValue> m_value_map;
+  mutable std::mutex m_mtx;
+  mutable std::condition_variable m_cv;
 };
 
 /**

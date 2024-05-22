@@ -45,9 +45,10 @@ TestServerInterface::~TestServerInterface() = default;
 
 bool TestServerInterface::ServeAnyValues(const NameAnyValueSet& name_value_set)
 {
+  std::lock_guard<std::mutex> lk{m_mtx};
   for (const auto& name : GetNames(name_value_set))
   {
-    if (HasAnyValue(name))
+    if (HasAnyValueImpl(name))
     {
       return false;
     }
@@ -56,27 +57,59 @@ bool TestServerInterface::ServeAnyValues(const NameAnyValueSet& name_value_set)
   {
     m_value_map[name_value_pair.first] = name_value_pair.second;
   }
+  m_cv.notify_one();
   return true;
 }
 
 bool TestServerInterface::UpdateAnyValue(const std::string& name, const sup::dto::AnyValue& value)
 {
+  std::lock_guard<std::mutex> lk{m_mtx};
   auto iter = m_value_map.find(name);
   if (iter == m_value_map.end())
   {
     return false;
   }
   iter->second = value;
+  m_cv.notify_one();
   return true;
 }
 
 bool TestServerInterface::HasAnyValue(const std::string& name) const
 {
+  std::lock_guard<std::mutex> lk{m_mtx};
+  return HasAnyValueImpl(name);
+}
+
+sup::dto::AnyValue TestServerInterface::GetAnyValue(const std::string& name) const
+{
+  std::lock_guard<std::mutex> lk{m_mtx};
+  return GetAnyValueImpl(name);
+}
+
+std::size_t TestServerInterface::GetSize() const
+{
+  std::lock_guard<std::mutex> lk{m_mtx};
+  return m_value_map.size();
+}
+
+bool TestServerInterface::WaitForValue(const std::string& name, const sup::dto::AnyValue& value,
+                                       double seconds) const
+{
+  auto duration = std::chrono::nanoseconds(std::lround(seconds * 1e9));
+  std::unique_lock<std::mutex> lk{m_mtx};
+  auto pred = [this, name, value](){
+    return GetAnyValueImpl(name) == value;
+  };
+  return m_cv.wait_for(lk, duration, pred);
+}
+
+bool TestServerInterface::HasAnyValueImpl(const std::string& name) const
+{
   auto iter = m_value_map.find(name);
   return iter != m_value_map.end();
 }
 
-sup::dto::AnyValue TestServerInterface::GetAnyValue(const std::string& name) const
+sup::dto::AnyValue TestServerInterface::GetAnyValueImpl(const std::string& name) const
 {
   auto iter = m_value_map.find(name);
   if (iter == m_value_map.end())
@@ -84,11 +117,6 @@ sup::dto::AnyValue TestServerInterface::GetAnyValue(const std::string& name) con
     return {};
   }
   return iter->second;
-}
-
-std::size_t TestServerInterface::GetSize() const
-{
-  return m_value_map.size();
 }
 
 std::ostream& operator<<(std::ostream& stream, const TestServerInterface& server_if)
