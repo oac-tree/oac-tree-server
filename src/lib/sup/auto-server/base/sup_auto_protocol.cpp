@@ -69,9 +69,11 @@ dto::AnyValue GetJobStateValue(sequencer::JobState state)
   return result;
 }
 
-dto::AnyValue EncodeVariableInfo(const dto::AnyValue& value, bool connected)
+dto::AnyValue EncodeVariableInfo(const std::string& name, const dto::AnyValue& value,
+                                 bool connected)
 {
   dto::AnyValue payload = {{
+    { kVariableNameField, name },
     { kVariableValueField, value },
     { kVariableConnectedField, connected }
   }};

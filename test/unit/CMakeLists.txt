@@ -9,6 +9,7 @@ target_sources(unit-tests
     instruction_tree_cache_tests.cpp
     job_value_mapper_tests.cpp
     # server_ui_tests.cpp
+    sup_auto_protocol_tests.cpp
     unit_test_helper.cpp
 )
 

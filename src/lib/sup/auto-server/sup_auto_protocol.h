@@ -51,6 +51,7 @@ extern const sup::dto::AnyValue kInstructionAnyValue;
 const std::string kVariableId = "VAR-";
 // Variable fields:
 const std::string kVariableType = "sup::variableType/v1.0";
+const std::string kVariableNameField = "var_name";
 const std::string kVariableValueField = "var_value";
 const std::string kVariableConnectedField = "var_connected";
 
@@ -100,14 +101,16 @@ std::string GetVariablePVName(const std::string& prefix, sup::dto::uint32 index)
 sup::dto::AnyValue GetJobStateValue(sup::sequencer::JobState state);
 
 /**
- * @brief Pack a variable's value and connected state into a base64 encoded AnyValue.
+ * @brief Pack a variable's name, value and connected state into a base64 encoded AnyValue.
  *
+ * @param name Variable's name.
  * @param value Variable's value.
  * @param connected Variable's connected status.
  *
  * @return Packed and encoded AnyValue.
  */
-sup::dto::AnyValue EncodeVariableInfo(const sup::dto::AnyValue& value, bool connected);
+sup::dto::AnyValue EncodeVariableInfo(const std::string& name, const dto::AnyValue& value,
+                                      bool connected);
 
 }  // namespace auto_server
 

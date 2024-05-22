@@ -69,7 +69,7 @@ void ServerJobInterface::VariableUpdated(const std::string& name, const sup::dto
                                           bool connected)
 {
   auto var_value_name = m_job_value_mapper.GetVariableValueName(name);
-  auto var_info = EncodeVariableInfo(value, connected);
+  auto var_info = EncodeVariableInfo(name, value, connected);
   m_server_interface.UpdateAnyValue(var_value_name, var_info);
 }
 
