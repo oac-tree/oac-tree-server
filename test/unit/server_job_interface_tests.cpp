@@ -242,5 +242,6 @@ TEST_F(ServerJobInterfaceTest, InstructionUpdates)
   EXPECT_EQ(copy1_node[kBreakpointField], true);
   EXPECT_EQ(copy1_node[kChildrenField], sup::dto::EmptyStruct());
 
+  // Uncomment to introspect how the served variables look like:
   // std::cout << m_test_server_interface;
 }
