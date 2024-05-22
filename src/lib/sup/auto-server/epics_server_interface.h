@@ -22,8 +22,6 @@
 #ifndef SUP_AUTO_SERVER_EPICS_SERVER_INTERFACE_H_
 #define SUP_AUTO_SERVER_EPICS_SERVER_INTERFACE_H_
 
-#include "epics_server.h"
-
 #include <sup/auto-server/server_interface.h>
 
 #include <map>
@@ -34,6 +32,7 @@ namespace sup
 {
 namespace auto_server
 {
+class EPICSServer;
 
 /**
  * @brief EPICSServerInterface implements ServerInterface using EPICS PvAccess.

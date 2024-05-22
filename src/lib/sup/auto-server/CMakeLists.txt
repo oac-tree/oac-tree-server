@@ -32,6 +32,7 @@ target_link_libraries(sup-auto-server
 install(TARGETS sup-auto-server EXPORT sup-auto-server-targets LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR})
 
 install(FILES
+  epics_server_interface.h
   exceptions.h
   instruction_tree_cache.h
   job_value_mapper.h

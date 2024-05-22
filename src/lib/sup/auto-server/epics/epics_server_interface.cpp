@@ -19,7 +19,9 @@
  * of the distribution package.
  ******************************************************************************/
 
-#include "epics_server_interface.h"
+#include <sup/auto-server/epics_server_interface.h>
+
+#include "epics_server.h"
 
 namespace sup
 {
