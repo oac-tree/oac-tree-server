@@ -21,7 +21,7 @@
 
 #include "unit_test_helper.h"
 
-#include <sup/auto-server/epics_server_interface.h>
+#include <sup/auto-server/epics/epics_server_interface.h>
 
 #include <sup/epics/pv_access_client_pv.h>
 
