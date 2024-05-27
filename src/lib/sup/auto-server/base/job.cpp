@@ -37,60 +37,78 @@ struct Job::JobImpl
 
   EPICSServerInterface m_epics_server;
   ServerJobInterface m_job_interface;
-  sup::sequencer::JobController m_controller;
+  sup::sequencer::AsyncRunner m_runner;
 };
 
 Job::Job(const std::string& prefix, std::unique_ptr<sup::sequencer::Procedure> proc)
   : m_proc{std::move(proc)}
   , m_impl{new JobImpl{prefix, *m_proc}}
+  , m_job_prefix{prefix}
+  , m_full_name{sup::sequencer::GetProcedureName(*m_proc)}
+  , m_nr_vars{m_proc->VariableNames().size()}
 {}
 
 Job::~Job() = default;
 
+std::string Job::GetPrefix() const
+{
+  return m_job_prefix;
+}
+
+std::string Job::GetProcedureName() const
+{
+  return m_full_name;
+}
+
+std::size_t Job::GetNumberOfVariables() const
+{
+  return m_nr_vars;
+}
+
 void Job::SetBreakpoint(const sup::sequencer::Instruction* instruction)
 {
-  return Controller().SetBreakpoint(instruction);
+  return Runner().SetBreakpoint(instruction);
 }
 
 void Job::RemoveBreakpoint(const sup::sequencer::Instruction* instruction)
 {
-  return Controller().RemoveBreakpoint(instruction);
+  return Runner().RemoveBreakpoint(instruction);
 }
 
 void Job::Start()
 {
-  return Controller().Start();
+  return Runner().Start();
 }
 
 void Job::Step()
 {
-  return Controller().Step();
+  return Runner().Step();
 }
 
 void Job::Pause()
 {
-  return Controller().Pause();
+  return Runner().Pause();
 }
 
 void Job::Reset()
 {
-  return Controller().Reset();
+  return Runner().Reset();
 }
 
 void Job::Halt()
 {
-  return Controller().Halt();
+  return Runner().Halt();
 }
 
-sup::sequencer::JobController& Job::Controller()
+sup::sequencer::AsyncRunner& Job::Runner()
 {
-  return m_impl->m_controller;
+  return m_impl->m_runner;
 }
 
 Job::JobImpl::JobImpl(const std::string& prefix, sup::sequencer::Procedure& proc)
   : m_epics_server{}
   , m_job_interface{prefix, proc, m_epics_server}
-  , m_controller{proc, m_job_interface}
+  , m_runner{proc, m_job_interface}
 {}
 
 }  // namespace auto_server

@@ -26,8 +26,8 @@
 
 #include <sup/protocol/base64_variable_codec.h>
 
+#include <sup/sequencer/async_runner.h>
 #include <sup/sequencer/instruction.h>
-#include <sup/sequencer/job_controller.h>
 #include <sup/sequencer/sequence_parser.h>
 
 #include <gtest/gtest.h>
@@ -91,8 +91,8 @@ TEST_F(ServerJobInterfaceTest, AfterSetup)
             kVariableAnyValue);
 
   // Setup and check again (variables are no longer empty, but state is still initial)
-  // The JobController is necessary as it binds the variable callbacks to the job interface
-  sup::sequencer::JobController controller{*proc, job_interface};
+  // The AsyncRunner is necessary as it binds the variable callbacks to the job interface
+  sup::sequencer::AsyncRunner runner{*proc, job_interface};
   EXPECT_EQ(m_test_server_interface.GetSize(), 4);
   EXPECT_EQ(m_test_server_interface.GetAnyValue(GetJobStatePVName(kTestPrefix)), kJobStateAnyValue);
   EXPECT_NE(m_test_server_interface.GetAnyValue(GetVariablePVName(kTestPrefix, 0)),
@@ -115,7 +115,7 @@ TEST_F(ServerJobInterfaceTest, InitializeInstructionTree)
   EXPECT_EQ(m_test_server_interface.GetSize(), 4);
 
   // Setup and check again
-  sup::sequencer::JobController controller{*proc, job_interface};
+  sup::sequencer::AsyncRunner runner{*proc, job_interface};
   EXPECT_EQ(m_test_server_interface.GetSize(), 4);
 
   // Initialize instruction tree and check again
@@ -179,7 +179,7 @@ TEST_F(ServerJobInterfaceTest, InstructionUpdates)
 
   // Setup and check again
   EXPECT_EQ(m_test_server_interface.GetSize(), 4);
-  sup::sequencer::JobController controller{*proc, job_interface};
+  sup::sequencer::AsyncRunner runner{*proc, job_interface};
   EXPECT_EQ(m_test_server_interface.GetSize(), 4);
 
   // Initialize instruction tree and check again
@@ -214,8 +214,8 @@ TEST_F(ServerJobInterfaceTest, InstructionUpdates)
   // Set breakpoint on second copy, start and wait for paused after breakpoint is hit
   ASSERT_EQ(root_instruction->ChildrenCount(), 2);
   auto copy_instruction = root_instruction->ChildInstructions()[1];
-  controller.SetBreakpoint(copy_instruction);
-  controller.Start();
+  runner.SetBreakpoint(copy_instruction);
+  runner.Start();
   const std::string state_name = GetJobStatePVName(kTestPrefix);
   auto paused_state_value = kJobStateAnyValue;
   paused_state_value[kJobStateField] =
