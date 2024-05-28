@@ -19,43 +19,37 @@
  * of the distribution package.
  ******************************************************************************/
 
-#ifndef SUP_AUTO_SERVER_AUTOMATION_SERVER_H_
-#define SUP_AUTO_SERVER_AUTOMATION_SERVER_H_
-
-#include <sup/auto-server/job.h>
-
-#include <memory>
-#include <string>
-#include <vector>
+#include <sup/auto-server/job_info.h>
 
 namespace sup
 {
 namespace auto_server
 {
-/**
- * @brief AutomationServer.
- */
-class AutomationServer
+
+JobInfo::JobInfo(const std::string& prefix, const sup::sequencer::Procedure& proc)
+  : m_job_prefix{prefix}
+  , m_full_name{sup::sequencer::GetProcedureName(proc)}
+  , m_nr_vars{proc.VariableNames().size()}
+{}
+
+JobInfo::~JobInfo() = default;
+
+std::string JobInfo::GetPrefix() const
 {
-public:
-  using ProcedureList = std::vector<std::unique_ptr<sup::sequencer::Procedure>>;
-  AutomationServer(const std::string& server_prefix, ProcedureList proc_list);
-  ~AutomationServer();
+  return m_job_prefix;
+}
 
-  std::string GetServerPrefix() const;
-  std::size_t GetNumberOfJobs() const;
+std::string JobInfo::GetProcedureName() const
+{
+  return m_full_name;
+}
 
-  JobInfo GetJobInfo(std::size_t idx) const;
+std::size_t JobInfo::GetNumberOfVariables() const
+{
+  return m_nr_vars;
+}
 
-private:
-  const std::string m_server_prefix;
-  std::vector<Job> m_jobs;
-};
-
-std::string CreateJobPrefix(const std::string& server_prefix, std::size_t idx);
 
 }  // namespace auto_server
 
 }  // namespace sup
-
-#endif  // SUP_AUTO_SERVER_AUTOMATION_SERVER_H_

@@ -22,6 +22,8 @@
 #ifndef SUP_AUTO_SERVER_JOB_H_
 #define SUP_AUTO_SERVER_JOB_H_
 
+#include <sup/auto-server/job_info.h>
+
 #include <sup/sequencer/async_runner.h>
 #include <sup/sequencer/instruction.h>
 #include <sup/sequencer/procedure.h>
@@ -43,12 +45,18 @@ public:
   Job(const std::string& prefix, std::unique_ptr<sup::sequencer::Procedure> proc);
   ~Job();
 
-  std::string GetPrefix() const;
-  std::string GetProcedureName() const;
-  std::size_t GetNumberOfVariables() const;
+  // Delete copy
+  Job(const Job& other) = delete;
+  Job& operator=(const Job& other) = delete;
+
+  // Only support move construction
+  Job(Job&& other);
+  Job& operator=(Job&& other) = delete;
+
+  JobInfo GetInfo() const;
 
   /**
-   * @brief Forward these methods to AsyncRunner
+   * @brief Methods forwarded to AsyncRunner
    */
   void SetBreakpoint(const sup::sequencer::Instruction* instruction);
   void RemoveBreakpoint(const sup::sequencer::Instruction* instruction);
@@ -63,9 +71,7 @@ private:
   std::unique_ptr<sup::sequencer::Procedure> m_proc;
   struct JobImpl;
   std::unique_ptr<JobImpl> m_impl;
-  const std::string m_job_prefix;
-  const std::string m_full_name;
-  const std::size_t m_nr_vars;
+  const JobInfo m_job_info;
 };
 
 }  // namespace auto_server

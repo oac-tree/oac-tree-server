@@ -1,8 +1,10 @@
 target_sources(sup-auto-server
   PRIVATE
+  automation_server.cpp
   exceptions.cpp
   instruction_tree_cache.cpp
   instruction_tree_utils.cpp
+  job_info.cpp
   job_value_mapper.cpp
   job.cpp
   server_interface.cpp

@@ -43,26 +43,23 @@ struct Job::JobImpl
 Job::Job(const std::string& prefix, std::unique_ptr<sup::sequencer::Procedure> proc)
   : m_proc{std::move(proc)}
   , m_impl{new JobImpl{prefix, *m_proc}}
-  , m_job_prefix{prefix}
-  , m_full_name{sup::sequencer::GetProcedureName(*m_proc)}
-  , m_nr_vars{m_proc->VariableNames().size()}
+  , m_job_info{prefix, *m_proc}
 {}
 
 Job::~Job() = default;
 
-std::string Job::GetPrefix() const
+Job::Job(Job&& other)
+  : m_proc{}
+  , m_impl{}
+  , m_job_info{other.m_job_info}
 {
-  return m_job_prefix;
+  std::swap(m_proc, other.m_proc);
+  std::swap(m_impl, other.m_impl);
 }
 
-std::string Job::GetProcedureName() const
+JobInfo Job::GetInfo() const
 {
-  return m_full_name;
-}
-
-std::size_t Job::GetNumberOfVariables() const
-{
-  return m_nr_vars;
+  return m_job_info;
 }
 
 void Job::SetBreakpoint(const sup::sequencer::Instruction* instruction)
