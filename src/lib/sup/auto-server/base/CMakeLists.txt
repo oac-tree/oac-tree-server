@@ -1,5 +1,6 @@
 target_sources(sup-auto-server
   PRIVATE
+  automation_server_protocol.cpp
   automation_server.cpp
   exceptions.cpp
   instruction_tree_cache.cpp

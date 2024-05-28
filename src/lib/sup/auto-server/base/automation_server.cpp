@@ -27,7 +27,7 @@ namespace sup
 namespace auto_server
 {
 
-AutomationServer::AutomationServer(const std::string& server_prefix, ProcedureList proc_list)
+AutomationServer::AutomationServer(const std::string& server_prefix, ProcedureList& proc_list)
   : m_server_prefix{server_prefix}
   , m_jobs{}
 {

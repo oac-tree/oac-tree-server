@@ -39,7 +39,7 @@ class AutomationServer
 {
 public:
   using ProcedureList = std::vector<std::unique_ptr<sup::sequencer::Procedure>>;
-  AutomationServer(const std::string& server_prefix, ProcedureList proc_list);
+  AutomationServer(const std::string& server_prefix, ProcedureList& proc_list);
   ~AutomationServer();
 
   std::string GetServerPrefix() const;

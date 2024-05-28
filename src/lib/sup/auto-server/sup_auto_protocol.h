@@ -67,6 +67,26 @@ const std::string kJobStateField = "state";
 // Basic job state AnyValue
 extern const sup::dto::AnyValue kJobStateAnyValue;
 
+// Automation servers will report the following type and version:
+const std::string kAutomationServerProtocolServerType = "SUP::AutomationServerProtocol";
+const std::string kAutomationServerProtocolServerVersion = "1.0";
+
+// Supported function names for automation servers:
+const std::string kGetServerPrefixFunctionName = "GetServerPrefix";
+const std::string kGetNumberOfJobsFunctionName = "GetNumberOfJobs";
+const std::string kGetJobInfoFunctionName = "GetJobInfo";
+
+// Field names used for the supported functions of automation servers:
+const std::string kServerPrefixFieldName = "server_prefix";
+const std::string kNumberOfJobsFieldName = "number_of_jobs";
+const std::string kJobIndexFieldName = "job_index";
+const std::string kJobInfoFieldName = "job_info";
+
+// Field names used for the JobInfo AnyValue:
+const std::string kJobPrefixFieldName = "job_prefix";
+const std::string kFullNameFieldName = "full_name";
+const std::string kNumberOfVarsFieldName = "n_vars";
+
 /**
  * @brief Create a PV channel name for the job state from a given prefix.
  *

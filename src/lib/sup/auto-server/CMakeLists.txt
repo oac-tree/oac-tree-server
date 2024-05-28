@@ -32,6 +32,7 @@ target_link_libraries(sup-auto-server
 install(TARGETS sup-auto-server EXPORT sup-auto-server-targets LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR})
 
 install(FILES
+  automation_server_protocol.h
   automation_server.h
   exceptions.h
   instruction_tree_cache.h
