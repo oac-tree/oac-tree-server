@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Procedure>
+  <Plugin>libsequencer-pvxs.so</Plugin>
+  <Sequence>
+    <RPCClient name="client" service="test-auto" requestVar="req" outputVar="out" timeout="3.0"/>
+    <Output fromVar="out"/>
+  </Sequence>
+  <Workspace>
+    <Local dynamicType="true" name="out"/>
+    <Local name="req" type='{"type":"struct","attributes":[{"function":{"type":"string"}}]}' value='{"function":"GetNumberOfJobs"}'/>
+  </Workspace>
+</Procedure>
