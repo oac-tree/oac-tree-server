@@ -2,11 +2,15 @@
 <Procedure>
   <Plugin>libsequencer-pvxs.so</Plugin>
   <Sequence>
-    <RPCClient name="client" service="test-auto" requestVar="req" outputVar="out" timeout="3.0"/>
+    <UserChoice>
+        <RPCClient name="Get number of jobs" service="test-auto" requestVar="n_jobs_req" outputVar="out" timeout="3.0"/>
+        <RPCClient name="Get server prefix" service="test-auto" requestVar="prefix_req" outputVar="out" timeout="3.0"/>
+    </UserChoice>
     <Output fromVar="out"/>
   </Sequence>
   <Workspace>
     <Local dynamicType="true" name="out"/>
-    <Local name="req" type='{"type":"struct","attributes":[{"query":{"type":"struct","attributes":[{"function":{"type":"string"}}]}}]}' value='{"query":{"function":"GetNumberOfJobs"}}'/>
+    <Local name="n_jobs_req" type='{"type":"struct","attributes":[{"query":{"type":"struct","attributes":[{"function":{"type":"string"}}]}}]}' value='{"query":{"function":"GetNumberOfJobs"}}'/>
+    <Local name="prefix_req" type='{"type":"struct","attributes":[{"query":{"type":"struct","attributes":[{"function":{"type":"string"}}]}}]}' value='{"query":{"function":"GetServerPrefix"}}'/>
   </Workspace>
 </Procedure>
