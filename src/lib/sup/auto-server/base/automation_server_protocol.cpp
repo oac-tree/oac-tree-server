@@ -83,7 +83,7 @@ sup::protocol::ProtocolResult AutomationServerProtocol::GetServerPrefix(
   (void)input;
   auto server_prefix = m_auto_server.GetServerPrefix();
   sup::dto::AnyValue temp_out;
- sup::protocol::FunctionProtocolPack(temp_out, kServerPrefixFieldName, server_prefix);
+  sup::protocol::FunctionProtocolPack(temp_out, kServerPrefixFieldName, server_prefix);
   if (!sup::dto::TryAssignIfEmptyOrConvert(output, temp_out))
   {
     return sup::protocol::ServerProtocolEncodingError;
@@ -97,7 +97,7 @@ sup::protocol::ProtocolResult AutomationServerProtocol::GetNumberOfJobs(
   (void)input;
   sup::dto::AnyValue number_jobs{sup::dto::UnsignedInteger64Type, m_auto_server.GetNumberOfJobs()};
   sup::dto::AnyValue temp_out;
- sup::protocol::FunctionProtocolPack(temp_out, kNumberOfJobsFieldName, number_jobs);
+  sup::protocol::FunctionProtocolPack(temp_out, kNumberOfJobsFieldName, number_jobs);
   if (!sup::dto::TryAssignIfEmptyOrConvert(output, temp_out))
   {
     return sup::protocol::ServerProtocolEncodingError;

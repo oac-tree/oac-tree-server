@@ -7,6 +7,6 @@
   </Sequence>
   <Workspace>
     <Local dynamicType="true" name="out"/>
-    <Local name="req" type='{"type":"struct","attributes":[{"function":{"type":"string"}}]}' value='{"function":"GetNumberOfJobs"}'/>
+    <Local name="req" type='{"type":"struct","attributes":[{"query":{"type":"struct","attributes":[{"function":{"type":"string"}}]}}]}' value='{"query":{"function":"GetNumberOfJobs"}}'/>
   </Workspace>
 </Procedure>
