@@ -33,14 +33,20 @@ namespace utils
 const std::string kSimpleCounterProcedureString{
 R"RAW(<?xml version="1.0" encoding="UTF-8"?>
 <Procedure>
-  <Sequence>
-    <Copy inputVar="one" outputVar="var1"/>
-    <Copy inputVar="one" outputVar="var2"/>
-  </Sequence>
+  <Plugin>libsequencer-pvxs.so</Plugin>
+  <Repeat maxCount="-1">
+    <Sequence>
+      <Wait timeout="1"/>
+      <Increment varName="counter"/>
+      <Copy inputVar="counter" outputVar="server.value"/>
+    </Sequence>
+  </Repeat>
   <Workspace>
-    <Local name="one" type='{"type":"uint32"}' value='1'/>
-    <Local name="var1" type='{"type":"uint32"}' value='0'/>
-    <Local name="var2" type='{"type":"uint32"}' value='0'/>
+    <PvAccessServer name="server"
+                    channel="TEST:SERVER-COUNTER"
+                    type='{"type":"","attributes":[{"value":{"type":"uint64"}}]}'
+                    value='{"value":0}'/>
+    <Local name="counter" type='{"type":"uint64"}' value='0' />
   </Workspace>
 </Procedure>
 )RAW"};
