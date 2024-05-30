@@ -53,11 +53,46 @@ JobInfo AutomationServer::GetJobInfo(std::size_t idx) const
 {
   if (idx >= m_jobs.size())
   {
-    const std::string error = "AutomationServer::GetJobInfo(): requesting index "
+    const std::string error = "AutomationServer::GetJobInfo(): index out of bounds; requesting"
       + std::to_string(idx) + " out of " + std::to_string(m_jobs.size()) + " jobs";
     throw InvalidOperationException(error);
   }
   return m_jobs[idx].GetInfo();
+}
+
+void AutomationServer::SendJobCommand(std::size_t idx, sup::sequencer::JobCommand command)
+{
+  using sup::sequencer::JobCommand;
+  if (idx >= m_jobs.size())
+  {
+    const std::string error = "AutomationServer::GetJobInfo(): index out of bounds; requesting"
+      + std::to_string(idx) + " out of " + std::to_string(m_jobs.size()) + " jobs";
+    throw InvalidOperationException(error);
+  }
+  switch (command)
+  {
+  case JobCommand::kStart:
+    m_jobs[idx].Start();
+    break;
+  case JobCommand::kStep:
+    m_jobs[idx].Step();
+    break;
+  case JobCommand::kPause:
+    m_jobs[idx].Pause();
+    break;
+  case JobCommand::kReset:
+    m_jobs[idx].Reset();
+    break;
+  case JobCommand::kHalt:
+    m_jobs[idx].Halt();
+    break;
+  default:
+    {
+      const std::string error = "AutomationServer::GetJobInfo(): unknown command enumerator ["
+        + std::to_string(static_cast<int>(command)) + "]";
+      throw InvalidOperationException(error);
+    }
+  }
 }
 
 std::string CreateJobPrefix(const std::string& server_prefix, std::size_t idx)

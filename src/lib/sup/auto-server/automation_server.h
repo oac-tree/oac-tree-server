@@ -47,6 +47,8 @@ public:
 
   JobInfo GetJobInfo(std::size_t idx) const;
 
+  void SendJobCommand(std::size_t idx, sup::sequencer::JobCommand command);
+
 private:
   const std::string m_server_prefix;
   std::vector<Job> m_jobs;

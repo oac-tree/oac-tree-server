@@ -118,16 +118,12 @@ sup::protocol::ProtocolResult AutomationServerProtocol::GetJobInfo(
   {
     return sup::protocol::ServerProtocolDecodingError;
   }
-  sup::dto::AnyValue job_info_av;
-  try
-  {
-    auto job_info = m_auto_server.GetJobInfo(idx);
-    job_info_av = ToAnyValue(job_info);
-  }
-  catch(const std::exception& e)
+  if (idx >= m_auto_server.GetNumberOfJobs())
   {
     return UnknownJob;
   }
+  auto job_info = m_auto_server.GetJobInfo(idx);
+  auto job_info_av = ToAnyValue(job_info);
   sup::dto::AnyValue temp_out;
   sup::protocol::FunctionProtocolPack(temp_out, kJobInfoFieldName, job_info_av);
   if (!sup::dto::TryAssignIfEmptyOrConvert(output, temp_out))
