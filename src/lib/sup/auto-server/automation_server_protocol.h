@@ -51,13 +51,17 @@ public:
 
 private:
   static const sup::protocol::ProtocolMemberFunctionMap<AutomationServerProtocol>& FunctionMap();
-  const AutomationServer m_auto_server;
+  AutomationServer m_auto_server;
   sup::protocol::ProtocolResult GetServerPrefix(const sup::dto::AnyValue& input,
                                                 sup::dto::AnyValue& output);
   sup::protocol::ProtocolResult GetNumberOfJobs(const sup::dto::AnyValue& input,
                                                 sup::dto::AnyValue& output);
   sup::protocol::ProtocolResult GetJobInfo(const sup::dto::AnyValue& input,
                                            sup::dto::AnyValue& output);
+  sup::protocol::ProtocolResult SendJobCommand(const sup::dto::AnyValue& input,
+                                               sup::dto::AnyValue& output);
+  sup::protocol::ProtocolResult ExtractJobIndex(const sup::dto::AnyValue& input,
+                                                sup::dto::uint64& idx);
 };
 
 /**
@@ -68,6 +72,10 @@ extern const sup::protocol::ProtocolResult NotSupported;
  * @brief The requested job is unknown.
 */
 extern const sup::protocol::ProtocolResult UnknownJob;
+/**
+ * @brief The requested job is unknown.
+*/
+extern const sup::protocol::ProtocolResult UnknownJobCommand;
 
 /**
  * @brief Encode a JobInfo object into an AnyValue.
