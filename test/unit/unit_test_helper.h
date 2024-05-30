@@ -53,6 +53,12 @@ R"RAW(
   </Workspace>
 )RAW"};
 
+const std::string kWaitProcedureBody{
+R"RAW(
+  <Wait timeout="20"/>
+  <Workspace/>
+)RAW"};
+
 namespace sup
 {
 namespace auto_server

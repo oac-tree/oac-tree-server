@@ -40,7 +40,7 @@ int main(int argc, char* argv[])
       "The program launches a SUP automation server with the provided procedures.");
   parser.AddHelpOption();
 
-  parser.AddOption({"-S", "--service"}, "Name of the automation server")
+  parser.AddOption({"-s", "--service"}, "Name of the automation server")
       .SetParameter(true)
       .SetValueName("service_name")
       .SetRequired(true);

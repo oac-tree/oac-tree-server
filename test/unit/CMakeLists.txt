@@ -6,6 +6,7 @@ target_sources(unit-tests
   PRIVATE
     epics_server_interface_tests.cpp
     instruction_tree_cache_tests.cpp
+    job_tests.cpp
     job_value_mapper_tests.cpp
     server_job_interface_tests.cpp
     sup_auto_protocol_tests.cpp
