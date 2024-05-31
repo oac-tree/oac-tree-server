@@ -21,7 +21,7 @@
 
 #include "unit_test_helper.h"
 
-#include <sup/auto-server/epics/epics_server_interface.h>
+#include <sup/auto-server/epics/epics_anyvalue_server.h>
 
 #include <sup/epics/pv_access_client_pv.h>
 
@@ -36,17 +36,17 @@ const sup::dto::AnyValue scalar = {{
   { "value", {sup::dto::SignedInteger32Type, 0}}
 }};
 
-ServerInterface::NameAnyValueSet value_set_1 = {
+AnyValueServerInterface::NameAnyValueSet value_set_1 = {
   { "val0", scalar},
   { "val1", scalar}
 };
 
-ServerInterface::NameAnyValueSet value_set_2 = {
+AnyValueServerInterface::NameAnyValueSet value_set_2 = {
   { "val2", scalar},
   { "val3", scalar}
 };
 
-ServerInterface::NameAnyValueSet value_set_3 = {
+AnyValueServerInterface::NameAnyValueSet value_set_3 = {
   { "val1", scalar}
 };
 
@@ -73,7 +73,7 @@ protected:
     return m_cv.wait_for(lk, duration, pred);
   }
 
-  EPICSServerInterface m_epics_server_interface;
+  EPICSAnyValueServer m_epics_server_interface;
   sup::dto::AnyValue m_value_cache;
   std::mutex m_mtx;
   std::condition_variable m_cv;

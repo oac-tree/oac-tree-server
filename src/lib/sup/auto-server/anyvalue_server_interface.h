@@ -19,8 +19,8 @@
  * of the distribution package.
  ******************************************************************************/
 
-#ifndef SUP_AUTO_SERVER_SERVER_INTERFACE_H_
-#define SUP_AUTO_SERVER_SERVER_INTERFACE_H_
+#ifndef SUP_AUTO_SERVER_ANYVALUE_SERVER_INTERFACE_H_
+#define SUP_AUTO_SERVER_ANYVALUE_SERVER_INTERFACE_H_
 
 #include <sup/dto/anyvalue.h>
 
@@ -35,8 +35,8 @@ namespace auto_server
 {
 
 /**
- * @brief ServerInterface defines the API for implementations that can handle the different I/O
- * requests for a running procedure. Those interactions in turn are defined by the API of
+ * @brief AnyValueServerInterface defines the API for implementations that can handle the different
+ * I/O requests for a running procedure. Those interactions in turn are defined by the API of
  * UserInterface and JobStateMonitor.
  *
  * @details Instead of having methods that directly map to all the UserInterface and JobStateMonitor
@@ -45,13 +45,13 @@ namespace auto_server
  *
  * @todo Provide the API for client input and message queues, i.e. values whose history may matter.
  */
-class ServerInterface
+class AnyValueServerInterface
 {
 public:
   using NameAnyValuePair = std::pair<std::string, sup::dto::AnyValue>;
   using NameAnyValueSet = std::vector<NameAnyValuePair>;
 
-  virtual ~ServerInterface();
+  virtual ~AnyValueServerInterface();
 
   /**
    * @brief Serve a set of AnyValues with given unique names.
@@ -83,10 +83,10 @@ public:
  * @param name_value_set List of name/value pairs.
  * @return List of names.
  */
-std::set<std::string> GetNames(const ServerInterface::NameAnyValueSet& name_value_set);
+std::set<std::string> GetNames(const AnyValueServerInterface::NameAnyValueSet& name_value_set);
 
 }  // namespace auto_server
 
 }  // namespace sup
 
-#endif  // SUP_AUTO_SERVER_SERVER_INTERFACE_H_
+#endif  // SUP_AUTO_SERVER_ANYVALUE_SERVER_INTERFACE_H_

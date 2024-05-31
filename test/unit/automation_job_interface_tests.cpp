@@ -21,7 +21,7 @@
 
 #include "unit_test_helper.h"
 
-#include <sup/auto-server/server_job_interface.h>
+#include <sup/auto-server/automation_job_interface.h>
 #include <sup/auto-server/sup_auto_protocol.h>
 
 #include <sup/protocol/base64_variable_codec.h>
@@ -51,7 +51,7 @@ TEST_F(ServerJobInterfaceTest, Construction)
   auto proc = sup::sequencer::ParseProcedureString(procedure_string);
   ASSERT_NE(proc.get(), nullptr);
   EXPECT_EQ(m_test_server_interface.GetSize(), 0);
-  ServerJobInterface job_interface{kTestPrefix, *proc, m_test_server_interface};
+  AutomationJobInterface job_interface{kTestPrefix, *proc, m_test_server_interface};
 
   // Check presence of job state and 3 variable anyvalues:
   EXPECT_EQ(m_test_server_interface.GetSize(), 4);
@@ -78,7 +78,7 @@ TEST_F(ServerJobInterfaceTest, AfterSetup)
   auto proc = sup::sequencer::ParseProcedureString(procedure_string);
   ASSERT_NE(proc.get(), nullptr);
   EXPECT_EQ(m_test_server_interface.GetSize(), 0);
-  ServerJobInterface job_interface{kTestPrefix, *proc, m_test_server_interface};
+  AutomationJobInterface job_interface{kTestPrefix, *proc, m_test_server_interface};
 
   // Check variable anyvalues before setup:
   EXPECT_EQ(m_test_server_interface.GetSize(), 4);
@@ -109,7 +109,7 @@ TEST_F(ServerJobInterfaceTest, InitializeInstructionTree)
   auto proc = sup::sequencer::ParseProcedureString(procedure_string);
   ASSERT_NE(proc.get(), nullptr);
   EXPECT_EQ(m_test_server_interface.GetSize(), 0);
-  ServerJobInterface job_interface{kTestPrefix, *proc, m_test_server_interface};
+  AutomationJobInterface job_interface{kTestPrefix, *proc, m_test_server_interface};
 
   // Check variable anyvalues before setup:
   EXPECT_EQ(m_test_server_interface.GetSize(), 4);
@@ -129,7 +129,7 @@ TEST_F(ServerJobInterfaceTest, OnStateChange)
   auto proc = sup::sequencer::ParseProcedureString(procedure_string);
   ASSERT_NE(proc.get(), nullptr);
   EXPECT_EQ(m_test_server_interface.GetSize(), 0);
-  ServerJobInterface job_interface{kTestPrefix, *proc, m_test_server_interface};
+  AutomationJobInterface job_interface{kTestPrefix, *proc, m_test_server_interface};
 
   // Check variable anyvalues before updates:
   const std::string state_name = GetJobStatePVName(kTestPrefix);
@@ -151,7 +151,7 @@ TEST_F(ServerJobInterfaceTest, VariableUpdated)
   auto proc = sup::sequencer::ParseProcedureString(procedure_string);
   ASSERT_NE(proc.get(), nullptr);
   EXPECT_EQ(m_test_server_interface.GetSize(), 0);
-  ServerJobInterface job_interface{kTestPrefix, *proc, m_test_server_interface};
+  AutomationJobInterface job_interface{kTestPrefix, *proc, m_test_server_interface};
 
   // Check variable anyvalues before updates:
   const std::string var0_name = GetVariablePVName(kTestPrefix, 0);
@@ -175,7 +175,7 @@ TEST_F(ServerJobInterfaceTest, InstructionUpdates)
   auto proc = sup::sequencer::ParseProcedureString(procedure_string);
   ASSERT_NE(proc.get(), nullptr);
   EXPECT_EQ(m_test_server_interface.GetSize(), 0);
-  ServerJobInterface job_interface{kTestPrefix, *proc, m_test_server_interface};
+  AutomationJobInterface job_interface{kTestPrefix, *proc, m_test_server_interface};
 
   // Setup and check again
   EXPECT_EQ(m_test_server_interface.GetSize(), 4);

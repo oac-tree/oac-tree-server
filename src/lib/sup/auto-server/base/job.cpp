@@ -21,9 +21,9 @@
 
 #include <sup/auto-server/job.h>
 
-#include <sup/auto-server/epics/epics_server_interface.h>
+#include <sup/auto-server/epics/epics_anyvalue_server.h>
 
-#include <sup/auto-server/server_job_interface.h>
+#include <sup/auto-server/automation_job_interface.h>
 
 namespace sup
 {
@@ -35,8 +35,8 @@ struct Job::JobImpl
   JobImpl(const std::string& prefix, sup::sequencer::Procedure& proc);
   ~JobImpl() = default;
 
-  EPICSServerInterface m_epics_server;
-  ServerJobInterface m_job_interface;
+  EPICSAnyValueServer m_epics_server;
+  AutomationJobInterface m_job_interface;
   sup::sequencer::AsyncRunner m_runner;
 };
 

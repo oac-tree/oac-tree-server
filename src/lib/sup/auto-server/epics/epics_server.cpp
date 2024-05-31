@@ -28,7 +28,7 @@ namespace sup
 namespace auto_server
 {
 
-EPICSServer::EPICSServer(const ServerInterface::NameAnyValueSet& name_value_set)
+EPICSServer::EPICSServer(const AnyValueServerInterface::NameAnyValueSet& name_value_set)
   : m_update_queue{}
   , m_update_future{}
 {
@@ -45,7 +45,7 @@ void EPICSServer::UpdateAnyValue(const std::string& name, const sup::dto::AnyVal
   m_update_queue.Push(name, value);
 }
 
-void EPICSServer::UpdateLoop(const ServerInterface::NameAnyValueSet& name_value_set)
+void EPICSServer::UpdateLoop(const AnyValueServerInterface::NameAnyValueSet& name_value_set)
 {
   sup::epics::PvAccessServer server;
   for (const auto& name_value_pair : name_value_set)

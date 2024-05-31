@@ -22,7 +22,7 @@
 #ifndef SUP_AUTO_SERVER_UNIT_TEST_HELPER_H_
 #define SUP_AUTO_SERVER_UNIT_TEST_HELPER_H_
 
-#include <sup/auto-server/server_interface.h>
+#include <sup/auto-server/anyvalue_server_interface.h>
 
 #include <sup/dto/anyvalue.h>
 
@@ -65,7 +65,7 @@ namespace auto_server
 {
 namespace UnitTestHelper
 {
-class TestServerInterface : public ServerInterface
+class TestServerInterface : public AnyValueServerInterface
 {
 public:
   TestServerInterface();

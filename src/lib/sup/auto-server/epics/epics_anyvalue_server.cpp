@@ -19,7 +19,7 @@
  * of the distribution package.
  ******************************************************************************/
 
-#include "epics_server_interface.h"
+#include "epics_anyvalue_server.h"
 
 #include "epics_server.h"
 
@@ -28,15 +28,15 @@ namespace sup
 namespace auto_server
 {
 
-EPICSServerInterface::EPICSServerInterface()
+EPICSAnyValueServer::EPICSAnyValueServer()
   : m_map_mutex{}
   , m_name_server_map{}
   , m_set_servers{}
 {}
 
-EPICSServerInterface::~EPICSServerInterface() = default;
+EPICSAnyValueServer::~EPICSAnyValueServer() = default;
 
-bool EPICSServerInterface::ServeAnyValues(const NameAnyValueSet &name_value_set)
+bool EPICSAnyValueServer::ServeAnyValues(const NameAnyValueSet &name_value_set)
 {
   // Since we are updating the map, we need to hold a lock during the whole operation.
   std::lock_guard<std::mutex> lk{m_map_mutex};
@@ -54,7 +54,7 @@ bool EPICSServerInterface::ServeAnyValues(const NameAnyValueSet &name_value_set)
   return true;
 }
 
-bool EPICSServerInterface::UpdateAnyValue(const std::string& name, const sup::dto::AnyValue& value)
+bool EPICSAnyValueServer::UpdateAnyValue(const std::string& name, const sup::dto::AnyValue& value)
 {
   // A mutex lock is only needed during the find operation:
   auto server = FindServer(name);
@@ -66,7 +66,7 @@ bool EPICSServerInterface::UpdateAnyValue(const std::string& name, const sup::dt
   return true;
 }
 
-bool EPICSServerInterface::ValidateNameValueSet(const NameAnyValueSet& name_value_set) const
+bool EPICSAnyValueServer::ValidateNameValueSet(const NameAnyValueSet& name_value_set) const
 {
   auto names = GetNames(name_value_set);
   if (names.size() != name_value_set.size())
@@ -84,7 +84,7 @@ bool EPICSServerInterface::ValidateNameValueSet(const NameAnyValueSet& name_valu
   return true;
 }
 
-EPICSServer* EPICSServerInterface::FindServer(const std::string& name) const
+EPICSServer* EPICSAnyValueServer::FindServer(const std::string& name) const
 {
   std::lock_guard<std::mutex> lk{m_map_mutex};
   auto iter = m_name_server_map.find(name);

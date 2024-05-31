@@ -19,10 +19,10 @@
  * of the distribution package.
  ******************************************************************************/
 
-#ifndef SUP_AUTO_SERVER_EPICS_SERVER_INTERFACE_H_
-#define SUP_AUTO_SERVER_EPICS_SERVER_INTERFACE_H_
+#ifndef SUP_AUTO_SERVER_EPICS_ANYVALUE_SERVER_H_
+#define SUP_AUTO_SERVER_EPICS_ANYVALUE_SERVER_H_
 
-#include <sup/auto-server/server_interface.h>
+#include <sup/auto-server/anyvalue_server_interface.h>
 
 #include <map>
 #include <memory>
@@ -35,13 +35,13 @@ namespace auto_server
 class EPICSServer;
 
 /**
- * @brief EPICSServerInterface implements ServerInterface using EPICS PvAccess.
+ * @brief EPICSAnyValueServer implements ServerInterface using EPICS PvAccess.
  */
-class EPICSServerInterface : public ServerInterface
+class EPICSAnyValueServer : public AnyValueServerInterface
 {
 public:
-  EPICSServerInterface();
-  ~EPICSServerInterface();
+  EPICSAnyValueServer();
+  ~EPICSAnyValueServer();
 
   bool ServeAnyValues(const NameAnyValueSet& name_value_set) override;
   bool UpdateAnyValue(const std::string& name, const sup::dto::AnyValue& value) override;
@@ -59,4 +59,4 @@ private:
 
 }  // namespace sup
 
-#endif  // SUP_AUTO_SERVER_EPICS_SERVER_INTERFACE_H_
+#endif  // SUP_AUTO_SERVER_EPICS_ANYVALUE_SERVER_H_

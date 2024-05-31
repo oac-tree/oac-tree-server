@@ -19,12 +19,12 @@
  * of the distribution package.
  ******************************************************************************/
 
-#ifndef SUP_AUTO_SERVER_SERVER_JOB_INTERFACE_H_
-#define SUP_AUTO_SERVER_SERVER_JOB_INTERFACE_H_
+#ifndef SUP_AUTO_SERVER_AUTOMATION_JOB_INTERFACE_H_
+#define SUP_AUTO_SERVER_AUTOMATION_JOB_INTERFACE_H_
 
+#include <sup/auto-server/anyvalue_server_interface.h>
 #include <sup/auto-server/instruction_tree_cache.h>
 #include <sup/auto-server/job_value_mapper.h>
-#include <sup/auto-server/server_interface.h>
 
 #include <sup/sequencer/job_interface.h>
 
@@ -33,13 +33,13 @@ namespace sup
 namespace auto_server
 {
 
-class ServerJobInterface : public sequencer::JobInterface
+class AutomationJobInterface : public sequencer::JobInterface
 {
 public:
-  ServerJobInterface(const std::string& prefix, const sequencer::Procedure& proc,
-                     ServerInterface& server_interface);
+  AutomationJobInterface(const std::string& prefix, const sequencer::Procedure& proc,
+                     AnyValueServerInterface& server_interface);
 
-  ~ServerJobInterface();
+  ~AutomationJobInterface();
 
   void InitializeInstructionTree(const sequencer::Instruction* root);
 
@@ -59,15 +59,15 @@ public:
   void OnProcedureTick(const sequencer::Procedure& proc) noexcept override;
 
 private:
-  ServerInterface::NameAnyValueSet GetValueSet() const;
+  AnyValueServerInterface::NameAnyValueSet GetValueSet() const;
   const JobValueMapper m_job_value_mapper;
   InstructionTreeCache m_instr_tree_cache;
   sup::dto::AnyValue m_instr_tree_anyvalue;
-  ServerInterface& m_server_interface;
+  AnyValueServerInterface& m_server_interface;
 };
 
 }  // namespace auto_server
 
 }  // namespace sup
 
-#endif  // SUP_AUTO_SERVER_SERVER_JOB_INTERFACE_H_
+#endif  // SUP_AUTO_SERVER_AUTOMATION_JOB_INTERFACE_H_

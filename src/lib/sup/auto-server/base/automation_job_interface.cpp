@@ -19,7 +19,7 @@
  * of the distribution package.
  ******************************************************************************/
 
-#include <sup/auto-server/server_job_interface.h>
+#include <sup/auto-server/automation_job_interface.h>
 #include <sup/auto-server/sup_auto_protocol.h>
 
 #include <sup/auto-server/base/instruction_tree_utils.h>
@@ -31,8 +31,8 @@ namespace sup
 namespace auto_server
 {
 
-ServerJobInterface::ServerJobInterface(const std::string& prefix, const sequencer::Procedure& proc,
-                                       ServerInterface& server_interface)
+AutomationJobInterface::AutomationJobInterface(const std::string& prefix, const sequencer::Procedure& proc,
+                                       AnyValueServerInterface& server_interface)
   : m_job_value_mapper{prefix, proc}
   , m_instr_tree_cache{}
   , m_instr_tree_anyvalue{}
@@ -42,19 +42,19 @@ ServerJobInterface::ServerJobInterface(const std::string& prefix, const sequence
   m_server_interface.ServeAnyValues(value_set);
 }
 
-ServerJobInterface::~ServerJobInterface() = default;
+AutomationJobInterface::~AutomationJobInterface() = default;
 
-void ServerJobInterface::InitializeInstructionTree(const sequencer::Instruction* root)
+void AutomationJobInterface::InitializeInstructionTree(const sequencer::Instruction* root)
 {
   m_instr_tree_cache.InitializeCache(root);
   m_instr_tree_anyvalue = m_instr_tree_cache.GetInitialInstructionTreeAnyValue();
   auto instr_tree_name = m_job_value_mapper.GetInstructionTreeName();
-  ServerInterface::NameAnyValueSet values_to_serve;
+  AnyValueServerInterface::NameAnyValueSet values_to_serve;
   values_to_serve.emplace_back(instr_tree_name, m_instr_tree_anyvalue);
   m_server_interface.ServeAnyValues(values_to_serve);
 }
 
-void ServerJobInterface::UpdateInstructionStatus(const sequencer::Instruction* instruction)
+void AutomationJobInterface::UpdateInstructionStatus(const sequencer::Instruction* instruction)
 {
   auto name = m_job_value_mapper.GetInstructionTreeName();
   auto status = instruction->GetStatus();
@@ -65,7 +65,7 @@ void ServerJobInterface::UpdateInstructionStatus(const sequencer::Instruction* i
   m_server_interface.UpdateAnyValue(name, m_instr_tree_anyvalue);
 }
 
-void ServerJobInterface::VariableUpdated(const std::string& name, const sup::dto::AnyValue& value,
+void AutomationJobInterface::VariableUpdated(const std::string& name, const sup::dto::AnyValue& value,
                                           bool connected)
 {
   auto var_value_name = m_job_value_mapper.GetVariableValueName(name);
@@ -73,21 +73,21 @@ void ServerJobInterface::VariableUpdated(const std::string& name, const sup::dto
   m_server_interface.UpdateAnyValue(var_value_name, var_info);
 }
 
-bool ServerJobInterface::PutValue(const sup::dto::AnyValue& value, const std::string& description)
+bool AutomationJobInterface::PutValue(const sup::dto::AnyValue& value, const std::string& description)
 {
   (void)value;
   (void)description;
   return true;
 }
 
-bool ServerJobInterface::GetUserValue(sup::dto::AnyValue& value, const std::string& description)
+bool AutomationJobInterface::GetUserValue(sup::dto::AnyValue& value, const std::string& description)
 {
   (void)value;
   (void)description;
   return false;
 }
 
-int ServerJobInterface::GetUserChoice(const std::vector<std::string>& options,
+int AutomationJobInterface::GetUserChoice(const std::vector<std::string>& options,
                                        const sup::dto::AnyValue& metadata)
 {
   (void)options;
@@ -95,25 +95,25 @@ int ServerJobInterface::GetUserChoice(const std::vector<std::string>& options,
   return -1;
 }
 
-void ServerJobInterface::Message(const std::string& message)
+void AutomationJobInterface::Message(const std::string& message)
 {
   (void)message;
 }
 
-void ServerJobInterface::Log(int severity, const std::string& message)
+void AutomationJobInterface::Log(int severity, const std::string& message)
 {
   (void)severity;
   (void)message;
 }
 
-void ServerJobInterface::OnStateChange(sequencer::JobState state) noexcept
+void AutomationJobInterface::OnStateChange(sequencer::JobState state) noexcept
 {
   auto name = m_job_value_mapper.GetJobStateName();
   auto value = GetJobStateValue(state);
   m_server_interface.UpdateAnyValue(name, value);
 }
 
-void ServerJobInterface::OnBreakpointChange(const sequencer::Instruction* instruction,
+void AutomationJobInterface::OnBreakpointChange(const sequencer::Instruction* instruction,
                                             bool breakpoint_set) noexcept
 {
   auto name = m_job_value_mapper.GetInstructionTreeName();
@@ -124,15 +124,15 @@ void ServerJobInterface::OnBreakpointChange(const sequencer::Instruction* instru
   m_server_interface.UpdateAnyValue(name, m_instr_tree_anyvalue);
 }
 
-void ServerJobInterface::OnProcedureTick(const sequencer::Procedure& proc) noexcept
+void AutomationJobInterface::OnProcedureTick(const sequencer::Procedure& proc) noexcept
 {
   // TODO: update next instruction leaves
   (void)proc;
 }
 
-ServerInterface::NameAnyValueSet ServerJobInterface::GetValueSet() const
+AnyValueServerInterface::NameAnyValueSet AutomationJobInterface::GetValueSet() const
 {
-  ServerInterface::NameAnyValueSet result;
+  AnyValueServerInterface::NameAnyValueSet result;
   auto job_value_name = m_job_value_mapper.GetJobStateName();
   auto job_value = GetJobStateValue(sequencer::JobState::kInitial);
   result.emplace_back(job_value_name, job_value);
