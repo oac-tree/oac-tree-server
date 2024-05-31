@@ -34,18 +34,18 @@
 
 using namespace sup::auto_server;
 
-const std::string kTestPrefix = "ServerJobInterfaceTests";
+const std::string kTestPrefix = "AutomationJobInterfaceTests";
 
-class ServerJobInterfaceTest : public ::testing::Test
+class AutomationJobInterfaceTests : public ::testing::Test
 {
 protected:
-  ServerJobInterfaceTest() = default;
-  virtual ~ServerJobInterfaceTest() = default;
+  AutomationJobInterfaceTests() = default;
+  virtual ~AutomationJobInterfaceTests() = default;
 
   UnitTestHelper::TestServerInterface m_test_server_interface;
 };
 
-TEST_F(ServerJobInterfaceTest, Construction)
+TEST_F(AutomationJobInterfaceTests, Construction)
 {
   const auto procedure_string = UnitTestHelper::CreateProcedureString(kWorkspaceSequenceBody);
   auto proc = sup::sequencer::ParseProcedureString(procedure_string);
@@ -72,7 +72,7 @@ TEST_F(ServerJobInterfaceTest, Construction)
             kVariableAnyValue);
 }
 
-TEST_F(ServerJobInterfaceTest, AfterSetup)
+TEST_F(AutomationJobInterfaceTests, AfterSetup)
 {
   const auto procedure_string = UnitTestHelper::CreateProcedureString(kWorkspaceSequenceBody);
   auto proc = sup::sequencer::ParseProcedureString(procedure_string);
@@ -103,7 +103,7 @@ TEST_F(ServerJobInterfaceTest, AfterSetup)
             kVariableAnyValue);
 }
 
-TEST_F(ServerJobInterfaceTest, InitializeInstructionTree)
+TEST_F(AutomationJobInterfaceTests, InitializeInstructionTree)
 {
   const auto procedure_string = UnitTestHelper::CreateProcedureString(kWorkspaceSequenceBody);
   auto proc = sup::sequencer::ParseProcedureString(procedure_string);
@@ -123,7 +123,7 @@ TEST_F(ServerJobInterfaceTest, InitializeInstructionTree)
   EXPECT_EQ(m_test_server_interface.GetSize(), 5);
 }
 
-TEST_F(ServerJobInterfaceTest, OnStateChange)
+TEST_F(AutomationJobInterfaceTests, OnStateChange)
 {
   const auto procedure_string = UnitTestHelper::CreateProcedureString(kWorkspaceSequenceBody);
   auto proc = sup::sequencer::ParseProcedureString(procedure_string);
@@ -145,7 +145,7 @@ TEST_F(ServerJobInterfaceTest, OnStateChange)
             static_cast<sup::dto::uint32>(sup::sequencer::JobState::kRunning));
 }
 
-TEST_F(ServerJobInterfaceTest, VariableUpdated)
+TEST_F(AutomationJobInterfaceTests, VariableUpdated)
 {
   const auto procedure_string = UnitTestHelper::CreateProcedureString(kWorkspaceSequenceBody);
   auto proc = sup::sequencer::ParseProcedureString(procedure_string);
@@ -169,7 +169,7 @@ TEST_F(ServerJobInterfaceTest, VariableUpdated)
   EXPECT_EQ(payload.second[kVariableValueField], update);
 }
 
-TEST_F(ServerJobInterfaceTest, InstructionUpdates)
+TEST_F(AutomationJobInterfaceTests, InstructionUpdates)
 {
   const auto procedure_string = UnitTestHelper::CreateProcedureString(kWorkspaceSequenceBody);
   auto proc = sup::sequencer::ParseProcedureString(procedure_string);

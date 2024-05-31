@@ -44,9 +44,9 @@ public:
   std::size_t GetNumberOfVariables() const;
 
 private:
-  const std::string m_job_prefix;
-  const std::string m_full_name;
-  const std::size_t m_nr_vars;
+  std::string m_job_prefix;
+  std::string m_full_name;
+  std::size_t m_nr_vars;
 };
 
 }  // namespace auto_server
