@@ -65,7 +65,7 @@ protected:
 TEST_F(JobTest, StartHalt)
 {
   const std::string prefix = "JobTest:StartHalt:";
-  const auto procedure_string = UnitTestHelper::CreateProcedureString(kWaitProcedureBody);
+  const auto procedure_string = UnitTestHelper::CreateProcedureString(kLongWaitProcedureBody);
   auto proc = sup::sequencer::ParseProcedureString(procedure_string);
   ASSERT_NE(proc.get(), nullptr);
 
@@ -90,9 +90,9 @@ TEST_F(JobTest, StartHalt)
   running_state[kJobStateField] = static_cast<sup::dto::uint32>(sup::sequencer::JobState::kRunning);
   EXPECT_TRUE(WaitForValue(running_state, 1.0));
 
-  // Halt job and wait for halted state
+  // Halt job and wait for failed state
   job.Halt();
-  auto halted_state = kJobStateAnyValue;
-  halted_state[kJobStateField] = static_cast<sup::dto::uint32>(sup::sequencer::JobState::kHalted);
-  EXPECT_TRUE(WaitForValue(halted_state, 1.0));
+  auto failed_state = kJobStateAnyValue;
+  failed_state[kJobStateField] = static_cast<sup::dto::uint32>(sup::sequencer::JobState::kFailed);
+  EXPECT_TRUE(WaitForValue(failed_state, 1.0));
 }

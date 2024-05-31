@@ -106,7 +106,10 @@ Job::JobImpl::JobImpl(const std::string& prefix, sup::sequencer::Procedure& proc
   : m_epics_server{}
   , m_job_interface{prefix, proc, m_epics_server}
   , m_runner{proc, m_job_interface}
-{}
+{
+  const auto root = proc.RootInstruction();
+  m_job_interface.InitializeInstructionTree(root);
+}
 
 }  // namespace auto_server
 

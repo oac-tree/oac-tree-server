@@ -53,7 +53,7 @@ R"RAW(
   </Workspace>
 )RAW"};
 
-const std::string kWaitProcedureBody{
+const std::string kLongWaitProcedureBody{
 R"RAW(
   <Wait timeout="20"/>
   <Workspace/>
