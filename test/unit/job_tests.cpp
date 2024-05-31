@@ -62,15 +62,51 @@ protected:
   std::condition_variable m_cv;
 };
 
-TEST_F(JobTest, StartHalt)
+TEST_F(JobTest, Constructed)
 {
-  const std::string prefix = "JobTest:StartHalt:";
+  const std::string prefix = "JobTest:Constructed:";
   const auto procedure_string = UnitTestHelper::CreateProcedureString(kLongWaitProcedureBody);
   auto proc = sup::sequencer::ParseProcedureString(procedure_string);
   ASSERT_NE(proc.get(), nullptr);
 
   // Create Job and wait for initial state
   Job job{prefix, std::move(proc)};
+
+  auto pv_callback = [this](const sup::epics::PvAccessClientPV::ExtendedValue& val) {
+    if(val.connected)
+    {
+      OnUpdateValue(val.value);
+    }
+  };
+  const auto state_channel = prefix + kJobStateId;
+  sup::epics::PvAccessClientPV state_pv{state_channel, pv_callback};
+  EXPECT_TRUE(state_pv.WaitForValidValue(1.0));
+  auto state = state_pv.GetValue();
+  EXPECT_EQ(state, kJobStateAnyValue);
+
+  // Start job and wait for running state
+  job.Start();
+  auto running_state = kJobStateAnyValue;
+  running_state[kJobStateField] = static_cast<sup::dto::uint32>(sup::sequencer::JobState::kRunning);
+  EXPECT_TRUE(WaitForValue(running_state, 1.0));
+
+  // Halt job and wait for failed state
+  job.Halt();
+  auto failed_state = kJobStateAnyValue;
+  failed_state[kJobStateField] = static_cast<sup::dto::uint32>(sup::sequencer::JobState::kFailed);
+  EXPECT_TRUE(WaitForValue(failed_state, 1.0));
+}
+
+TEST_F(JobTest, MoveConstructed)
+{
+  const std::string prefix = "JobTest:MoveConstructed:";
+  const auto procedure_string = UnitTestHelper::CreateProcedureString(kLongWaitProcedureBody);
+  auto proc = sup::sequencer::ParseProcedureString(procedure_string);
+  ASSERT_NE(proc.get(), nullptr);
+
+  // Create Job and wait for initial state
+  Job tmp_job{prefix, std::move(proc)};
+  Job job{std::move(tmp_job)};
 
   auto pv_callback = [this](const sup::epics::PvAccessClientPV::ExtendedValue& val) {
     if(val.connected)
