@@ -27,7 +27,6 @@
 #include <sup/protocol/function_protocol.h>
 #include <sup/protocol/protocol.h>
 
-#include <memory>
 #include <string>
 
 namespace sup
