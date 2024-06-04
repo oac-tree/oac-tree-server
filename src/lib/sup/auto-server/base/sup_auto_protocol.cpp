@@ -57,6 +57,11 @@ std::string GetInstructionTreePVName(const std::string& prefix)
   return prefix + kInstructionTreeId;
 }
 
+std::string GetInstructionPVName(const std::string& prefix, dto::uint32 index)
+{
+  return prefix + kInstructionId + std::to_string(index);
+}
+
 std::string GetVariablePVName(const std::string& prefix, dto::uint32 index)
 {
   return prefix + kVariableId + std::to_string(index);

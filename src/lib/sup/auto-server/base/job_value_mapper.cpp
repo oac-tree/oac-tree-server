@@ -21,8 +21,10 @@
 
 #include <sup/auto-server/job_value_mapper.h>
 
+#include "instruction_map.h"
 #include "variable_map.h"
 
+#include <sup/auto-server/exceptions.h>
 #include <sup/auto-server/sup_auto_protocol.h>
 
 namespace sup
@@ -33,9 +35,15 @@ namespace auto_server
 JobValueMapper::JobValueMapper(const std::string& prefix, const sequencer::Procedure& proc)
   : m_prefix{prefix}
   , m_variable_map{new VariableMap{proc.GetWorkspace()}}
+  , m_instruction_map{}
 {}
 
 JobValueMapper::~JobValueMapper() = default;
+
+void JobValueMapper::InitializeInstructionTree(const sequencer::Instruction* root)
+{
+  m_instruction_map.reset(new InstructionMap{root});
+}
 
 std::string JobValueMapper::GetInstructionTreeName() const
 {
@@ -45,6 +53,18 @@ std::string JobValueMapper::GetInstructionTreeName() const
 std::string JobValueMapper::GetJobStateName() const
 {
   return GetJobStatePVName(m_prefix);
+}
+
+std::string JobValueMapper::GetInstructionValueName(const sequencer::Instruction* instr) const
+{
+  if (!m_instruction_map)
+  {
+    const std::string error = "JobValueMapper::GetInstructionValueName(): object was not "
+      "correctly initialized with a root instruction";
+    throw InvalidOperationException(error);
+  }
+  auto idx = m_instruction_map->FindInstructionIndex(instr);
+  return GetInstructionPVName(m_prefix, idx);
 }
 
 std::string JobValueMapper::GetVariableValueName(const std::string& var_name) const

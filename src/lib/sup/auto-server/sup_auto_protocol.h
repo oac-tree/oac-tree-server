@@ -38,6 +38,7 @@ namespace auto_server
 
 // Instruction tree postfix:
 const std::string kInstructionTreeId = "INST";
+const std::string kInstructionId = "INSTR-";
 // Instruction tree node fields:
 const std::string kInstructionNodeType = "sup::instructionNode/v1.0";
 const std::string kExecStatusField = "exec_status";
@@ -104,6 +105,15 @@ std::string GetJobStatePVName(const std::string& prefix);
  * @return PV channel name for the instruction tree.
  */
 std::string GetInstructionTreePVName(const std::string& prefix);
+
+/**
+ * @brief Create a PV channel name for an instruction with the given index and prefix.
+ *
+ * @param prefix Prefix that needs to be unique among all running jobs in the network.
+ * @param index Index of the instruction inside the procedure.
+ * @return PV channel name for the instruction.
+ */
+std::string GetInstructionPVName(const std::string& prefix, sup::dto::uint32 index);
 
 /**
  * @brief Create a PV channel name for a variable with the given index and prefix.

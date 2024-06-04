@@ -33,8 +33,9 @@ namespace sup
 namespace auto_server
 {
 class VariableMap;
+class InstructionMap;
 /**
- * @brief JobValueMapper is responsible for the mapping of variable names, instruction trees and
+ * @brief JobValueMapper is responsible for the mapping of variable names, instructions and
  * job states to the name of a server AnyValue.
  */
 class JobValueMapper
@@ -43,9 +44,13 @@ public:
   JobValueMapper(const std::string& prefix, const sequencer::Procedure& proc);
   ~JobValueMapper();
 
+  void InitializeInstructionTree(const sequencer::Instruction* root);
+
   std::string GetInstructionTreeName() const;
 
   std::string GetJobStateName() const;
+
+  std::string GetInstructionValueName(const sequencer::Instruction* instr) const;
 
   std::string GetVariableValueName(const std::string& var_name) const;
 
@@ -53,6 +58,7 @@ public:
 private:
   const std::string m_prefix;
   const std::unique_ptr<VariableMap> m_variable_map;
+  std::unique_ptr<InstructionMap> m_instruction_map;
 };
 
 }  // namespace auto_server
