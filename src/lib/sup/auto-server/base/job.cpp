@@ -108,6 +108,7 @@ Job::JobImpl::JobImpl(const std::string& prefix, std::unique_ptr<sup::sequencer:
 {
   const auto root = m_proc->RootInstruction();
   m_job_interface.InitializeInstructionTree(root);
+  m_job_info.SetInstructionTreeInfo(m_job_interface.GetInstructionTreeInfo(root));
 }
 
 }  // namespace auto_server

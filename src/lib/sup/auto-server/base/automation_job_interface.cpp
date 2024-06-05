@@ -31,8 +31,9 @@ namespace sup
 namespace auto_server
 {
 
-AutomationJobInterface::AutomationJobInterface(const std::string& prefix, const sequencer::Procedure& proc,
-                                       AnyValueServerInterface& server_interface)
+AutomationJobInterface::AutomationJobInterface(const std::string& prefix,
+                                               const sequencer::Procedure& proc,
+                                               AnyValueServerInterface& server_interface)
   : m_job_value_mapper{prefix, proc}
   , m_instr_states{}
   , m_server_interface{server_interface}
@@ -52,6 +53,12 @@ void AutomationJobInterface::InitializeInstructionTree(const sequencer::Instruct
   m_server_interface.ServeAnyValues(instr_value_set);
 }
 
+sup::dto::AnyValue AutomationJobInterface::GetInstructionTreeInfo(
+  const sequencer::Instruction* root) const
+{
+  return utils::BuildInstructionTreeInfo(root, m_job_value_mapper);
+}
+
 void AutomationJobInterface::UpdateInstructionStatus(const sequencer::Instruction* instruction)
 {
   auto name = m_job_value_mapper.GetInstructionValueName(instruction);
@@ -62,22 +69,25 @@ void AutomationJobInterface::UpdateInstructionStatus(const sequencer::Instructio
   m_server_interface.UpdateAnyValue(name, instr_state);
 }
 
-void AutomationJobInterface::VariableUpdated(const std::string& name, const sup::dto::AnyValue& value,
-                                          bool connected)
+void AutomationJobInterface::VariableUpdated(const std::string& name,
+                                             const sup::dto::AnyValue& value,
+                                             bool connected)
 {
   auto var_value_name = m_job_value_mapper.GetVariableValueName(name);
   auto var_info = EncodeVariableInfo(name, value, connected);
   m_server_interface.UpdateAnyValue(var_value_name, var_info);
 }
 
-bool AutomationJobInterface::PutValue(const sup::dto::AnyValue& value, const std::string& description)
+bool AutomationJobInterface::PutValue(const sup::dto::AnyValue& value,
+                                      const std::string& description)
 {
   (void)value;
   (void)description;
   return true;
 }
 
-bool AutomationJobInterface::GetUserValue(sup::dto::AnyValue& value, const std::string& description)
+bool AutomationJobInterface::GetUserValue(sup::dto::AnyValue& value,
+                                          const std::string& description)
 {
   (void)value;
   (void)description;
@@ -85,7 +95,7 @@ bool AutomationJobInterface::GetUserValue(sup::dto::AnyValue& value, const std::
 }
 
 int AutomationJobInterface::GetUserChoice(const std::vector<std::string>& options,
-                                       const sup::dto::AnyValue& metadata)
+                                          const sup::dto::AnyValue& metadata)
 {
   (void)options;
   (void)metadata;
@@ -111,7 +121,7 @@ void AutomationJobInterface::OnStateChange(sequencer::JobState state) noexcept
 }
 
 void AutomationJobInterface::OnBreakpointChange(const sequencer::Instruction* instruction,
-                                            bool breakpoint_set) noexcept
+                                                bool breakpoint_set) noexcept
 {
   auto name = m_job_value_mapper.GetInstructionValueName(instruction);
   auto instr_idx = m_job_value_mapper.GetInstructionIndex(instruction);

@@ -39,14 +39,18 @@ public:
   JobInfo(const std::string& prefix, const sup::sequencer::Procedure& proc);
   ~JobInfo();
 
+  void SetInstructionTreeInfo(const sup::dto::AnyValue& instr_tree_info);
+
   std::string GetPrefix() const;
   std::string GetProcedureName() const;
   std::size_t GetNumberOfVariables() const;
+  sup::dto::AnyValue GetInstructionTreeInfo() const;
 
 private:
   std::string m_job_prefix;
   std::string m_full_name;
   std::size_t m_nr_vars;
+  sup::dto::AnyValue m_instr_tree_info;
 };
 
 }  // namespace auto_server

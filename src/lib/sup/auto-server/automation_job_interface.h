@@ -36,11 +36,13 @@ class AutomationJobInterface : public sequencer::JobInterface
 {
 public:
   AutomationJobInterface(const std::string& prefix, const sequencer::Procedure& proc,
-                     AnyValueServerInterface& server_interface);
+                         AnyValueServerInterface& server_interface);
 
   ~AutomationJobInterface();
 
   void InitializeInstructionTree(const sequencer::Instruction* root);
+
+  sup::dto::AnyValue GetInstructionTreeInfo(const sequencer::Instruction* root) const;
 
   void UpdateInstructionStatus(const sequencer::Instruction* instruction) override;
   void VariableUpdated(const std::string& name, const sup::dto::AnyValue& value,
