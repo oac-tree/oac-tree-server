@@ -22,6 +22,10 @@
 #ifndef SUP_AUTO_SERVER_INSTRUCTION_TREE_UTILS_H_
 #define SUP_AUTO_SERVER_INSTRUCTION_TREE_UTILS_H_
 
+#include <sup/auto-server/job_value_mapper.h>
+
+#include <sup/dto/anyvalue.h>
+
 #include <vector>
 #include <string>
 
@@ -38,16 +42,35 @@ namespace utils
 {
 
 /**
- * @brief Create a unique fieldname for the given instruction. Uniqueness means that no other child
- * instruction of its parent has the same name. The name consists of the instruction's type and an
- * integer index.
+ * @brief Build an AnyValue representation of the instruction tree, providing instruction types,
+ * attributes and the instruction index used for publishing its status.
  *
- * @param instruction Instruction to provide name for.
- * @param used_names Instruction names already in use in its parent instruction.
- * @return Unique fieldname.
+ * @param root Root instruction of the tree to represent.
+ * @param mapper JobValueMapper object that provides indices for each instruction.
+ * @return AnyValue representation.
  */
-std::string CreateUniqueField(const sequencer::Instruction* instruction,
-                              const std::vector<std::string>& used_names);
+sup::dto::AnyValue BuildInstructionTreeInfo(const sequencer::Instruction* root,
+                                            const JobValueMapper& mapper);
+
+/**
+ * @brief Build an AnyValue representation of an instruction, providing its type,
+ * attributes and the instruction index used for publishing its status.
+ *
+ * @param root Instruction to represent.
+ * @param index Index to put inside the node (referring to the served instruction AnyValue status).
+ * @return AnyValue representation.
+ */
+sup::dto::AnyValue BuildInstructionInfoNode(const sequencer::Instruction* instr,
+                                            sup::dto::uint32 index);
+
+/**
+ * @brief Create a unique member name for a structured AnyValue. An integer index is used to
+ * generate the member name to allow to easily deduce member order later.
+ *
+ * @param idx Index to use.
+ * @return Unique member name.
+ */
+std::string CreateIndexedMemberName(std::size_t idx);
 
 }  // namespace utils
 

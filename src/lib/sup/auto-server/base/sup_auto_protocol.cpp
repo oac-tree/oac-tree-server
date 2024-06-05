@@ -37,6 +37,12 @@ const dto::AnyValue kInstructionAnyValue = {{
   { kBreakpointField, false }
 }, kInstructionType };
 
+const dto::AnyValue kInstructionInfoNodeAnyValue = {{
+  { kInstructionInfoNodeTypeField, "" },
+  { kIndexField, { sup::dto::UnsignedInteger32Type, 0 }},
+  { kAttributesField, sup::dto::EmptyStruct() }
+}, kInstructionInfoNodeType };
+
 const dto::AnyValue kVariableAnyValue = {{
   { protocol::kEncodingField, protocol::kBase64Encoding},
   { protocol::kValueField, "" }
@@ -49,11 +55,6 @@ const dto::AnyValue kJobStateAnyValue = {{
 std::string GetJobStatePVName(const std::string& prefix)
 {
   return prefix + kJobStateId;
-}
-
-std::string GetInstructionTreePVName(const std::string& prefix)
-{
-  return prefix + kInstructionTreeId;
 }
 
 std::string GetInstructionPVName(const std::string& prefix, dto::uint32 index)

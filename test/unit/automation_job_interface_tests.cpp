@@ -251,5 +251,5 @@ TEST_F(AutomationJobInterfaceTests, InstructionUpdates)
   EXPECT_EQ(copy1_status[kBreakpointField], true);
 
   // Uncomment to introspect how the served variables look like:
-  std::cout << m_test_server_interface;
+  // std::cout << m_test_server_interface;
 }

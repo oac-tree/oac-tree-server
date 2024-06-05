@@ -46,8 +46,6 @@ public:
 
   void InitializeInstructionTree(const sequencer::Instruction* root);
 
-  std::string GetInstructionTreeName() const;
-
   std::string GetJobStateName() const;
 
   sup::dto::uint32 GetNumberOfInstructions() const;
@@ -56,9 +54,13 @@ public:
 
   std::string GetInstructionValueName(const sequencer::Instruction* instr) const;
 
-  std::string GetVariableValueName(const std::string& var_name) const;
-
   std::vector<std::string> GetInstructionValueNames() const;
+
+  sup::dto::uint32 GetNumberOfVariables() const;
+
+  sup::dto::uint32 GetVariableIndex(const std::string& var_name) const;
+
+  std::string GetVariableValueName(const std::string& var_name) const;
 
   std::vector<std::string> GetVariableValueNames() const;
 private:

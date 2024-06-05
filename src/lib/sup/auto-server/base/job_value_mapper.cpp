@@ -45,11 +45,6 @@ void JobValueMapper::InitializeInstructionTree(const sequencer::Instruction* roo
   m_instruction_map.reset(new InstructionMap{root});
 }
 
-std::string JobValueMapper::GetInstructionTreeName() const
-{
-  return GetInstructionTreePVName(m_prefix);
-}
-
 std::string JobValueMapper::GetJobStateName() const
 {
   return GetJobStatePVName(m_prefix);
@@ -88,20 +83,33 @@ std::string JobValueMapper::GetInstructionValueName(const sequencer::Instruction
   return GetInstructionPVName(m_prefix, idx);
 }
 
+std::vector<std::string> JobValueMapper::GetInstructionValueNames() const
+{
+  std::vector<std::string> result;
+  if (m_instruction_map)
+  {
+    for (sup::dto::uint32 idx = 0; idx < m_instruction_map->GetNumberOfInstructions(); ++idx)
+    {
+      result.push_back(GetInstructionPVName(m_prefix, idx));
+    }
+  }
+  return result;
+}
+
+sup::dto::uint32 JobValueMapper::GetNumberOfVariables() const
+{
+  return m_variable_map->GetNumberOfVariables();
+}
+
+sup::dto::uint32 JobValueMapper::GetVariableIndex(const std::string& var_name) const
+{
+  return m_variable_map->FindVariableIndex(var_name);
+}
+
 std::string JobValueMapper::GetVariableValueName(const std::string& var_name) const
 {
   auto idx = m_variable_map->FindVariableIndex(var_name);
   return GetVariablePVName(m_prefix, idx);
-}
-
-std::vector<std::string> JobValueMapper::GetInstructionValueNames() const
-{
-  std::vector<std::string> result;
-  for (sup::dto::uint32 idx = 0; idx < m_instruction_map->GetNumberOfInstructions(); ++idx)
-  {
-    result.push_back(GetInstructionPVName(m_prefix, idx));
-  }
-  return result;
 }
 
 std::vector<std::string> JobValueMapper::GetVariableValueNames() const

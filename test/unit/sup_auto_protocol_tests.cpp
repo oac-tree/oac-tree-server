@@ -42,7 +42,7 @@ TEST_F(SupAutoProtocolTest, PVNames)
 
   // Check value names
   EXPECT_EQ(GetJobStatePVName(prefix), prefix + kJobStateId);
-  EXPECT_EQ(GetInstructionTreePVName(prefix), prefix + kInstructionTreeId);
+  EXPECT_EQ(GetInstructionPVName(prefix, 1729u), prefix + kInstructionId + "1729");
   EXPECT_EQ(GetVariablePVName(prefix, 42u), prefix + kVariableId + "42");
 }
 

@@ -36,16 +36,26 @@ namespace auto_server
 // Prefix for a specific procedure:
 // "CSW-S2D-AUTO-STARTUP:
 
-// Instruction tree postfix:
-const std::string kInstructionTreeId = "INST";
+// Instruction pv identifier
 const std::string kInstructionId = "INSTR-";
-// Instruction tree node fields:
+// Instruction fields:
 const std::string kInstructionType = "sup::instructionType/v1.0";
 const std::string kExecStatusField = "exec_status";
 const std::string kBreakpointField = "breakpoint";
 
-// Basic instruction node AnyValue
+// Basic instruction AnyValue
 extern const sup::dto::AnyValue kInstructionAnyValue;
+
+// Instruction info node fields
+const std::string kInstructionInfoNodeType = "sup::instructionNodeInfoType/v1.0";
+const std::string kInstructionInfoNodeTypeField = "type";
+const std::string kIndexField = "index";
+const std::string kAttributesField = "attributes";
+const std::string kChildInstructionsField = "children";
+const std::string kChildMemberFieldPrefix = "child_";
+
+// Basic instruction info node AnyValue
+extern const sup::dto::AnyValue kInstructionInfoNodeAnyValue;
 
 // Variable pv identifier
 const std::string kVariableId = "VAR-";
@@ -96,14 +106,6 @@ const std::string kNumberOfVarsFieldName = "n_vars";
  * @return PV channel name for the job state.
  */
 std::string GetJobStatePVName(const std::string& prefix);
-
-/**
- * @brief Create a PV channel name for the instruction tree from a given prefix.
- *
- * @param prefix Prefix that needs to be unique among all running jobs in the network.
- * @return PV channel name for the instruction tree.
- */
-std::string GetInstructionTreePVName(const std::string& prefix);
 
 /**
  * @brief Create a PV channel name for an instruction with the given index and prefix.
