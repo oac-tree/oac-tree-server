@@ -37,7 +37,7 @@ install(FILES
   automation_server_protocol.h
   automation_server.h
   exceptions.h
-  instruction_tree_cache.h
+  # instruction_tree_cache.h
   job_info.h
   job_value_mapper.h
   job.h

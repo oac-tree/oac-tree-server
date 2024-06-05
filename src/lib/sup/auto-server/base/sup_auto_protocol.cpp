@@ -34,9 +34,8 @@ namespace auto_server
 
 const dto::AnyValue kInstructionAnyValue = {{
   { kExecStatusField, static_cast<dto::uint16>(sequencer::ExecutionStatus::NOT_STARTED)},
-  { kBreakpointField, false },
-  { kChildrenField, dto::EmptyStruct() }
-}, kInstructionNodeType };
+  { kBreakpointField, false }
+}, kInstructionType };
 
 const dto::AnyValue kVariableAnyValue = {{
   { protocol::kEncodingField, protocol::kBase64Encoding},

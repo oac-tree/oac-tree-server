@@ -56,7 +56,7 @@ namespace auto_server
 
 InstructionTreeCache::InstructionTreeCache()
   : m_instruction_paths{}
-  , m_instr_tree_anyvalue{kInstructionAnyValue}
+  , m_instr_tree_anyvalue{kOldInstructionAnyValue}
 {}
 
 InstructionTreeCache::~InstructionTreeCache() = default;
@@ -119,7 +119,7 @@ std::string PushRootNode(std::deque<InstructionNode>& stack,
                          sup::dto::AnyValue& root_anyvalue,
                          const sup::sequencer::Instruction* root_instruction)
 {
-  root_anyvalue = kInstructionAnyValue;
+  root_anyvalue = kOldInstructionAnyValue;
   InstructionNode node{ root_instruction, root_anyvalue, "", 0 };
   stack.push_back(node);
   return "";
@@ -133,7 +133,7 @@ std::string PushInstructionNode(std::deque<InstructionNode>& stack,
   auto current_member_names = parent_node.anyvalue[kChildrenField].MemberNames();
   auto instr_path = utils::CreateUniqueField(instruction, current_member_names);
   auto full_instr_path = utils::CreateFullInstructionPath(parent_path, instr_path);
-  parent_node.anyvalue[kChildrenField].AddMember(instr_path, kInstructionAnyValue);
+  parent_node.anyvalue[kChildrenField].AddMember(instr_path, kOldInstructionAnyValue);
   InstructionNode node{ instruction, parent_node.anyvalue[kChildrenField][instr_path],
                         full_instr_path, 0 };
   stack.push_back(node);

@@ -55,6 +55,27 @@ std::string JobValueMapper::GetJobStateName() const
   return GetJobStatePVName(m_prefix);
 }
 
+sup::dto::uint32 JobValueMapper::GetNumberOfInstructions() const
+{
+  if (!m_instruction_map)
+  {
+    return 0;
+  }
+  return m_instruction_map->GetNumberOfInstructions();
+}
+
+sup::dto::uint32 JobValueMapper::GetInstructionIndex(const sequencer::Instruction* instr) const
+{
+  if (!m_instruction_map)
+  {
+    const std::string error = "JobValueMapper::GetInstructionIndex(): object was not "
+      "correctly initialized with a root instruction";
+    throw InvalidOperationException(error);
+  }
+  return m_instruction_map->FindInstructionIndex(instr);
+}
+
+
 std::string JobValueMapper::GetInstructionValueName(const sequencer::Instruction* instr) const
 {
   if (!m_instruction_map)
@@ -71,6 +92,16 @@ std::string JobValueMapper::GetVariableValueName(const std::string& var_name) co
 {
   auto idx = m_variable_map->FindVariableIndex(var_name);
   return GetVariablePVName(m_prefix, idx);
+}
+
+std::vector<std::string> JobValueMapper::GetInstructionValueNames() const
+{
+  std::vector<std::string> result;
+  for (sup::dto::uint32 idx = 0; idx < m_instruction_map->GetNumberOfInstructions(); ++idx)
+  {
+    result.push_back(GetInstructionPVName(m_prefix, idx));
+  }
+  return result;
 }
 
 std::vector<std::string> JobValueMapper::GetVariableValueNames() const

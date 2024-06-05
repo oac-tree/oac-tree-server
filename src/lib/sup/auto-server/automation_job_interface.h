@@ -23,7 +23,6 @@
 #define SUP_AUTO_SERVER_AUTOMATION_JOB_INTERFACE_H_
 
 #include <sup/auto-server/anyvalue_server_interface.h>
-#include <sup/auto-server/instruction_tree_cache.h>
 #include <sup/auto-server/job_value_mapper.h>
 
 #include <sup/sequencer/job_interface.h>
@@ -59,10 +58,10 @@ public:
   void OnProcedureTick(const sequencer::Procedure& proc) noexcept override;
 
 private:
-  AnyValueServerInterface::NameAnyValueSet GetValueSet() const;
-  const JobValueMapper m_job_value_mapper;
-  InstructionTreeCache m_instr_tree_cache;
-  sup::dto::AnyValue m_instr_tree_anyvalue;
+  AnyValueServerInterface::NameAnyValueSet GetInitialValueSet() const;
+  AnyValueServerInterface::NameAnyValueSet GetInstructionValueSet() const;
+  JobValueMapper m_job_value_mapper;
+  std::vector<sup::dto::AnyValue> m_instr_states;
   AnyValueServerInterface& m_server_interface;
 };
 

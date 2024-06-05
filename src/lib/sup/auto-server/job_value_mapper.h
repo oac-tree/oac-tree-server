@@ -50,9 +50,15 @@ public:
 
   std::string GetJobStateName() const;
 
+  sup::dto::uint32 GetNumberOfInstructions() const;
+
+  sup::dto::uint32 GetInstructionIndex(const sequencer::Instruction* instr) const;
+
   std::string GetInstructionValueName(const sequencer::Instruction* instr) const;
 
   std::string GetVariableValueName(const std::string& var_name) const;
+
+  std::vector<std::string> GetInstructionValueNames() const;
 
   std::vector<std::string> GetVariableValueNames() const;
 private:

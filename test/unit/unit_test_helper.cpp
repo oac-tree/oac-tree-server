@@ -21,8 +21,6 @@
 
 #include "unit_test_helper.h"
 
-#include <sup/auto-server/instruction_tree_cache.h>
-
 #include <sup/dto/anyvalue_helper.h>
 #include <sup/sequencer/sequence_parser.h>
 
@@ -144,17 +142,17 @@ std::string CreateProcedureString(const std::string &body)
   return header + body + footer;
 }
 
-sup::dto::AnyValue CreateTestInstructionTreeAnyValue()
-{
-  const auto procedure_string = CreateProcedureString(kShortSequenceBody);
-  auto proc = sequencer::ParseProcedureString(procedure_string);
-  proc->Setup();
+// sup::dto::AnyValue CreateTestInstructionTreeAnyValue()
+// {
+//   const auto procedure_string = CreateProcedureString(kShortSequenceBody);
+//   auto proc = sequencer::ParseProcedureString(procedure_string);
+//   proc->Setup();
 
-  auto root_instr = proc->RootInstruction();
-  InstructionTreeCache tree_cache{};
-  tree_cache.InitializeCache(root_instr);
-  return tree_cache.GetInitialInstructionTreeAnyValue();
-}
+//   auto root_instr = proc->RootInstruction();
+//   InstructionTreeCache tree_cache{};
+//   tree_cache.InitializeCache(root_instr);
+//   return tree_cache.GetInitialInstructionTreeAnyValue();
+// }
 
 }  // namespace UnitTestHelper
 

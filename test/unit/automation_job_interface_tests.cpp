@@ -34,8 +34,6 @@
 
 using namespace sup::auto_server;
 
-const std::string kTestPrefix = "AutomationJobInterfaceTests";
-
 class AutomationJobInterfaceTests : public ::testing::Test
 {
 protected:
@@ -47,6 +45,7 @@ protected:
 
 TEST_F(AutomationJobInterfaceTests, Construction)
 {
+  const std::string kTestPrefix = "AutomationJobInterfaceTests:Construction:";
   const auto procedure_string = UnitTestHelper::CreateProcedureString(kWorkspaceSequenceBody);
   auto proc = sup::sequencer::ParseProcedureString(procedure_string);
   ASSERT_NE(proc.get(), nullptr);
@@ -74,6 +73,7 @@ TEST_F(AutomationJobInterfaceTests, Construction)
 
 TEST_F(AutomationJobInterfaceTests, AfterSetup)
 {
+  const std::string kTestPrefix = "AutomationJobInterfaceTests:AfterSetup:";
   const auto procedure_string = UnitTestHelper::CreateProcedureString(kWorkspaceSequenceBody);
   auto proc = sup::sequencer::ParseProcedureString(procedure_string);
   ASSERT_NE(proc.get(), nullptr);
@@ -105,6 +105,7 @@ TEST_F(AutomationJobInterfaceTests, AfterSetup)
 
 TEST_F(AutomationJobInterfaceTests, InitializeInstructionTree)
 {
+  const std::string kTestPrefix = "AutomationJobInterfaceTests:InitializeInstructionTree:";
   const auto procedure_string = UnitTestHelper::CreateProcedureString(kWorkspaceSequenceBody);
   auto proc = sup::sequencer::ParseProcedureString(procedure_string);
   ASSERT_NE(proc.get(), nullptr);
@@ -118,13 +119,14 @@ TEST_F(AutomationJobInterfaceTests, InitializeInstructionTree)
   sup::sequencer::AsyncRunner runner{*proc, job_interface};
   EXPECT_EQ(m_test_server_interface.GetSize(), 4);
 
-  // Initialize instruction tree and check again
+  // Initialize instruction tree and check again (three instruction values added)
   job_interface.InitializeInstructionTree(proc->RootInstruction());
-  EXPECT_EQ(m_test_server_interface.GetSize(), 5);
+  EXPECT_EQ(m_test_server_interface.GetSize(), 7);
 }
 
 TEST_F(AutomationJobInterfaceTests, OnStateChange)
 {
+  const std::string kTestPrefix = "AutomationJobInterfaceTests:OnStateChange:";
   const auto procedure_string = UnitTestHelper::CreateProcedureString(kWorkspaceSequenceBody);
   auto proc = sup::sequencer::ParseProcedureString(procedure_string);
   ASSERT_NE(proc.get(), nullptr);
@@ -147,6 +149,7 @@ TEST_F(AutomationJobInterfaceTests, OnStateChange)
 
 TEST_F(AutomationJobInterfaceTests, VariableUpdated)
 {
+  const std::string kTestPrefix = "AutomationJobInterfaceTests:VariableUpdated:";
   const auto procedure_string = UnitTestHelper::CreateProcedureString(kWorkspaceSequenceBody);
   auto proc = sup::sequencer::ParseProcedureString(procedure_string);
   ASSERT_NE(proc.get(), nullptr);
@@ -171,6 +174,7 @@ TEST_F(AutomationJobInterfaceTests, VariableUpdated)
 
 TEST_F(AutomationJobInterfaceTests, InstructionUpdates)
 {
+  const std::string kTestPrefix = "AutomationJobInterfaceTests:InstructionUpdates:";
   const auto procedure_string = UnitTestHelper::CreateProcedureString(kWorkspaceSequenceBody);
   auto proc = sup::sequencer::ParseProcedureString(procedure_string);
   ASSERT_NE(proc.get(), nullptr);
@@ -185,31 +189,35 @@ TEST_F(AutomationJobInterfaceTests, InstructionUpdates)
   // Initialize instruction tree and check again
   auto root_instruction = proc->RootInstruction();
   job_interface.InitializeInstructionTree(root_instruction);
-  EXPECT_EQ(m_test_server_interface.GetSize(), 5);
+  EXPECT_EQ(m_test_server_interface.GetSize(), 7);
 
-  const std::string instruction_tree_name = GetInstructionTreePVName(kTestPrefix);
-  ASSERT_TRUE(m_test_server_interface.HasAnyValue(instruction_tree_name));
-  auto instr_tree = m_test_server_interface.GetAnyValue(instruction_tree_name);
-  std::string copy0_node_name = kChildrenField + ".Copy0";
-  std::string copy1_node_name = kChildrenField + ".Copy1";
-  ASSERT_TRUE(instr_tree.HasField(copy0_node_name));
-  ASSERT_TRUE(instr_tree.HasField(copy1_node_name));
-  auto copy0_node = instr_tree[copy0_node_name];
-  auto copy1_node = instr_tree[copy1_node_name];
-  ASSERT_TRUE(copy0_node.HasField(kExecStatusField));
-  ASSERT_TRUE(copy0_node.HasField(kBreakpointField));
-  ASSERT_TRUE(copy0_node.HasField(kChildrenField));
-  EXPECT_EQ(copy0_node[kExecStatusField],
+  // Check presence of served instruction statuses
+  const std::string instr_0_name = GetInstructionPVName(kTestPrefix, 0);
+  ASSERT_TRUE(m_test_server_interface.HasAnyValue(instr_0_name));
+  const std::string instr_1_name = GetInstructionPVName(kTestPrefix, 1);
+  ASSERT_TRUE(m_test_server_interface.HasAnyValue(instr_1_name));
+  const std::string instr_2_name = GetInstructionPVName(kTestPrefix, 2);
+  ASSERT_TRUE(m_test_server_interface.HasAnyValue(instr_2_name));
+
+  // Check instruction status content
+  auto seq_status = m_test_server_interface.GetAnyValue(instr_0_name);
+  ASSERT_TRUE(seq_status.HasField(kExecStatusField));
+  ASSERT_TRUE(seq_status.HasField(kBreakpointField));
+  EXPECT_EQ(seq_status[kExecStatusField],
     static_cast<sup::dto::uint16>(sup::sequencer::ExecutionStatus::NOT_STARTED));
-  EXPECT_EQ(copy0_node[kBreakpointField], false);
-  EXPECT_EQ(copy0_node[kChildrenField], sup::dto::EmptyStruct());
-  ASSERT_TRUE(copy1_node.HasField(kExecStatusField));
-  ASSERT_TRUE(copy1_node.HasField(kBreakpointField));
-  ASSERT_TRUE(copy1_node.HasField(kChildrenField));
-  EXPECT_EQ(copy1_node[kExecStatusField],
+  EXPECT_EQ(seq_status[kBreakpointField], false);
+  auto copy0_status = m_test_server_interface.GetAnyValue(instr_1_name);
+  ASSERT_TRUE(copy0_status.HasField(kExecStatusField));
+  ASSERT_TRUE(copy0_status.HasField(kBreakpointField));
+  EXPECT_EQ(copy0_status[kExecStatusField],
     static_cast<sup::dto::uint16>(sup::sequencer::ExecutionStatus::NOT_STARTED));
-  EXPECT_EQ(copy1_node[kBreakpointField], false);
-  EXPECT_EQ(copy1_node[kChildrenField], sup::dto::EmptyStruct());
+  EXPECT_EQ(copy0_status[kBreakpointField], false);
+  auto copy1_status = m_test_server_interface.GetAnyValue(instr_2_name);
+  ASSERT_TRUE(copy1_status.HasField(kExecStatusField));
+  ASSERT_TRUE(copy1_status.HasField(kBreakpointField));
+  EXPECT_EQ(copy1_status[kExecStatusField],
+    static_cast<sup::dto::uint16>(sup::sequencer::ExecutionStatus::NOT_STARTED));
+  EXPECT_EQ(copy1_status[kBreakpointField], false);
 
   // Set breakpoint on second copy, start and wait for paused after breakpoint is hit
   ASSERT_EQ(root_instruction->ChildrenCount(), 2);
@@ -223,25 +231,25 @@ TEST_F(AutomationJobInterfaceTests, InstructionUpdates)
   ASSERT_TRUE(m_test_server_interface.WaitForValue(state_name, paused_state_value, 1.0));
 
   // Check again
-  ASSERT_TRUE(m_test_server_interface.HasAnyValue(instruction_tree_name));
-  instr_tree = m_test_server_interface.GetAnyValue(instruction_tree_name);
-  copy0_node = instr_tree[copy0_node_name];
-  copy1_node = instr_tree[copy1_node_name];
-  ASSERT_TRUE(copy0_node.HasField(kExecStatusField));
-  ASSERT_TRUE(copy0_node.HasField(kBreakpointField));
-  ASSERT_TRUE(copy0_node.HasField(kChildrenField));
-  EXPECT_EQ(copy0_node[kExecStatusField].As<sup::dto::uint16>(),
+  seq_status = m_test_server_interface.GetAnyValue(instr_0_name);
+  ASSERT_TRUE(seq_status.HasField(kExecStatusField));
+  ASSERT_TRUE(seq_status.HasField(kBreakpointField));
+  EXPECT_EQ(seq_status[kExecStatusField],
+    static_cast<sup::dto::uint16>(sup::sequencer::ExecutionStatus::NOT_FINISHED));
+  EXPECT_EQ(seq_status[kBreakpointField], false);
+  copy0_status = m_test_server_interface.GetAnyValue(instr_1_name);
+  ASSERT_TRUE(copy0_status.HasField(kExecStatusField));
+  ASSERT_TRUE(copy0_status.HasField(kBreakpointField));
+  EXPECT_EQ(copy0_status[kExecStatusField],
     static_cast<sup::dto::uint16>(sup::sequencer::ExecutionStatus::SUCCESS));
-  EXPECT_EQ(copy0_node[kBreakpointField], false);
-  EXPECT_EQ(copy0_node[kChildrenField], sup::dto::EmptyStruct());
-  ASSERT_TRUE(copy1_node.HasField(kExecStatusField));
-  ASSERT_TRUE(copy1_node.HasField(kBreakpointField));
-  ASSERT_TRUE(copy1_node.HasField(kChildrenField));
-  EXPECT_EQ(copy1_node[kExecStatusField],
+  EXPECT_EQ(copy0_status[kBreakpointField], false);
+  copy1_status = m_test_server_interface.GetAnyValue(instr_2_name);
+  ASSERT_TRUE(copy1_status.HasField(kExecStatusField));
+  ASSERT_TRUE(copy1_status.HasField(kBreakpointField));
+  EXPECT_EQ(copy1_status[kExecStatusField],
     static_cast<sup::dto::uint16>(sup::sequencer::ExecutionStatus::NOT_STARTED));
-  EXPECT_EQ(copy1_node[kBreakpointField], true);
-  EXPECT_EQ(copy1_node[kChildrenField], sup::dto::EmptyStruct());
+  EXPECT_EQ(copy1_status[kBreakpointField], true);
 
   // Uncomment to introspect how the served variables look like:
-  // std::cout << m_test_server_interface;
+  std::cout << m_test_server_interface;
 }

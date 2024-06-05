@@ -35,13 +35,6 @@ namespace auto_server
 namespace utils
 {
 
-std::string CreateFullInstructionPath(const std::string& prefix, const std::string& instr_name)
-{
-  auto full_prefix = prefix.empty() ? kChildrenField + "."
-                                    : prefix + "." + kChildrenField + ".";
-  return full_prefix + instr_name;
-}
-
 std::string CreateUniqueField(const sequencer::Instruction* instruction,
                               const std::vector<std::string>& used_names)
 {

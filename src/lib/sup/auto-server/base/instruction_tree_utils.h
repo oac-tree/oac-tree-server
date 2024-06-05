@@ -38,19 +38,6 @@ namespace utils
 {
 
 /**
- * @brief Create a full path into an AnyValue from a prefix and a specific instruction name.
- *
- * @note Every instruction in the tree is represented by a structure, containing its status and
- * a member structure for possible children. The full path contains these intermediate fieldnames
- * for the 'children' structure.
- *
- * @param prefix Path to the parent instruction or empty if instruction was the root.
- * @param instr_name Unique instruction name within a given parent.
- * @return Full path from root to the instruction.
- */
-std::string CreateFullInstructionPath(const std::string& prefix, const std::string& instr_name);
-
-/**
  * @brief Create a unique fieldname for the given instruction. Uniqueness means that no other child
  * instruction of its parent has the same name. The name consists of the instruction's type and an
  * integer index.

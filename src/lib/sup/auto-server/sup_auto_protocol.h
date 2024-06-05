@@ -40,10 +40,9 @@ namespace auto_server
 const std::string kInstructionTreeId = "INST";
 const std::string kInstructionId = "INSTR-";
 // Instruction tree node fields:
-const std::string kInstructionNodeType = "sup::instructionNode/v1.0";
+const std::string kInstructionType = "sup::instructionType/v1.0";
 const std::string kExecStatusField = "exec_status";
 const std::string kBreakpointField = "breakpoint";
-const std::string kChildrenField = "children";
 
 // Basic instruction node AnyValue
 extern const sup::dto::AnyValue kInstructionAnyValue;
