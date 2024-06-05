@@ -68,10 +68,8 @@ public:
 
 private:
   sup::sequencer::AsyncRunner& Runner();
-  std::unique_ptr<sup::sequencer::Procedure> m_proc;
   struct JobImpl;
   std::unique_ptr<JobImpl> m_impl;
-  const JobInfo m_job_info;
 };
 
 }  // namespace auto_server

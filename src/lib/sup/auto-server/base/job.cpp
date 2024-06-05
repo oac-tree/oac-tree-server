@@ -32,34 +32,31 @@ namespace auto_server
 
 struct Job::JobImpl
 {
-  JobImpl(const std::string& prefix, sup::sequencer::Procedure& proc);
+  JobImpl(const std::string& prefix, std::unique_ptr<sup::sequencer::Procedure> proc);
   ~JobImpl() = default;
 
+  std::unique_ptr<sup::sequencer::Procedure> m_proc;
   EPICSAnyValueServer m_epics_server;
   AutomationJobInterface m_job_interface;
   sup::sequencer::AsyncRunner m_runner;
+  JobInfo m_job_info;
 };
 
 Job::Job(const std::string& prefix, std::unique_ptr<sup::sequencer::Procedure> proc)
-  : m_proc{std::move(proc)}
-  , m_impl{new JobImpl{prefix, *m_proc}}
-  , m_job_info{prefix, *m_proc}
+  : m_impl{new JobImpl{prefix, std::move(proc)}}
 {}
 
 Job::~Job() = default;
 
 Job::Job(Job&& other)
-  : m_proc{}
-  , m_impl{}
-  , m_job_info{other.m_job_info}
+  : m_impl{}
 {
-  std::swap(m_proc, other.m_proc);
   std::swap(m_impl, other.m_impl);
 }
 
 JobInfo Job::GetInfo() const
 {
-  return m_job_info;
+  return m_impl->m_job_info;
 }
 
 void Job::SetBreakpoint(const sup::sequencer::Instruction* instruction)
@@ -102,12 +99,14 @@ sup::sequencer::AsyncRunner& Job::Runner()
   return m_impl->m_runner;
 }
 
-Job::JobImpl::JobImpl(const std::string& prefix, sup::sequencer::Procedure& proc)
-  : m_epics_server{}
-  , m_job_interface{prefix, proc, m_epics_server}
-  , m_runner{proc, m_job_interface}
+Job::JobImpl::JobImpl(const std::string& prefix, std::unique_ptr<sup::sequencer::Procedure> proc)
+  : m_proc{std::move(proc)}
+  , m_epics_server{}
+  , m_job_interface{prefix, *m_proc, m_epics_server}
+  , m_runner{*m_proc, m_job_interface}
+  , m_job_info{prefix, *m_proc}
 {
-  const auto root = proc.RootInstruction();
+  const auto root = m_proc->RootInstruction();
   m_job_interface.InitializeInstructionTree(root);
 }
 

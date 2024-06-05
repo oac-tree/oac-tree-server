@@ -24,12 +24,9 @@
 #include <sup/auto-server/base/instruction_tree_utils.h>
 #include <sup/auto-server/sup_auto_protocol.h>
 
-#include <sup/dto/anyvalue_helper.h>
 #include <sup/sequencer/sequence_parser.h>
 
 #include <gtest/gtest.h>
-
-#include <iostream>
 
 using namespace sup::auto_server;
 
@@ -79,8 +76,6 @@ TEST_F(InstructionTreeUtilsTest, BuildInstructionTreeInfo)
     { "outputVar", "var2" }
   };
   EXPECT_TRUE(CheckInstructionNodeAnyValue(child_1, "Copy", 2, child_1_attrs));
-
-  std::cout << sup::dto::PrintAnyValue(instr_tree) << std::endl;
 }
 
 bool CheckInstructionNodeAnyValue(const sup::dto::AnyValue& node, const std::string& node_type,
