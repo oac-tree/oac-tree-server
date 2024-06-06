@@ -22,16 +22,15 @@
 #include "unit_test_helper.h"
 
 #include <sup/auto-server/job.h>
+#include <sup/auto-server/job_value_mapper.h>
 #include <sup/auto-server/sup_auto_protocol.h>
 
+#include <sup/auto-server/base/instruction_tree_utils.h>
 #include <sup/auto-server/base/variable_utils.h>
 
-#include <sup/dto/anyvalue_helper.h>
 #include <sup/sequencer/sequence_parser.h>
 
 #include <gtest/gtest.h>
-
-#include <iostream>
 
 using namespace sup::auto_server;
 
@@ -52,7 +51,13 @@ TEST_F(JobInfoTest, FromJob)
   // Build workspace representation before passing the procedure inside a job
   auto ws_av = utils::BuildWorkspaceInfo(proc->GetWorkspace());
 
-  // Create Job and wait for initial state
+  // Build instruction tree info representation
+  JobValueMapper mapper{prefix, *proc};
+  auto root = proc->RootInstruction();
+  mapper.InitializeInstructionTree(root);
+  auto instr_tree_info = utils::BuildInstructionTreeInfo(root, mapper);
+
+  // Create Job and validate its JobInfo
   Job job{prefix, std::move(proc)};
 
   auto job_info = job.GetInfo();
@@ -61,7 +66,5 @@ TEST_F(JobInfoTest, FromJob)
   EXPECT_EQ(job_info.GetNumberOfVariables(), 3);
   EXPECT_EQ(job_info.GetNumberOfInstructions(), 3);
   EXPECT_EQ(job_info.GetVariableInfo(), ws_av);
-
-  auto job_info_av = ToAnyValue(job_info);
-  std::cout << sup::dto::PrintAnyValue(job_info_av) << std::endl;
+  EXPECT_EQ(job_info.GetInstructionTreeInfo(), instr_tree_info);
 }
