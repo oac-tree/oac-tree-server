@@ -27,6 +27,8 @@
 #include <sup/sequencer/instruction.h>
 #include <sup/sequencer/instruction_tree.h>
 
+#include <algorithm>
+
 namespace sup
 {
 namespace auto_server
@@ -51,8 +53,7 @@ sup::dto::uint32 InstructionMap::FindInstructionIndex(const sequencer::Instructi
   return iter->second;
 }
 
-std::map<const sequencer::Instruction*, sup::dto::uint32>
-InstructionMap::GetInstructionMapping() const
+const InstructionMap::InstructionIndexMap& InstructionMap::GetInstructionMapping() const
 {
   return m_instruction_map;
 }
@@ -73,6 +74,30 @@ void InstructionMap::InitializeMap(const sequencer::Instruction* root)
   {
     m_instruction_map[instr_list[idx]] = idx;
   }
+}
+
+std::vector<const sequencer::Instruction*> GetReverseMap(
+  const InstructionMap::InstructionIndexMap& instr_map)
+{
+  auto size = instr_map.size();
+  std::vector<const sequencer::Instruction*> result(size, nullptr);
+  for (const auto& entry : instr_map)
+  {
+    auto idx = entry.second;
+    if (idx >= result.size())
+    {
+      const std::string error = "GetReverseMap(): index found that is larger than the map size";
+      throw InvalidOperationException(error);
+    }
+    result[idx] = entry.first;
+  }
+  auto iter = std::find(result.begin(), result.end(), nullptr);
+  if (iter != result.end())
+  {
+      const std::string error = "GetReverseMap(): equal indices found for different instructions";
+      throw InvalidOperationException(error);
+  }
+  return result;
 }
 
 }  // namespace auto_server

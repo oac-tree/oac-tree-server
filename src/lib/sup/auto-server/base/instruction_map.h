@@ -47,6 +47,7 @@ namespace auto_server
 class InstructionMap
 {
 public:
+  using InstructionIndexMap = std::map<const sequencer::Instruction*, sup::dto::uint32>;
   /**
    * @brief Construct a InstructionMap object from the given root instruction.
    *
@@ -74,7 +75,7 @@ public:
    *
    * @return map of instructions to indices.
    */
-  std::map<const sequencer::Instruction*, sup::dto::uint32> GetInstructionMapping() const;
+  const InstructionIndexMap& GetInstructionMapping() const;
 
   /**
    * @brief Return the number of instructions that are mapped.
@@ -90,8 +91,21 @@ private:
    * @param root Root of the instruction tree whose nodes will be mapped.
    */
   void InitializeMap(const sequencer::Instruction* root);
-  std::map<const sequencer::Instruction*, sup::dto::uint32> m_instruction_map;
+  InstructionIndexMap m_instruction_map;
 };
+
+/**
+ * @brief Build a vector of Instruction pointers in the order of the indices in the given map.
+ * It is assumed that all indices in the map are distinct and span exactly the range from zero
+ * to the size of the map: [0, size-1]. Nullptr entries are also not allowed.
+ *
+ * @param instr_map Map of instruction pointers to indices.
+ * @return Ordered list of instruction pointers.
+ *
+ * @throw InvalidOperationException when the assumptions on the map are invalid.
+ */
+std::vector<const sequencer::Instruction*> GetReverseMap(
+  const InstructionMap::InstructionIndexMap& instr_map);
 
 }  // namespace auto_server
 
