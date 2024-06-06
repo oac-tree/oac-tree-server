@@ -45,7 +45,7 @@ public:
   std::string GetServerPrefix() const;
   std::size_t GetNumberOfJobs() const;
 
-  JobInfo GetJobInfo(std::size_t idx) const;
+  const JobInfo& GetJobInfo(std::size_t idx) const;
 
   void EditBreakpoint(std::size_t job_idx, std::size_t instr_idx, bool breakpoint_active);
 

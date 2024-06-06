@@ -30,14 +30,17 @@ JobInfo::JobInfo(const std::string& prefix, const sup::sequencer::Procedure& pro
   : m_job_prefix{prefix}
   , m_full_name{sup::sequencer::GetProcedureName(proc)}
   , m_nr_vars{proc.VariableNames().size()}
+  , m_nr_instr{}
   , m_instr_tree_info{}
 {}
 
 JobInfo::~JobInfo() = default;
 
-void JobInfo::SetInstructionTreeInfo(const sup::dto::AnyValue& instr_tree_info)
+void JobInfo::SetInstructionTreeInfo(const sup::dto::AnyValue& instr_tree_info,
+                                     std::size_t nr_instr)
 {
   m_instr_tree_info = instr_tree_info;
+  m_nr_instr = nr_instr;
 }
 
 std::string JobInfo::GetPrefix() const
@@ -55,7 +58,12 @@ std::size_t JobInfo::GetNumberOfVariables() const
   return m_nr_vars;
 }
 
-sup::dto::AnyValue JobInfo::GetInstructionTreeInfo() const
+std::size_t JobInfo::GetNumberOfInstructions() const
+{
+  return m_nr_instr;
+}
+
+const sup::dto::AnyValue& JobInfo::GetInstructionTreeInfo() const
 {
   return m_instr_tree_info;
 }

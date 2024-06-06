@@ -57,10 +57,15 @@ private:
                                                 sup::dto::AnyValue& output);
   sup::protocol::ProtocolResult GetJobInfo(const sup::dto::AnyValue& input,
                                            sup::dto::AnyValue& output);
+  sup::protocol::ProtocolResult EditBreakpoint(const sup::dto::AnyValue& input,
+                                               sup::dto::AnyValue& output);
   sup::protocol::ProtocolResult SendJobCommand(const sup::dto::AnyValue& input,
                                                sup::dto::AnyValue& output);
   sup::protocol::ProtocolResult ExtractJobIndex(const sup::dto::AnyValue& input,
                                                 sup::dto::uint64& idx);
+  sup::protocol::ProtocolResult ExtractInstructionIndex(const sup::dto::AnyValue& input,
+                                                        std::size_t number_of_instructions,
+                                                        sup::dto::uint64& idx);
 };
 
 /**
@@ -71,6 +76,10 @@ extern const sup::protocol::ProtocolResult NotSupported;
  * @brief The requested job is unknown.
 */
 extern const sup::protocol::ProtocolResult UnknownJob;
+/**
+ * @brief The requested instruction is unknown.
+*/
+extern const sup::protocol::ProtocolResult UnknownInstruction;
 /**
  * @brief The requested job is unknown.
 */

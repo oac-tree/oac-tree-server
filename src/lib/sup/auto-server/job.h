@@ -53,7 +53,7 @@ public:
   Job(Job&& other);
   Job& operator=(Job&& other) = delete;
 
-  JobInfo GetInfo() const;
+  const JobInfo& GetInfo() const;
 
   /**
    * @brief Methods forwarded to AsyncRunner

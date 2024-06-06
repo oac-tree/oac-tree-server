@@ -85,6 +85,7 @@ const std::string kAutomationServerProtocolServerVersion = "1.0";
 const std::string kGetServerPrefixFunctionName = "GetServerPrefix";
 const std::string kGetNumberOfJobsFunctionName = "GetNumberOfJobs";
 const std::string kGetJobInfoFunctionName = "GetJobInfo";
+const std::string kEditBreakpointCommandFunctionName = "EditBreakpoint";
 const std::string kSendJobCommandFunctionName = "SendJobCommand";
 
 // Field names used for the supported functions of automation servers:
@@ -92,6 +93,8 @@ const std::string kServerPrefixFieldName = "server_prefix";
 const std::string kNumberOfJobsFieldName = "number_of_jobs";
 const std::string kJobIndexFieldName = "job_index";
 const std::string kJobInfoFieldName = "job_info";
+const std::string kInstructionIndexFieldName = "instruction_index";
+const std::string kBreakpointActiveFieldName = "breakpoint_active";
 const std::string kJobCommandFieldName = "command";
 
 // Field names used for the JobInfo AnyValue:

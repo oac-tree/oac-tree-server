@@ -45,6 +45,7 @@ enum AutomationServerStatus
 {
   kNotSupported = sup::protocol::SPECIFIC_APPLICATION_ERROR_START,
   kUnknownJob,
+  kUnknownInstruction,
   kUnknownJobCommand
 };
 }  // namespace status
@@ -80,6 +81,7 @@ AutomationServerProtocol::FunctionMap()
     { kGetServerPrefixFunctionName, &AutomationServerProtocol::GetServerPrefix },
     { kGetNumberOfJobsFunctionName, &AutomationServerProtocol::GetNumberOfJobs },
     { kGetJobInfoFunctionName, &AutomationServerProtocol::GetJobInfo },
+    { kEditBreakpointCommandFunctionName, &AutomationServerProtocol::EditBreakpoint },
     { kSendJobCommandFunctionName, &AutomationServerProtocol::SendJobCommand }
   };
   return f_map;
@@ -122,7 +124,7 @@ sup::protocol::ProtocolResult AutomationServerProtocol::GetJobInfo(
   {
     return result;
   }
-  auto job_info = m_auto_server.GetJobInfo(idx);
+  const auto& job_info = m_auto_server.GetJobInfo(idx);
   auto job_info_av = ToAnyValue(job_info);
   sup::dto::AnyValue temp_out;
   sup::protocol::FunctionProtocolPack(temp_out, kJobInfoFieldName, job_info_av);
@@ -130,6 +132,32 @@ sup::protocol::ProtocolResult AutomationServerProtocol::GetJobInfo(
   {
     return sup::protocol::ServerProtocolEncodingError;
   }
+  return sup::protocol::Success;
+}
+
+sup::protocol::ProtocolResult AutomationServerProtocol::EditBreakpoint(
+  const sup::dto::AnyValue& input, sup::dto::AnyValue& output)
+{
+  (void)output;
+  sup::dto::uint64 job_idx;
+  auto result = ExtractJobIndex(input, job_idx);
+  if (result != sup::protocol::Success)
+  {
+    return result;
+  }
+  sup::dto::uint64 instr_idx;
+  auto number_of_instructions = m_auto_server.GetJobInfo(job_idx).GetNumberOfInstructions();
+  result = ExtractInstructionIndex(input, number_of_instructions, instr_idx);
+  if (result != sup::protocol::Success)
+  {
+    return result;
+  }
+  bool breakpoint_active;
+  if (!sup::protocol::FunctionProtocolExtract(breakpoint_active, input, kBreakpointActiveFieldName))
+  {
+    return sup::protocol::ServerProtocolDecodingError;
+  }
+  m_auto_server.EditBreakpoint(job_idx, instr_idx, breakpoint_active);
   return sup::protocol::Success;
 }
 
@@ -172,8 +200,28 @@ sup::protocol::ProtocolResult AutomationServerProtocol::ExtractJobIndex(
   return sup::protocol::Success;
 }
 
+sup::protocol::ProtocolResult AutomationServerProtocol::ExtractInstructionIndex(
+  const sup::dto::AnyValue& input, std::size_t number_of_instructions, sup::dto::uint64& idx)
+{
+  sup::dto::AnyValue idx_av;
+  if (!sup::protocol::FunctionProtocolExtract(idx_av, input, kInstructionIndexFieldName))
+  {
+    return sup::protocol::ServerProtocolDecodingError;
+  }
+  if (!idx_av.As(idx))
+  {
+    return sup::protocol::ServerProtocolDecodingError;
+  }
+  if (idx >= number_of_instructions)
+  {
+    return UnknownInstruction;
+  }
+  return sup::protocol::Success;
+}
+
 const sup::protocol::ProtocolResult NotSupported{status::kNotSupported};
 const sup::protocol::ProtocolResult UnknownJob{status::kUnknownJob};
+const sup::protocol::ProtocolResult UnknownInstruction{status::kUnknownInstruction};
 const sup::protocol::ProtocolResult UnknownJobCommand{status::kUnknownJobCommand};
 
 sup::dto::AnyValue ToAnyValue(const JobInfo& job_info)

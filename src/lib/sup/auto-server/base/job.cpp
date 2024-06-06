@@ -55,7 +55,7 @@ Job::Job(Job&& other)
   std::swap(m_impl, other.m_impl);
 }
 
-JobInfo Job::GetInfo() const
+const JobInfo& Job::GetInfo() const
 {
   return m_impl->m_job_info;
 }
@@ -120,8 +120,9 @@ Job::JobImpl::JobImpl(const std::string& prefix, std::unique_ptr<sup::sequencer:
 {
   const auto root = m_proc->RootInstruction();
   m_job_interface.InitializeInstructionTree(root);
-  m_job_info.SetInstructionTreeInfo(m_job_interface.GetInstructionTreeInfo(root));
   m_ordered_instructions = m_job_interface.GetOrderedInstructions();
+  m_job_info.SetInstructionTreeInfo(m_job_interface.GetInstructionTreeInfo(root),
+                                    m_ordered_instructions.size());
 }
 
 }  // namespace auto_server
