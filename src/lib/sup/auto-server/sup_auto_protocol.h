@@ -101,6 +101,8 @@ const std::string kJobCommandFieldName = "command";
 const std::string kJobPrefixFieldName = "job_prefix";
 const std::string kFullNameFieldName = "full_name";
 const std::string kNumberOfVarsFieldName = "n_vars";
+const std::string kNumberOfInstrFieldName = "n_instr";
+const std::string kInstructionTreeInfoFieldName = "instr_tree_info";
 
 /**
  * @brief Create a PV channel name for the job state from a given prefix.

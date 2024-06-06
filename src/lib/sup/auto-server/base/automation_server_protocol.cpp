@@ -229,7 +229,11 @@ sup::dto::AnyValue ToAnyValue(const JobInfo& job_info)
   sup::dto::AnyValue result = {{
     { kJobPrefixFieldName, job_info.GetPrefix() },
     { kFullNameFieldName, job_info.GetProcedureName() },
-    { kNumberOfVarsFieldName, { sup::dto::UnsignedInteger64Type, job_info.GetNumberOfVariables() } }
+    { kNumberOfVarsFieldName,
+      { sup::dto::UnsignedInteger64Type, job_info.GetNumberOfVariables() } },
+    { kNumberOfInstrFieldName,
+      { sup::dto::UnsignedInteger64Type, job_info.GetNumberOfInstructions() } },
+    { kInstructionTreeInfoFieldName, job_info.GetInstructionTreeInfo() }
   }};
   return result;
 }
