@@ -44,6 +44,8 @@ public:
 
   sup::dto::AnyValue GetInstructionTreeInfo(const sequencer::Instruction* root) const;
 
+  std::vector<const sequencer::Instruction*> GetOrderedInstructions() const;
+
   void UpdateInstructionStatus(const sequencer::Instruction* instruction) override;
   void VariableUpdated(const std::string& name, const sup::dto::AnyValue& value,
                        bool connected) override;

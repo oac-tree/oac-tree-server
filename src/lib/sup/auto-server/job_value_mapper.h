@@ -54,6 +54,8 @@ public:
 
   std::string GetInstructionValueName(const sequencer::Instruction* instr) const;
 
+  std::vector<const sequencer::Instruction*> GetOrderedInstructions() const;
+
   std::vector<std::string> GetInstructionValueNames() const;
 
   sup::dto::uint32 GetNumberOfVariables() const;

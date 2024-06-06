@@ -58,8 +58,8 @@ public:
   /**
    * @brief Methods forwarded to AsyncRunner
    */
-  void SetBreakpoint(const sup::sequencer::Instruction* instruction);
-  void RemoveBreakpoint(const sup::sequencer::Instruction* instruction);
+  void SetBreakpoint(std::size_t instr_idx);
+  void RemoveBreakpoint(std::size_t instr_idx);
   void Start();
   void Step();
   void Pause();

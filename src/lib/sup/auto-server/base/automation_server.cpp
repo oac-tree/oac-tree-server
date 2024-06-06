@@ -60,6 +60,26 @@ JobInfo AutomationServer::GetJobInfo(std::size_t idx) const
   return m_jobs[idx].GetInfo();
 }
 
+void AutomationServer::EditBreakpoint(std::size_t job_idx, std::size_t instr_idx,
+                                      bool breakpoint_active)
+{
+  if (job_idx >= m_jobs.size())
+  {
+    const std::string error = "AutomationServer::EditBreakpoint(): index out of bounds; requesting"
+      + std::to_string(job_idx) + " out of " + std::to_string(m_jobs.size()) + " jobs";
+    throw InvalidOperationException(error);
+  }
+  if (breakpoint_active)
+  {
+    m_jobs[job_idx].SetBreakpoint(instr_idx);
+  }
+  else
+  {
+    m_jobs[job_idx].RemoveBreakpoint(instr_idx);
+  }
+  return;
+}
+
 void AutomationServer::SendJobCommand(std::size_t idx, sup::sequencer::JobCommand command)
 {
   using sup::sequencer::JobCommand;

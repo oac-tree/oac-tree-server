@@ -83,6 +83,17 @@ std::string JobValueMapper::GetInstructionValueName(const sequencer::Instruction
   return GetInstructionPVName(m_prefix, idx);
 }
 
+std::vector<const sequencer::Instruction*> JobValueMapper::GetOrderedInstructions() const
+{
+  if (!m_instruction_map)
+  {
+    const std::string error = "JobValueMapper::GetOrderedInstructions(): object was not "
+      "correctly initialized with a root instruction";
+    throw InvalidOperationException(error);
+  }
+  return GetReverseMap(m_instruction_map->GetInstructionMapping());
+}
+
 std::vector<std::string> JobValueMapper::GetInstructionValueNames() const
 {
   std::vector<std::string> result;

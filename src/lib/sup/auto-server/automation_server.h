@@ -47,6 +47,8 @@ public:
 
   JobInfo GetJobInfo(std::size_t idx) const;
 
+  void EditBreakpoint(std::size_t job_idx, std::size_t instr_idx, bool breakpoint_active);
+
   void SendJobCommand(std::size_t idx, sup::sequencer::JobCommand command);
 
 private:

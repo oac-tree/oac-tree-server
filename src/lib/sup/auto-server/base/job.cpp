@@ -40,6 +40,7 @@ struct Job::JobImpl
   AutomationJobInterface m_job_interface;
   sup::sequencer::AsyncRunner m_runner;
   JobInfo m_job_info;
+  std::vector<const sequencer::Instruction*> m_ordered_instructions;
 };
 
 Job::Job(const std::string& prefix, std::unique_ptr<sup::sequencer::Procedure> proc)
@@ -59,13 +60,23 @@ JobInfo Job::GetInfo() const
   return m_impl->m_job_info;
 }
 
-void Job::SetBreakpoint(const sup::sequencer::Instruction* instruction)
+void Job::SetBreakpoint(std::size_t instr_idx)
 {
+  if (instr_idx >= m_impl->m_ordered_instructions.size())
+  {
+    return;
+  }
+  auto instruction = m_impl->m_ordered_instructions[instr_idx];
   return Runner().SetBreakpoint(instruction);
 }
 
-void Job::RemoveBreakpoint(const sup::sequencer::Instruction* instruction)
+void Job::RemoveBreakpoint(std::size_t instr_idx)
 {
+  if (instr_idx >= m_impl->m_ordered_instructions.size())
+  {
+    return;
+  }
+  auto instruction = m_impl->m_ordered_instructions[instr_idx];
   return Runner().RemoveBreakpoint(instruction);
 }
 
@@ -105,10 +116,12 @@ Job::JobImpl::JobImpl(const std::string& prefix, std::unique_ptr<sup::sequencer:
   , m_job_interface{prefix, *m_proc, m_epics_server}
   , m_runner{*m_proc, m_job_interface}
   , m_job_info{prefix, *m_proc}
+  , m_ordered_instructions{}
 {
   const auto root = m_proc->RootInstruction();
   m_job_interface.InitializeInstructionTree(root);
   m_job_info.SetInstructionTreeInfo(m_job_interface.GetInstructionTreeInfo(root));
+  m_ordered_instructions = m_job_interface.GetOrderedInstructions();
 }
 
 }  // namespace auto_server

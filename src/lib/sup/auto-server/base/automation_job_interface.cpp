@@ -59,6 +59,11 @@ sup::dto::AnyValue AutomationJobInterface::GetInstructionTreeInfo(
   return utils::BuildInstructionTreeInfo(root, m_job_value_mapper);
 }
 
+std::vector<const sequencer::Instruction*> AutomationJobInterface::GetOrderedInstructions() const
+{
+  return m_job_value_mapper.GetOrderedInstructions();
+}
+
 void AutomationJobInterface::UpdateInstructionStatus(const sequencer::Instruction* instruction)
 {
   auto name = m_job_value_mapper.GetInstructionValueName(instruction);
