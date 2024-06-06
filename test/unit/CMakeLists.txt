@@ -8,6 +8,7 @@ target_sources(unit-tests
     automation_server_tests.cpp
     epics_anyvalue_server_tests.cpp
     instruction_tree_utils_tests.cpp
+    job_info_tests.cpp
     job_tests.cpp
     job_value_mapper_tests.cpp
     sup_auto_protocol_tests.cpp
