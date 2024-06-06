@@ -85,11 +85,6 @@ extern const sup::protocol::ProtocolResult UnknownInstruction;
 */
 extern const sup::protocol::ProtocolResult UnknownJobCommand;
 
-/**
- * @brief Encode a JobInfo object into an AnyValue.
-*/
-sup::dto::AnyValue ToAnyValue(const JobInfo& job_info);
-
 }  // namespace auto_server
 
 }  // namespace sup

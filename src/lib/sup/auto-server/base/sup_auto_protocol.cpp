@@ -48,6 +48,12 @@ const dto::AnyValue kVariableAnyValue = {{
   { protocol::kValueField, "" }
 }, kVariableType };
 
+const dto::AnyValue kVariableInfoAnyValue = {{
+  { kVariableInfoTypeField, "" },
+  { kIndexField, { sup::dto::UnsignedInteger32Type, 0 }},
+  { kAttributesField, sup::dto::EmptyStruct() }
+}, kVariableInfoType };
+
 const dto::AnyValue kJobStateAnyValue = {{
   { kJobStateField, static_cast<dto::uint32>(sequencer::JobState::kInitial)}
 }, kJobStateType };
@@ -78,7 +84,7 @@ dto::AnyValue EncodeVariableInfo(const std::string& name, const dto::AnyValue& v
                                  bool connected)
 {
   dto::AnyValue payload = {{
-    { kVariableNameField, name },
+    { kVariableNameField, name },  // TODO: name is probably redundant
     { kVariableValueField, value },
     { kVariableConnectedField, connected }
   }};

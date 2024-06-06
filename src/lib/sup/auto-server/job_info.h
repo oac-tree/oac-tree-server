@@ -45,6 +45,7 @@ public:
   std::string GetProcedureName() const;
   std::size_t GetNumberOfVariables() const;
   std::size_t GetNumberOfInstructions() const;
+  const sup::dto::AnyValue& GetVariableInfo() const;
   const sup::dto::AnyValue& GetInstructionTreeInfo() const;
 
 private:
@@ -52,8 +53,14 @@ private:
   std::string m_full_name;
   std::size_t m_nr_vars;
   std::size_t m_nr_instr;
+  sup::dto::AnyValue m_variable_info;
   sup::dto::AnyValue m_instr_tree_info;
 };
+
+/**
+ * @brief Encode a JobInfo object into an AnyValue.
+*/
+sup::dto::AnyValue ToAnyValue(const JobInfo& job_info);
 
 }  // namespace auto_server
 

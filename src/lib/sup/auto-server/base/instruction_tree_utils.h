@@ -56,7 +56,7 @@ sup::dto::AnyValue BuildInstructionTreeInfo(const sequencer::Instruction* root,
  * @brief Build an AnyValue representation of an instruction, providing its type,
  * attributes and the instruction index used for publishing its status.
  *
- * @param root Instruction to represent.
+ * @param instr Instruction to represent.
  * @param index Index to put inside the node (referring to the served instruction AnyValue status).
  * @return AnyValue representation.
  */

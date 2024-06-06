@@ -20,6 +20,9 @@
  ******************************************************************************/
 
 #include <sup/auto-server/job_info.h>
+#include <sup/auto-server/sup_auto_protocol.h>
+
+#include "variable_utils.h"
 
 namespace sup
 {
@@ -31,6 +34,7 @@ JobInfo::JobInfo(const std::string& prefix, const sup::sequencer::Procedure& pro
   , m_full_name{sup::sequencer::GetProcedureName(proc)}
   , m_nr_vars{proc.VariableNames().size()}
   , m_nr_instr{}
+  , m_variable_info{utils::BuildWorkspaceInfo(proc.GetWorkspace())}
   , m_instr_tree_info{}
 {}
 
@@ -63,9 +67,29 @@ std::size_t JobInfo::GetNumberOfInstructions() const
   return m_nr_instr;
 }
 
+const sup::dto::AnyValue& JobInfo::GetVariableInfo() const
+{
+  return m_variable_info;
+}
+
 const sup::dto::AnyValue& JobInfo::GetInstructionTreeInfo() const
 {
   return m_instr_tree_info;
+}
+
+sup::dto::AnyValue ToAnyValue(const JobInfo& job_info)
+{
+  sup::dto::AnyValue result = {{
+    { kJobPrefixFieldName, job_info.GetPrefix() },
+    { kFullNameFieldName, job_info.GetProcedureName() },
+    { kNumberOfVarsFieldName,
+      { sup::dto::UnsignedInteger64Type, job_info.GetNumberOfVariables() } },
+    { kNumberOfInstrFieldName,
+      { sup::dto::UnsignedInteger64Type, job_info.GetNumberOfInstructions() } },
+    { kVariableInfoFieldName, job_info.GetVariableInfo() },
+    { kInstructionTreeInfoFieldName, job_info.GetInstructionTreeInfo() }
+  }};
+  return result;
 }
 
 }  // namespace auto_server

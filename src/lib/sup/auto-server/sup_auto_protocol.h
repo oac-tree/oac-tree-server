@@ -68,6 +68,13 @@ const std::string kVariableConnectedField = "var_connected";
 // Basic Variable AnyValue
 extern const sup::dto::AnyValue kVariableAnyValue;
 
+// Variable info node fields
+const std::string kVariableInfoType = "sup::variableInfoType/v1.0";
+const std::string kVariableInfoTypeField = "type";
+
+// Basic variable info node AnyValue
+extern const sup::dto::AnyValue kVariableInfoAnyValue;
+
 // Job state postfix:
 const std::string kJobStateId = "STATE";
 // Job state type name and fields:
@@ -102,6 +109,7 @@ const std::string kJobPrefixFieldName = "job_prefix";
 const std::string kFullNameFieldName = "full_name";
 const std::string kNumberOfVarsFieldName = "n_vars";
 const std::string kNumberOfInstrFieldName = "n_instr";
+const std::string kVariableInfoFieldName = "var_info";
 const std::string kInstructionTreeInfoFieldName = "instr_tree_info";
 
 /**
