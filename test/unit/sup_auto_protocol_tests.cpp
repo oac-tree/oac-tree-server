@@ -65,15 +65,12 @@ TEST_F(SupAutoProtocolTest, EncodeVariableInfo)
     { "flag", true },
     { "setpoint", 42.0 }
   }};
-  const std::string var_name = "my_test_var";
-  auto encoded = EncodeVariableInfo(var_name, var_value, true);
+  auto encoded = EncodeVariableInfo(var_value, true);
   auto decoded = sup::protocol::Base64VariableCodec::Decode(encoded);
   ASSERT_TRUE(decoded.first);
   auto payload = decoded.second;
-  ASSERT_TRUE(payload.HasField(kVariableNameField));
   ASSERT_TRUE(payload.HasField(kVariableValueField));
   ASSERT_TRUE(payload.HasField(kVariableConnectedField));
-  EXPECT_EQ(payload[kVariableNameField], var_name);
   EXPECT_EQ(payload[kVariableValueField], var_value);
   EXPECT_EQ(payload[kVariableConnectedField], true);
 }

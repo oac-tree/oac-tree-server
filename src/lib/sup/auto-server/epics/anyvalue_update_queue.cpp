@@ -74,21 +74,18 @@ std::deque<AnyValueUpdateCommand> AnyValueUpdateQueue::PopCommands()
 
 bool ProcessCommandQueue(std::deque<AnyValueUpdateCommand>& queue, const ValueUpdateFunction& func)
 {
-  bool exit = false;
   while (!queue.empty())
   {
     auto& command = queue.front();
     if (command.GetCommandType() == AnyValueUpdateCommand::kExit)
     {
       queue.pop_front();
-      exit = true;
-      // TODO: check if continuing is really what we want
-      continue;  // Keep on processing this queue before returning the signal to exit.
+      return true;  // stop processing
     }
     func(command.Name(), command.Value());
     queue.pop_front();
   }
-  return exit;
+  return false;
 }
 
 }  // namespace auto_server
