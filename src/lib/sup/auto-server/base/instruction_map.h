@@ -25,7 +25,6 @@
 #include <sup/dto/anyvalue.h>
 
 #include <map>
-#include <string>
 
 namespace sup
 {

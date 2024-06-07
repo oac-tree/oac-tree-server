@@ -118,7 +118,7 @@ sup::protocol::ProtocolResult AutomationServerProtocol::GetNumberOfJobs(
 sup::protocol::ProtocolResult AutomationServerProtocol::GetJobInfo(
   const sup::dto::AnyValue& input, sup::dto::AnyValue& output)
 {
-  sup::dto::uint64 idx;
+  sup::dto::uint64 idx{};
   auto result = ExtractJobIndex(input, idx);
   if (result != sup::protocol::Success)
   {
@@ -139,13 +139,13 @@ sup::protocol::ProtocolResult AutomationServerProtocol::EditBreakpoint(
   const sup::dto::AnyValue& input, sup::dto::AnyValue& output)
 {
   (void)output;
-  sup::dto::uint64 job_idx;
+  sup::dto::uint64 job_idx{};
   auto result = ExtractJobIndex(input, job_idx);
   if (result != sup::protocol::Success)
   {
     return result;
   }
-  sup::dto::uint64 instr_idx;
+  sup::dto::uint64 instr_idx{};
   auto number_of_instructions = m_auto_server.GetJobInfo(job_idx).GetNumberOfInstructions();
   result = ExtractInstructionIndex(input, number_of_instructions, instr_idx);
   if (result != sup::protocol::Success)
@@ -165,7 +165,7 @@ sup::protocol::ProtocolResult AutomationServerProtocol::SendJobCommand(
   const sup::dto::AnyValue& input, sup::dto::AnyValue& output)
 {
   (void)output;
-  sup::dto::uint64 idx;
+  sup::dto::uint64 idx{};
   auto result = ExtractJobIndex(input, idx);
   if (result != sup::protocol::Success)
   {
@@ -184,7 +184,7 @@ sup::protocol::ProtocolResult AutomationServerProtocol::SendJobCommand(
 sup::protocol::ProtocolResult AutomationServerProtocol::ExtractJobIndex(
   const sup::dto::AnyValue& input, sup::dto::uint64& idx)
 {
-  sup::dto::AnyValue idx_av;
+  sup::dto::AnyValue idx_av{};
   if (!sup::protocol::FunctionProtocolExtract(idx_av, input, kJobIndexFieldName))
   {
     return sup::protocol::ServerProtocolDecodingError;
@@ -203,7 +203,7 @@ sup::protocol::ProtocolResult AutomationServerProtocol::ExtractJobIndex(
 sup::protocol::ProtocolResult AutomationServerProtocol::ExtractInstructionIndex(
   const sup::dto::AnyValue& input, std::size_t number_of_instructions, sup::dto::uint64& idx)
 {
-  sup::dto::AnyValue idx_av;
+  sup::dto::AnyValue idx_av{};
   if (!sup::protocol::FunctionProtocolExtract(idx_av, input, kInstructionIndexFieldName))
   {
     return sup::protocol::ServerProtocolDecodingError;

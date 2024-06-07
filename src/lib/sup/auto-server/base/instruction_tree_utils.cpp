@@ -26,7 +26,6 @@
 
 #include <sup/sequencer/instruction.h>
 
-#include <algorithm>
 #include <deque>
 
 namespace
