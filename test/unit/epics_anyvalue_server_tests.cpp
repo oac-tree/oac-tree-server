@@ -36,17 +36,17 @@ const sup::dto::AnyValue scalar = {{
   { "value", {sup::dto::SignedInteger32Type, 0}}
 }};
 
-AnyValueServerInterface::NameAnyValueSet value_set_1 = {
+AnyValueManagerInterface::NameAnyValueSet value_set_1 = {
   { "val0", scalar},
   { "val1", scalar}
 };
 
-AnyValueServerInterface::NameAnyValueSet value_set_2 = {
+AnyValueManagerInterface::NameAnyValueSet value_set_2 = {
   { "val2", scalar},
   { "val3", scalar}
 };
 
-AnyValueServerInterface::NameAnyValueSet value_set_3 = {
+AnyValueManagerInterface::NameAnyValueSet value_set_3 = {
   { "val1", scalar}
 };
 
@@ -82,7 +82,7 @@ protected:
 TEST_F(EPICSServerInterfaceTest, ServeAndUpdate)
 {
   // Serve value set and construct client PV for monitoring
-  ASSERT_TRUE(m_epics_server_interface.ServeAnyValues(value_set_1));
+  ASSERT_TRUE(m_epics_server_interface.AddAnyValues(value_set_1));
   auto pv_callback = [this](const sup::epics::PvAccessClientPV::ExtendedValue& val) {
     if(val.connected)
     {
@@ -101,7 +101,7 @@ TEST_F(EPICSServerInterfaceTest, ServeAndUpdate)
   EXPECT_TRUE(WaitForValue(update_1, 1.0));
 
   // Serve second set and construct client PV for monitoring
-  ASSERT_TRUE(m_epics_server_interface.ServeAnyValues(value_set_2));
+  ASSERT_TRUE(m_epics_server_interface.AddAnyValues(value_set_2));
   sup::epics::PvAccessClientPV val2_pv{"val2", pv_callback};
   EXPECT_TRUE(val2_pv.WaitForValidValue(1.0));
   auto val2 = val2_pv.GetValue();
@@ -114,7 +114,7 @@ TEST_F(EPICSServerInterfaceTest, ServeAndUpdate)
   EXPECT_TRUE(WaitForValue(update_2, 1.0));
 
   // Check failure to serve variables with known names
-  EXPECT_FALSE(m_epics_server_interface.ServeAnyValues(value_set_3));
+  EXPECT_FALSE(m_epics_server_interface.AddAnyValues(value_set_3));
 
   // Check failure to update variables with unknown names
   EXPECT_FALSE(m_epics_server_interface.UpdateAnyValue("unknown", scalar));

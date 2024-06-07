@@ -19,7 +19,7 @@
  * of the distribution package.
  ******************************************************************************/
 
-#include <sup/auto-server/anyvalue_server_interface.h>
+#include <sup/auto-server/anyvalue_manager_interface.h>
 #include <sup/auto-server/exceptions.h>
 
 #include <algorithm>
@@ -29,12 +29,12 @@ namespace sup
 namespace auto_server
 {
 
-AnyValueServerInterface::~AnyValueServerInterface() = default;
+AnyValueManagerInterface::~AnyValueManagerInterface() = default;
 
-std::set<std::string> GetNames(const AnyValueServerInterface::NameAnyValueSet& name_value_set)
+std::set<std::string> GetNames(const AnyValueManagerInterface::NameAnyValueSet& name_value_set)
 {
   std::set<std::string> result;
-  auto func = [](const AnyValueServerInterface::NameAnyValuePair& name_value_pair) {
+  auto func = [](const AnyValueManagerInterface::NameAnyValuePair& name_value_pair) {
     return name_value_pair.first;
   };
   std::transform(name_value_set.begin(), name_value_set.end(),

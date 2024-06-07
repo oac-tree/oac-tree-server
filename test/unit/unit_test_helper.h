@@ -22,7 +22,7 @@
 #ifndef SUP_AUTO_SERVER_UNIT_TEST_HELPER_H_
 #define SUP_AUTO_SERVER_UNIT_TEST_HELPER_H_
 
-#include <sup/auto-server/anyvalue_server_interface.h>
+#include <sup/auto-server/anyvalue_manager_interface.h>
 
 #include <sup/dto/anyvalue.h>
 
@@ -65,13 +65,13 @@ namespace auto_server
 {
 namespace UnitTestHelper
 {
-class TestServerInterface : public AnyValueServerInterface
+class TestServerInterface : public AnyValueManagerInterface
 {
 public:
   TestServerInterface();
   ~TestServerInterface();
 
-  bool ServeAnyValues(const NameAnyValueSet& name_value_set) override;
+  bool AddAnyValues(const NameAnyValueSet& name_value_set) override;
   bool UpdateAnyValue(const std::string& name, const sup::dto::AnyValue& value) override;
 
   bool HasAnyValue(const std::string& name) const;

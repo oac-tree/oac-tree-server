@@ -41,7 +41,7 @@ TestServerInterface::TestServerInterface()
 
 TestServerInterface::~TestServerInterface() = default;
 
-bool TestServerInterface::ServeAnyValues(const NameAnyValueSet& name_value_set)
+bool TestServerInterface::AddAnyValues(const NameAnyValueSet& name_value_set)
 {
   std::lock_guard<std::mutex> lk{m_mtx};
   for (const auto& name : GetNames(name_value_set))

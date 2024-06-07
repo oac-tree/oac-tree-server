@@ -36,7 +36,7 @@ EPICSAnyValueServer::EPICSAnyValueServer()
 
 EPICSAnyValueServer::~EPICSAnyValueServer() = default;
 
-bool EPICSAnyValueServer::ServeAnyValues(const NameAnyValueSet &name_value_set)
+bool EPICSAnyValueServer::AddAnyValues(const NameAnyValueSet &name_value_set)
 {
   // Since we are updating the map, we need to hold a lock during the whole operation.
   std::lock_guard<std::mutex> lk{m_map_mutex};

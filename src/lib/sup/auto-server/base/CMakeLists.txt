@@ -1,6 +1,6 @@
 target_sources(sup-auto-server
   PRIVATE
-  anyvalue_server_interface.cpp
+  anyvalue_manager_interface.cpp
   automation_job_interface.cpp
   automation_server_protocol.cpp
   automation_server.cpp

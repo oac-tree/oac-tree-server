@@ -33,13 +33,13 @@ namespace auto_server
 
 AutomationJobInterface::AutomationJobInterface(const std::string& prefix,
                                                const sequencer::Procedure& proc,
-                                               AnyValueServerInterface& server_interface)
+                                               AnyValueManagerInterface& server_interface)
   : m_job_value_mapper{prefix, proc}
   , m_instr_states{}
   , m_server_interface{server_interface}
 {
   auto value_set = GetInitialValueSet();
-  m_server_interface.ServeAnyValues(value_set);
+  m_server_interface.AddAnyValues(value_set);
 }
 
 AutomationJobInterface::~AutomationJobInterface() = default;
@@ -50,7 +50,7 @@ void AutomationJobInterface::InitializeInstructionTree(const sequencer::Instruct
   m_instr_states = std::vector<sup::dto::AnyValue>(m_job_value_mapper.GetNumberOfInstructions(),
                                                    kInstructionAnyValue);
   auto instr_value_set = GetInstructionValueSet();
-  m_server_interface.ServeAnyValues(instr_value_set);
+  m_server_interface.AddAnyValues(instr_value_set);
 }
 
 sup::dto::AnyValue AutomationJobInterface::GetInstructionTreeInfo(
@@ -141,9 +141,9 @@ void AutomationJobInterface::OnProcedureTick(const sequencer::Procedure& proc) n
   (void)proc;
 }
 
-AnyValueServerInterface::NameAnyValueSet AutomationJobInterface::GetInitialValueSet() const
+AnyValueManagerInterface::NameAnyValueSet AutomationJobInterface::GetInitialValueSet() const
 {
-  AnyValueServerInterface::NameAnyValueSet result;
+  AnyValueManagerInterface::NameAnyValueSet result;
   auto job_value_name = m_job_value_mapper.GetJobStateName();
   auto job_value = GetJobStateValue(sequencer::JobState::kInitial);
   result.emplace_back(job_value_name, job_value);
@@ -155,9 +155,9 @@ AnyValueServerInterface::NameAnyValueSet AutomationJobInterface::GetInitialValue
   return result;
 }
 
-AnyValueServerInterface::NameAnyValueSet AutomationJobInterface::GetInstructionValueSet() const
+AnyValueManagerInterface::NameAnyValueSet AutomationJobInterface::GetInstructionValueSet() const
 {
-  AnyValueServerInterface::NameAnyValueSet result;
+  AnyValueManagerInterface::NameAnyValueSet result;
   auto instr_names = m_job_value_mapper.GetInstructionValueNames();
   for (const auto& name : instr_names)
   {

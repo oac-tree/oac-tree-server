@@ -35,43 +35,42 @@ namespace auto_server
 {
 
 /**
- * @brief AnyValueServerInterface defines the API for implementations that can handle the different
- * I/O requests for a running procedure. Those interactions in turn are defined by the API of
- * UserInterface and JobStateMonitor.
+ * @brief AnyValueManagerInterface defines the API for implementations that manage multiple sets of
+ * (name, value) pairs, where value is encoded as an AnyValue.
  *
- * @details Instead of having methods that directly map to all the UserInterface and JobStateMonitor
- * methods, this interface tries to provide more basic functionality, like exposing fixed AnyValues,
- * providing ways to exchange AnyValues, etc.
+ * @details Implementations of this interface will be used on the server side to publish updates of
+ * instructions, variables, etc. On the client side, the implementation will be used to map such
+ * updates to the appropriate JobInterface methods.
  *
  * @todo Provide the API for client input and message queues, i.e. values whose history may matter.
  */
-class AnyValueServerInterface
+class AnyValueManagerInterface
 {
 public:
   using NameAnyValuePair = std::pair<std::string, sup::dto::AnyValue>;
   using NameAnyValueSet = std::vector<NameAnyValuePair>;
 
-  virtual ~AnyValueServerInterface();
+  virtual ~AnyValueManagerInterface();
 
   /**
-   * @brief Serve a set of AnyValues with given unique names.
+   * @brief Add a set of AnyValues with given unique names.
    *
    * @details Typical implementations should be able to support multiple calls to this member
-   * function, allowing to serve additional sets of AnyValues in different stages of setting up
-   * the full server application. In the case of Sequencer procedures, this is required since
-   * the job and variable states need to be server before procedure setup, while the instruction
-   * tree AnyValue can only be created afterwards.
+   * function, allowing to manage additional sets of AnyValues in different stages of setting up
+   * the client or server application. In the case of Sequencer procedures on the server side, this
+   * is required since the job and variable states need to be present before procedure setup, while
+   * the instruction states can only be created afterwards.
    *
    * @param name_value_set List of pairs of names and AnyValues.
-   * @return true when successful. In case of failure, none of the values is assumed to be served.
+   * @return true when successful. In case of failure, none of the values is assumed to be added.
    */
-  virtual bool ServeAnyValues(const NameAnyValueSet& name_value_set) = 0;
+  virtual bool AddAnyValues(const NameAnyValueSet& name_value_set) = 0;
 
   /**
-   * @brief Update the value of the served AnyValue with the given name.
+   * @brief Update the value of the managed AnyValue with the given name.
    *
-   * @param name Name of the served AnyValue to be updated.
-   * @param value New value for the server AnyValue.
+   * @param name Name of the managed AnyValue to be updated.
+   * @param value New value for the managed AnyValue.
    * @return true on success. Failure may include the case of an unknown name.
    */
   virtual bool UpdateAnyValue(const std::string& name, const sup::dto::AnyValue& value) = 0;
@@ -83,7 +82,7 @@ public:
  * @param name_value_set List of name/value pairs.
  * @return List of names.
  */
-std::set<std::string> GetNames(const AnyValueServerInterface::NameAnyValueSet& name_value_set);
+std::set<std::string> GetNames(const AnyValueManagerInterface::NameAnyValueSet& name_value_set);
 
 }  // namespace auto_server
 
