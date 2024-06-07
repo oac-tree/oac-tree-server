@@ -35,7 +35,8 @@ namespace auto_server
 class EPICSServer;
 
 /**
- * @brief EPICSAnyValueServer implements ServerInterface using EPICS PvAccess.
+ * @brief EPICSAnyValueServer implements AnyValueManagerInterface using EPICS PvAccess and publishes
+ * the managed AnyValues over this protocol.
  */
 class EPICSAnyValueServer : public AnyValueManagerInterface
 {
