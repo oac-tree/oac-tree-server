@@ -13,5 +13,6 @@ target_sources(sup-auto-server
   job.cpp
   sup_auto_protocol.cpp
   variable_map.cpp
+  variable_proxy.cpp
   variable_utils.cpp
 )
