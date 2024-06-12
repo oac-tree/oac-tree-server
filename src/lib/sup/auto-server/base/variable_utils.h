@@ -55,6 +55,16 @@ sup::dto::AnyValue BuildWorkspaceInfo(const sequencer::Workspace& ws);
  */
 sup::dto::AnyValue BuildVariableInfo(const sequencer::Variable* var, sup::dto::uint32 index);
 
+/**
+ * @brief Build an list of variable names from the workspace AnyValue representation, ordered by
+ * index. This allows O(1) lookup. It is assumed that all indices are unique and span exactly the
+ * range from zero to (number_of_variables -1).
+ *
+ * @param variable_info AnyValue representation of all variables in a workspace.
+ * @return List of variable names, ordered by index.
+ */
+std::vector<std::string> BuildVariableNameMap(const sup::dto::AnyValue& variable_info);
+
 }  // namespace utils
 
 }  // namespace auto_server

@@ -27,6 +27,11 @@
 #include <sup/sequencer/execution_status.h>
 #include <sup/sequencer/job_states.h>
 
+namespace
+{
+bool ValidateVariablePayload(const sup::dto::AnyValue& payload);
+}
+
 namespace sup
 {
 namespace auto_server
@@ -95,6 +100,44 @@ dto::AnyValue EncodeVariableInfo(const dto::AnyValue& value, bool connected)
   return encoded.second;
 }
 
+std::pair<sup::dto::AnyValue, bool> DecodeVariableInfo(const dto::AnyValue& encoded)
+{
+  const std::pair<sup::dto::AnyValue, bool> failure{ {}, false };
+  auto decoded = protocol::Base64VariableCodec::Decode(encoded);
+  if (!decoded.first)
+  {
+    return failure;
+  }
+  auto& payload = decoded.second;
+  if (!ValidateVariablePayload(payload))
+  {
+    return failure;
+  }
+  return { payload[kVariableValueField], payload[kVariableConnectedField].As<sup::dto::boolean>() };
+}
+
 }  // namespace auto_server
 
 }  // namespace sup
+
+namespace
+{
+using namespace sup::auto_server;
+bool ValidateVariablePayload(const sup::dto::AnyValue& payload)
+{
+  if (!payload.HasField(kVariableValueField))
+  {
+    return false;
+  }
+  if (!payload.HasField(kVariableConnectedField))
+  {
+    return false;
+  }
+  if (payload[kVariableConnectedField].GetType() != sup::dto::BooleanType)
+  {
+    return false;
+  }
+  return true;
+}
+}
+

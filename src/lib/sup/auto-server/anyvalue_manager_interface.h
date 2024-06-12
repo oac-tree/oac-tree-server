@@ -19,8 +19,8 @@
  * of the distribution package.
  ******************************************************************************/
 
-#ifndef SUP_AUTO_SERVER_ANYVALUE_SERVER_INTERFACE_H_
-#define SUP_AUTO_SERVER_ANYVALUE_SERVER_INTERFACE_H_
+#ifndef SUP_AUTO_SERVER_ANYVALUE_MANAGER_INTERFACE_H_
+#define SUP_AUTO_SERVER_ANYVALUE_MANAGER_INTERFACE_H_
 
 #include <sup/dto/anyvalue.h>
 
@@ -88,4 +88,4 @@ std::set<std::string> GetNames(const AnyValueManagerInterface::NameAnyValueSet& 
 
 }  // namespace sup
 
-#endif  // SUP_AUTO_SERVER_ANYVALUE_SERVER_INTERFACE_H_
+#endif  // SUP_AUTO_SERVER_ANYVALUE_MANAGER_INTERFACE_H_

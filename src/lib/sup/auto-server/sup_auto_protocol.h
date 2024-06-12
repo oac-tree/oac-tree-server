@@ -155,6 +155,16 @@ sup::dto::AnyValue GetJobStateValue(sup::sequencer::JobState state);
  */
 sup::dto::AnyValue EncodeVariableInfo(const dto::AnyValue& value, bool connected);
 
+/**
+ * @brief Decode the packed and encoded AnyValue information of a variable into its value
+ * and connected state. On failure, returns an empty AnyValue and false.
+ *
+ * @param encoded Encoded AnyValue information.
+ *
+ * @return Pair of variable value and its connected state.
+ */
+std::pair<sup::dto::AnyValue, bool> DecodeVariableInfo(const dto::AnyValue& encoded);
+
 }  // namespace auto_server
 
 }  // namespace sup

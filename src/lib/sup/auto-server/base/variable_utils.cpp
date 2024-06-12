@@ -64,6 +64,13 @@ sup::dto::AnyValue BuildVariableInfo(const sequencer::Variable* var, sup::dto::u
   return result;
 }
 
+std::vector<std::string> BuildVariableNameMap(const sup::dto::AnyValue& variable_info)
+{
+  // TODO: implement
+  (void)variable_info;
+  return {};
+}
+
 }  // namespace utils
 
 }  // namespace auto_server

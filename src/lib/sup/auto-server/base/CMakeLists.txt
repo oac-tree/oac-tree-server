@@ -4,6 +4,7 @@ target_sources(sup-auto-server
   automation_job_interface.cpp
   automation_server_protocol.cpp
   automation_server.cpp
+  client_interface_mapper.cpp
   exceptions.cpp
   instruction_map.cpp
   instruction_tree_utils.cpp

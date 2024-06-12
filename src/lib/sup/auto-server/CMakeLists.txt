@@ -36,6 +36,7 @@ install(FILES
   automation_job_interface.h
   automation_server_protocol.h
   automation_server.h
+  client_interface_mapper.h
   exceptions.h
   job_info.h
   job_value_mapper.h
