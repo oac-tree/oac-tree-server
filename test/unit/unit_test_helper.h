@@ -98,9 +98,9 @@ private:
 std::string CreateProcedureString(const std::string& body);
 
 /**
- * Creates an AnyValue representing the status of a simple instruction tree.
+ * Print the provided AnyValue to std::cout.
  */
-sup::dto::AnyValue CreateTestInstructionTreeAnyValue();
+void DumpAnyValue(const sup::dto::AnyValue& value);
 
 }  // namespace UnitTestHelper
 

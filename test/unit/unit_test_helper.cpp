@@ -27,6 +27,7 @@
 #include <chrono>
 #include <cmath>
 #include <fstream>
+#include <iostream>
 
 namespace sup
 {
@@ -140,6 +141,11 @@ std::string CreateProcedureString(const std::string &body)
   static const std::string footer{R"RAW(</Procedure>)RAW"};
 
   return header + body + footer;
+}
+
+void DumpAnyValue(const sup::dto::AnyValue& value)
+{
+  std::cout << sup::dto::PrintAnyValue(value) << std::endl;
 }
 
 }  // namespace UnitTestHelper

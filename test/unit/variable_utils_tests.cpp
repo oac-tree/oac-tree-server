@@ -52,6 +52,8 @@ TEST_F(VariableUtilsTest, VariableInfo)
   auto var_names = workspace.VariableNames();
   auto ws_info = utils::BuildWorkspaceInfo(workspace);
 
+  // UnitTestHelper::DumpAnyValue(ws_info);
+
   auto var_name_map = utils::BuildVariableNameMap(ws_info);
   EXPECT_EQ(var_name_map.size(), var_names.size());
   EXPECT_TRUE(std::is_permutation(var_name_map.begin(), var_name_map.end(), var_names.begin()));
