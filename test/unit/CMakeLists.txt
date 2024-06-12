@@ -13,6 +13,7 @@ target_sources(unit-tests
     job_value_mapper_tests.cpp
     sup_auto_protocol_tests.cpp
     unit_test_helper.cpp
+    variable_utils_tests.cpp
 )
 
 target_include_directories(unit-tests

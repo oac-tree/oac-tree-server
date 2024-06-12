@@ -27,6 +27,16 @@
 #include <sup/sequencer/variable.h>
 #include <sup/sequencer/workspace.h>
 
+#include <set>
+
+namespace
+{
+bool ValidateWorkspaceInfo(const sup::dto::AnyValue& ws_info);
+bool ValidateVariableInfo(const sup::dto::AnyValue& var_info);
+bool ValidateMemberType(const sup::dto::AnyValue& anyvalue, const std::string& mem_name,
+                        const sup::dto::AnyType& mem_type);
+}  // unnamed namespace
+
 namespace sup
 {
 namespace auto_server
@@ -66,9 +76,32 @@ sup::dto::AnyValue BuildVariableInfo(const sequencer::Variable* var, sup::dto::u
 
 std::vector<std::string> BuildVariableNameMap(const sup::dto::AnyValue& variable_info)
 {
-  // TODO: implement
-  (void)variable_info;
-  return {};
+  if (!ValidateWorkspaceInfo(variable_info))
+  {
+    const std::string error = "BuildVariableNameMap(): wrong format of variable info argument";
+    throw InvalidOperationException(error);
+  }
+  auto var_names = variable_info.MemberNames();
+  std::vector<std::string> result(var_names.size());
+  std::set<sup::dto::uint32> used_indices{};
+  for (const auto& var_name : var_names)
+  {
+    auto idx = variable_info[var_name][kIndexField].As<sup::dto::uint32>();
+    if (idx >= result.size())
+    {
+      const std::string error = "BuildVariableNameMap(): encountered variable index larger or "
+                                "equal to number of variables";
+      throw InvalidOperationException(error);
+    }
+    result[idx] = var_name;
+    used_indices.insert(idx);
+  }
+  if (used_indices.size() != result.size())
+  {
+    const std::string error = "BuildVariableNameMap(): duplicate indices found";
+    throw InvalidOperationException(error);
+  }
+  return result;
 }
 
 }  // namespace utils
@@ -76,3 +109,66 @@ std::vector<std::string> BuildVariableNameMap(const sup::dto::AnyValue& variable
 }  // namespace auto_server
 
 }  // namespace sup
+
+namespace
+{
+using namespace sup::auto_server;
+
+bool ValidateWorkspaceInfo(const sup::dto::AnyValue& ws_info)
+{
+  if (!sup::dto::IsStructValue(ws_info))
+  {
+    return false;
+  }
+  auto mem_names = ws_info.MemberNames();
+  for (const auto& mem_name : mem_names)
+  {
+    if (!ValidateVariableInfo(ws_info[mem_name]))
+    {
+      return false;
+    }
+  }
+  return true;
+}
+
+bool ValidateVariableInfo(const sup::dto::AnyValue& var_info)
+{
+  if (!ValidateMemberType(var_info, kVariableInfoTypeField, sup::dto::StringType))
+  {
+    return false;
+  }
+  if (!ValidateMemberType(var_info, kIndexField, sup::dto::UnsignedInteger32Type))
+  {
+    return false;
+  }
+  if (!var_info.HasField(kAttributesField) || !sup::dto::IsStructValue(var_info[kAttributesField]))
+  {
+    return false;
+  }
+  const auto& var_attrs = var_info[kAttributesField];
+  auto mem_names = var_attrs.MemberNames();
+  for (const auto& mem_name : mem_names)
+  {
+    if (var_attrs[mem_name].GetType() != sup::dto::StringType)
+    {
+      return false;
+    }
+  }
+  return true;
+}
+
+bool ValidateMemberType(const sup::dto::AnyValue& anyvalue, const std::string& mem_name,
+                        const sup::dto::AnyType& mem_type)
+{
+  if (!anyvalue.HasField(mem_name))
+  {
+    return false;
+  }
+  if (anyvalue[mem_name].GetType() != mem_type)
+  {
+    return false;
+  }
+  return true;
+}
+}  // unnamed namespace
+
