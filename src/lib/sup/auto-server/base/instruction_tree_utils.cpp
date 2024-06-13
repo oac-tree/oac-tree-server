@@ -21,6 +21,8 @@
 
 #include "instruction_tree_utils.h"
 
+#include "anyvalue_utils.h"
+
 #include <sup/auto-server/exceptions.h>
 #include <sup/auto-server/sup_auto_protocol.h>
 
@@ -41,6 +43,7 @@ struct InstructionNode
 
 sup::dto::AnyValue& AddChildAnyValue(sup::dto::AnyValue& parent, const sup::dto::AnyValue& child,
                                      std::size_t idx);
+bool ValidateInstructionInfo(const sup::dto::AnyValue& instr_info);
 }  // unnamed namespace
 
 namespace sup
@@ -99,6 +102,24 @@ std::string CreateIndexedMemberName(std::size_t idx)
   return kChildMemberFieldPrefix + std::to_string(idx);
 }
 
+InstructionInfo ToInstructionInfo(const sup::dto::AnyValue& instr_info_anyvalue)
+{
+  if (!ValidateInstructionInfo(instr_info_anyvalue))
+  {
+    const std::string error = "ToInstructionInfo(): wrong format of instruction info AnyValue";
+    throw InvalidOperationException(error);
+  }
+  auto instr_type = instr_info_anyvalue[kInstructionInfoNodeTypeField].As<std::string>();
+  auto instr_idx = instr_info_anyvalue[kIndexField].As<sup::dto::uint32>();
+  auto& attr_av = instr_info_anyvalue[kAttributesField];
+  std::vector<StringAttribute> attributes;
+  for (const auto& attr_name : attr_av.MemberNames())
+  {
+    attributes.emplace_back(attr_name, attr_av[attr_name].As<std::string>());
+  }
+  return { instr_type, instr_idx, attributes };
+}
+
 }  // namespace utils
 
 }  // namespace auto_server
@@ -120,4 +141,33 @@ sup::dto::AnyValue& AddChildAnyValue(sup::dto::AnyValue& parent, const sup::dto:
   parent[kChildInstructionsField].AddMember(member_name, child);
   return parent[kChildInstructionsField][member_name];
 }
+
+bool ValidateInstructionInfo(const sup::dto::AnyValue& instr_info)
+{
+  if (!utils::ValidateMemberType(instr_info, kInstructionInfoNodeTypeField, sup::dto::StringType))
+  {
+    return false;
+  }
+  if (!utils::ValidateMemberType(instr_info, kIndexField, sup::dto::UnsignedInteger32Type))
+  {
+    return false;
+  }
+  if (!instr_info.HasField(kAttributesField) ||
+      !sup::dto::IsStructValue(instr_info[kAttributesField]))
+  {
+    return false;
+  }
+  const auto& instr_attrs = instr_info[kAttributesField];
+  auto mem_names = instr_attrs.MemberNames();
+  for (const auto& mem_name : mem_names)
+  {
+    if (instr_attrs[mem_name].GetType() != sup::dto::StringType)
+    {
+      return false;
+    }
+  }
+  return true;
+
+}
+
 }  // unnamed namespace

@@ -22,6 +22,7 @@
 #ifndef SUP_AUTO_SERVER_INSTRUCTION_TREE_UTILS_H_
 #define SUP_AUTO_SERVER_INSTRUCTION_TREE_UTILS_H_
 
+#include <sup/auto-server/instruction_info.h>
 #include <sup/auto-server/job_value_mapper.h>
 
 #include <sup/dto/anyvalue.h>
@@ -70,6 +71,15 @@ sup::dto::AnyValue BuildInstructionInfoNode(const sequencer::Instruction* instr,
  * @return Unique member name.
  */
 std::string CreateIndexedMemberName(std::size_t idx);
+
+/**
+ * @brief Convert the given AnyValue to a InstructionInfo object.
+ *
+ * @param instr_info_anyvalue AnyValue representation of an instruction.
+ * @return InstructionInfo object.
+ * @throw InvalidOperationException when the provided anyvalue has the wrong format.
+ */
+InstructionInfo ToInstructionInfo(const sup::dto::AnyValue& instr_info_anyvalue);
 
 }  // namespace utils
 

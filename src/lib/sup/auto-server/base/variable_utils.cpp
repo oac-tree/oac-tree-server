@@ -21,6 +21,8 @@
 
 #include "variable_utils.h"
 
+#include "anyvalue_utils.h"
+
 #include <sup/auto-server/exceptions.h>
 #include <sup/auto-server/sup_auto_protocol.h>
 
@@ -33,8 +35,6 @@ namespace
 {
 bool ValidateWorkspaceInfo(const sup::dto::AnyValue& ws_info);
 bool ValidateVariableInfo(const sup::dto::AnyValue& var_info);
-bool ValidateMemberType(const sup::dto::AnyValue& anyvalue, const std::string& mem_name,
-                        const sup::dto::AnyType& mem_type);
 }  // unnamed namespace
 
 namespace sup
@@ -151,11 +151,11 @@ bool ValidateWorkspaceInfo(const sup::dto::AnyValue& ws_info)
 
 bool ValidateVariableInfo(const sup::dto::AnyValue& var_info)
 {
-  if (!ValidateMemberType(var_info, kVariableInfoTypeField, sup::dto::StringType))
+  if (!utils::ValidateMemberType(var_info, kVariableInfoTypeField, sup::dto::StringType))
   {
     return false;
   }
-  if (!ValidateMemberType(var_info, kIndexField, sup::dto::UnsignedInteger32Type))
+  if (!utils::ValidateMemberType(var_info, kIndexField, sup::dto::UnsignedInteger32Type))
   {
     return false;
   }
@@ -175,18 +175,5 @@ bool ValidateVariableInfo(const sup::dto::AnyValue& var_info)
   return true;
 }
 
-bool ValidateMemberType(const sup::dto::AnyValue& anyvalue, const std::string& mem_name,
-                        const sup::dto::AnyType& mem_type)
-{
-  if (!anyvalue.HasField(mem_name))
-  {
-    return false;
-  }
-  if (anyvalue[mem_name].GetType() != mem_type)
-  {
-    return false;
-  }
-  return true;
-}
 }  // unnamed namespace
 
