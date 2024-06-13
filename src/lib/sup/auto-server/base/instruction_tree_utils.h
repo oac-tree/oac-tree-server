@@ -59,6 +59,7 @@ sup::dto::AnyValue BuildInstructionTreeInfo(const sequencer::Instruction* root,
  * @param instr Instruction to represent.
  * @param index Index to put inside the node (referring to the served instruction AnyValue status).
  * @return AnyValue representation.
+ * @throw InvalidOperationException when a nullptr is passed.
  */
 sup::dto::AnyValue BuildInstructionInfoNode(const sequencer::Instruction* instr,
                                             sup::dto::uint32 index);

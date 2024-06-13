@@ -54,6 +54,7 @@ sup::dto::AnyValue BuildWorkspaceInfoAnyValue(const sequencer::Workspace& ws);
  * @param var Variable to represent.
  * @param index Index to put inside the node (referring to the served variable AnyValue status).
  * @return AnyValue representation.
+ * @throw InvalidOperationException when a nullptr is passed.
  */
 sup::dto::AnyValue BuildVariableInfoAnyValue(const sequencer::Variable* var, sup::dto::uint32 index);
 
