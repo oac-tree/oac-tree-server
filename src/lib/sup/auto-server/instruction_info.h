@@ -19,8 +19,8 @@
  * of the distribution package.
  ******************************************************************************/
 
-#ifndef SUP_AUTO_SERVER_VARIABLE_INFO_H_
-#define SUP_AUTO_SERVER_VARIABLE_INFO_H_
+#ifndef SUP_AUTO_SERVER_INSTRUCTION_INFO_H_
+#define SUP_AUTO_SERVER_INSTRUCTION_INFO_H_
 
 #include <sup/auto-server/attribute_info.h>
 
@@ -34,12 +34,14 @@ namespace sup
 namespace auto_server
 {
 /**
- * @brief The VariableInfo structure represents the static information that a client can get about a
- * Workspace variable.
+ * @brief The InstructionInfo structure represents the static information that a client can get
+ * about a procedure instruction.
+ *
+ * TODO: add children here too?
  */
-struct VariableInfo
+struct InstructionInfo
 {
-  std::string m_var_type;
+  std::string m_instr_type;
   sup::dto::uint32 m_index;
   std::vector<StringAttribute> m_attributes;
 };
@@ -48,4 +50,4 @@ struct VariableInfo
 
 }  // namespace sup
 
-#endif  // SUP_AUTO_SERVER_VARIABLE_INFO_H_
+#endif  // SUP_AUTO_SERVER_INSTRUCTION_INFO_H_

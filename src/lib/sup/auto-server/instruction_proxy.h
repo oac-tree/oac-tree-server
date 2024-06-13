@@ -19,35 +19,36 @@
  * of the distribution package.
  ******************************************************************************/
 
-#ifndef SUP_AUTO_SERVER_VARIABLE_PROXY_H_
-#define SUP_AUTO_SERVER_VARIABLE_PROXY_H_
+#ifndef SUP_AUTO_SERVER_INSTRUCTION_PROXY_H_
+#define SUP_AUTO_SERVER_INSTRUCTION_PROXY_H_
 
-#include <sup/auto-server/variable_info.h>
+#include <sup/auto-server/instruction_info.h>
 
 namespace sup
 {
 namespace auto_server
 {
 /**
- * @brief The VariableProxy class represents a Variable at the client side. It contains the type of
- * Variable, its index and its attributes. It does not contain dynamic state information, such as
- * its current value.
+ * @brief The InstructionProxy class represents an Instruction at the client side. It contains the
+ * type of Instruction, its index and its attributes. It does not contain dynamic state information,
+ * such as its current execution status.
  *
- * @note This class is very similar to VariableInfo. However, since they serve different purposes,
- * they are kept as separate classes. This allows to easily extend one without affecting the other.
+ * @note This class is very similar to InstructionInfo. However, since they serve different
+ * purposes, they are kept as separate classes. This allows to easily extend one without affecting
+ * the other.
  */
-class VariableProxy
+class InstructionProxy
 {
 public:
-  explicit VariableProxy(const VariableInfo& var_info);
-  ~VariableProxy();
+  explicit InstructionProxy(const InstructionInfo& instr_info);
+  ~InstructionProxy();
 
   std::string GetType() const;
   sup::dto::uint32 GetIndex() const;
   std::vector<StringAttribute> GetAttributes() const;
 
 private:
-  std::string m_var_type;
+  std::string m_instr_type;
   sup::dto::uint32 m_index;
   std::vector<StringAttribute> m_attributes;
 };
@@ -56,4 +57,4 @@ private:
 
 }  // namespace sup
 
-#endif  // SUP_AUTO_SERVER_VARIABLE_PROXY_H_
+#endif  // SUP_AUTO_SERVER_INSTRUCTION_PROXY_H_

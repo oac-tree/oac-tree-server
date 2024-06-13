@@ -19,33 +19,20 @@
  * of the distribution package.
  ******************************************************************************/
 
-#ifndef SUP_AUTO_SERVER_VARIABLE_INFO_H_
-#define SUP_AUTO_SERVER_VARIABLE_INFO_H_
-
-#include <sup/auto-server/attribute_info.h>
-
-#include <sup/dto/basic_scalar_types.h>
+#ifndef SUP_AUTO_SERVER_ATTRIBUTE_INFO_H_
+#define SUP_AUTO_SERVER_ATTRIBUTE_INFO_H_
 
 #include <string>
-#include <vector>
+#include <utility>
 
 namespace sup
 {
 namespace auto_server
 {
-/**
- * @brief The VariableInfo structure represents the static information that a client can get about a
- * Workspace variable.
- */
-struct VariableInfo
-{
-  std::string m_var_type;
-  sup::dto::uint32 m_index;
-  std::vector<StringAttribute> m_attributes;
-};
+using StringAttribute = std::pair<std::string, std::string>;
 
 }  // namespace auto_server
 
 }  // namespace sup
 
-#endif  // SUP_AUTO_SERVER_VARIABLE_INFO_H_
+#endif  // SUP_AUTO_SERVER_ATTRIBUTE_INFO_H_

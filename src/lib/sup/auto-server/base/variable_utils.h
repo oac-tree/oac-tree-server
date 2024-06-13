@@ -62,7 +62,7 @@ sup::dto::AnyValue BuildVariableInfoAnyValue(const sequencer::Variable* var, sup
  * index. This allows O(1) lookup. It is assumed that all indices are unique and span exactly the
  * range from zero to (number_of_variables -1).
  *
- * @param variable_info AnyValue representation of all variables in a workspace.
+ * @param workspace_info AnyValue representation of all variables in a workspace.
  * @return List of variable names, ordered by index.
  * @throw InvalidOperationException when the assumptions on the input are violated.
  */

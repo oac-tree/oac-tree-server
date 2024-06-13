@@ -7,6 +7,7 @@ target_sources(sup-auto-server
   client_interface_mapper.cpp
   exceptions.cpp
   instruction_map.cpp
+  instruction_proxy.cpp
   instruction_tree_utils.cpp
   job_info.cpp
   job_value_mapper.cpp

@@ -37,7 +37,7 @@ namespace auto_server
 class AnyValueManagerClient : public AnyValueManagerInterface
 {
 public:
-  AnyValueManagerClient(ClientInterfaceMapper& interface_mapper);
+  explicit AnyValueManagerClient(ClientInterfaceMapper& interface_mapper);
   virtual ~AnyValueManagerClient();
 
   /**
