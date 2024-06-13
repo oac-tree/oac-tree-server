@@ -30,13 +30,14 @@ namespace auto_server
 JobProxy::JobProxy(const sup::dto::AnyValue& job_info_av)
   : m_job_prefix{}
   , m_full_name{}
-  , m_variable_info{}
+  , m_vars{}
   , m_instr_tree_info{}
 {
   // TODO: add validation of main structure
   m_job_prefix = job_info_av[kJobPrefixFieldName].As<std::string>();
   m_full_name = job_info_av[kFullNameFieldName].As<std::string>();
-  m_variable_info = job_info_av[kVariableInfoFieldName];
+  const auto& variable_info = job_info_av[kVariableInfoFieldName];
+  // TODO: construct m_vars from variable_info
   m_instr_tree_info = job_info_av[kInstructionTreeInfoFieldName];
 }
 
@@ -54,8 +55,7 @@ std::string JobProxy::GetProcedureName() const
 
 std::size_t JobProxy::GetNumberOfVariables() const
 {
-  // TODO: get from var list
-  return 0;
+  return m_vars.size();
 }
 
 std::size_t JobProxy::GetNumberOfInstructions() const
@@ -64,9 +64,9 @@ std::size_t JobProxy::GetNumberOfInstructions() const
   return 0;
 }
 
-const sup::dto::AnyValue& JobProxy::GetWorkspaceInfo() const
+const std::vector<VariableProxy>& JobProxy::GetWorkspaceInfo() const
 {
-  return m_variable_info;
+  return m_vars;
 }
 
 const sup::dto::AnyValue& JobProxy::GetInstructionTreeInfo() const

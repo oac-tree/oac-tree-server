@@ -22,9 +22,12 @@
 #ifndef SUP_AUTO_SERVER_JOB_PROXY_H_
 #define SUP_AUTO_SERVER_JOB_PROXY_H_
 
-#include <sup/sequencer/procedure.h>
+#include <sup/auto-server/variable_proxy.h>
+
+#include <sup/dto/anyvalue.h>
 
 #include <string>
+#include <vector>
 
 namespace sup
 {
@@ -43,13 +46,13 @@ public:
   std::string GetProcedureName() const;
   std::size_t GetNumberOfVariables() const;
   std::size_t GetNumberOfInstructions() const;
-  const sup::dto::AnyValue& GetWorkspaceInfo() const;
+  const std::vector<VariableProxy>& GetWorkspaceInfo() const;
   const sup::dto::AnyValue& GetInstructionTreeInfo() const;
 
 private:
   std::string m_job_prefix;
   std::string m_full_name;
-  sup::dto::AnyValue m_variable_info;
+  std::vector<VariableProxy> m_vars;
   sup::dto::AnyValue m_instr_tree_info;
 };
 
