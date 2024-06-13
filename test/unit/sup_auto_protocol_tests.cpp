@@ -59,13 +59,13 @@ TEST_F(SupAutoProtocolTest, JobStateValue)
             static_cast<sup::dto::uint32>(sup::sequencer::JobState::kFailed));
 }
 
-TEST_F(SupAutoProtocolTest, EncodeVariableInfo)
+TEST_F(SupAutoProtocolTest, EncodeVariableState)
 {
   const sup::dto::AnyValue var_value = {{
     { "flag", true },
     { "setpoint", 42.0 }
   }};
-  auto encoded = EncodeVariableInfo(var_value, true);
+  auto encoded = EncodeVariableState(var_value, true);
   auto decoded = sup::protocol::Base64VariableCodec::Decode(encoded);
   ASSERT_TRUE(decoded.first);
   auto payload = decoded.second;

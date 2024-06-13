@@ -45,7 +45,7 @@ public:
   std::string GetProcedureName() const;
   std::size_t GetNumberOfVariables() const;
   std::size_t GetNumberOfInstructions() const;
-  const sup::dto::AnyValue& GetVariableInfo() const;
+  const sup::dto::AnyValue& GetWorkspaceInfo() const;
   const sup::dto::AnyValue& GetInstructionTreeInfo() const;
 
 private:

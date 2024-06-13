@@ -22,26 +22,23 @@
 #ifndef SUP_AUTO_SERVER_VARIABLE_PROXY_H_
 #define SUP_AUTO_SERVER_VARIABLE_PROXY_H_
 
-#include <sup/dto/anyvalue.h>
-
-#include <string>
-#include <utility>
-#include <vector>
+#include <sup/auto-server/variable_info.h>
 
 namespace sup
 {
 namespace auto_server
 {
-using StringAttribute = std::pair<std::string, std::string>;
-
 /**
  * @brief The VariableProxy class represents a Variable at the client side. It contains the type of
  * Variable and its attributes. It is immutable, i.e. has no non-const member functions.
+ *
+ * @note This class is very similar to VariableInfo. However, since they serve different purposes,
+ * they are kept as separate classes. This allows to easily extend one without affecting the other.
  */
 class VariableProxy
 {
 public:
-  VariableProxy(const sup::dto::AnyValue& var_info);
+  explicit VariableProxy(const VariableInfo& var_info);
   ~VariableProxy();
 
   std::string GetType() const;

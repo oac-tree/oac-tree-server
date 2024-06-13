@@ -19,38 +19,34 @@
  * of the distribution package.
  ******************************************************************************/
 
-#include <sup/auto-server/variable_proxy.h>
+#ifndef SUP_AUTO_SERVER_VARIABLE_INFO_H_
+#define SUP_AUTO_SERVER_VARIABLE_INFO_H_
 
-#include "variable_utils.h"
+#include <sup/dto/basic_scalar_types.h>
+
+#include <string>
+#include <utility>
+#include <vector>
 
 namespace sup
 {
 namespace auto_server
 {
+using StringAttribute = std::pair<std::string, std::string>;
 
-VariableProxy::VariableProxy(const VariableInfo& var_info)
-  : m_var_type{var_info.m_var_type}
-  , m_index{var_info.m_index}
-  , m_attributes{var_info.m_attributes}
-{}
-
-VariableProxy::~VariableProxy() = default;
-
-std::string VariableProxy::GetType() const
+/**
+ * @brief The VariableInfo structure represents the static information that a client can get about a
+ * Workspace variable.
+ */
+struct VariableInfo
 {
-  return m_var_type;
-}
-
-sup::dto::uint32 VariableProxy::GetIndex() const
-{
-  return m_index;
-}
-
-std::vector<StringAttribute> VariableProxy::GetAttributes() const
-{
-  return m_attributes;
-}
+  std::string m_var_type;
+  sup::dto::uint32 m_index;
+  std::vector<StringAttribute> m_attributes;
+};
 
 }  // namespace auto_server
 
 }  // namespace sup
+
+#endif  // SUP_AUTO_SERVER_VARIABLE_INFO_H_

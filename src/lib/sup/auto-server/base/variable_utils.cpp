@@ -43,25 +43,25 @@ namespace auto_server
 {
 namespace utils
 {
-sup::dto::AnyValue BuildWorkspaceInfo(const sequencer::Workspace& ws)
+sup::dto::AnyValue BuildWorkspaceInfoAnyValue(const sequencer::Workspace& ws)
 {
   sup::dto::AnyValue result = sup::dto::EmptyStruct();
   auto var_names = ws.VariableNames();
   sup::dto::uint32 idx = 0;
   for (const auto& var_name : var_names)
   {
-    auto var_av = BuildVariableInfo(ws.GetVariable(var_name), idx);
+    auto var_av = BuildVariableInfoAnyValue(ws.GetVariable(var_name), idx);
     result.AddMember(var_name, var_av);
     ++idx;
   }
   return result;
 }
 
-sup::dto::AnyValue BuildVariableInfo(const sequencer::Variable* var, sup::dto::uint32 index)
+sup::dto::AnyValue BuildVariableInfoAnyValue(const sequencer::Variable* var, sup::dto::uint32 index)
 {
   if (var == nullptr)
   {
-    const std::string error = "BuildVariableInfo(): called with a nullptr";
+    const std::string error = "BuildVariableInfoAnyValue(): called with a nullptr";
     throw InvalidOperationException(error);
   }
   auto result = kVariableInfoAnyValue;
@@ -74,19 +74,19 @@ sup::dto::AnyValue BuildVariableInfo(const sequencer::Variable* var, sup::dto::u
   return result;
 }
 
-std::vector<std::string> BuildVariableNameMap(const sup::dto::AnyValue& variable_info)
+std::vector<std::string> BuildVariableNameMap(const sup::dto::AnyValue& workspace_info)
 {
-  if (!ValidateWorkspaceInfo(variable_info))
+  if (!ValidateWorkspaceInfo(workspace_info))
   {
-    const std::string error = "BuildVariableNameMap(): wrong format of variable info argument";
+    const std::string error = "BuildVariableNameMap(): wrong format of workspace info AnyValue";
     throw InvalidOperationException(error);
   }
-  auto var_names = variable_info.MemberNames();
+  auto var_names = workspace_info.MemberNames();
   std::vector<std::string> result(var_names.size());
   std::set<sup::dto::uint32> used_indices{};
   for (const auto& var_name : var_names)
   {
-    auto idx = variable_info[var_name][kIndexField].As<sup::dto::uint32>();
+    auto idx = workspace_info[var_name][kIndexField].As<sup::dto::uint32>();
     if (idx >= result.size())
     {
       const std::string error = "BuildVariableNameMap(): encountered variable index larger or "
@@ -102,6 +102,24 @@ std::vector<std::string> BuildVariableNameMap(const sup::dto::AnyValue& variable
     throw InvalidOperationException(error);
   }
   return result;
+}
+
+VariableInfo ToVariableInfo(const sup::dto::AnyValue& var_info_anyvalue)
+{
+  if (!ValidateVariableInfo(var_info_anyvalue))
+  {
+    const std::string error = "ToVariableInfo(): wrong format of variable info AnyValue";
+    throw InvalidOperationException(error);
+  }
+  auto var_type = var_info_anyvalue[kVariableInfoTypeField].As<std::string>();
+  auto var_idx = var_info_anyvalue[kIndexField].As<sup::dto::uint32>();
+  auto& attr_av = var_info_anyvalue[kAttributesField];
+  std::vector<StringAttribute> attributes;
+  for (const auto& attr_name : attr_av.MemberNames())
+  {
+    attributes.emplace_back(attr_name, attr_av[attr_name].As<std::string>());
+  }
+  return { var_type, var_idx, attributes };
 }
 
 }  // namespace utils

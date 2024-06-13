@@ -50,7 +50,7 @@ TEST_F(VariableUtilsTest, VariableInfo)
   // Build AnyValue representation of the workspace
   auto& workspace = proc->GetWorkspace();
   auto var_names = workspace.VariableNames();
-  auto ws_info = utils::BuildWorkspaceInfo(workspace);
+  auto ws_info = utils::BuildWorkspaceInfoAnyValue(workspace);
 
   // UnitTestHelper::DumpAnyValue(ws_info);
 

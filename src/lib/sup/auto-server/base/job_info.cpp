@@ -34,7 +34,7 @@ JobInfo::JobInfo(const std::string& prefix, const sup::sequencer::Procedure& pro
   , m_full_name{sup::sequencer::GetProcedureName(proc)}
   , m_nr_vars{proc.VariableNames().size()}
   , m_nr_instr{}
-  , m_variable_info{utils::BuildWorkspaceInfo(proc.GetWorkspace())}
+  , m_variable_info{utils::BuildWorkspaceInfoAnyValue(proc.GetWorkspace())}
   , m_instr_tree_info{}
 {}
 
@@ -67,7 +67,7 @@ std::size_t JobInfo::GetNumberOfInstructions() const
   return m_nr_instr;
 }
 
-const sup::dto::AnyValue& JobInfo::GetVariableInfo() const
+const sup::dto::AnyValue& JobInfo::GetWorkspaceInfo() const
 {
   return m_variable_info;
 }
@@ -86,7 +86,7 @@ sup::dto::AnyValue ToAnyValue(const JobInfo& job_info)
       { sup::dto::UnsignedInteger64Type, job_info.GetNumberOfVariables() } },
     { kNumberOfInstrFieldName,
       { sup::dto::UnsignedInteger64Type, job_info.GetNumberOfInstructions() } },
-    { kVariableInfoFieldName, job_info.GetVariableInfo() },
+    { kVariableInfoFieldName, job_info.GetWorkspaceInfo() },
     { kInstructionTreeInfoFieldName, job_info.GetInstructionTreeInfo() }
   }};
   return result;

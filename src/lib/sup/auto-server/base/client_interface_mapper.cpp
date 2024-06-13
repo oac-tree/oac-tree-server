@@ -35,7 +35,7 @@ ClientInterfaceMapper::ClientInterfaceMapper(sequencer::JobInterface& job_interf
                                              const JobInfo& job_info)
   : m_job_interface{job_interface}
   , m_instr_info{}
-  , m_var_name_map{utils::BuildVariableNameMap(job_info.GetVariableInfo())}
+  , m_var_name_map{utils::BuildVariableNameMap(job_info.GetWorkspaceInfo())}
 {}
 
 ClientInterfaceMapper::~ClientInterfaceMapper() = default;
@@ -57,7 +57,7 @@ void ClientInterfaceMapper::VariableUpdated(
     return;
   }
   const auto& var_name = m_var_name_map[var_idx];
-  auto var_info = DecodeVariableInfo(value);
+  auto var_info = DecodeVariableState(value);
   m_job_interface.VariableUpdated(var_name, var_info.first, var_info.second);
 }
 

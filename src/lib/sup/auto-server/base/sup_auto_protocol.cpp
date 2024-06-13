@@ -85,7 +85,7 @@ dto::AnyValue GetJobStateValue(sequencer::JobState state)
   return result;
 }
 
-dto::AnyValue EncodeVariableInfo(const dto::AnyValue& value, bool connected)
+dto::AnyValue EncodeVariableState(const dto::AnyValue& value, bool connected)
 {
   dto::AnyValue payload = {{
     { kVariableValueField, value },
@@ -94,13 +94,13 @@ dto::AnyValue EncodeVariableInfo(const dto::AnyValue& value, bool connected)
   auto encoded = protocol::Base64VariableCodec::Encode(payload);
   if (!encoded.first)
   {
-    const std::string error = "EncodeVariableInfo(): could not encode the variable's state";
+    const std::string error = "EncodeVariableState(): could not encode the variable's state";
     throw InvalidOperationException(error);
   }
   return encoded.second;
 }
 
-std::pair<sup::dto::AnyValue, bool> DecodeVariableInfo(const dto::AnyValue& encoded)
+std::pair<sup::dto::AnyValue, bool> DecodeVariableState(const dto::AnyValue& encoded)
 {
   const std::pair<sup::dto::AnyValue, bool> failure{ {}, false };
   auto decoded = protocol::Base64VariableCodec::Decode(encoded);

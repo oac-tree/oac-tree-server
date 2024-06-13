@@ -22,6 +22,8 @@
 #ifndef SUP_AUTO_SERVER_VARIABLE_UTILS_H_
 #define SUP_AUTO_SERVER_VARIABLE_UTILS_H_
 
+#include <sup/auto-server/variable_info.h>
+
 #include <sup/dto/anyvalue.h>
 
 namespace sup
@@ -43,7 +45,7 @@ namespace utils
  * @param ws Workspace to represent.
  * @return AnyValue representation.
  */
-sup::dto::AnyValue BuildWorkspaceInfo(const sequencer::Workspace& ws);
+sup::dto::AnyValue BuildWorkspaceInfoAnyValue(const sequencer::Workspace& ws);
 
 /**
  * @brief Build an AnyValue representation of a variable, providing its type,
@@ -53,7 +55,7 @@ sup::dto::AnyValue BuildWorkspaceInfo(const sequencer::Workspace& ws);
  * @param index Index to put inside the node (referring to the served variable AnyValue status).
  * @return AnyValue representation.
  */
-sup::dto::AnyValue BuildVariableInfo(const sequencer::Variable* var, sup::dto::uint32 index);
+sup::dto::AnyValue BuildVariableInfoAnyValue(const sequencer::Variable* var, sup::dto::uint32 index);
 
 /**
  * @brief Build an list of variable names from the workspace AnyValue representation, ordered by
@@ -62,8 +64,18 @@ sup::dto::AnyValue BuildVariableInfo(const sequencer::Variable* var, sup::dto::u
  *
  * @param variable_info AnyValue representation of all variables in a workspace.
  * @return List of variable names, ordered by index.
+ * @throw InvalidOperationException when the assumptions on the input are violated.
  */
-std::vector<std::string> BuildVariableNameMap(const sup::dto::AnyValue& variable_info);
+std::vector<std::string> BuildVariableNameMap(const sup::dto::AnyValue& workspace_info);
+
+/**
+ * @brief Convert the given AnyValue to a VariableInfo object.
+ *
+ * @param var_info_anyvalue AnyValue representation of a variable.
+ * @return VariableInfo object.
+ * @throw InvalidOperationException when the provided anyvalue has the wrong format.
+ */
+VariableInfo ToVariableInfo(const sup::dto::AnyValue& var_info_anyvalue);
 
 }  // namespace utils
 
