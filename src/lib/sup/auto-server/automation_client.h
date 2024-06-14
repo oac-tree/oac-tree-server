@@ -19,10 +19,12 @@
  * of the distribution package.
  ******************************************************************************/
 
-#ifndef SUP_AUTO_SERVER_AUTOMATION_SERVER_H_
-#define SUP_AUTO_SERVER_AUTOMATION_SERVER_H_
+#ifndef SUP_AUTO_SERVER_AUTOMATION_CLIENT_H_
+#define SUP_AUTO_SERVER_AUTOMATION_CLIENT_H_
 
-#include <sup/auto-server/job.h>
+#include <sup/auto-server/job_proxy.h>
+
+#include <sup/sequencer/job_commands.h>
 
 #include <memory>
 #include <string>
@@ -33,33 +35,26 @@ namespace sup
 namespace auto_server
 {
 /**
- * @brief AutomationServer.
+ * @brief AutomationClient.
  */
-class AutomationServer
+class AutomationClient
 {
 public:
-  using ProcedureList = std::vector<std::unique_ptr<sup::sequencer::Procedure>>;
-  AutomationServer(const std::string& server_prefix, ProcedureList& proc_list);
-  ~AutomationServer();
+  AutomationClient(const std::string& server_prefix);
+  ~AutomationClient();
 
   std::string GetServerPrefix() const;
   std::size_t GetNumberOfJobs() const;
 
-  const JobInfo& GetJobInfo(std::size_t job_idx) const;
+  const JobProxy& GetJobProxy(std::size_t job_idx) const;
 
   void EditBreakpoint(std::size_t job_idx, std::size_t instr_idx, bool breakpoint_active);
 
   void SendJobCommand(std::size_t job_idx, sup::sequencer::JobCommand command);
-
-private:
-  const std::string m_server_prefix;
-  std::vector<Job> m_jobs;
 };
-
-std::string CreateJobPrefix(const std::string& server_prefix, std::size_t idx);
 
 }  // namespace auto_server
 
 }  // namespace sup
 
-#endif  // SUP_AUTO_SERVER_AUTOMATION_SERVER_H_
+#endif  // SUP_AUTO_SERVER_AUTOMATION_CLIENT_H_
