@@ -52,9 +52,10 @@ std::vector<StringAttribute> InstructionProxy::GetAttributes() const
   return m_attributes;
 }
 
-void InstructionProxy::AppendChild(std::unique_ptr<InstructionProxy> child)
+InstructionProxy* InstructionProxy::AppendChild(std::unique_ptr<InstructionProxy> child)
 {
   m_children.push_back(std::move(child));
+  return m_children.back().get();
 }
 
 std::vector<InstructionProxy*> InstructionProxy::Children()

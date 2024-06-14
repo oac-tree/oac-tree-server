@@ -22,10 +22,12 @@
 #ifndef SUP_AUTO_SERVER_JOB_PROXY_H_
 #define SUP_AUTO_SERVER_JOB_PROXY_H_
 
+#include <sup/auto-server/instruction_proxy.h>
 #include <sup/auto-server/variable_proxy.h>
 
 #include <sup/dto/anyvalue.h>
 
+#include <memory>
 #include <string>
 #include <vector>
 
@@ -47,14 +49,16 @@ public:
   std::size_t GetNumberOfVariables() const;
   std::size_t GetNumberOfInstructions() const;
   const std::vector<VariableProxy>& GetWorkspaceInfo() const;
-  const sup::dto::AnyValue& GetInstructionTreeInfo() const;
+  const InstructionProxy* GetRootInstructionInfo() const;
 
 private:
   void InitializeWorkspaceInfo(const sup::dto::AnyValue& ws_info_av);
+  void InitializeInstructionInfo(const sup::dto::AnyValue& instr_info_av, std::size_t n_instr);
   std::string m_job_prefix;
   std::string m_full_name;
   std::vector<VariableProxy> m_vars;
-  sup::dto::AnyValue m_instr_tree_info;
+  std::unique_ptr<InstructionProxy> m_root;
+  std::vector<InstructionProxy*> m_instr_map;
 };
 
 }  // namespace auto_server

@@ -49,7 +49,13 @@ public:
   sup::dto::uint32 GetIndex() const;
   std::vector<StringAttribute> GetAttributes() const;
 
-  void AppendChild(std::unique_ptr<InstructionProxy> child);
+  /**
+   * @brief Append a child to the end of its list of children.
+   *
+   * @param child Child InstructionProxy to add.
+   * @return Pointer to added child.
+   */
+  InstructionProxy* AppendChild(std::unique_ptr<InstructionProxy> child);
 
   std::vector<InstructionProxy*> Children();
   std::vector<const InstructionProxy*> Children() const;

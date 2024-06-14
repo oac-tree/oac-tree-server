@@ -20,6 +20,7 @@
  ******************************************************************************/
 
 #include "anyvalue_utils.h"
+#include "instruction_tree_utils.h"
 #include "variable_utils.h"
 
 #include <sup/auto-server/exceptions.h>
@@ -27,6 +28,7 @@
 #include <sup/auto-server/sup_auto_protocol.h>
 #include <sup/auto-server/variable_proxy.h>
 
+#include <deque>
 #include <set>
 
 namespace
@@ -35,6 +37,16 @@ using namespace sup::auto_server;
 
 bool ValidateJobInfo(const sup::dto::AnyValue& job_info);
 bool ValidateVariableList(const std::vector<VariableProxy>& var_list);
+
+struct InstrProxyNode
+{
+  const sup::dto::AnyValue& node_av;
+  InstructionProxy* instr_proxy;
+};
+
+std::unique_ptr<InstructionProxy> CreateAndAdd(const sup::dto::AnyValue& instr_av,
+                                               std::vector<InstructionProxy*>& instr_map,
+                                               std::set<std::size_t>& used_indices);
 }  // unnamed namespace
 
 namespace sup
@@ -47,7 +59,8 @@ JobProxy::JobProxy(const sup::dto::AnyValue& job_info_av)
   : m_job_prefix{}
   , m_full_name{}
   , m_vars{}
-  , m_instr_tree_info{}
+  , m_root{}
+  , m_instr_map{}
 {
   if (!ValidateJobInfo(job_info_av))
   {
@@ -58,8 +71,9 @@ JobProxy::JobProxy(const sup::dto::AnyValue& job_info_av)
   m_full_name = job_info_av[kFullNameFieldName].As<std::string>();
   const auto& workspace_info = job_info_av[kVariableInfoFieldName];
   InitializeWorkspaceInfo(workspace_info);
-  m_instr_tree_info = job_info_av[kInstructionTreeInfoFieldName];
-  // TODO: replace member anyvalue with tree of instr proxies
+  const auto& instr_tree_info = job_info_av[kInstructionTreeInfoFieldName];
+  std::size_t n_instr = job_info_av[kNumberOfInstrFieldName].As<sup::dto::uint64>();
+  InitializeInstructionInfo(instr_tree_info, n_instr);
 }
 
 JobProxy::~JobProxy() = default;
@@ -90,9 +104,9 @@ const std::vector<VariableProxy>& JobProxy::GetWorkspaceInfo() const
   return m_vars;
 }
 
-const sup::dto::AnyValue& JobProxy::GetInstructionTreeInfo() const
+const InstructionProxy* JobProxy::GetRootInstructionInfo() const
 {
-  return m_instr_tree_info;
+  return m_root.get();
 }
 
 void JobProxy::InitializeWorkspaceInfo(const sup::dto::AnyValue& ws_info_av)
@@ -123,6 +137,50 @@ void JobProxy::InitializeWorkspaceInfo(const sup::dto::AnyValue& ws_info_av)
     throw InvalidOperationException(error);
   }
   m_vars = vars;
+}
+
+void JobProxy::InitializeInstructionInfo(const sup::dto::AnyValue& instr_info_av,
+                                         std::size_t n_instr)
+{
+  if (!sup::dto::IsStructValue(instr_info_av))
+  {
+    const std::string error = "JobProxy::InitializeInstructionInfo(): wrong format of "
+                              "instruction tree info AnyValue";
+    throw InvalidOperationException(error);
+  }
+  std::vector<InstructionProxy*> instr_map(n_instr, nullptr);
+  std::set<std::size_t> used_indices{};
+  std::deque<InstrProxyNode> stack{};
+  auto root = CreateAndAdd(instr_info_av, instr_map, used_indices);
+  stack.push_back(InstrProxyNode{instr_info_av, root.get()});
+  while (!stack.empty())
+  {
+    auto current = stack.back();
+    stack.pop_back();
+    if (current.node_av.HasField(kChildInstructionsField))
+    {
+      auto& children_av = current.node_av[kChildInstructionsField];
+      std::size_t child_idx = 0;
+      auto child_mem_name = utils::CreateIndexedMemberName(child_idx);
+      while (children_av.HasField(child_mem_name))
+      {
+        auto& child_av = children_av[child_mem_name];
+        auto child = CreateAndAdd(child_av, instr_map, used_indices);
+        auto p_child = current.instr_proxy->AppendChild(std::move(child));
+        stack.push_back(InstrProxyNode{child_av, p_child});
+        ++child_idx;
+        child_mem_name = utils::CreateIndexedMemberName(child_idx);
+      }
+    }
+  }
+  if (used_indices.size() != n_instr)
+  {
+    const std::string error = "JobProxy::InitializeInstructionInfo(): duplicate instruction "
+                              "indices found";
+    throw InvalidOperationException(error);
+  }
+  m_root = std::move(root);
+  m_instr_map = instr_map;
 }
 
 }  // namespace auto_server
@@ -176,6 +234,24 @@ bool ValidateVariableList(const std::vector<VariableProxy>& var_list)
     return false;
   }
   return true;
+}
+
+std::unique_ptr<InstructionProxy> CreateAndAdd(const sup::dto::AnyValue& instr_av,
+                                               std::vector<InstructionProxy*>& instr_map,
+                                               std::set<std::size_t>& used_indices)
+{
+  std::unique_ptr<InstructionProxy> result{
+    new InstructionProxy(utils::ToInstructionInfo(instr_av))};
+  auto idx = result->GetIndex();
+  if (idx >= instr_map.size())
+  {
+    const std::string error = "JobProxy::InitializeInstructionInfo(): encountered instruction "
+                              "index greater than or equal to number of instructions";
+    throw InvalidOperationException(error);
+  }
+  instr_map[idx] = result.get();
+  used_indices.insert(idx);
+  return result;
 }
 
 }  // unnamed namespace
