@@ -50,6 +50,7 @@ public:
   const sup::dto::AnyValue& GetInstructionTreeInfo() const;
 
 private:
+  void InitializeWorkspaceInfo(const sup::dto::AnyValue& ws_info_av);
   std::string m_job_prefix;
   std::string m_full_name;
   std::vector<VariableProxy> m_vars;
