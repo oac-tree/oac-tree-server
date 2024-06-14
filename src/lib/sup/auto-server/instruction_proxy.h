@@ -24,6 +24,8 @@
 
 #include <sup/auto-server/instruction_info.h>
 
+#include <memory>
+
 namespace sup
 {
 namespace auto_server
@@ -47,10 +49,16 @@ public:
   sup::dto::uint32 GetIndex() const;
   std::vector<StringAttribute> GetAttributes() const;
 
+  void AppendChild(std::unique_ptr<InstructionProxy> child);
+
+  std::vector<InstructionProxy*> Children();
+  std::vector<const InstructionProxy*> Children() const;
+
 private:
   std::string m_instr_type;
   sup::dto::uint32 m_index;
   std::vector<StringAttribute> m_attributes;
+  std::vector<std::unique_ptr<InstructionProxy>> m_children;
 };
 
 }  // namespace auto_server
