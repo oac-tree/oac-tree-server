@@ -36,8 +36,6 @@ namespace auto_server
 /**
  * @brief The InstructionInfo structure represents the static information that a client can get
  * about a procedure instruction.
- *
- * TODO: add children here too?
  */
 struct InstructionInfo
 {

@@ -50,6 +50,7 @@ public:
   std::size_t GetNumberOfInstructions() const;
   const std::vector<VariableProxy>& GetWorkspaceInfo() const;
   const InstructionProxy* GetRootInstructionInfo() const;
+  std::vector<InstructionProxy*> GetInstructionIndexMap() const;
 
 private:
   void InitializeWorkspaceInfo(const sup::dto::AnyValue& ws_info_av);

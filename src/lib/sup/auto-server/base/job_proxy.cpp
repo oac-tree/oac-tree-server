@@ -95,8 +95,7 @@ std::size_t JobProxy::GetNumberOfVariables() const
 
 std::size_t JobProxy::GetNumberOfInstructions() const
 {
-  // TODO: get from instr tree or mapping
-  return 0;
+  return m_instr_map.size();
 }
 
 const std::vector<VariableProxy>& JobProxy::GetWorkspaceInfo() const
@@ -181,6 +180,11 @@ void JobProxy::InitializeInstructionInfo(const sup::dto::AnyValue& instr_info_av
   }
   m_root = std::move(root);
   m_instr_map = instr_map;
+}
+
+std::vector<InstructionProxy*> JobProxy::GetInstructionIndexMap() const
+{
+  return m_instr_map;
 }
 
 }  // namespace auto_server
