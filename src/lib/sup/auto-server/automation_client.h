@@ -46,6 +46,8 @@ public:
   std::string GetServerPrefix() const;
   std::size_t GetNumberOfJobs() const;
 
+  // TODO: refactor so that both client and server implement the same interface
+  // this may lead to removal of JobInfo??
   const JobProxy& GetJobProxy(std::size_t job_idx) const;
 
   void EditBreakpoint(std::size_t job_idx, std::size_t instr_idx, bool breakpoint_active);

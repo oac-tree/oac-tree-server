@@ -22,7 +22,7 @@
 #ifndef SUP_AUTO_SERVER_CLIENT_INTERFACE_MAPPER_H_
 #define SUP_AUTO_SERVER_CLIENT_INTERFACE_MAPPER_H_
 
-#include <sup/auto-server/job_info.h>
+#include <sup/auto-server/old_job_info.h>
 
 #include <sup/sequencer/job_interface.h>
 
@@ -41,7 +41,7 @@ namespace auto_server
 class ClientInterfaceMapper
 {
 public:
-  ClientInterfaceMapper(sequencer::JobInterface& job_interface, const JobInfo& job_info);
+  ClientInterfaceMapper(sequencer::JobInterface& job_interface, const OldJobInfo& job_info);
   ~ClientInterfaceMapper();
 
   void InstructionUpdated(sup::dto::uint32 instr_idx, const sup::dto::AnyValue& value);

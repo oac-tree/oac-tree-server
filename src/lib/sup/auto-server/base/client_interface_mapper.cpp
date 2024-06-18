@@ -32,7 +32,7 @@ namespace auto_server
 
 
 ClientInterfaceMapper::ClientInterfaceMapper(sequencer::JobInterface& job_interface,
-                                             const JobInfo& job_info)
+                                             const OldJobInfo& job_info)
   : m_job_interface{job_interface}
   , m_instr_info{}
   , m_var_name_map{utils::BuildVariableNameMap(job_info.GetWorkspaceInfo())}

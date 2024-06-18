@@ -22,7 +22,7 @@
 #ifndef SUP_AUTO_SERVER_JOB_H_
 #define SUP_AUTO_SERVER_JOB_H_
 
-#include <sup/auto-server/job_info.h>
+#include <sup/auto-server/old_job_info.h>
 
 #include <sup/sequencer/async_runner.h>
 #include <sup/sequencer/instruction.h>
@@ -53,7 +53,7 @@ public:
   Job(Job&& other);
   Job& operator=(Job&& other) = delete;
 
-  const JobInfo& GetInfo() const;
+  const OldJobInfo& GetInfo() const;
 
   /**
    * @brief Methods forwarded to AsyncRunner

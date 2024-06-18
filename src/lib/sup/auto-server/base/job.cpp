@@ -39,7 +39,7 @@ struct Job::JobImpl
   EPICSAnyValueServer m_epics_server;
   AutomationJobInterface m_job_interface;
   sup::sequencer::AsyncRunner m_runner;
-  JobInfo m_job_info;
+  OldJobInfo m_job_info;
   std::vector<const sequencer::Instruction*> m_ordered_instructions;
 };
 
@@ -55,7 +55,7 @@ Job::Job(Job&& other)
   std::swap(m_impl, other.m_impl);
 }
 
-const JobInfo& Job::GetInfo() const
+const OldJobInfo& Job::GetInfo() const
 {
   return m_impl->m_job_info;
 }

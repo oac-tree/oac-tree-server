@@ -49,7 +49,7 @@ std::size_t AutomationServer::GetNumberOfJobs() const
   return m_jobs.size();
 }
 
-const JobInfo& AutomationServer::GetJobInfo(std::size_t job_idx) const
+const OldJobInfo& AutomationServer::GetJobInfo(std::size_t job_idx) const
 {
   if (job_idx >= m_jobs.size())
   {

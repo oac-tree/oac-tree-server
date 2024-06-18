@@ -41,7 +41,7 @@ install(FILES
   exceptions.h
   instruction_info.h
   instruction_proxy.h
-  job_info.h
+  old_job_info.h
   job_proxy.h
   job_value_mapper.h
   job.h

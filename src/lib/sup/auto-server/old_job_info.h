@@ -19,8 +19,8 @@
  * of the distribution package.
  ******************************************************************************/
 
-#ifndef SUP_AUTO_SERVER_JOB_INFO_H_
-#define SUP_AUTO_SERVER_JOB_INFO_H_
+#ifndef SUP_AUTO_SERVER_OLD_JOB_INFO_H_
+#define SUP_AUTO_SERVER_OLD_JOB_INFO_H_
 
 #include <sup/sequencer/procedure.h>
 
@@ -33,11 +33,11 @@ namespace auto_server
 /**
  * @brief The JobInfo.
  */
-class JobInfo
+class OldJobInfo
 {
 public:
-  JobInfo(const std::string& prefix, const sup::sequencer::Procedure& proc);
-  ~JobInfo();
+  OldJobInfo(const std::string& prefix, const sup::sequencer::Procedure& proc);
+  ~OldJobInfo();
 
   void SetInstructionTreeInfo(const sup::dto::AnyValue& instr_tree_info, std::size_t nr_instr);
 
@@ -60,10 +60,10 @@ private:
 /**
  * @brief Encode a JobInfo object into an AnyValue.
 */
-sup::dto::AnyValue ToAnyValue(const JobInfo& job_info);
+sup::dto::AnyValue ToAnyValue(const OldJobInfo& job_info);
 
 }  // namespace auto_server
 
 }  // namespace sup
 
-#endif  // SUP_AUTO_SERVER_JOB_INFO_H_
+#endif  // SUP_AUTO_SERVER_OLD_JOB_INFO_H_

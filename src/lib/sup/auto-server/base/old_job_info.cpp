@@ -19,7 +19,7 @@
  * of the distribution package.
  ******************************************************************************/
 
-#include <sup/auto-server/job_info.h>
+#include <sup/auto-server/old_job_info.h>
 #include <sup/auto-server/sup_auto_protocol.h>
 
 #include "variable_utils.h"
@@ -29,7 +29,7 @@ namespace sup
 namespace auto_server
 {
 
-JobInfo::JobInfo(const std::string& prefix, const sup::sequencer::Procedure& proc)
+OldJobInfo::OldJobInfo(const std::string& prefix, const sup::sequencer::Procedure& proc)
   : m_job_prefix{prefix}
   , m_full_name{sup::sequencer::GetProcedureName(proc)}
   , m_nr_vars{proc.VariableNames().size()}
@@ -38,46 +38,46 @@ JobInfo::JobInfo(const std::string& prefix, const sup::sequencer::Procedure& pro
   , m_instr_tree_info{}
 {}
 
-JobInfo::~JobInfo() = default;
+OldJobInfo::~OldJobInfo() = default;
 
-void JobInfo::SetInstructionTreeInfo(const sup::dto::AnyValue& instr_tree_info,
+void OldJobInfo::SetInstructionTreeInfo(const sup::dto::AnyValue& instr_tree_info,
                                      std::size_t nr_instr)
 {
   m_instr_tree_info = instr_tree_info;
   m_nr_instr = nr_instr;
 }
 
-std::string JobInfo::GetPrefix() const
+std::string OldJobInfo::GetPrefix() const
 {
   return m_job_prefix;
 }
 
-std::string JobInfo::GetProcedureName() const
+std::string OldJobInfo::GetProcedureName() const
 {
   return m_full_name;
 }
 
-std::size_t JobInfo::GetNumberOfVariables() const
+std::size_t OldJobInfo::GetNumberOfVariables() const
 {
   return m_nr_vars;
 }
 
-std::size_t JobInfo::GetNumberOfInstructions() const
+std::size_t OldJobInfo::GetNumberOfInstructions() const
 {
   return m_nr_instr;
 }
 
-const sup::dto::AnyValue& JobInfo::GetWorkspaceInfo() const
+const sup::dto::AnyValue& OldJobInfo::GetWorkspaceInfo() const
 {
   return m_variable_info;
 }
 
-const sup::dto::AnyValue& JobInfo::GetInstructionTreeInfo() const
+const sup::dto::AnyValue& OldJobInfo::GetInstructionTreeInfo() const
 {
   return m_instr_tree_info;
 }
 
-sup::dto::AnyValue ToAnyValue(const JobInfo& job_info)
+sup::dto::AnyValue ToAnyValue(const OldJobInfo& job_info)
 {
   sup::dto::AnyValue result = {{
     { kJobPrefixFieldName, job_info.GetPrefix() },

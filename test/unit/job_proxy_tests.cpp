@@ -21,7 +21,7 @@
 
 #include "unit_test_helper.h"
 
-#include <sup/auto-server/job_info.h>
+#include <sup/auto-server/old_job_info.h>
 #include <sup/auto-server/job_proxy.h>
 #include <sup/auto-server/job_value_mapper.h>
 #include <sup/auto-server/job.h>
