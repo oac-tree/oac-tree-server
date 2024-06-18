@@ -59,6 +59,17 @@ sup::dto::AnyValue BuildWorkspaceInfoAnyValue(const sequencer::Workspace& ws);
 sup::dto::AnyValue BuildVariableInfoAnyValue(const sequencer::Variable* var, sup::dto::uint32 index);
 
 /**
+ * @brief Create a VariableInfo representation of a variable, providing its type,
+ * attributes and the variable index used for publishing its status.
+ *
+ * @param var Variable to represent.
+ * @param index Index to put inside the object (referring to the served variable AnyValue status).
+ * @return VariableInfo representation.
+ * @throw InvalidOperationException when a nullptr is passed.
+ */
+VariableInfo CreateVariableInfo(const sequencer::Variable* var, sup::dto::uint32 index);
+
+/**
  * @brief Build an list of variable names from the workspace AnyValue representation, ordered by
  * index. This allows O(1) lookup. It is assumed that all indices are unique and span exactly the
  * range from zero to (number_of_variables -1).

@@ -74,6 +74,22 @@ sup::dto::AnyValue BuildVariableInfoAnyValue(const sequencer::Variable* var, sup
   return result;
 }
 
+VariableInfo CreateVariableInfo(const sequencer::Variable* var, sup::dto::uint32 index)
+{
+  if (var == nullptr)
+  {
+    const std::string error = "CreateVariableInfo(): called with a nullptr";
+    throw InvalidOperationException(error);
+  }
+  auto var_type = var->GetType();
+  std::vector<StringAttribute> attributes;
+  for (const auto& attr : var->GetStringAttributes())
+  {
+    attributes.emplace_back(attr.first, attr.second);
+  }
+  return { var_type, index, attributes };
+}
+
 std::vector<std::string> BuildVariableNameMap(const sup::dto::AnyValue& workspace_info)
 {
   if (!ValidateWorkspaceInfo(workspace_info))
