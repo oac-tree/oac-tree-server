@@ -58,6 +58,10 @@ private:
   std::vector<StringAttribute> m_attributes;
 };
 
+// Equality operators
+bool operator==(const VariableInfo& left, const VariableInfo& right);
+bool operator!=(const VariableInfo& left, const VariableInfo& right);
+
 }  // namespace auto_server
 
 }  // namespace sup

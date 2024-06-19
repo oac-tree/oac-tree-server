@@ -50,6 +50,28 @@ std::vector<StringAttribute> VariableInfo::GetAttributes() const
   return m_attributes;
 }
 
+bool operator==(const VariableInfo& left, const VariableInfo& right)
+{
+  if (left.GetType() != right.GetType())
+  {
+    return false;
+  }
+  if (left.GetIndex() != right.GetIndex())
+  {
+    return false;
+  }
+  if (left.GetAttributes() != right.GetAttributes())
+  {
+    return false;
+  }
+  return true;
+}
+
+bool operator!=(const VariableInfo& left, const VariableInfo& right)
+{
+  return !(left == right);
+}
+
 }  // namespace auto_server
 
 }  // namespace sup

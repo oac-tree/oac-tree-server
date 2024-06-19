@@ -46,11 +46,11 @@ namespace auto_server
 const VariableInfo kInvalidVariableProxy{"", 0, {}};
 
 JobProxy::JobProxy(const std::string& job_prefix, const std::string& full_name,
-                   const WorkspaceInfo& ws_info, std::unique_ptr<InstructionInfo> root_instr)
+                   const WorkspaceInfo& ws_info, std::unique_ptr<InstructionInfo> root_info)
   : m_job_prefix{job_prefix}
   , m_full_name{full_name}
   , m_ws{ws_info}
-  , m_root{std::move(root_instr)}
+  , m_root{std::move(root_info)}
 {}
 
 JobProxy::~JobProxy() = default;

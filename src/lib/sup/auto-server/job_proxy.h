@@ -42,7 +42,7 @@ class JobProxy
 {
 public:
   JobProxy(const std::string& job_prefix, const std::string& full_name,
-           const WorkspaceInfo& ws_info, std::unique_ptr<InstructionInfo> root_instr);
+           const WorkspaceInfo& ws_info, std::unique_ptr<InstructionInfo> root_info);
   ~JobProxy();
 
   std::string GetPrefix() const;
