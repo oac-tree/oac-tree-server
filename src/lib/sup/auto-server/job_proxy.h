@@ -48,7 +48,7 @@ public:
   std::string GetProcedureName() const;
   std::size_t GetNumberOfVariables() const;
   std::size_t GetNumberOfInstructions() const;
-  const std::vector<VariableProxy>& GetWorkspaceInfo() const;
+  const std::vector<VariableInfo>& GetWorkspaceInfo() const;
   const InstructionProxy* GetRootInstructionInfo() const;
   std::vector<InstructionProxy*> GetInstructionIndexMap() const;
 
@@ -57,7 +57,7 @@ private:
   void InitializeInstructionInfo(const sup::dto::AnyValue& instr_info_av, std::size_t n_instr);
   std::string m_job_prefix;
   std::string m_full_name;
-  std::vector<VariableProxy> m_vars;
+  std::vector<VariableInfo> m_vars;
   std::unique_ptr<InstructionProxy> m_root;
   std::vector<InstructionProxy*> m_instr_map;
 };

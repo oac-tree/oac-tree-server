@@ -19,34 +19,33 @@
  * of the distribution package.
  ******************************************************************************/
 
-#include <sup/auto-server/variable_proxy.h>
-
-#include "variable_utils.h"
+#include <sup/auto-server/variable_info.h>
 
 namespace sup
 {
 namespace auto_server
 {
 
-VariableProxy::VariableProxy(const VariableInfo& var_info)
-  : m_var_type{var_info.m_var_type}
-  , m_index{var_info.m_index}
-  , m_attributes{var_info.m_attributes}
+VariableInfo::VariableInfo(const std::string& var_type, sup::dto::uint32 idx,
+                             std::vector<StringAttribute> attributes)
+  : m_var_type{var_type}
+  , m_index{idx}
+  , m_attributes{std::move(attributes)}
 {}
 
-VariableProxy::~VariableProxy() = default;
+VariableInfo::~VariableInfo() = default;
 
-std::string VariableProxy::GetType() const
+std::string VariableInfo::GetType() const
 {
   return m_var_type;
 }
 
-sup::dto::uint32 VariableProxy::GetIndex() const
+sup::dto::uint32 VariableInfo::GetIndex() const
 {
   return m_index;
 }
 
-std::vector<StringAttribute> VariableProxy::GetAttributes() const
+std::vector<StringAttribute> VariableInfo::GetAttributes() const
 {
   return m_attributes;
 }

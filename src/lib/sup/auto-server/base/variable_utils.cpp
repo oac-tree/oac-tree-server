@@ -74,6 +74,19 @@ sup::dto::AnyValue BuildVariableInfoAnyValue(const sequencer::Variable* var, sup
   return result;
 }
 
+std::vector<VariableInfo> CreateWorkspaceInfo(const sequencer::Workspace& ws)
+{
+  std::vector<VariableInfo> result;
+  auto var_names = ws.VariableNames();
+  sup::dto::uint32 idx = 0;
+  for (const auto& var_name : var_names)
+  {
+    result.push_back(CreateVariableInfo(ws.GetVariable(var_name), idx));
+    ++idx;
+  }
+  return result;
+}
+
 VariableInfo CreateVariableInfo(const sequencer::Variable* var, sup::dto::uint32 index)
 {
   if (var == nullptr)
@@ -82,12 +95,8 @@ VariableInfo CreateVariableInfo(const sequencer::Variable* var, sup::dto::uint32
     throw InvalidOperationException(error);
   }
   auto var_type = var->GetType();
-  std::vector<StringAttribute> attributes;
-  for (const auto& attr : var->GetStringAttributes())
-  {
-    attributes.emplace_back(attr.first, attr.second);
-  }
-  return { var_type, index, attributes };
+  std::vector<StringAttribute> attributes = var->GetStringAttributes();
+  return VariableInfo{ var_type, index, attributes };
 }
 
 std::vector<std::string> BuildVariableNameMap(const sup::dto::AnyValue& workspace_info)
@@ -135,7 +144,7 @@ VariableInfo ToVariableInfo(const sup::dto::AnyValue& var_info_anyvalue)
   {
     attributes.emplace_back(attr_name, attr_av[attr_name].As<std::string>());
   }
-  return { var_type, var_idx, attributes };
+  return VariableInfo{ var_type, var_idx, attributes };
 }
 
 }  // namespace utils

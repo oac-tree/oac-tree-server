@@ -36,7 +36,7 @@ namespace
 using namespace sup::auto_server;
 
 bool ValidateJobInfo(const sup::dto::AnyValue& job_info);
-bool ValidateVariableList(const std::vector<VariableProxy>& var_list);
+bool ValidateVariableList(const std::vector<VariableInfo>& var_list);
 
 struct InstrProxyNode
 {
@@ -53,7 +53,7 @@ namespace sup
 {
 namespace auto_server
 {
-const VariableProxy kInvalidVariableProxy( {"", 0, {}} );
+const VariableInfo kInvalidVariableProxy{"", 0, {}};
 
 JobProxy::JobProxy(const sup::dto::AnyValue& job_info_av)
   : m_job_prefix{}
@@ -98,7 +98,7 @@ std::size_t JobProxy::GetNumberOfInstructions() const
   return m_instr_map.size();
 }
 
-const std::vector<VariableProxy>& JobProxy::GetWorkspaceInfo() const
+const std::vector<VariableInfo>& JobProxy::GetWorkspaceInfo() const
 {
   return m_vars;
 }
@@ -117,17 +117,17 @@ void JobProxy::InitializeWorkspaceInfo(const sup::dto::AnyValue& ws_info_av)
     throw InvalidOperationException(error);
   }
   auto mem_names = ws_info_av.MemberNames();
-  std::vector<VariableProxy> vars(mem_names.size(), kInvalidVariableProxy);
+  std::vector<VariableInfo> vars(mem_names.size(), kInvalidVariableProxy);
   for (const auto& mem_name : mem_names)
   {
     auto var_info = utils::ToVariableInfo(ws_info_av[mem_name]);
-    if (var_info.m_index >= vars.size())
+    if (var_info.GetIndex() >= vars.size())
     {
       const std::string error = "JobProxy::InitializeWorkspaceInfo(): encountered index "
                                 "larger or equal to number of variables";
       throw InvalidOperationException(error);
     }
-    vars[var_info.m_index] = VariableProxy{var_info};
+    vars[var_info.GetIndex()] = var_info;
   }
   if (!ValidateVariableList(vars))
   {
@@ -222,7 +222,7 @@ bool ValidateJobInfo(const sup::dto::AnyValue& job_info)
   return true;
 }
 
-bool ValidateVariableList(const std::vector<VariableProxy>& var_list)
+bool ValidateVariableList(const std::vector<VariableInfo>& var_list)
 {
   std::set<sup::dto::uint32> indices;
   for (const auto& var : var_list)

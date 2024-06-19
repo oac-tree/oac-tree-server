@@ -23,6 +23,7 @@
 #define SUP_AUTO_SERVER_VARIABLE_UTILS_H_
 
 #include <sup/auto-server/variable_info.h>
+#include <sup/auto-server/variable_proxy.h>
 
 #include <sup/dto/anyvalue.h>
 
@@ -57,6 +58,15 @@ sup::dto::AnyValue BuildWorkspaceInfoAnyValue(const sequencer::Workspace& ws);
  * @throw InvalidOperationException when a nullptr is passed.
  */
 sup::dto::AnyValue BuildVariableInfoAnyValue(const sequencer::Variable* var, sup::dto::uint32 index);
+
+/**
+ * @brief Create a representation of all variables in a workspace, providing their types and
+ * attributes.
+ *
+ * @param ws Workspace to use.
+ * @return List of VariableInfo objects representing the variables in the given workspace.
+ */
+std::vector<VariableInfo> CreateWorkspaceInfo(const sequencer::Workspace& ws);
 
 /**
  * @brief Create a VariableInfo representation of a variable, providing its type,

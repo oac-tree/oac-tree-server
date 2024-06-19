@@ -34,11 +34,25 @@ namespace sup
 namespace auto_server
 {
 /**
- * @brief The VariableInfo structure represents the static information that a client can get about a
- * Workspace variable.
+ * @brief The VariableInfo class represents the static information of a Variable, including its
+ * type and attributes. It also contains an index that allows to uniquely identify the Variable
+ * within a workspace.
+ *
+ * @todo Check if putting the index inside is really needed, since the index can be deduced from
+ * the order of VariableInfo objects that is used.
  */
-struct VariableInfo
+class VariableInfo
 {
+public:
+  VariableInfo(const std::string& var_type, sup::dto::uint32 idx,
+                std::vector<StringAttribute> attributes);
+  ~VariableInfo();
+
+  std::string GetType() const;
+  sup::dto::uint32 GetIndex() const;
+  std::vector<StringAttribute> GetAttributes() const;
+
+private:
   std::string m_var_type;
   sup::dto::uint32 m_index;
   std::vector<StringAttribute> m_attributes;
