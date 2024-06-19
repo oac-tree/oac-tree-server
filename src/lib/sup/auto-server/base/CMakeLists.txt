@@ -18,4 +18,5 @@ target_sources(sup-auto-server
   variable_map.cpp
   variable_info.cpp
   variable_utils.cpp
+  workspace_info.cpp
 )

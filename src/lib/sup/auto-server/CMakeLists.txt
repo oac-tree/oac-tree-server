@@ -46,5 +46,6 @@ install(FILES
   job.h
   sup_auto_protocol.h
   variable_info.h
+  workspace_info.h
   DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/sup/auto-server
 )

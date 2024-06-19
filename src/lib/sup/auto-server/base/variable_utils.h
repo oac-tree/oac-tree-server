@@ -23,6 +23,7 @@
 #define SUP_AUTO_SERVER_VARIABLE_UTILS_H_
 
 #include <sup/auto-server/variable_info.h>
+#include <sup/auto-server/workspace_info.h>
 
 #include <sup/dto/anyvalue.h>
 
@@ -38,6 +39,62 @@ namespace auto_server
 {
 namespace utils
 {
+
+/**
+ * @brief Create a representation of all variables in a workspace, providing their names, types and
+ * attributes.
+ *
+ * @param ws Workspace to use.
+ * @return WorkspaceInfo object representing all variables in the given workspace.
+ */
+WorkspaceInfo CreateWorkspaceInfo(const sequencer::Workspace& ws);
+
+/**
+ * @brief Create a VariableInfo representation of a variable, providing its type,
+ * attributes and the variable index used for publishing its status.
+ *
+ * @param var Variable to represent.
+ * @param index Index to put inside the object (referring to the served variable AnyValue status).
+ * @return VariableInfo representation.
+ * @throw InvalidOperationException when a nullptr is passed.
+ */
+VariableInfo CreateVariableInfo(const sequencer::Variable* var, sup::dto::uint32 index);
+
+/**
+ * @brief Convert the given AnyValue to a list of VariableInfo objects that represent a workspace.
+ *
+ * @param ws_info_anyvalue AnyValue representation of all workspace variables.
+ * @return WorkspaceInfo object.
+ * @throw InvalidOperationException when the provided anyvalue has the wrong format.
+ */
+WorkspaceInfo ToWorkspaceInfo(const sup::dto::AnyValue& ws_info_anyvalue);
+
+/**
+ * @brief Convert the given AnyValue to a VariableInfo object.
+ *
+ * @param var_info_anyvalue AnyValue representation of a variable.
+ * @return VariableInfo object.
+ * @throw InvalidOperationException when the provided anyvalue has the wrong format.
+ */
+VariableInfo ToVariableInfo(const sup::dto::AnyValue& var_info_anyvalue);
+
+/**
+ * @brief Convert the given WorkspaceInfo object to an AnyValue.
+ *
+ * @param ws_info WorkspaceInfo object.
+ * @return AnyValue representation of the WorkspaceInfo object.
+ */
+sup::dto::AnyValue ToAnyValue(const WorkspaceInfo& ws_info);
+
+/**
+ * @brief Convert the given VariableInfo object to an AnyValue.
+ *
+ * @param var_info VariableInfo object.
+ * @return AnyValue representation of the VariableInfo object.
+ */
+sup::dto::AnyValue ToAnyValue(const VariableInfo& var_info);
+
+// TODO: Remove the following functions
 
 /**
  * @brief Build an AnyValue representation of all variables in the given workspace.
@@ -59,26 +116,6 @@ sup::dto::AnyValue BuildWorkspaceInfoAnyValue(const sequencer::Workspace& ws);
 sup::dto::AnyValue BuildVariableInfoAnyValue(const sequencer::Variable* var, sup::dto::uint32 index);
 
 /**
- * @brief Create a representation of all variables in a workspace, providing their types and
- * attributes.
- *
- * @param ws Workspace to use.
- * @return List of VariableInfo objects representing the variables in the given workspace.
- */
-std::vector<VariableInfo> CreateWorkspaceInfo(const sequencer::Workspace& ws);
-
-/**
- * @brief Create a VariableInfo representation of a variable, providing its type,
- * attributes and the variable index used for publishing its status.
- *
- * @param var Variable to represent.
- * @param index Index to put inside the object (referring to the served variable AnyValue status).
- * @return VariableInfo representation.
- * @throw InvalidOperationException when a nullptr is passed.
- */
-VariableInfo CreateVariableInfo(const sequencer::Variable* var, sup::dto::uint32 index);
-
-/**
  * @brief Build an list of variable names from the workspace AnyValue representation, ordered by
  * index. This allows O(1) lookup. It is assumed that all indices are unique and span exactly the
  * range from zero to (number_of_variables -1).
@@ -88,15 +125,6 @@ VariableInfo CreateVariableInfo(const sequencer::Variable* var, sup::dto::uint32
  * @throw InvalidOperationException when the assumptions on the input are violated.
  */
 std::vector<std::string> BuildVariableNameMap(const sup::dto::AnyValue& workspace_info);
-
-/**
- * @brief Convert the given AnyValue to a VariableInfo object.
- *
- * @param var_info_anyvalue AnyValue representation of a variable.
- * @return VariableInfo object.
- * @throw InvalidOperationException when the provided anyvalue has the wrong format.
- */
-VariableInfo ToVariableInfo(const sup::dto::AnyValue& var_info_anyvalue);
 
 }  // namespace utils
 
