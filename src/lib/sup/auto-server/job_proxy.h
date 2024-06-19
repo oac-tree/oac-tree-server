@@ -23,7 +23,7 @@
 #define SUP_AUTO_SERVER_JOB_PROXY_H_
 
 #include <sup/auto-server/instruction_info.h>
-#include <sup/auto-server/variable_info.h>
+#include <sup/auto-server/workspace_info.h>
 
 #include <sup/dto/anyvalue.h>
 
@@ -41,25 +41,22 @@ namespace auto_server
 class JobProxy
 {
 public:
-  JobProxy(const sup::dto::AnyValue& job_info_av);
+  JobProxy(const std::string& job_prefix, const std::string& full_name,
+           const WorkspaceInfo& ws_info, std::unique_ptr<InstructionInfo> root_instr);
   ~JobProxy();
 
   std::string GetPrefix() const;
   std::string GetProcedureName() const;
   std::size_t GetNumberOfVariables() const;
   std::size_t GetNumberOfInstructions() const;
-  const std::vector<VariableInfo>& GetWorkspaceInfo() const;
+  const WorkspaceInfo& GetWorkspaceInfo() const;
   const InstructionInfo* GetRootInstructionInfo() const;
-  std::vector<InstructionInfo*> GetInstructionIndexMap() const;
 
 private:
-  void InitializeWorkspaceInfo(const sup::dto::AnyValue& ws_info_av);
-  void InitializeInstructionInfo(const sup::dto::AnyValue& instr_info_av, std::size_t n_instr);
   std::string m_job_prefix;
   std::string m_full_name;
-  std::vector<VariableInfo> m_vars;
+  WorkspaceInfo m_ws;
   std::unique_ptr<InstructionInfo> m_root;
-  std::vector<InstructionInfo*> m_instr_map;
 };
 
 }  // namespace auto_server

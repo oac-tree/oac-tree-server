@@ -46,6 +46,8 @@ public:
 
   void AddVariableInfo(const std::string& var_name, const VariableInfo& var_info);
 
+  std::size_t GetNumberOfVariables() const;
+
   const std::vector<std::pair<std::string, VariableInfo>>& GetVariableInfos() const;
 
 private:

@@ -37,6 +37,11 @@ void WorkspaceInfo::AddVariableInfo(const std::string& var_name, const VariableI
   m_vars.emplace_back(var_name, var_info);
 }
 
+std::size_t WorkspaceInfo::GetNumberOfVariables() const
+{
+  return m_vars.size();
+}
+
 const std::vector<std::pair<std::string, VariableInfo>>& WorkspaceInfo::GetVariableInfos() const
 {
   return m_vars;
