@@ -23,7 +23,6 @@
 #define SUP_AUTO_SERVER_VARIABLE_UTILS_H_
 
 #include <sup/auto-server/variable_info.h>
-#include <sup/auto-server/variable_proxy.h>
 
 #include <sup/dto/anyvalue.h>
 

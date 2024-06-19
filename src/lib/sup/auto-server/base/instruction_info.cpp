@@ -19,7 +19,7 @@
  * of the distribution package.
  ******************************************************************************/
 
-#include <sup/auto-server/instruction_proxy.h>
+#include <sup/auto-server/instruction_info.h>
 
 #include <algorithm>
 
@@ -28,50 +28,54 @@ namespace sup
 namespace auto_server
 {
 
-InstructionProxy::InstructionProxy(const InstructionInfo& instr_info)
-  : m_instr_type{instr_info.m_instr_type}
-  , m_index{instr_info.m_index}
-  , m_attributes{instr_info.m_attributes}
+InstructionInfo::InstructionInfo(const std::string& instr_type, sup::dto::uint32 idx,
+                                   std::vector<StringAttribute> attributes)
+  : m_instr_type{instr_type}
+  , m_index{idx}
+  , m_attributes{std::move(attributes)}
   , m_children{}
 {}
 
-InstructionProxy::~InstructionProxy() = default;
+InstructionInfo::~InstructionInfo() = default;
 
-std::string InstructionProxy::GetType() const
+InstructionInfo::InstructionInfo(InstructionInfo&& other) = default;
+InstructionInfo& InstructionInfo::operator=(InstructionInfo&& other) = default;
+
+std::string InstructionInfo::GetType() const
 {
   return m_instr_type;
 }
 
-sup::dto::uint32 InstructionProxy::GetIndex() const
+sup::dto::uint32 InstructionInfo::GetIndex() const
 {
   return m_index;
 }
 
-std::vector<StringAttribute> InstructionProxy::GetAttributes() const
+std::vector<StringAttribute> InstructionInfo::GetAttributes() const
 {
   return m_attributes;
 }
 
-InstructionProxy* InstructionProxy::AppendChild(std::unique_ptr<InstructionProxy> child)
+InstructionInfo* InstructionInfo::AppendChild(std::unique_ptr<InstructionInfo> child)
 {
   m_children.push_back(std::move(child));
   return m_children.back().get();
 }
 
-std::vector<InstructionProxy*> InstructionProxy::Children()
+std::vector<InstructionInfo*> InstructionInfo::Children()
 {
-  std::vector<InstructionProxy*> result;
-  auto func = [](const std::unique_ptr<InstructionProxy>& instr) {
+  std::vector<InstructionInfo*> result;
+  auto func = [](const std::unique_ptr<InstructionInfo>& instr) {
     return instr.get();
   };
   std::transform(m_children.begin(), m_children.end(), std::back_inserter(result), func);
   return result;
 }
 
-std::vector<const InstructionProxy*> InstructionProxy::Children() const
+std::vector<const InstructionInfo*> InstructionInfo::Children() const
 {
-  std::vector<const InstructionProxy*> result;
-  auto func = [](const std::unique_ptr<InstructionProxy>& instr) {
+  std::vector<const InstructionInfo*> result;
+  auto func = [](const std::unique_ptr<InstructionInfo>& instr) {
     return instr.get();
   };
   std::transform(m_children.begin(), m_children.end(), std::back_inserter(result), func);

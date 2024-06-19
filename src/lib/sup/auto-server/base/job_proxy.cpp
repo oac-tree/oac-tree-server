@@ -26,7 +26,7 @@
 #include <sup/auto-server/exceptions.h>
 #include <sup/auto-server/job_proxy.h>
 #include <sup/auto-server/sup_auto_protocol.h>
-#include <sup/auto-server/variable_proxy.h>
+#include <sup/auto-server/variable_info.h>
 
 #include <deque>
 #include <set>
@@ -41,11 +41,11 @@ bool ValidateVariableList(const std::vector<VariableInfo>& var_list);
 struct InstrProxyNode
 {
   const sup::dto::AnyValue& node_av;
-  InstructionProxy* instr_proxy;
+  InstructionInfo* instr_proxy;
 };
 
-std::unique_ptr<InstructionProxy> CreateAndAdd(const sup::dto::AnyValue& instr_av,
-                                               std::vector<InstructionProxy*>& instr_map,
+std::unique_ptr<InstructionInfo> CreateAndAdd(const sup::dto::AnyValue& instr_av,
+                                               std::vector<InstructionInfo*>& instr_map,
                                                std::set<std::size_t>& used_indices);
 }  // unnamed namespace
 
@@ -103,7 +103,7 @@ const std::vector<VariableInfo>& JobProxy::GetWorkspaceInfo() const
   return m_vars;
 }
 
-const InstructionProxy* JobProxy::GetRootInstructionInfo() const
+const InstructionInfo* JobProxy::GetRootInstructionInfo() const
 {
   return m_root.get();
 }
@@ -147,7 +147,7 @@ void JobProxy::InitializeInstructionInfo(const sup::dto::AnyValue& instr_info_av
                               "instruction tree info AnyValue";
     throw InvalidOperationException(error);
   }
-  std::vector<InstructionProxy*> instr_map(n_instr, nullptr);
+  std::vector<InstructionInfo*> instr_map(n_instr, nullptr);
   std::set<std::size_t> used_indices{};
   std::deque<InstrProxyNode> stack{};
   auto root = CreateAndAdd(instr_info_av, instr_map, used_indices);
@@ -182,7 +182,7 @@ void JobProxy::InitializeInstructionInfo(const sup::dto::AnyValue& instr_info_av
   m_instr_map = instr_map;
 }
 
-std::vector<InstructionProxy*> JobProxy::GetInstructionIndexMap() const
+std::vector<InstructionInfo*> JobProxy::GetInstructionIndexMap() const
 {
   return m_instr_map;
 }
@@ -240,12 +240,11 @@ bool ValidateVariableList(const std::vector<VariableInfo>& var_list)
   return true;
 }
 
-std::unique_ptr<InstructionProxy> CreateAndAdd(const sup::dto::AnyValue& instr_av,
-                                               std::vector<InstructionProxy*>& instr_map,
+std::unique_ptr<InstructionInfo> CreateAndAdd(const sup::dto::AnyValue& instr_av,
+                                               std::vector<InstructionInfo*>& instr_map,
                                                std::set<std::size_t>& used_indices)
 {
-  std::unique_ptr<InstructionProxy> result{
-    new InstructionProxy(utils::ToInstructionInfo(instr_av))};
+  auto result = utils::ToInstructionInfo(instr_av);
   auto idx = result->GetIndex();
   if (idx >= instr_map.size())
   {

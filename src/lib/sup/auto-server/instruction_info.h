@@ -26,6 +26,7 @@
 
 #include <sup/dto/basic_scalar_types.h>
 
+#include <memory>
 #include <string>
 #include <vector>
 
@@ -34,14 +35,41 @@ namespace sup
 namespace auto_server
 {
 /**
- * @brief The InstructionInfo structure represents the static information that a client can get
- * about a procedure instruction.
+ * @brief The InstructionInfo class represents the static information of an Instruction, including
+ * its type, attributes and child instructions. It also contains an index that allows to uniquely
+ * identify the Instruction within a procedure.
  */
-struct InstructionInfo
+class InstructionInfo
 {
+public:
+  InstructionInfo(const std::string& instr_type, sup::dto::uint32 idx,
+                   std::vector<StringAttribute> attributes);
+  ~InstructionInfo();
+
+  // Default move constructor/assignment
+  InstructionInfo(InstructionInfo&& other);
+  InstructionInfo& operator=(InstructionInfo&& other);
+
+  std::string GetType() const;
+  sup::dto::uint32 GetIndex() const;
+  std::vector<StringAttribute> GetAttributes() const;
+
+  /**
+   * @brief Append a child to the end of its list of children.
+   *
+   * @param child Child InstructionInfo to add.
+   * @return Pointer to added child.
+   */
+  InstructionInfo* AppendChild(std::unique_ptr<InstructionInfo> child);
+
+  std::vector<InstructionInfo*> Children();
+  std::vector<const InstructionInfo*> Children() const;
+
+private:
   std::string m_instr_type;
   sup::dto::uint32 m_index;
   std::vector<StringAttribute> m_attributes;
+  std::vector<std::unique_ptr<InstructionInfo>> m_children;
 };
 
 }  // namespace auto_server

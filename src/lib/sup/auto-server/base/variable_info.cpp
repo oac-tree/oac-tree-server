@@ -27,7 +27,7 @@ namespace auto_server
 {
 
 VariableInfo::VariableInfo(const std::string& var_type, sup::dto::uint32 idx,
-                             std::vector<StringAttribute> attributes)
+                           std::vector<StringAttribute> attributes)
   : m_var_type{var_type}
   , m_index{idx}
   , m_attributes{std::move(attributes)}

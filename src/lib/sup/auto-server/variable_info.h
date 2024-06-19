@@ -45,7 +45,7 @@ class VariableInfo
 {
 public:
   VariableInfo(const std::string& var_type, sup::dto::uint32 idx,
-                std::vector<StringAttribute> attributes);
+               std::vector<StringAttribute> attributes);
   ~VariableInfo();
 
   std::string GetType() const;

@@ -22,8 +22,8 @@
 #ifndef SUP_AUTO_SERVER_JOB_PROXY_H_
 #define SUP_AUTO_SERVER_JOB_PROXY_H_
 
-#include <sup/auto-server/instruction_proxy.h>
-#include <sup/auto-server/variable_proxy.h>
+#include <sup/auto-server/instruction_info.h>
+#include <sup/auto-server/variable_info.h>
 
 #include <sup/dto/anyvalue.h>
 
@@ -49,8 +49,8 @@ public:
   std::size_t GetNumberOfVariables() const;
   std::size_t GetNumberOfInstructions() const;
   const std::vector<VariableInfo>& GetWorkspaceInfo() const;
-  const InstructionProxy* GetRootInstructionInfo() const;
-  std::vector<InstructionProxy*> GetInstructionIndexMap() const;
+  const InstructionInfo* GetRootInstructionInfo() const;
+  std::vector<InstructionInfo*> GetInstructionIndexMap() const;
 
 private:
   void InitializeWorkspaceInfo(const sup::dto::AnyValue& ws_info_av);
@@ -58,8 +58,8 @@ private:
   std::string m_job_prefix;
   std::string m_full_name;
   std::vector<VariableInfo> m_vars;
-  std::unique_ptr<InstructionProxy> m_root;
-  std::vector<InstructionProxy*> m_instr_map;
+  std::unique_ptr<InstructionInfo> m_root;
+  std::vector<InstructionInfo*> m_instr_map;
 };
 
 }  // namespace auto_server

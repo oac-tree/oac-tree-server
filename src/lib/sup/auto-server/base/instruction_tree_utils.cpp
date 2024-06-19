@@ -102,7 +102,7 @@ std::string CreateIndexedMemberName(std::size_t idx)
   return kChildMemberFieldPrefix + std::to_string(idx);
 }
 
-InstructionInfo ToInstructionInfo(const sup::dto::AnyValue& instr_info_anyvalue)
+std::unique_ptr<InstructionInfo> ToInstructionInfo(const sup::dto::AnyValue& instr_info_anyvalue)
 {
   if (!ValidateInstructionInfo(instr_info_anyvalue))
   {
@@ -117,7 +117,7 @@ InstructionInfo ToInstructionInfo(const sup::dto::AnyValue& instr_info_anyvalue)
   {
     attributes.emplace_back(attr_name, attr_av[attr_name].As<std::string>());
   }
-  return { instr_type, instr_idx, attributes };
+  return std::unique_ptr<InstructionInfo>{new InstructionInfo(instr_type, instr_idx, attributes)};
 }
 
 }  // namespace utils

@@ -27,6 +27,7 @@
 
 #include <sup/dto/anyvalue.h>
 
+#include <memory>
 #include <string>
 
 namespace sup
@@ -77,10 +78,10 @@ std::string CreateIndexedMemberName(std::size_t idx);
  * @brief Convert the given AnyValue to a InstructionInfo object.
  *
  * @param instr_info_anyvalue AnyValue representation of an instruction.
- * @return InstructionInfo object.
+ * @return New InstructionInfo object.
  * @throw InvalidOperationException when the provided anyvalue has the wrong format.
  */
-InstructionInfo ToInstructionInfo(const sup::dto::AnyValue& instr_info_anyvalue);
+std::unique_ptr<InstructionInfo> ToInstructionInfo(const sup::dto::AnyValue& instr_info_anyvalue);
 
 }  // namespace utils
 
