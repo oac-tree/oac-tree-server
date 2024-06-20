@@ -54,6 +54,10 @@ private:
   std::vector<std::pair<std::string, VariableInfo>> m_vars;
 };
 
+// Equality operators
+bool operator==(const WorkspaceInfo& left, const WorkspaceInfo& right);
+bool operator!=(const WorkspaceInfo& left, const WorkspaceInfo& right);
+
 }  // namespace auto_server
 
 }  // namespace sup

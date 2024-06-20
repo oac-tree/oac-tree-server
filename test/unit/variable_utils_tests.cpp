@@ -133,3 +133,20 @@ TEST_F(VariableUtilsTest, VariableInfoToFromAnyValue)
     EXPECT_EQ(var_info_read_back, var_info);
   }
 }
+
+TEST_F(VariableUtilsTest, WorkspaceInfoToFromAnyValue)
+{
+  // Construct procedure and extract Workspace
+  const auto procedure_string = UnitTestHelper::CreateProcedureString(kWorkspaceSequenceBody);
+  auto proc = sup::sequencer::ParseProcedureString(procedure_string);
+  ASSERT_NE(proc.get(), nullptr);
+  EXPECT_NO_THROW(proc->Setup());
+  auto& ws = proc->GetWorkspace();
+
+  // Create WorkspaceInfo and validate
+  auto ws_info = utils::CreateWorkspaceInfo(ws);
+  auto ws_info_av = utils::ToAnyValue(ws_info);
+  auto ws_info_read_back = utils::ToWorkspaceInfo(ws_info_av);
+  EXPECT_EQ(ws_info_read_back, ws_info);
+}
+

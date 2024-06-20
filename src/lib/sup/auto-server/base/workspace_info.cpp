@@ -47,6 +47,16 @@ const std::vector<std::pair<std::string, VariableInfo>>& WorkspaceInfo::GetVaria
   return m_vars;
 }
 
+bool operator==(const WorkspaceInfo& left, const WorkspaceInfo& right)
+{
+  return left.GetVariableInfos() == right.GetVariableInfos();
+}
+
+bool operator!=(const WorkspaceInfo& left, const WorkspaceInfo& right)
+{
+  return !(left == right);
+}
+
 }  // namespace auto_server
 
 }  // namespace sup
