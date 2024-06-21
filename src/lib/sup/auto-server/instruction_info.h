@@ -43,7 +43,7 @@ class InstructionInfo
 {
 public:
   InstructionInfo(const std::string& instr_type, sup::dto::uint32 idx,
-                   std::vector<StringAttribute> attributes);
+                  std::vector<StringAttribute> attributes);
   ~InstructionInfo();
 
   // Default move constructor/assignment

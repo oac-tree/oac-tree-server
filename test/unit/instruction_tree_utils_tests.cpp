@@ -28,6 +28,9 @@
 
 #include <gtest/gtest.h>
 
+#include <algorithm>
+#include <set>
+
 using namespace sup::auto_server;
 
 class InstructionTreeUtilsTest : public ::testing::Test
@@ -40,6 +43,49 @@ protected:
 bool CheckInstructionNodeAnyValue(const sup::dto::AnyValue& node, const std::string& node_type,
                                   sup::dto::uint32 index,
                                   const sup::sequencer::StringAttributeList& attributes);
+
+TEST_F(InstructionTreeUtilsTest, InstructionInfoFromInstructionTree)
+{
+  // Construct procedure and extract Workspace
+  const auto procedure_string = UnitTestHelper::CreateProcedureString(kWorkspaceSequenceBody);
+  auto proc = sup::sequencer::ParseProcedureString(procedure_string);
+  ASSERT_NE(proc.get(), nullptr);
+  EXPECT_NO_THROW(proc->Setup());
+  const auto* root = proc->RootInstruction();
+
+  // Create InstructionInfo tree
+  auto instr_info = utils::CreateInstructionInfoTree(*root);
+
+  // Check root of the InstructionInfo tree
+  EXPECT_EQ(instr_info->GetType(), "Sequence");
+  std::set<sup::dto::uint32> indices;
+  indices.insert(instr_info->GetIndex());
+  auto attributes = instr_info->GetAttributes();
+  EXPECT_EQ(attributes.size(), 0);
+
+  auto children = instr_info->Children();
+  ASSERT_EQ(children.size(), 2);
+  {
+    // check first child
+    auto child = children[0];
+    EXPECT_EQ(child->GetType(), "Copy");
+    indices.insert(child->GetIndex());
+    auto child_attrs = child->GetAttributes();
+    EXPECT_EQ(child_attrs.size(), 2);
+    EXPECT_EQ(child->Children().size(), 0);
+  }
+  {
+    // check second child
+    auto child = children[1];
+    EXPECT_EQ(child->GetType(), "Copy");
+    indices.insert(child->GetIndex());
+    auto child_attrs = child->GetAttributes();
+    EXPECT_EQ(child_attrs.size(), 2);
+    EXPECT_EQ(child->Children().size(), 0);
+  }
+  std::set<sup::dto::uint32> expected_indices{0,1,2};
+  EXPECT_EQ(indices, expected_indices);
+}
 
 TEST_F(InstructionTreeUtilsTest, BuildInstructionTreeInfo)
 {

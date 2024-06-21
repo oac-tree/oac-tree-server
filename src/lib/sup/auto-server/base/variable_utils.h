@@ -94,7 +94,28 @@ VariableInfo ToVariableInfo(const sup::dto::AnyValue& var_info_anyvalue);
  */
 sup::dto::AnyValue ToAnyValue(const VariableInfo& var_info);
 
+/**
+ * @brief Validate if the given AnyValue has the right format to be parsed as a WorkspaceInfo
+ * object.
+ *
+ * @details This function only checks that the AnyValue is a structure and each member can be
+ * parsed as a VariableInfo object.
+ *
+ * @param ws_info AnyValue to validate.
+ * @return true when the provided AnyValue can be correctly parsed to a WorkspaceInfo object.
+ */
 bool ValidateWorkspaceInfoAnyValue(const sup::dto::AnyValue& ws_info);
+
+/**
+ * @brief Validate if the given AnyValue has the right format to be parsed as a VariableInfo
+ * object.
+ *
+ * @details This function only checks that the AnyValue is a structure and contains the mandatory
+ * member fields with the correct type. Any extra fields in the structure are ignored.
+ *
+ * @param ws_info AnyValue to validate.
+ * @return true when the provided AnyValue can be correctly parsed to a VariableInfo object.
+ */
 bool ValidateVariableInfoAnyValue(const sup::dto::AnyValue& var_info);
 
 

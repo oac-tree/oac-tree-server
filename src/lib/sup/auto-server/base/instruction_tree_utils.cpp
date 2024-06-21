@@ -22,6 +22,7 @@
 #include "instruction_tree_utils.h"
 
 #include "anyvalue_utils.h"
+#include "instruction_map.h"
 
 #include <sup/auto-server/exceptions.h>
 #include <sup/auto-server/sup_auto_protocol.h>
@@ -34,6 +35,12 @@ namespace
 {
 using namespace sup::auto_server;
 
+struct InstructionInfoStackNode
+{
+  const sup::sequencer::Instruction* instruction;
+  InstructionInfo* instr_info;
+};
+
 struct InstructionNode
 {
   const sup::sequencer::Instruction* instruction;
@@ -44,6 +51,7 @@ struct InstructionNode
 sup::dto::AnyValue& AddChildAnyValue(sup::dto::AnyValue& parent, const sup::dto::AnyValue& child,
                                      std::size_t idx);
 bool ValidateInstructionInfo(const sup::dto::AnyValue& instr_info);
+
 }  // unnamed namespace
 
 namespace sup
@@ -52,6 +60,37 @@ namespace auto_server
 {
 namespace utils
 {
+std::unique_ptr<InstructionInfo> CreateInstructionInfoTree(const sequencer::Instruction& root)
+{
+  std::deque<InstructionInfoStackNode> stack;
+  auto root_address = std::addressof(root);
+  InstructionMap instr_map{root_address};
+  auto root_info = CreateInstructionInfoNode(root, instr_map.FindInstructionIndex(root_address));
+  InstructionInfoStackNode root_node{ root_address, root_info.get() };
+  stack.push_back(root_node);
+  while (!stack.empty())
+  {
+    auto node = stack.back();
+    stack.pop_back();
+    auto children = node.instruction->ChildInstructions();
+    for (auto child : children)
+    {
+      auto child_info = CreateInstructionInfoNode(*child, instr_map.FindInstructionIndex(child));
+      auto child_info_p = node.instr_info->AppendChild(std::move(child_info));
+      InstructionInfoStackNode child_node{child, child_info_p};
+      stack.push_back(child_node);
+    }
+  }
+  return root_info;
+}
+
+std::unique_ptr<InstructionInfo> CreateInstructionInfoNode(const sequencer::Instruction& instr,
+                                                           sup::dto::uint32 index)
+{
+  auto instr_type = instr.GetType();
+  std::vector<StringAttribute> attributes = instr.GetStringAttributes();
+  return std::unique_ptr<InstructionInfo>{new InstructionInfo{instr_type, index, attributes}};
+}
 
 sup::dto::AnyValue BuildInstructionTreeInfo(const sequencer::Instruction* root,
                                             const JobValueMapper& mapper)

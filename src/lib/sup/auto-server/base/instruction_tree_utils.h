@@ -43,6 +43,48 @@ namespace utils
 {
 
 /**
+ * @brief Create a InstructionInfo representation of an Instruction tree, providing all Instruction
+ * types, their attributes and indices used for publishing their status.
+ *
+ * @param root Root instruction of the tree to represent.
+ *
+ * @return InstructionInfo tree representation.
+ */
+std::unique_ptr<InstructionInfo> CreateInstructionInfoTree(const sequencer::Instruction& root);
+
+/**
+ * @brief Create a InstructionInfo representation of a single Instruction, providing its type,
+ * attributes and the given index. This function will not encode the Instruction's child
+ * Instructions.
+ *
+ * @param instr Instruction to represent.
+ * @param index Index to use.
+ *
+ * @return InstructionInfo representation.
+ */
+std::unique_ptr<InstructionInfo> CreateInstructionInfoNode(const sequencer::Instruction& instr,
+                                                           sup::dto::uint32 index);
+
+// /**
+//  * @brief Convert the given AnyValue to a VariableInfo object.
+//  *
+//  * @param var_info_anyvalue AnyValue representation of a variable.
+//  * @return VariableInfo object.
+//  * @throw InvalidOperationException when the provided anyvalue has the wrong format.
+//  */
+// VariableInfo ToVariableInfo(const sup::dto::AnyValue& var_info_anyvalue);
+
+// /**
+//  * @brief Convert the given VariableInfo object to an AnyValue.
+//  *
+//  * @param var_info VariableInfo object.
+//  * @return AnyValue representation of the VariableInfo object.
+//  */
+// sup::dto::AnyValue ToAnyValue(const VariableInfo& var_info);
+
+// TODO: Remove the following functions
+
+/**
  * @brief Build an AnyValue representation of the instruction tree, providing instruction types,
  * attributes and the instruction index used for publishing its status.
  *
