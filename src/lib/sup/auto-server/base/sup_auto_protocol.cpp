@@ -63,6 +63,13 @@ const dto::AnyValue kJobStateAnyValue = {{
   { kJobStateField, static_cast<dto::uint32>(sequencer::JobState::kInitial)}
 }, kJobStateType };
 
+const dto::AnyValue kJobInfoAnyValue = {{
+  { kJobPrefixFieldName, "" },
+  { kFullNameFieldName, "" },
+  { kVariableInfoFieldName, sup::dto::AnyValue{} },
+  { kInstructionTreeInfoFieldName, sup::dto::AnyValue{} }
+}, kJobInfoType };
+
 std::string GetJobStatePVName(const std::string& prefix)
 {
   return prefix + kJobStateId;

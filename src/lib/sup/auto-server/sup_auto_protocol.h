@@ -83,6 +83,18 @@ const std::string kJobStateField = "state";
 // Basic job state AnyValue
 extern const sup::dto::AnyValue kJobStateAnyValue;
 
+// Field names used for the JobInfo AnyValue:
+const std::string kJobInfoType = "sup::jobInfoType/v1.0";
+const std::string kJobPrefixFieldName = "job_prefix";
+const std::string kFullNameFieldName = "full_name";
+// TODO: remove the following two, since they are redundant
+const std::string kNumberOfVarsFieldName = "n_vars";
+const std::string kNumberOfInstrFieldName = "n_instr";
+const std::string kVariableInfoFieldName = "var_info";
+const std::string kInstructionTreeInfoFieldName = "instr_tree_info";
+
+extern const sup::dto::AnyValue kJobInfoAnyValue;
+
 // Automation servers will report the following type and version:
 const std::string kAutomationServerProtocolServerType = "SUP::AutomationServerProtocol";
 const std::string kAutomationServerProtocolServerVersion = "1.0";
@@ -102,14 +114,6 @@ const std::string kJobInfoFieldName = "job_info";
 const std::string kInstructionIndexFieldName = "instruction_index";
 const std::string kBreakpointActiveFieldName = "breakpoint_active";
 const std::string kJobCommandFieldName = "command";
-
-// Field names used for the JobInfo AnyValue:
-const std::string kJobPrefixFieldName = "job_prefix";
-const std::string kFullNameFieldName = "full_name";
-const std::string kNumberOfVarsFieldName = "n_vars";
-const std::string kNumberOfInstrFieldName = "n_instr";
-const std::string kVariableInfoFieldName = "var_info";
-const std::string kInstructionTreeInfoFieldName = "instr_tree_info";
 
 /**
  * @brief Create a PV channel name for the job state from a given prefix.
