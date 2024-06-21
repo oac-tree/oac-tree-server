@@ -108,15 +108,15 @@ TEST_F(InstructionTreeUtilsTest, BuildInstructionTreeInfo)
   ASSERT_TRUE(instr_tree.HasField(kChildInstructionsField));
   auto& children = instr_tree[kChildInstructionsField];
   ASSERT_EQ(children.NumberOfMembers(), 2);
-  ASSERT_TRUE(children.HasField(utils::CreateIndexedMemberName(0)));
-  ASSERT_TRUE(children.HasField(utils::CreateIndexedMemberName(1)));
-  auto& child_0 = children[utils::CreateIndexedMemberName(0)];
+  ASSERT_TRUE(children.HasField(utils::CreateIndexedInstrChildName(0)));
+  ASSERT_TRUE(children.HasField(utils::CreateIndexedInstrChildName(1)));
+  auto& child_0 = children[utils::CreateIndexedInstrChildName(0)];
   sup::sequencer::StringAttributeList child_0_attrs{
     { "inputVar", "one" },
     { "outputVar", "var1" }
   };
   EXPECT_TRUE(CheckInstructionNodeAnyValue(child_0, "Copy", 1, child_0_attrs));
-  auto& child_1 = children[utils::CreateIndexedMemberName(1)];
+  auto& child_1 = children[utils::CreateIndexedInstrChildName(1)];
   sup::sequencer::StringAttributeList child_1_attrs{
     { "inputVar", "one" },
     { "outputVar", "var2" }

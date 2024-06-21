@@ -53,6 +53,24 @@ namespace utils
 std::unique_ptr<InstructionInfo> CreateInstructionInfoTree(const sequencer::Instruction& root);
 
 /**
+ * @brief Convert the given AnyValue to an InstructionInfo tree.
+ *
+ * @param instr_info_anyvalue AnyValue representation of an instruction tree.
+ * @return InstructionInfo tree.
+ * @throw InvalidOperationException when the provided anyvalue has the wrong format.
+ */
+std::unique_ptr<InstructionInfo> ToInstructionInfoTree(
+  const sup::dto::AnyValue& instr_info_anyvalue);
+
+/**
+ * @brief Convert the given InstructionInfo tree to an AnyValue.
+ *
+ * @param instr_info InstructionInfo tree.
+ * @return AnyValue representation of the InstructionInfo tree.
+ */
+sup::dto::AnyValue ToAnyValueTree(const InstructionInfo& instr_info);
+
+/**
  * @brief Create a InstructionInfo representation of a single Instruction, providing its type,
  * attributes and the given index. This function will not encode the Instruction's child
  * Instructions.
@@ -65,22 +83,34 @@ std::unique_ptr<InstructionInfo> CreateInstructionInfoTree(const sequencer::Inst
 std::unique_ptr<InstructionInfo> CreateInstructionInfoNode(const sequencer::Instruction& instr,
                                                            sup::dto::uint32 index);
 
-// /**
-//  * @brief Convert the given AnyValue to a VariableInfo object.
-//  *
-//  * @param var_info_anyvalue AnyValue representation of a variable.
-//  * @return VariableInfo object.
-//  * @throw InvalidOperationException when the provided anyvalue has the wrong format.
-//  */
-// VariableInfo ToVariableInfo(const sup::dto::AnyValue& var_info_anyvalue);
+/**
+ * @brief Convert the given AnyValue to a single InstructionInfo node. This function ignores any
+ * possible child instructions.
+ *
+ * @param instr_info_anyvalue AnyValue representation of an instruction.
+ * @return InstructionInfo node.
+ * @throw InvalidOperationException when the provided anyvalue has the wrong format.
+ */
+std::unique_ptr<InstructionInfo> ToInstructionInfoNode(
+  const sup::dto::AnyValue& instr_info_anyvalue);
 
-// /**
-//  * @brief Convert the given VariableInfo object to an AnyValue.
-//  *
-//  * @param var_info VariableInfo object.
-//  * @return AnyValue representation of the VariableInfo object.
-//  */
-// sup::dto::AnyValue ToAnyValue(const VariableInfo& var_info);
+/**
+ * @brief Convert the given InstructionInfo node to an AnyValue. This function ignores any
+ * possible child instructions.
+ *
+ * @param instr_info InstructionInfo node.
+ * @return AnyValue representation of the InstructionInfo node.
+ */
+sup::dto::AnyValue ToAnyValueNode(const InstructionInfo& instr_info);
+
+/**
+ * @brief Create a unique member name for an Instruction to be used in a structured AnyValue.
+ * An integer index is used to generate the member name to allow to easily deduce member order later.
+ *
+ * @param idx Index to use.
+ * @return Unique member name.
+ */
+std::string CreateIndexedInstrChildName(std::size_t idx);
 
 // TODO: Remove the following functions
 
@@ -106,15 +136,6 @@ sup::dto::AnyValue BuildInstructionTreeInfo(const sequencer::Instruction* root,
  */
 sup::dto::AnyValue BuildInstructionInfoNode(const sequencer::Instruction* instr,
                                             sup::dto::uint32 index);
-
-/**
- * @brief Create a unique member name for a structured AnyValue. An integer index is used to
- * generate the member name to allow to easily deduce member order later.
- *
- * @param idx Index to use.
- * @return Unique member name.
- */
-std::string CreateIndexedMemberName(std::size_t idx);
 
 /**
  * @brief Convert the given AnyValue to a InstructionInfo object.

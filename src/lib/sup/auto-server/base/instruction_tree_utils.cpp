@@ -35,10 +35,22 @@ namespace
 {
 using namespace sup::auto_server;
 
-struct InstructionInfoStackNode
+struct InstrToInstrInfoStackNode
 {
-  const sup::sequencer::Instruction* instruction;
-  InstructionInfo* instr_info;
+  const sup::sequencer::Instruction& instruction;
+  InstructionInfo& instr_info;
+};
+
+struct AnyValueToInstrInfoStackNode
+{
+  const sup::dto::AnyValue& anyvalue;
+  InstructionInfo& instr_info;
+};
+
+struct InstrInfoToAnyValueStackNode
+{
+  const InstructionInfo& instr_info;
+  sup::dto::AnyValue& anyvalue;
 };
 
 struct InstructionNode
@@ -62,26 +74,86 @@ namespace utils
 {
 std::unique_ptr<InstructionInfo> CreateInstructionInfoTree(const sequencer::Instruction& root)
 {
-  std::deque<InstructionInfoStackNode> stack;
+  std::deque<InstrToInstrInfoStackNode> stack;
   auto root_address = std::addressof(root);
   InstructionMap instr_map{root_address};
-  auto root_info = CreateInstructionInfoNode(root, instr_map.FindInstructionIndex(root_address));
-  InstructionInfoStackNode root_node{ root_address, root_info.get() };
+  auto root_info =
+    CreateInstructionInfoNode(root, instr_map.FindInstructionIndex(root_address));
+  InstrToInstrInfoStackNode root_node{ root, *root_info };
   stack.push_back(root_node);
   while (!stack.empty())
   {
     auto node = stack.back();
     stack.pop_back();
-    auto children = node.instruction->ChildInstructions();
+    auto children = node.instruction.ChildInstructions();
     for (auto child : children)
     {
       auto child_info = CreateInstructionInfoNode(*child, instr_map.FindInstructionIndex(child));
-      auto child_info_p = node.instr_info->AppendChild(std::move(child_info));
-      InstructionInfoStackNode child_node{child, child_info_p};
+      auto child_info_p = node.instr_info.AppendChild(std::move(child_info));
+      InstrToInstrInfoStackNode child_node{*child, *child_info_p};
       stack.push_back(child_node);
     }
   }
   return root_info;
+}
+
+std::unique_ptr<InstructionInfo> ToInstructionInfoTree(
+  const sup::dto::AnyValue& instr_info_anyvalue)
+{
+  std::deque<AnyValueToInstrInfoStackNode> stack;
+  auto root_info = ToInstructionInfoNode(instr_info_anyvalue);
+  AnyValueToInstrInfoStackNode root_node{ instr_info_anyvalue, *root_info };
+  stack.push_back(root_node);
+  while (!stack.empty())
+  {
+    auto node = stack.back();
+    stack.pop_back();
+    if (node.anyvalue.HasField(kChildInstructionsField))
+    {
+      auto& children_av = node.anyvalue[kChildInstructionsField];
+      auto mem_names = children_av.MemberNames();
+      for (const auto& mem_name : mem_names)
+      {
+        auto& child_av = children_av[mem_name];
+        auto child_info = ToInstructionInfoNode(child_av);
+        auto child_info_p = node.instr_info.AppendChild(std::move(child_info));
+        AnyValueToInstrInfoStackNode child_node{ child_av, *child_info_p };
+        stack.push_back(child_node);
+      }
+    }
+  }
+  return root_info;
+}
+
+sup::dto::AnyValue ToAnyValueTree(const InstructionInfo& instr_info)
+{
+  std::deque<InstrInfoToAnyValueStackNode> stack;
+  auto root_av = ToAnyValueNode(instr_info);
+  InstrInfoToAnyValueStackNode root_node{ instr_info, root_av };
+  stack.push_back(root_node);
+  while (!stack.empty())
+  {
+    auto node = stack.back();
+    stack.pop_back();
+    auto children = node.instr_info.Children();
+    if (children.empty())
+    {
+      continue;
+    }
+    node.anyvalue.AddMember(kChildInstructionsField, sup::dto::EmptyStruct());
+    std::size_t child_idx = 0;
+    auto& children_av = node.anyvalue[kChildInstructionsField];
+    for (const auto* child : children)
+    {
+      auto child_av = ToAnyValueNode(*child);
+      auto child_mem_name = CreateIndexedInstrChildName(child_idx);
+      children_av.AddMember(child_mem_name, child_av);
+      auto& child_av_ref = children_av[child_mem_name];
+      InstrInfoToAnyValueStackNode child_node{ *child, child_av_ref };
+      stack.push_back(child_node);
+    }
+  }
+  return root_av;
 }
 
 std::unique_ptr<InstructionInfo> CreateInstructionInfoNode(const sequencer::Instruction& instr,
@@ -90,6 +162,42 @@ std::unique_ptr<InstructionInfo> CreateInstructionInfoNode(const sequencer::Inst
   auto instr_type = instr.GetType();
   std::vector<StringAttribute> attributes = instr.GetStringAttributes();
   return std::unique_ptr<InstructionInfo>{new InstructionInfo{instr_type, index, attributes}};
+}
+
+std::unique_ptr<InstructionInfo> ToInstructionInfoNode(
+  const sup::dto::AnyValue& instr_info_anyvalue)
+{
+  if (!ValidateInstructionInfo(instr_info_anyvalue))
+  {
+    const std::string error = "ToInstructionInfoNode(): wrong format of instruction info AnyValue";
+    throw InvalidOperationException(error);
+  }
+  auto instr_type = instr_info_anyvalue[kInstructionInfoNodeTypeField].As<std::string>();
+  auto instr_idx = instr_info_anyvalue[kIndexField].As<sup::dto::uint32>();
+  auto& attr_av = instr_info_anyvalue[kAttributesField];
+  std::vector<StringAttribute> attributes;
+  for (const auto& attr_name : attr_av.MemberNames())
+  {
+    attributes.emplace_back(attr_name, attr_av[attr_name].As<std::string>());
+  }
+  return std::unique_ptr<InstructionInfo>{new InstructionInfo{instr_type, instr_idx, attributes}};
+}
+
+sup::dto::AnyValue ToAnyValueNode(const InstructionInfo& instr_info)
+{
+  auto result = kInstructionInfoNodeAnyValue;
+  result[kInstructionInfoNodeTypeField] = instr_info.GetType();
+  result[kIndexField] = instr_info.GetIndex();
+  for (const auto& attr : instr_info.GetAttributes())
+  {
+    result[kAttributesField].AddMember(attr.first, attr.second);
+  }
+  return result;
+}
+
+std::string CreateIndexedInstrChildName(std::size_t idx)
+{
+  return kChildMemberFieldPrefix + std::to_string(idx);
 }
 
 sup::dto::AnyValue BuildInstructionTreeInfo(const sequencer::Instruction* root,
@@ -136,11 +244,6 @@ sup::dto::AnyValue BuildInstructionInfoNode(const sequencer::Instruction* instr,
   return result;
 }
 
-std::string CreateIndexedMemberName(std::size_t idx)
-{
-  return kChildMemberFieldPrefix + std::to_string(idx);
-}
-
 std::unique_ptr<InstructionInfo> ToInstructionInfo(const sup::dto::AnyValue& instr_info_anyvalue)
 {
   if (!ValidateInstructionInfo(instr_info_anyvalue))
@@ -176,7 +279,7 @@ sup::dto::AnyValue& AddChildAnyValue(sup::dto::AnyValue& parent, const sup::dto:
   {
     parent.AddMember(kChildInstructionsField, sup::dto::EmptyStruct());
   }
-  auto member_name = utils::CreateIndexedMemberName(idx);
+  auto member_name = utils::CreateIndexedInstrChildName(idx);
   parent[kChildInstructionsField].AddMember(member_name, child);
   return parent[kChildInstructionsField][member_name];
 }
@@ -204,6 +307,14 @@ bool ValidateInstructionInfo(const sup::dto::AnyValue& instr_info)
     {
       return false;
     }
+  }
+  if (instr_info.HasField(kChildInstructionsField))
+  {
+    if (!sup::dto::IsStructValue(instr_info[kChildInstructionsField]))
+    {
+      return false;
+    }
+    // TODO: check member names are child_0, child_1, etc.
   }
   return true;
 
