@@ -11,7 +11,7 @@ target_sources(sup-auto-server
   instruction_info.cpp
   instruction_tree_utils.cpp
   old_job_info.cpp
-  job_proxy.cpp
+  job_info.cpp
   job_value_mapper.cpp
   job.cpp
   sup_auto_protocol.cpp

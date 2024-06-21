@@ -22,7 +22,7 @@
 #ifndef SUP_AUTO_SERVER_AUTOMATION_CLIENT_H_
 #define SUP_AUTO_SERVER_AUTOMATION_CLIENT_H_
 
-#include <sup/auto-server/job_proxy.h>
+#include <sup/auto-server/job_info.h>
 
 #include <sup/sequencer/job_commands.h>
 
@@ -48,7 +48,7 @@ public:
 
   // TODO: refactor so that both client and server implement the same interface
   // this may lead to removal of JobInfo??
-  const JobProxy& GetJobProxy(std::size_t job_idx) const;
+  const JobInfo& GetJobProxy(std::size_t job_idx) const;
 
   void EditBreakpoint(std::size_t job_idx, std::size_t instr_idx, bool breakpoint_active);
 

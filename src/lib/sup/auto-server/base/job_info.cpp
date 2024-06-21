@@ -24,7 +24,7 @@
 #include "variable_utils.h"
 
 #include <sup/auto-server/exceptions.h>
-#include <sup/auto-server/job_proxy.h>
+#include <sup/auto-server/job_info.h>
 #include <sup/auto-server/sup_auto_protocol.h>
 #include <sup/auto-server/variable_info.h>
 
@@ -45,7 +45,7 @@ namespace auto_server
 {
 const VariableInfo kInvalidVariableProxy{"", 0, {}};
 
-JobProxy::JobProxy(const std::string& job_prefix, const std::string& full_name,
+JobInfo::JobInfo(const std::string& job_prefix, const std::string& full_name,
                    const WorkspaceInfo& ws_info, std::unique_ptr<InstructionInfo> root_info)
   : m_job_prefix{job_prefix}
   , m_full_name{full_name}
@@ -53,35 +53,35 @@ JobProxy::JobProxy(const std::string& job_prefix, const std::string& full_name,
   , m_root{std::move(root_info)}
 {}
 
-JobProxy::~JobProxy() = default;
+JobInfo::~JobInfo() = default;
 
-std::string JobProxy::GetPrefix() const
+std::string JobInfo::GetPrefix() const
 {
   return m_job_prefix;
 }
 
-std::string JobProxy::GetProcedureName() const
+std::string JobInfo::GetProcedureName() const
 {
   return m_full_name;
 }
 
-std::size_t JobProxy::GetNumberOfVariables() const
+std::size_t JobInfo::GetNumberOfVariables() const
 {
   return m_ws.GetNumberOfVariables();
 }
 
-std::size_t JobProxy::GetNumberOfInstructions() const
+std::size_t JobInfo::GetNumberOfInstructions() const
 {
   // TODO: Fix this!
   return 0;
 }
 
-const WorkspaceInfo& JobProxy::GetWorkspaceInfo() const
+const WorkspaceInfo& JobInfo::GetWorkspaceInfo() const
 {
   return m_ws;
 }
 
-const InstructionInfo* JobProxy::GetRootInstructionInfo() const
+const InstructionInfo* JobInfo::GetRootInstructionInfo() const
 {
   return m_root.get();
 }

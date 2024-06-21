@@ -25,25 +25,23 @@
 #include <sup/auto-server/instruction_info.h>
 #include <sup/auto-server/workspace_info.h>
 
-#include <sup/dto/anyvalue.h>
-
 #include <memory>
 #include <string>
-#include <vector>
 
 namespace sup
 {
 namespace auto_server
 {
 /**
- * @brief The JobProxy object represents all the static information about a Job on the client side.
+ * @brief The JobInfo object represents all the static information about a procedure, i.e. its
+ * Instructions, Workspace and also the prefix that is used for identifying dynamic AnyValues.
  */
-class JobProxy
+class JobInfo
 {
 public:
-  JobProxy(const std::string& job_prefix, const std::string& full_name,
+  JobInfo(const std::string& job_prefix, const std::string& full_name,
            const WorkspaceInfo& ws_info, std::unique_ptr<InstructionInfo> root_info);
-  ~JobProxy();
+  ~JobInfo();
 
   std::string GetPrefix() const;
   std::string GetProcedureName() const;

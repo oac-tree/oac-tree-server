@@ -22,7 +22,7 @@
 #include "unit_test_helper.h"
 
 #include <sup/auto-server/old_job_info.h>
-#include <sup/auto-server/job_proxy.h>
+#include <sup/auto-server/job_info.h>
 #include <sup/auto-server/job_value_mapper.h>
 #include <sup/auto-server/job.h>
 
@@ -56,8 +56,8 @@ TEST_F(JobProxyTest, Constructor)
   auto job_info = job.GetInfo();
   auto job_info_av = ToAnyValue(job_info);
 
-  // Create and validate JobProxy
-  JobProxy job_proxy{job_info_av};
+  // Create and validate JobInfo
+  JobInfo job_proxy{job_info_av};
   EXPECT_EQ(job_proxy.GetPrefix(), prefix);
   EXPECT_EQ(job_proxy.GetProcedureName(), "Common header");
   EXPECT_EQ(job_proxy.GetNumberOfVariables(), 3);
