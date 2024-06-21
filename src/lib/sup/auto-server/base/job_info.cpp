@@ -86,6 +86,32 @@ const InstructionInfo* JobInfo::GetRootInstructionInfo() const
   return m_root.get();
 }
 
+bool operator==(const JobInfo& left, const JobInfo& right)
+{
+  if (left.GetPrefix() != right.GetPrefix())
+  {
+    return false;
+  }
+  if (left.GetProcedureName() != right.GetProcedureName())
+  {
+    return false;
+  }
+  if (left.GetWorkspaceInfo() != right.GetWorkspaceInfo())
+  {
+    return false;
+  }
+  if (*left.GetRootInstructionInfo() != *right.GetRootInstructionInfo())
+  {
+    return false;
+  }
+  return true;
+}
+
+bool operator!=(const JobInfo& left, const JobInfo& right)
+{
+  return !(left == right);
+}
+
 }  // namespace auto_server
 
 }  // namespace sup

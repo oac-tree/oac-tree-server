@@ -72,6 +72,16 @@ private:
   std::vector<std::unique_ptr<InstructionInfo>> m_children;
 };
 
+/**
+ * @brief Compare two InstructionInfo objects for equality.
+ */
+bool operator==(const InstructionInfo& left, const InstructionInfo& right);
+
+/**
+ * @brief Compare two InstructionInfo objects for inequality.
+ */
+bool operator!=(const InstructionInfo& left, const InstructionInfo& right);
+
 }  // namespace auto_server
 
 }  // namespace sup

@@ -57,6 +57,16 @@ private:
   std::unique_ptr<InstructionInfo> m_root;
 };
 
+/**
+ * @brief Compare two JobInfo objects for equality.
+ */
+bool operator==(const JobInfo& left, const JobInfo& right);
+
+/**
+ * @brief Compare two JobInfo objects for inequality.
+ */
+bool operator!=(const JobInfo& left, const JobInfo& right);
+
 }  // namespace auto_server
 
 }  // namespace sup

@@ -82,6 +82,43 @@ std::vector<const InstructionInfo*> InstructionInfo::Children() const
   return result;
 }
 
+bool operator==(const InstructionInfo& left, const InstructionInfo& right)
+{
+  if (left.GetType() != right.GetType())
+  {
+    return false;
+  }
+  if (left.GetIndex() != right.GetIndex())
+  {
+    return false;
+  }
+  if (left.GetAttributes() != right.GetAttributes())
+  {
+    return false;
+  }
+  auto left_children = left.Children();
+  auto right_children = right.Children();
+  if (left_children.size() != right_children.size())
+  {
+    return false;
+  }
+  // This recursive implementation is not very performant. However, it is currently only used
+  // in unit testing.
+  for (std::size_t i=0; i<left_children.size(); ++i)
+  {
+    if (*left_children[i] != *right_children[i])
+    {
+      return false;
+    }
+  }
+  return true;
+}
+
+bool operator!=(const InstructionInfo& left, const InstructionInfo& right)
+{
+  return !(left == right);
+}
+
 }  // namespace auto_server
 
 }  // namespace sup
