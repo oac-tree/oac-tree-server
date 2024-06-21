@@ -62,7 +62,6 @@ struct InstructionNode
 
 sup::dto::AnyValue& AddChildAnyValue(sup::dto::AnyValue& parent, const sup::dto::AnyValue& child,
                                      std::size_t idx);
-bool ValidateInstructionInfo(const sup::dto::AnyValue& instr_info);
 
 }  // unnamed namespace
 
@@ -201,6 +200,41 @@ std::string CreateIndexedInstrChildName(std::size_t idx)
   return kChildMemberFieldPrefix + std::to_string(idx);
 }
 
+bool ValidateInstructionInfo(const sup::dto::AnyValue& instr_info)
+{
+  if (!ValidateMemberType(instr_info, kInstructionInfoNodeTypeField, sup::dto::StringType))
+  {
+    return false;
+  }
+  if (!ValidateMemberType(instr_info, kIndexField, sup::dto::UnsignedInteger32Type))
+  {
+    return false;
+  }
+  if (!instr_info.HasField(kAttributesField) ||
+      !sup::dto::IsStructValue(instr_info[kAttributesField]))
+  {
+    return false;
+  }
+  const auto& instr_attrs = instr_info[kAttributesField];
+  auto mem_names = instr_attrs.MemberNames();
+  for (const auto& mem_name : mem_names)
+  {
+    if (instr_attrs[mem_name].GetType() != sup::dto::StringType)
+    {
+      return false;
+    }
+  }
+  if (instr_info.HasField(kChildInstructionsField))
+  {
+    if (!sup::dto::IsStructValue(instr_info[kChildInstructionsField]))
+    {
+      return false;
+    }
+    // TODO: check member names are child_0, child_1, etc. ?
+  }
+  return true;
+}
+
 sup::dto::AnyValue BuildInstructionTreeInfo(const sequencer::Instruction* root,
                                             const JobValueMapper& mapper)
 {
@@ -283,42 +317,6 @@ sup::dto::AnyValue& AddChildAnyValue(sup::dto::AnyValue& parent, const sup::dto:
   auto member_name = utils::CreateIndexedInstrChildName(idx);
   parent[kChildInstructionsField].AddMember(member_name, child);
   return parent[kChildInstructionsField][member_name];
-}
-
-bool ValidateInstructionInfo(const sup::dto::AnyValue& instr_info)
-{
-  if (!utils::ValidateMemberType(instr_info, kInstructionInfoNodeTypeField, sup::dto::StringType))
-  {
-    return false;
-  }
-  if (!utils::ValidateMemberType(instr_info, kIndexField, sup::dto::UnsignedInteger32Type))
-  {
-    return false;
-  }
-  if (!instr_info.HasField(kAttributesField) ||
-      !sup::dto::IsStructValue(instr_info[kAttributesField]))
-  {
-    return false;
-  }
-  const auto& instr_attrs = instr_info[kAttributesField];
-  auto mem_names = instr_attrs.MemberNames();
-  for (const auto& mem_name : mem_names)
-  {
-    if (instr_attrs[mem_name].GetType() != sup::dto::StringType)
-    {
-      return false;
-    }
-  }
-  if (instr_info.HasField(kChildInstructionsField))
-  {
-    if (!sup::dto::IsStructValue(instr_info[kChildInstructionsField]))
-    {
-      return false;
-    }
-    // TODO: check member names are child_0, child_1, etc.
-  }
-  return true;
-
 }
 
 }  // unnamed namespace

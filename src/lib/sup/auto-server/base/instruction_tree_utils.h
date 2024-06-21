@@ -112,6 +112,19 @@ sup::dto::AnyValue ToAnyValueNode(const InstructionInfo& instr_info);
  */
 std::string CreateIndexedInstrChildName(std::size_t idx);
 
+/**
+ * @brief Validate if the given AnyValue has the right format to be parsed as an InstructionInfo
+ * node.
+ *
+ * @details This function only checks the top level structure and does not validate any possible
+ * children.
+ *
+ * @param instr_info AnyValue to validate.
+ * @return true when the provided AnyValue can be correctly parsed to a InstructionInfo node.
+ */
+bool ValidateInstructionInfo(const sup::dto::AnyValue& instr_info);
+
+
 // TODO: Remove the following functions
 
 /**
