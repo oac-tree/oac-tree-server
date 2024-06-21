@@ -31,12 +31,6 @@
 
 #include <set>
 
-namespace
-{
-bool ValidateWorkspaceInfo(const sup::dto::AnyValue& ws_info);
-bool ValidateVariableInfo(const sup::dto::AnyValue& var_info);
-}  // unnamed namespace
-
 namespace sup
 {
 namespace auto_server
@@ -56,21 +50,9 @@ WorkspaceInfo CreateWorkspaceInfo(const sequencer::Workspace& ws)
   return result;
 }
 
-VariableInfo CreateVariableInfo(const sequencer::Variable* var, sup::dto::uint32 index)
-{
-  if (var == nullptr)
-  {
-    const std::string error = "CreateVariableInfo(): called with a nullptr";
-    throw InvalidOperationException(error);
-  }
-  auto var_type = var->GetType();
-  std::vector<StringAttribute> attributes = var->GetStringAttributes();
-  return VariableInfo{ var_type, index, attributes };
-}
-
 WorkspaceInfo ToWorkspaceInfo(const sup::dto::AnyValue& ws_info_anyvalue)
 {
-  if (!ValidateWorkspaceInfo(ws_info_anyvalue))
+  if (!ValidateWorkspaceInfoAnyValue(ws_info_anyvalue))
   {
     const std::string error = "ToWorkspaceInfo(): wrong format of workspace info AnyValue";
     throw InvalidOperationException(error);
@@ -102,9 +84,33 @@ WorkspaceInfo ToWorkspaceInfo(const sup::dto::AnyValue& ws_info_anyvalue)
   return result;
 }
 
+sup::dto::AnyValue ToAnyValue(const WorkspaceInfo& ws_info)
+{
+  sup::dto::AnyValue result = sup::dto::EmptyStruct();
+  const auto& var_infos = ws_info.GetVariableInfos();
+  for (const auto& var_info : var_infos)
+  {
+    auto var_av = ToAnyValue(var_info.second);
+    result.AddMember(var_info.first, var_av);
+  }
+  return result;
+}
+
+VariableInfo CreateVariableInfo(const sequencer::Variable* var, sup::dto::uint32 index)
+{
+  if (var == nullptr)
+  {
+    const std::string error = "CreateVariableInfo(): called with a nullptr";
+    throw InvalidOperationException(error);
+  }
+  auto var_type = var->GetType();
+  std::vector<StringAttribute> attributes = var->GetStringAttributes();
+  return VariableInfo{ var_type, index, attributes };
+}
+
 VariableInfo ToVariableInfo(const sup::dto::AnyValue& var_info_anyvalue)
 {
-  if (!ValidateVariableInfo(var_info_anyvalue))
+  if (!ValidateVariableInfoAnyValue(var_info_anyvalue))
   {
     const std::string error = "ToVariableInfo(): wrong format of variable info AnyValue";
     throw InvalidOperationException(error);
@@ -120,18 +126,6 @@ VariableInfo ToVariableInfo(const sup::dto::AnyValue& var_info_anyvalue)
   return VariableInfo{ var_type, var_idx, attributes };
 }
 
-sup::dto::AnyValue ToAnyValue(const WorkspaceInfo& ws_info)
-{
-  sup::dto::AnyValue result = sup::dto::EmptyStruct();
-  const auto& var_infos = ws_info.GetVariableInfos();
-  for (const auto& var_info : var_infos)
-  {
-    auto var_av = ToAnyValue(var_info.second);
-    result.AddMember(var_info.first, var_av);
-  }
-  return result;
-}
-
 sup::dto::AnyValue ToAnyValue(const VariableInfo& var_info)
 {
   auto result = kVariableInfoAnyValue;
@@ -142,6 +136,49 @@ sup::dto::AnyValue ToAnyValue(const VariableInfo& var_info)
     result[kAttributesField].AddMember(attr.first, attr.second);
   }
   return result;
+}
+
+bool ValidateWorkspaceInfoAnyValue(const sup::dto::AnyValue& ws_info)
+{
+  if (!sup::dto::IsStructValue(ws_info))
+  {
+    return false;
+  }
+  auto mem_names = ws_info.MemberNames();
+  for (const auto& mem_name : mem_names)
+  {
+    if (!ValidateVariableInfoAnyValue(ws_info[mem_name]))
+    {
+      return false;
+    }
+  }
+  return true;
+}
+
+bool ValidateVariableInfoAnyValue(const sup::dto::AnyValue& var_info)
+{
+  if (!ValidateMemberType(var_info, kVariableInfoTypeField, sup::dto::StringType))
+  {
+    return false;
+  }
+  if (!ValidateMemberType(var_info, kIndexField, sup::dto::UnsignedInteger32Type))
+  {
+    return false;
+  }
+  if (!var_info.HasField(kAttributesField) || !sup::dto::IsStructValue(var_info[kAttributesField]))
+  {
+    return false;
+  }
+  const auto& var_attrs = var_info[kAttributesField];
+  auto mem_names = var_attrs.MemberNames();
+  for (const auto& mem_name : mem_names)
+  {
+    if (var_attrs[mem_name].GetType() != sup::dto::StringType)
+    {
+      return false;
+    }
+  }
+  return true;
 }
 
 sup::dto::AnyValue BuildWorkspaceInfoAnyValue(const sequencer::Workspace& ws)
@@ -177,7 +214,7 @@ sup::dto::AnyValue BuildVariableInfoAnyValue(const sequencer::Variable* var, sup
 
 std::vector<std::string> BuildVariableNameMap(const sup::dto::AnyValue& workspace_info)
 {
-  if (!ValidateWorkspaceInfo(workspace_info))
+  if (!ValidateWorkspaceInfoAnyValue(workspace_info))
   {
     const std::string error = "BuildVariableNameMap(): wrong format of workspace info AnyValue";
     throw InvalidOperationException(error);
@@ -210,53 +247,3 @@ std::vector<std::string> BuildVariableNameMap(const sup::dto::AnyValue& workspac
 }  // namespace auto_server
 
 }  // namespace sup
-
-namespace
-{
-using namespace sup::auto_server;
-
-bool ValidateWorkspaceInfo(const sup::dto::AnyValue& ws_info)
-{
-  if (!sup::dto::IsStructValue(ws_info))
-  {
-    return false;
-  }
-  auto mem_names = ws_info.MemberNames();
-  for (const auto& mem_name : mem_names)
-  {
-    if (!ValidateVariableInfo(ws_info[mem_name]))
-    {
-      return false;
-    }
-  }
-  return true;
-}
-
-bool ValidateVariableInfo(const sup::dto::AnyValue& var_info)
-{
-  if (!utils::ValidateMemberType(var_info, kVariableInfoTypeField, sup::dto::StringType))
-  {
-    return false;
-  }
-  if (!utils::ValidateMemberType(var_info, kIndexField, sup::dto::UnsignedInteger32Type))
-  {
-    return false;
-  }
-  if (!var_info.HasField(kAttributesField) || !sup::dto::IsStructValue(var_info[kAttributesField]))
-  {
-    return false;
-  }
-  const auto& var_attrs = var_info[kAttributesField];
-  auto mem_names = var_attrs.MemberNames();
-  for (const auto& mem_name : mem_names)
-  {
-    if (var_attrs[mem_name].GetType() != sup::dto::StringType)
-    {
-      return false;
-    }
-  }
-  return true;
-}
-
-}  // unnamed namespace
-

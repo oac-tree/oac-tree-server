@@ -37,9 +37,6 @@ namespace auto_server
  * @brief The VariableInfo class represents the static information of a Variable, including its
  * type and attributes. It also contains an index that allows to uniquely identify the Variable
  * within a workspace.
- *
- * @todo Check if putting the index inside is really needed, since the index can be deduced from
- * the order of VariableInfo objects that is used.
  */
 class VariableInfo
 {
@@ -58,8 +55,14 @@ private:
   std::vector<StringAttribute> m_attributes;
 };
 
-// Equality operators
+/**
+ * @brief Compare two VariableInfo objects for equality.
+ */
 bool operator==(const VariableInfo& left, const VariableInfo& right);
+
+/**
+ * @brief Compare two VariableInfo objects for inequality.
+ */
 bool operator!=(const VariableInfo& left, const VariableInfo& right);
 
 }  // namespace auto_server

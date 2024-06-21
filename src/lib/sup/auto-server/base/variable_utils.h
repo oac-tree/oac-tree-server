@@ -50,6 +50,23 @@ namespace utils
 WorkspaceInfo CreateWorkspaceInfo(const sequencer::Workspace& ws);
 
 /**
+ * @brief Convert the given AnyValue to a list of VariableInfo objects that represent a workspace.
+ *
+ * @param ws_info_anyvalue AnyValue representation of all workspace variables.
+ * @return WorkspaceInfo object.
+ * @throw InvalidOperationException when the provided anyvalue has the wrong format.
+ */
+WorkspaceInfo ToWorkspaceInfo(const sup::dto::AnyValue& ws_info_anyvalue);
+
+/**
+ * @brief Convert the given WorkspaceInfo object to an AnyValue.
+ *
+ * @param ws_info WorkspaceInfo object.
+ * @return AnyValue representation of the WorkspaceInfo object.
+ */
+sup::dto::AnyValue ToAnyValue(const WorkspaceInfo& ws_info);
+
+/**
  * @brief Create a VariableInfo representation of a variable, providing its type,
  * attributes and the variable index used for publishing its status.
  *
@@ -61,15 +78,6 @@ WorkspaceInfo CreateWorkspaceInfo(const sequencer::Workspace& ws);
 VariableInfo CreateVariableInfo(const sequencer::Variable* var, sup::dto::uint32 index);
 
 /**
- * @brief Convert the given AnyValue to a list of VariableInfo objects that represent a workspace.
- *
- * @param ws_info_anyvalue AnyValue representation of all workspace variables.
- * @return WorkspaceInfo object.
- * @throw InvalidOperationException when the provided anyvalue has the wrong format.
- */
-WorkspaceInfo ToWorkspaceInfo(const sup::dto::AnyValue& ws_info_anyvalue);
-
-/**
  * @brief Convert the given AnyValue to a VariableInfo object.
  *
  * @param var_info_anyvalue AnyValue representation of a variable.
@@ -79,20 +87,16 @@ WorkspaceInfo ToWorkspaceInfo(const sup::dto::AnyValue& ws_info_anyvalue);
 VariableInfo ToVariableInfo(const sup::dto::AnyValue& var_info_anyvalue);
 
 /**
- * @brief Convert the given WorkspaceInfo object to an AnyValue.
- *
- * @param ws_info WorkspaceInfo object.
- * @return AnyValue representation of the WorkspaceInfo object.
- */
-sup::dto::AnyValue ToAnyValue(const WorkspaceInfo& ws_info);
-
-/**
  * @brief Convert the given VariableInfo object to an AnyValue.
  *
  * @param var_info VariableInfo object.
  * @return AnyValue representation of the VariableInfo object.
  */
 sup::dto::AnyValue ToAnyValue(const VariableInfo& var_info);
+
+bool ValidateWorkspaceInfoAnyValue(const sup::dto::AnyValue& ws_info);
+bool ValidateVariableInfoAnyValue(const sup::dto::AnyValue& var_info);
+
 
 // TODO: Remove the following functions
 
