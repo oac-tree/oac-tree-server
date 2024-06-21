@@ -151,6 +151,7 @@ sup::dto::AnyValue ToAnyValueTree(const InstructionInfo& instr_info)
       auto& child_av_ref = children_av[child_mem_name];
       InstrInfoToAnyValueStackNode child_node{ *child, child_av_ref };
       stack.push_back(child_node);
+      ++child_idx;
     }
   }
   return root_av;

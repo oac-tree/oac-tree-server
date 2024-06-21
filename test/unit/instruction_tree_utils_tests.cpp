@@ -87,6 +87,24 @@ TEST_F(InstructionTreeUtilsTest, InstructionInfoFromInstructionTree)
   EXPECT_EQ(indices, expected_indices);
 }
 
+TEST_F(InstructionTreeUtilsTest, InstructionInfoToFromAnyValue)
+{
+  // Construct procedure and extract Workspace
+  const auto procedure_string = UnitTestHelper::CreateProcedureString(kWorkspaceSequenceBody);
+  auto proc = sup::sequencer::ParseProcedureString(procedure_string);
+  ASSERT_NE(proc.get(), nullptr);
+  EXPECT_NO_THROW(proc->Setup());
+  const auto* root = proc->RootInstruction();
+
+  // Create InstructionInfo tree
+  auto instr_info = utils::CreateInstructionInfoTree(*root);
+
+  // Create AnyValue, translate back and check they are equal
+  auto instr_av = utils::ToAnyValueTree(*instr_info);
+  auto instr_info_read_back = utils::ToInstructionInfoTree(instr_av);
+  EXPECT_EQ(*instr_info_read_back, *instr_info);
+}
+
 TEST_F(InstructionTreeUtilsTest, BuildInstructionTreeInfo)
 {
   // Construct procedure
