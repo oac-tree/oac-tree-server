@@ -74,6 +74,16 @@ std::unique_ptr<InstructionInfo> ToInstructionInfoTree(
 sup::dto::AnyValue ToAnyValueTree(const InstructionInfo& instr_info);
 
 /**
+ * @brief Build a list of InstructionInfo pointers, ordered by index. This allows O(1) lookup.
+ * It is assumed the indices are unique and span exactly the range from zero to
+ * (number_of_instructions -1).
+ *
+ * @param instr_info InstructionInfo tree.
+ * @return Ordered list of InstructionInfo pointers.
+ */
+std::vector<const InstructionInfo*> CreateInstructionInfoMap(const InstructionInfo& instr_info);
+
+/**
  * @brief Create a InstructionInfo representation of a single Instruction, providing its type,
  * attributes and the given index. This function will not encode the Instruction's child
  * Instructions.

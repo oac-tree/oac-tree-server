@@ -146,6 +146,36 @@ sup::dto::AnyValue ToAnyValueTree(const InstructionInfo& instr_info)
   return root_av;
 }
 
+std::vector<const InstructionInfo*> CreateInstructionInfoMap(const InstructionInfo& instr_info)
+{
+  std::vector<std::pair<sup::dto::uint32, const InstructionInfo*>> unordered{};
+  std::deque<const InstructionInfo*> stack;
+  auto root = std::addressof(instr_info);
+  stack.push_back(root);
+  while (!stack.empty())
+  {
+    auto p_info = stack.back();
+    stack.pop_back();
+    unordered.emplace_back(p_info->GetIndex(), p_info);
+    for (const auto* child : p_info->Children())
+    {
+      stack.push_back(child);
+    }
+  }
+  std::vector<const InstructionInfo*> result(unordered.size(), nullptr);
+  for (auto it = unordered.begin(); it != unordered.end(); ++it)
+  {
+    auto idx = it->first;
+    if (idx >= result.size())
+    {
+      // TODO: throw
+    }
+    result[it->first] = it->second;
+  }
+  // TODO: check for absence of nullptr in result
+  return result;
+}
+
 std::unique_ptr<InstructionInfo> CreateInstructionInfoNode(const sequencer::Instruction& instr,
                                                            sup::dto::uint32 index)
 {
