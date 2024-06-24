@@ -53,12 +53,6 @@ void AutomationJobInterface::InitializeInstructionTree(const sequencer::Instruct
   m_server_interface.AddAnyValues(instr_value_set);
 }
 
-sup::dto::AnyValue AutomationJobInterface::GetInstructionTreeInfo(
-  const sequencer::Instruction* root) const
-{
-  return utils::BuildInstructionTreeInfo(root, m_job_value_mapper);
-}
-
 std::vector<const sequencer::Instruction*> AutomationJobInterface::GetOrderedInstructions() const
 {
   return m_job_value_mapper.GetOrderedInstructions();

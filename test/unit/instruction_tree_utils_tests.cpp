@@ -41,10 +41,6 @@ protected:
   virtual ~InstructionTreeUtilsTest() = default;
 };
 
-bool CheckInstructionNodeAnyValue(const sup::dto::AnyValue& node, const std::string& node_type,
-                                  sup::dto::uint32 index,
-                                  const sup::sequencer::StringAttributeList& attributes);
-
 TEST_F(InstructionTreeUtilsTest, InstructionInfoFromInstructionTree)
 {
   // Construct procedure and extract Workspace
@@ -106,73 +102,4 @@ TEST_F(InstructionTreeUtilsTest, InstructionInfoToFromAnyValue)
   auto instr_av = utils::ToAnyValueTree(*instr_info);
   auto instr_info_read_back = utils::ToInstructionInfoTree(instr_av);
   EXPECT_EQ(*instr_info_read_back, *instr_info);
-}
-
-TEST_F(InstructionTreeUtilsTest, BuildInstructionTreeInfo)
-{
-  // Construct procedure
-  const auto procedure_string = UnitTestHelper::CreateProcedureString(kWorkspaceSequenceBody);
-  auto proc = sup::sequencer::ParseProcedureString(procedure_string);
-  ASSERT_NE(proc.get(), nullptr);
-  EXPECT_NO_THROW(proc->Setup());
-
-  // Construct value mapper
-  const std::string prefix = "Test_BuildInstructionTreeInfo:";
-  JobValueMapper mapper{prefix, *proc};
-  mapper.InitializeInstructionTree(proc->RootInstruction());
-
-  // Create instruction tree info AnyValue
-  auto instr_tree = utils::BuildInstructionTreeInfo(proc->RootInstruction(), mapper);
-
-  // Check this AnyValue
-  EXPECT_TRUE(CheckInstructionNodeAnyValue(instr_tree, "Sequence", 0, {}));
-  ASSERT_TRUE(instr_tree.HasField(kChildInstructionsField));
-  auto& children = instr_tree[kChildInstructionsField];
-  ASSERT_EQ(children.NumberOfMembers(), 2);
-  ASSERT_TRUE(children.HasField(utils::CreateIndexedInstrChildName(0)));
-  ASSERT_TRUE(children.HasField(utils::CreateIndexedInstrChildName(1)));
-  auto& child_0 = children[utils::CreateIndexedInstrChildName(0)];
-  sup::sequencer::StringAttributeList child_0_attrs{
-    { "inputVar", "one" },
-    { "outputVar", "var1" }
-  };
-  EXPECT_TRUE(CheckInstructionNodeAnyValue(child_0, "Copy", 1, child_0_attrs));
-  auto& child_1 = children[utils::CreateIndexedInstrChildName(1)];
-  sup::sequencer::StringAttributeList child_1_attrs{
-    { "inputVar", "one" },
-    { "outputVar", "var2" }
-  };
-  EXPECT_TRUE(CheckInstructionNodeAnyValue(child_1, "Copy", 2, child_1_attrs));
-}
-
-bool CheckInstructionNodeAnyValue(const sup::dto::AnyValue& node, const std::string& node_type,
-                                  sup::dto::uint32 index,
-                                  const sup::sequencer::StringAttributeList& attributes)
-{
-  if (!node.HasField(kInstructionInfoNodeTypeField) ||
-      !node.HasField(kIndexField) || !node.HasField(kAttributesField))
-  {
-    return false;
-  }
-  if (node[kInstructionInfoNodeTypeField] != node_type)
-  {
-    return false;
-  }
-  if (node[kIndexField] != index)
-  {
-    return false;
-  }
-  auto& attr_av = node[kAttributesField];
-  for (const auto& attr : attributes)
-  {
-    if (!attr_av.HasField(attr.first))
-    {
-      return false;
-    }
-    if (attr_av[attr.first] != attr.second)
-    {
-      return false;
-    }
-  }
-  return attr_av.NumberOfMembers() == attributes.size();
 }

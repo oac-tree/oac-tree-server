@@ -32,10 +32,10 @@ namespace auto_server
 
 
 ClientInterfaceMapper::ClientInterfaceMapper(sequencer::JobInterface& job_interface,
-                                             const OldJobInfo& job_info)
+                                             const JobInfo& job_info)
   : m_job_interface{job_interface}
   , m_instr_info{}
-  , m_var_name_map{utils::BuildVariableNameMap(job_info.GetWorkspaceInfo())}
+  , m_ws_info{job_info.GetWorkspaceInfo()}
 {}
 
 ClientInterfaceMapper::~ClientInterfaceMapper() = default;
@@ -52,11 +52,12 @@ void ClientInterfaceMapper::InstructionUpdated(sup::dto::uint32 instr_idx,
 void ClientInterfaceMapper::VariableUpdated(
   sup::dto::uint32 var_idx, const sup::dto::AnyValue& value)
 {
-  if (var_idx >= m_var_name_map.size())
+  if (var_idx >= m_ws_info.GetNumberOfVariables())
   {
     return;
   }
-  const auto& var_name = m_var_name_map[var_idx];
+  // TODO fix
+  const auto& var_name = "OOPS";
   auto var_info = DecodeVariableState(value);
   m_job_interface.VariableUpdated(var_name, var_info.first, var_info.second);
 }

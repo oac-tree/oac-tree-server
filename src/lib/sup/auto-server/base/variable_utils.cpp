@@ -96,6 +96,23 @@ sup::dto::AnyValue ToAnyValue(const WorkspaceInfo& ws_info)
   return result;
 }
 
+bool ValidateWorkspaceInfoAnyValue(const sup::dto::AnyValue& ws_info)
+{
+  if (!sup::dto::IsStructValue(ws_info))
+  {
+    return false;
+  }
+  auto mem_names = ws_info.MemberNames();
+  for (const auto& mem_name : mem_names)
+  {
+    if (!ValidateVariableInfoAnyValue(ws_info[mem_name]))
+    {
+      return false;
+    }
+  }
+  return true;
+}
+
 VariableInfo CreateVariableInfo(const sequencer::Variable* var, sup::dto::uint32 index)
 {
   if (var == nullptr)
@@ -138,23 +155,6 @@ sup::dto::AnyValue ToAnyValue(const VariableInfo& var_info)
   return result;
 }
 
-bool ValidateWorkspaceInfoAnyValue(const sup::dto::AnyValue& ws_info)
-{
-  if (!sup::dto::IsStructValue(ws_info))
-  {
-    return false;
-  }
-  auto mem_names = ws_info.MemberNames();
-  for (const auto& mem_name : mem_names)
-  {
-    if (!ValidateVariableInfoAnyValue(ws_info[mem_name]))
-    {
-      return false;
-    }
-  }
-  return true;
-}
-
 bool ValidateVariableInfoAnyValue(const sup::dto::AnyValue& var_info)
 {
   if (!ValidateMemberType(var_info, kVariableInfoTypeField, sup::dto::StringType))
@@ -179,37 +179,6 @@ bool ValidateVariableInfoAnyValue(const sup::dto::AnyValue& var_info)
     }
   }
   return true;
-}
-
-sup::dto::AnyValue BuildWorkspaceInfoAnyValue(const sequencer::Workspace& ws)
-{
-  sup::dto::AnyValue result = sup::dto::EmptyStruct();
-  auto var_names = ws.VariableNames();
-  sup::dto::uint32 idx = 0;
-  for (const auto& var_name : var_names)
-  {
-    auto var_av = BuildVariableInfoAnyValue(ws.GetVariable(var_name), idx);
-    result.AddMember(var_name, var_av);
-    ++idx;
-  }
-  return result;
-}
-
-sup::dto::AnyValue BuildVariableInfoAnyValue(const sequencer::Variable* var, sup::dto::uint32 index)
-{
-  if (var == nullptr)
-  {
-    const std::string error = "BuildVariableInfoAnyValue(): called with a nullptr";
-    throw InvalidOperationException(error);
-  }
-  auto result = kVariableInfoAnyValue;
-  result[kVariableInfoTypeField] = var->GetType();
-  result[kIndexField] = index;
-  for (const auto& attr : var->GetStringAttributes())
-  {
-    result[kAttributesField].AddMember(attr.first, attr.second);
-  }
-  return result;
 }
 
 std::vector<std::string> BuildVariableNameMap(const sup::dto::AnyValue& workspace_info)

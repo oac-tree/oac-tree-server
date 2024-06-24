@@ -21,6 +21,8 @@
 
 #include <sup/auto-server/automation_server_protocol.h>
 
+#include "job_utils.h"
+
 #include <sup/auto-server/sup_auto_protocol.h>
 
 #include <sup/dto/anyvalue_helper.h>
@@ -125,7 +127,7 @@ sup::protocol::ProtocolResult AutomationServerProtocol::GetJobInfo(
     return result;
   }
   const auto& job_info = m_auto_server.GetJobInfo(idx);
-  auto job_info_av = ToAnyValue(job_info);
+  auto job_info_av = utils::ToAnyValue(job_info);
   sup::dto::AnyValue temp_out;
   sup::protocol::FunctionProtocolPack(temp_out, kJobInfoFieldName, job_info_av);
   if (!sup::dto::TryAssignIfEmptyOrConvert(output, temp_out))

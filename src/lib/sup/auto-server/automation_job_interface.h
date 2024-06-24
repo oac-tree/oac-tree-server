@@ -42,8 +42,6 @@ public:
 
   void InitializeInstructionTree(const sequencer::Instruction* root);
 
-  sup::dto::AnyValue GetInstructionTreeInfo(const sequencer::Instruction* root) const;
-
   std::vector<const sequencer::Instruction*> GetOrderedInstructions() const;
 
   void UpdateInstructionStatus(const sequencer::Instruction* instruction) override;

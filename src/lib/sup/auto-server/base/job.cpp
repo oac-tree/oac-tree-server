@@ -21,6 +21,8 @@
 
 #include <sup/auto-server/job.h>
 
+#include <sup/auto-server/base/instruction_map.h>
+#include <sup/auto-server/base/job_utils.h>
 #include <sup/auto-server/epics/epics_anyvalue_server.h>
 
 #include <sup/auto-server/automation_job_interface.h>
@@ -39,7 +41,7 @@ struct Job::JobImpl
   EPICSAnyValueServer m_epics_server;
   AutomationJobInterface m_job_interface;
   sup::sequencer::AsyncRunner m_runner;
-  OldJobInfo m_job_info;
+  std::unique_ptr<JobInfo> m_job_info;
   std::vector<const sequencer::Instruction*> m_ordered_instructions;
 };
 
@@ -55,9 +57,9 @@ Job::Job(Job&& other)
   std::swap(m_impl, other.m_impl);
 }
 
-const OldJobInfo& Job::GetInfo() const
+const JobInfo& Job::GetInfo() const
 {
-  return m_impl->m_job_info;
+  return *m_impl->m_job_info;
 }
 
 void Job::SetBreakpoint(std::size_t instr_idx)
@@ -115,14 +117,14 @@ Job::JobImpl::JobImpl(const std::string& prefix, std::unique_ptr<sup::sequencer:
   , m_epics_server{}
   , m_job_interface{prefix, *m_proc, m_epics_server}
   , m_runner{*m_proc, m_job_interface}
-  , m_job_info{prefix, *m_proc}
+  , m_job_info{}
   , m_ordered_instructions{}
 {
-  const auto root = m_proc->RootInstruction();
+  const auto* root = m_proc->RootInstruction();
   m_job_interface.InitializeInstructionTree(root);
   m_ordered_instructions = m_job_interface.GetOrderedInstructions();
-  m_job_info.SetInstructionTreeInfo(m_job_interface.GetInstructionTreeInfo(root),
-                                    m_ordered_instructions.size());
+  InstructionMap instr_map{root};
+  m_job_info.reset(new JobInfo{utils::CreateJobInfo(prefix, *m_proc, instr_map)});
 }
 
 }  // namespace auto_server

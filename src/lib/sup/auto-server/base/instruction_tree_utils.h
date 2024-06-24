@@ -127,41 +127,6 @@ std::string CreateIndexedInstrChildName(std::size_t idx);
  */
 bool ValidateInstructionInfo(const sup::dto::AnyValue& instr_info);
 
-
-// TODO: Remove the following functions
-
-/**
- * @brief Build an AnyValue representation of the instruction tree, providing instruction types,
- * attributes and the instruction index used for publishing its status.
- *
- * @param root Root instruction of the tree to represent.
- * @param mapper JobValueMapper object that provides indices for each instruction.
- * @return AnyValue representation.
- */
-sup::dto::AnyValue BuildInstructionTreeInfo(const sequencer::Instruction* root,
-                                            const JobValueMapper& mapper);
-
-/**
- * @brief Build an AnyValue representation of an instruction, providing its type,
- * attributes and the instruction index used for publishing its status.
- *
- * @param instr Instruction to represent.
- * @param index Index to put inside the node (referring to the served instruction AnyValue status).
- * @return AnyValue representation.
- * @throw InvalidOperationException when a nullptr is passed.
- */
-sup::dto::AnyValue BuildInstructionInfoNode(const sequencer::Instruction* instr,
-                                            sup::dto::uint32 index);
-
-/**
- * @brief Convert the given AnyValue to a InstructionInfo object.
- *
- * @param instr_info_anyvalue AnyValue representation of an instruction.
- * @return New InstructionInfo object.
- * @throw InvalidOperationException when the provided anyvalue has the wrong format.
- */
-std::unique_ptr<InstructionInfo> ToInstructionInfo(const sup::dto::AnyValue& instr_info_anyvalue);
-
 }  // namespace utils
 
 }  // namespace auto_server

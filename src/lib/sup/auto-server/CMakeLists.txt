@@ -40,7 +40,6 @@ install(FILES
   client_interface_mapper.h
   exceptions.h
   instruction_info.h
-  old_job_info.h
   job_info.h
   job_value_mapper.h
   job.h

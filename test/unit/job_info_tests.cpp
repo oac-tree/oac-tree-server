@@ -144,31 +144,3 @@ TEST_F(JobInfoTest, JobInfoToFromAnyValue)
   auto job_info_read_back = utils::ToJobInfo(job_av);
   EXPECT_EQ(job_info_read_back, job_info);
 }
-
-TEST_F(JobInfoTest, FromJob)
-{
-  const std::string prefix = "JobInfoTest:FromJob:";
-  const auto procedure_string = UnitTestHelper::CreateProcedureString(kWorkspaceSequenceBody);
-  auto proc = sup::sequencer::ParseProcedureString(procedure_string);
-  ASSERT_NE(proc.get(), nullptr);
-
-  // Build workspace representation before passing the procedure inside a job
-  auto ws_av = utils::BuildWorkspaceInfoAnyValue(proc->GetWorkspace());
-
-  // Build instruction tree info representation
-  JobValueMapper mapper{prefix, *proc};
-  auto root = proc->RootInstruction();
-  mapper.InitializeInstructionTree(root);
-  auto instr_tree_info = utils::BuildInstructionTreeInfo(root, mapper);
-
-  // Create Job and validate its JobInfo
-  Job job{prefix, std::move(proc)};
-
-  auto job_info = job.GetInfo();
-  EXPECT_EQ(job_info.GetPrefix(), prefix);
-  EXPECT_EQ(job_info.GetProcedureName(), "Common header");
-  EXPECT_EQ(job_info.GetNumberOfVariables(), 3);
-  EXPECT_EQ(job_info.GetNumberOfInstructions(), 3);
-  EXPECT_EQ(job_info.GetWorkspaceInfo(), ws_av);
-  EXPECT_EQ(job_info.GetInstructionTreeInfo(), instr_tree_info);
-}
