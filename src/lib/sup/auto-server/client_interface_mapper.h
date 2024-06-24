@@ -50,7 +50,7 @@ private:
   sequencer::JobInterface& m_job_interface;
   // TODO: replace this anyvalue with a more direct object
   std::vector<sup::dto::AnyValue> m_instr_info;
-  WorkspaceInfo m_ws_info;
+  std::vector<std::string> m_var_map;
 };
 
 }  // namespace auto_server

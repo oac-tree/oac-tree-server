@@ -87,9 +87,6 @@ extern const sup::dto::AnyValue kJobStateAnyValue;
 const std::string kJobInfoType = "sup::jobInfoType/v1.0";
 const std::string kJobPrefixFieldName = "job_prefix";
 const std::string kFullNameFieldName = "full_name";
-// TODO: remove the following two, since they are redundant
-const std::string kNumberOfVarsFieldName = "n_vars";
-const std::string kNumberOfInstrFieldName = "n_instr";
 const std::string kWorkspaceInfoFieldName = "ws_info";
 const std::string kInstructionTreeInfoFieldName = "instr_tree_info";
 

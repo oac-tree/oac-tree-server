@@ -1,6 +1,5 @@
 # Todo
 
-* Provide creation of map {idx -> var_name} from WorkspaceInfo
+* Provide creation of map {idx -> instr_info} from InstructionInfo tree
 * Check for name attribute in variables??
-* Rename JobProxy to JobInfo and dump old JobInfo
 * Validate uniqueness and absence of gaps in variable/instruction indices when creating Info objects.

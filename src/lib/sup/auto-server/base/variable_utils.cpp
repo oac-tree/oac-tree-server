@@ -29,6 +29,7 @@
 #include <sup/sequencer/variable.h>
 #include <sup/sequencer/workspace.h>
 
+#include <algorithm>
 #include <set>
 
 namespace sup
@@ -113,6 +114,17 @@ bool ValidateWorkspaceInfoAnyValue(const sup::dto::AnyValue& ws_info)
   return true;
 }
 
+std::vector<std::string> BuildVariableNameMap(const WorkspaceInfo& ws_info)
+{
+  const auto& var_infos = ws_info.GetVariableInfos();
+  std::vector<std::string> result;
+  auto func = [](const std::pair<std::string, VariableInfo>& pair) {
+    return pair.first;
+  };
+  (void)std::transform(var_infos.begin(), var_infos.end(), std::back_inserter(result), func);
+  return result;
+}
+
 VariableInfo CreateVariableInfo(const sequencer::Variable* var, sup::dto::uint32 index)
 {
   if (var == nullptr)
@@ -179,36 +191,6 @@ bool ValidateVariableInfoAnyValue(const sup::dto::AnyValue& var_info)
     }
   }
   return true;
-}
-
-std::vector<std::string> BuildVariableNameMap(const sup::dto::AnyValue& workspace_info)
-{
-  if (!ValidateWorkspaceInfoAnyValue(workspace_info))
-  {
-    const std::string error = "BuildVariableNameMap(): wrong format of workspace info AnyValue";
-    throw InvalidOperationException(error);
-  }
-  auto var_names = workspace_info.MemberNames();
-  std::vector<std::string> result(var_names.size());
-  std::set<sup::dto::uint32> used_indices{};
-  for (const auto& var_name : var_names)
-  {
-    auto idx = workspace_info[var_name][kIndexField].As<sup::dto::uint32>();
-    if (idx >= result.size())
-    {
-      const std::string error = "BuildVariableNameMap(): encountered variable index larger or "
-                                "equal to number of variables";
-      throw InvalidOperationException(error);
-    }
-    result[idx] = var_name;
-    used_indices.insert(idx);
-  }
-  if (used_indices.size() != result.size())
-  {
-    const std::string error = "BuildVariableNameMap(): duplicate indices found";
-    throw InvalidOperationException(error);
-  }
-  return result;
 }
 
 }  // namespace utils

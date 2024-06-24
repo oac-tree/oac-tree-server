@@ -79,6 +79,16 @@ sup::dto::AnyValue ToAnyValue(const WorkspaceInfo& ws_info);
 bool ValidateWorkspaceInfoAnyValue(const sup::dto::AnyValue& ws_info);
 
 /**
+ * @brief Build an list of variable names from the WorkspaceInfo object, ordered by
+ * index. This allows O(1) lookup. It is assumed that all indices are unique and span exactly the
+ * range from zero to (number_of_variables -1).
+ *
+ * @param ws_info WorkspaceInfo object.
+ * @return List of variable names, ordered by index.
+ */
+std::vector<std::string> BuildVariableNameMap(const WorkspaceInfo& ws_info);
+
+/**
  * @brief Create a VariableInfo representation of a variable, providing its type,
  * attributes and the variable index used for publishing its status.
  *
@@ -117,20 +127,6 @@ sup::dto::AnyValue ToAnyValue(const VariableInfo& var_info);
  * @return true when the provided AnyValue can be correctly parsed to a VariableInfo object.
  */
 bool ValidateVariableInfoAnyValue(const sup::dto::AnyValue& var_info);
-
-
-// TODO: Refactor the following function to take a WorkspaceInfo object instead of AnyValue
-
-/**
- * @brief Build an list of variable names from the workspace AnyValue representation, ordered by
- * index. This allows O(1) lookup. It is assumed that all indices are unique and span exactly the
- * range from zero to (number_of_variables -1).
- *
- * @param workspace_info AnyValue representation of all variables in a workspace.
- * @return List of variable names, ordered by index.
- * @throw InvalidOperationException when the assumptions on the input are violated.
- */
-std::vector<std::string> BuildVariableNameMap(const sup::dto::AnyValue& workspace_info);
 
 }  // namespace utils
 
