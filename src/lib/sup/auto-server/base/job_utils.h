@@ -56,7 +56,7 @@ sup::dto::AnyValue ToAnyValue(const JobInfo& job_info);
  * @param job_info AnyValue to validate.
  * @return true when the provided AnyValue can be correctly parsed to a JobInfo object.
  */
-bool ValidateWorkspaceInfoAnyValue(const sup::dto::AnyValue& job_info);
+bool ValidateJobInfoAnyValue(const sup::dto::AnyValue& job_info);
 
 }  // namespace utils
 

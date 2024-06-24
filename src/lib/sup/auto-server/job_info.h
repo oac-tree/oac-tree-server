@@ -43,6 +43,9 @@ public:
            const WorkspaceInfo& ws_info, std::unique_ptr<InstructionInfo> root_info);
   ~JobInfo();
 
+  JobInfo(JobInfo&& other) = default;
+  JobInfo& operator=(JobInfo&& other) = default;
+
   std::string GetPrefix() const;
   std::string GetProcedureName() const;
   std::size_t GetNumberOfVariables() const;

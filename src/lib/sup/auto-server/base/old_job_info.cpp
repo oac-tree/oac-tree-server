@@ -86,7 +86,7 @@ sup::dto::AnyValue ToAnyValue(const OldJobInfo& job_info)
       { sup::dto::UnsignedInteger64Type, job_info.GetNumberOfVariables() } },
     { kNumberOfInstrFieldName,
       { sup::dto::UnsignedInteger64Type, job_info.GetNumberOfInstructions() } },
-    { kVariableInfoFieldName, job_info.GetWorkspaceInfo() },
+    { kWorkspaceInfoFieldName, job_info.GetWorkspaceInfo() },
     { kInstructionTreeInfoFieldName, job_info.GetInstructionTreeInfo() }
   }};
   return result;

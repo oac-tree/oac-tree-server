@@ -90,7 +90,7 @@ const std::string kFullNameFieldName = "full_name";
 // TODO: remove the following two, since they are redundant
 const std::string kNumberOfVarsFieldName = "n_vars";
 const std::string kNumberOfInstrFieldName = "n_instr";
-const std::string kVariableInfoFieldName = "var_info";
+const std::string kWorkspaceInfoFieldName = "ws_info";
 const std::string kInstructionTreeInfoFieldName = "instr_tree_info";
 
 extern const sup::dto::AnyValue kJobInfoAnyValue;

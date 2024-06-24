@@ -66,7 +66,7 @@ const dto::AnyValue kJobStateAnyValue = {{
 const dto::AnyValue kJobInfoAnyValue = {{
   { kJobPrefixFieldName, "" },
   { kFullNameFieldName, "" },
-  { kVariableInfoFieldName, sup::dto::AnyValue{} },
+  { kWorkspaceInfoFieldName, sup::dto::AnyValue{} },
   { kInstructionTreeInfoFieldName, sup::dto::AnyValue{} }
 }, kJobInfoType };
 

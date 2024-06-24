@@ -31,20 +31,10 @@
 #include <deque>
 #include <set>
 
-namespace
-{
-using namespace sup::auto_server;
-
-bool ValidateJobInfo(const sup::dto::AnyValue& job_info);
-bool ValidateVariableList(const std::vector<VariableInfo>& var_list);
-}  // unnamed namespace
-
 namespace sup
 {
 namespace auto_server
 {
-const VariableInfo kInvalidVariableProxy{"", 0, {}};
-
 JobInfo::JobInfo(const std::string& job_prefix, const std::string& full_name,
                    const WorkspaceInfo& ws_info, std::unique_ptr<InstructionInfo> root_info)
   : m_job_prefix{job_prefix}
@@ -115,55 +105,3 @@ bool operator!=(const JobInfo& left, const JobInfo& right)
 }  // namespace auto_server
 
 }  // namespace sup
-
-namespace
-{
-bool ValidateJobInfo(const sup::dto::AnyValue& job_info)
-{
-  if (!utils::ValidateMemberType(job_info, kJobPrefixFieldName, sup::dto::StringType))
-  {
-    return false;
-  }
-  if (!utils::ValidateMemberType(job_info, kFullNameFieldName, sup::dto::StringType))
-  {
-    return false;
-  }
-  if (!utils::ValidateMemberType(job_info, kNumberOfVarsFieldName, sup::dto::UnsignedInteger64Type))
-  {
-    return false;
-  }
-  if (!utils::ValidateMemberType(job_info, kNumberOfInstrFieldName, sup::dto::UnsignedInteger64Type))
-  {
-    return false;
-  }
-  if (!job_info.HasField(kVariableInfoFieldName))
-  {
-    return false;
-  }
-  if (!job_info.HasField(kInstructionTreeInfoFieldName))
-  {
-    return false;
-  }
-  return true;
-}
-
-bool ValidateVariableList(const std::vector<VariableInfo>& var_list)
-{
-  std::set<sup::dto::uint32> indices;
-  for (const auto& var : var_list)
-  {
-    if (var.GetType().empty())
-    {
-      return false;
-    }
-    indices.insert(var.GetIndex());
-  }
-  if (indices.size() != var_list.size())
-  {
-    return false;
-  }
-  return true;
-}
-
-}  // unnamed namespace
-
