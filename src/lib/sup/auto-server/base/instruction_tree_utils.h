@@ -39,18 +39,21 @@ class Instruction;
 
 namespace auto_server
 {
+class InstructionMap;
+
 namespace utils
 {
-
 /**
  * @brief Create a InstructionInfo representation of an Instruction tree, providing all Instruction
  * types, their attributes and indices used for publishing their status.
  *
  * @param root Root instruction of the tree to represent.
+ * @param instr_map Map of instructions to indices.
  *
  * @return InstructionInfo tree representation.
  */
-std::unique_ptr<InstructionInfo> CreateInstructionInfoTree(const sequencer::Instruction& root);
+std::unique_ptr<InstructionInfo> CreateInstructionInfoTree(const sequencer::Instruction& root,
+                                                           const InstructionMap& instr_map);
 
 /**
  * @brief Convert the given AnyValue to an InstructionInfo tree.

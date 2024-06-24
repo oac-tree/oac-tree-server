@@ -28,12 +28,28 @@
 #include <sup/auto-server/exceptions.h>
 #include <sup/auto-server/sup_auto_protocol.h>
 
+#include <sup/sequencer/instruction.h>
+
 namespace sup
 {
 namespace auto_server
 {
 namespace utils
 {
+JobInfo CreateJobInfo(const std::string& job_prefix, const sequencer::Procedure& proc,
+                      const InstructionMap& instr_map)
+{
+  auto fullname = sup::sequencer::GetProcedureName(proc);
+  auto ws_info = CreateWorkspaceInfo(proc.GetWorkspace());
+  auto root = proc.RootInstruction();
+  if (root == nullptr)
+  {
+    const std::string error = "CreateJobInfo(): procedure does not contain a root instruction";
+    throw InvalidOperationException(error);
+  }
+  auto instr_tree_info = CreateInstructionInfoTree(*root, instr_map);
+  return JobInfo{ job_prefix, fullname, ws_info, std::move(instr_tree_info) };
+}
 
 JobInfo ToJobInfo(const sup::dto::AnyValue& job_info_anyvalue)
 {

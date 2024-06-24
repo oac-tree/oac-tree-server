@@ -40,7 +40,7 @@ class JobInfo
 {
 public:
   JobInfo(const std::string& job_prefix, const std::string& full_name,
-           const WorkspaceInfo& ws_info, std::unique_ptr<InstructionInfo> root_info);
+          const WorkspaceInfo& ws_info, std::unique_ptr<InstructionInfo> root_info);
   ~JobInfo();
 
   JobInfo(JobInfo&& other) = default;

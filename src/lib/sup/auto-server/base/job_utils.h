@@ -28,10 +28,30 @@
 
 namespace sup
 {
+namespace sequencer
+{
+class Procedure;
+}  // namespace sequencer
+
 namespace auto_server
 {
+class InstructionMap;
+
 namespace utils
 {
+
+/**
+ * @brief Create a JobInfo representation of a job, including the used prefix, a tree of
+ * InstructionInfos and a WorkspaceInfo.
+ *
+ * @param job_prefix Prefix used for the job.
+ * @param proc Procedure of the job.
+ * @param instr_map Map of instructions to indices.
+ *
+ * @return JobInfo representation.
+ */
+JobInfo CreateJobInfo(const std::string& job_prefix, const sequencer::Procedure& proc,
+                      const InstructionMap& instr_map);
 
 /**
  * @brief Convert the given AnyValue to a JobInfo object.

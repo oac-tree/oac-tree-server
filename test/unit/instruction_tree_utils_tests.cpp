@@ -22,6 +22,7 @@
 #include "unit_test_helper.h"
 
 #include <sup/auto-server/base/instruction_tree_utils.h>
+#include <sup/auto-server/base/instruction_map.h>
 #include <sup/auto-server/sup_auto_protocol.h>
 
 #include <sup/sequencer/sequence_parser.h>
@@ -54,7 +55,8 @@ TEST_F(InstructionTreeUtilsTest, InstructionInfoFromInstructionTree)
   const auto* root = proc->RootInstruction();
 
   // Create InstructionInfo tree
-  auto instr_info = utils::CreateInstructionInfoTree(*root);
+  InstructionMap instr_map{root};
+  auto instr_info = utils::CreateInstructionInfoTree(*root, instr_map);
 
   // Check root of the InstructionInfo tree
   EXPECT_EQ(instr_info->GetType(), "Sequence");
@@ -97,7 +99,8 @@ TEST_F(InstructionTreeUtilsTest, InstructionInfoToFromAnyValue)
   const auto* root = proc->RootInstruction();
 
   // Create InstructionInfo tree
-  auto instr_info = utils::CreateInstructionInfoTree(*root);
+  InstructionMap instr_map{root};
+  auto instr_info = utils::CreateInstructionInfoTree(*root, instr_map);
 
   // Create AnyValue, translate back and check they are equal
   auto instr_av = utils::ToAnyValueTree(*instr_info);

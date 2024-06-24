@@ -71,11 +71,11 @@ namespace auto_server
 {
 namespace utils
 {
-std::unique_ptr<InstructionInfo> CreateInstructionInfoTree(const sequencer::Instruction& root)
+std::unique_ptr<InstructionInfo> CreateInstructionInfoTree(const sequencer::Instruction& root,
+                                                           const InstructionMap& instr_map)
 {
   std::deque<InstrToInstrInfoStackNode> stack;
   auto root_address = std::addressof(root);
-  InstructionMap instr_map{root_address};
   auto root_info =
     CreateInstructionInfoNode(root, instr_map.FindInstructionIndex(root_address));
   InstrToInstrInfoStackNode root_node{ root, *root_info };
