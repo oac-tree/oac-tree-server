@@ -20,10 +20,9 @@
  ******************************************************************************/
 
 #include <sup/auto-server/automation_server_protocol.h>
-
-#include "job_utils.h"
-
 #include <sup/auto-server/sup_auto_protocol.h>
+#include <sup/auto-server/epics/epics_anyvalue_server.h>
+#include "job_utils.h"
 
 #include <sup/dto/anyvalue_helper.h>
 #include <sup/protocol/function_protocol_extract.h>
@@ -52,10 +51,19 @@ enum AutomationServerStatus
 };
 }  // namespace status
 
+
+// TODO: currently there is only one AnyValueManager for the whole server and it is fixed to be
+// an EPICS implementation. This needs revisiting.
 AutomationServerProtocol::AutomationServerProtocol(const std::string& server_prefix,
-                         AutomationServer::ProcedureList& proc_list)
-  : m_auto_server{server_prefix, proc_list}
-{}
+                                                   ProcedureList& proc_list)
+  : m_auto_server{server_prefix}
+  , m_anyvalue_mgr{new EPICSAnyValueServer{}}
+{
+  for (auto& proc : proc_list)
+  {
+    m_auto_server.AddJob(std::move(proc), *m_anyvalue_mgr);
+  }
+}
 
 AutomationServerProtocol::~AutomationServerProtocol() = default;
 

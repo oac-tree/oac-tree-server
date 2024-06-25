@@ -22,6 +22,7 @@
 #ifndef SUP_AUTO_SERVER_AUTOMATION_SERVER_PROTOCOL_H_
 #define SUP_AUTO_SERVER_AUTOMATION_SERVER_PROTOCOL_H_
 
+#include <sup/auto-server/anyvalue_manager_interface.h>
 #include <sup/auto-server/automation_server.h>
 
 #include <sup/protocol/function_protocol.h>
@@ -33,14 +34,14 @@ namespace sup
 {
 namespace auto_server
 {
+using ProcedureList = std::vector<std::unique_ptr<sup::sequencer::Procedure>>;
 /**
  * @brief AutomationServerProtocol.
  */
 class AutomationServerProtocol : public sup::protocol::Protocol
 {
 public:
-  AutomationServerProtocol(const std::string& server_prefix,
-                           AutomationServer::ProcedureList& proc_list);
+  AutomationServerProtocol(const std::string& server_prefix, ProcedureList& proc_list);
   ~AutomationServerProtocol();
 
   sup::protocol::ProtocolResult Invoke(const sup::dto::AnyValue& input,
@@ -51,6 +52,7 @@ public:
 private:
   static const sup::protocol::ProtocolMemberFunctionMap<AutomationServerProtocol>& FunctionMap();
   AutomationServer m_auto_server;
+  std::unique_ptr<AnyValueManagerInterface> m_anyvalue_mgr;
   sup::protocol::ProtocolResult GetServerPrefix(const sup::dto::AnyValue& input,
                                                 sup::dto::AnyValue& output);
   sup::protocol::ProtocolResult GetNumberOfJobs(const sup::dto::AnyValue& input,

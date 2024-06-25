@@ -2,7 +2,7 @@
 
 ## Todo
 
-* Fix AutomationServerProtocol and app
+* Fix app
 * Reactivate some unit tests
 * Refactor server side regarding Instruction/Variable maps, user interfaces, etc.
 * Use factories (or factory methods) to manage the lifetime of multiple AnyValueManagerInterfaces?
@@ -13,3 +13,4 @@
 ## Done
 
 * Inject AnyValueManagerInterface into Job to facilitate testing and make it more flexible?
+* Fix AutomationServerProtocol
