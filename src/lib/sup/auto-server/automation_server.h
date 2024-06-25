@@ -25,6 +25,7 @@
 #include <sup/auto-server/job.h>
 
 #include <memory>
+#include <mutex>
 #include <string>
 #include <vector>
 
@@ -38,9 +39,11 @@ namespace auto_server
 class AutomationServer
 {
 public:
-  using ProcedureList = std::vector<std::unique_ptr<sup::sequencer::Procedure>>;
-  AutomationServer(const std::string& server_prefix, ProcedureList& proc_list);
+  AutomationServer(const std::string& server_prefix);
   ~AutomationServer();
+
+  void AddJob(std::unique_ptr<sup::sequencer::Procedure> proc,
+              AnyValueManagerInterface& anyvalue_mgr);
 
   std::string GetServerPrefix() const;
   std::size_t GetNumberOfJobs() const;
@@ -52,8 +55,11 @@ public:
   void SendJobCommand(std::size_t job_idx, sup::sequencer::JobCommand command);
 
 private:
+  Job& GetJob(std::size_t job_idx);
+  const Job& GetJob(std::size_t job_idx) const;
   const std::string m_server_prefix;
   std::vector<Job> m_jobs;
+  mutable std::mutex m_mtx;
 };
 
 std::string CreateJobPrefix(const std::string& server_prefix, std::size_t idx);

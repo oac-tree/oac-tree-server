@@ -27,17 +27,21 @@ namespace sup
 namespace auto_server
 {
 
-AutomationServer::AutomationServer(const std::string& server_prefix, ProcedureList& proc_list)
+AutomationServer::AutomationServer(const std::string& server_prefix)
   : m_server_prefix{server_prefix}
   , m_jobs{}
-{
-  for (std::size_t idx = 0; idx < proc_list.size(); ++idx)
-  {
-    m_jobs.emplace_back(CreateJobPrefix(m_server_prefix, idx), std::move(proc_list[idx]));
-  }
-}
+  , m_mtx{}
+{}
 
 AutomationServer::~AutomationServer() = default;
+
+void AutomationServer::AddJob(std::unique_ptr<sup::sequencer::Procedure> proc,
+                              AnyValueManagerInterface& anyvalue_mgr)
+{
+  std::lock_guard<std::mutex> lk{m_mtx};
+  auto idx = m_jobs.size();
+  m_jobs.emplace_back(CreateJobPrefix(m_server_prefix, idx), std::move(proc), anyvalue_mgr);
+}
 
 std::string AutomationServer::GetServerPrefix() const
 {
@@ -46,36 +50,27 @@ std::string AutomationServer::GetServerPrefix() const
 
 std::size_t AutomationServer::GetNumberOfJobs() const
 {
+  std::lock_guard<std::mutex> lk{m_mtx};
   return m_jobs.size();
 }
 
 const JobInfo& AutomationServer::GetJobInfo(std::size_t job_idx) const
 {
-  if (job_idx >= m_jobs.size())
-  {
-    const std::string error = "AutomationServer::GetJobInfo(): index out of bounds; requesting"
-      + std::to_string(job_idx) + " out of " + std::to_string(m_jobs.size()) + " jobs";
-    throw InvalidOperationException(error);
-  }
-  return m_jobs[job_idx].GetInfo();
+  auto& job = GetJob(job_idx);
+  return job.GetInfo();
 }
 
 void AutomationServer::EditBreakpoint(std::size_t job_idx, std::size_t instr_idx,
                                       bool breakpoint_active)
 {
-  if (job_idx >= m_jobs.size())
-  {
-    const std::string error = "AutomationServer::EditBreakpoint(): index out of bounds; requesting"
-      + std::to_string(job_idx) + " out of " + std::to_string(m_jobs.size()) + " jobs";
-    throw InvalidOperationException(error);
-  }
+  auto& job = GetJob(job_idx);
   if (breakpoint_active)
   {
-    m_jobs[job_idx].SetBreakpoint(instr_idx);
+    job.SetBreakpoint(instr_idx);
   }
   else
   {
-    m_jobs[job_idx].RemoveBreakpoint(instr_idx);
+    job.RemoveBreakpoint(instr_idx);
   }
   return;
 }
@@ -83,28 +78,23 @@ void AutomationServer::EditBreakpoint(std::size_t job_idx, std::size_t instr_idx
 void AutomationServer::SendJobCommand(std::size_t job_idx, sup::sequencer::JobCommand command)
 {
   using sup::sequencer::JobCommand;
-  if (job_idx >= m_jobs.size())
-  {
-    const std::string error = "AutomationServer::GetJobInfo(): index out of bounds; requesting"
-      + std::to_string(job_idx) + " out of " + std::to_string(m_jobs.size()) + " jobs";
-    throw InvalidOperationException(error);
-  }
+  auto& job = GetJob(job_idx);
   switch (command)
   {
   case JobCommand::kStart:
-    m_jobs[job_idx].Start();
+    job.Start();
     break;
   case JobCommand::kStep:
-    m_jobs[job_idx].Step();
+    job.Step();
     break;
   case JobCommand::kPause:
-    m_jobs[job_idx].Pause();
+    job.Pause();
     break;
   case JobCommand::kReset:
-    m_jobs[job_idx].Reset();
+    job.Reset();
     break;
   case JobCommand::kHalt:
-    m_jobs[job_idx].Halt();
+    job.Halt();
     break;
   default:
     {
@@ -113,6 +103,23 @@ void AutomationServer::SendJobCommand(std::size_t job_idx, sup::sequencer::JobCo
       throw InvalidOperationException(error);
     }
   }
+}
+
+Job& AutomationServer::GetJob(std::size_t job_idx)
+{
+  return const_cast<Job&>(const_cast<const AutomationServer*>(this)->GetJob(job_idx));
+}
+
+const Job& AutomationServer::GetJob(std::size_t job_idx) const
+{
+  std::lock_guard<std::mutex> lk{m_mtx};
+  if (job_idx >= m_jobs.size())
+  {
+    const std::string error = "AutomationServer::GetJob(): index out of bounds; requesting"
+      + std::to_string(job_idx) + " out of " + std::to_string(m_jobs.size()) + " jobs";
+    throw InvalidOperationException(error);
+  }
+  return m_jobs[job_idx];
 }
 
 std::string CreateJobPrefix(const std::string& server_prefix, std::size_t idx)

@@ -24,6 +24,8 @@
 #include <sup/auto-server/job.h>
 #include <sup/auto-server/sup_auto_protocol.h>
 
+#include <sup/auto-server/epics/epics_anyvalue_server.h>
+
 #include <sup/epics/pv_access_client_pv.h>
 #include <sup/sequencer/sequence_parser.h>
 
@@ -57,6 +59,7 @@ protected:
     return m_cv.wait_for(lk, duration, pred);
   }
 
+  EPICSAnyValueServer m_anyvalue_mgr;
   sup::dto::AnyValue m_value_cache;
   std::mutex m_mtx;
   std::condition_variable m_cv;
@@ -70,7 +73,7 @@ TEST_F(JobTest, Constructed)
   ASSERT_NE(proc.get(), nullptr);
 
   // Create Job and wait for initial state
-  Job job{prefix, std::move(proc)};
+  Job job{prefix, std::move(proc), m_anyvalue_mgr};
 
   auto pv_callback = [this](const sup::epics::PvAccessClientPV::ExtendedValue& val) {
     if(val.connected)
@@ -105,7 +108,7 @@ TEST_F(JobTest, MoveConstructed)
   ASSERT_NE(proc.get(), nullptr);
 
   // Create Job and wait for initial state
-  Job tmp_job{prefix, std::move(proc)};
+  Job tmp_job{prefix, std::move(proc), m_anyvalue_mgr};
   Job job{std::move(tmp_job)};
 
   auto pv_callback = [this](const sup::epics::PvAccessClientPV::ExtendedValue& val) {

@@ -34,19 +34,21 @@ namespace auto_server
 
 struct Job::JobImpl
 {
-  JobImpl(const std::string& prefix, std::unique_ptr<sup::sequencer::Procedure> proc);
+  JobImpl(const std::string& prefix, std::unique_ptr<sup::sequencer::Procedure> proc,
+          AnyValueManagerInterface& anyvalue_mgr);
   ~JobImpl() = default;
 
   std::unique_ptr<sup::sequencer::Procedure> m_proc;
-  EPICSAnyValueServer m_epics_server;
+  AnyValueManagerInterface& m_anyvalue_mgr;
   AutomationJobInterface m_job_interface;
   sup::sequencer::AsyncRunner m_runner;
   std::unique_ptr<JobInfo> m_job_info;
   std::vector<const sequencer::Instruction*> m_ordered_instructions;
 };
 
-Job::Job(const std::string& prefix, std::unique_ptr<sup::sequencer::Procedure> proc)
-  : m_impl{new JobImpl{prefix, std::move(proc)}}
+Job::Job(const std::string& prefix, std::unique_ptr<sup::sequencer::Procedure> proc,
+         AnyValueManagerInterface& anyvalue_mgr)
+  : m_impl{new JobImpl{prefix, std::move(proc), anyvalue_mgr}}
 {}
 
 Job::~Job() = default;
@@ -112,10 +114,11 @@ sup::sequencer::AsyncRunner& Job::Runner()
   return m_impl->m_runner;
 }
 
-Job::JobImpl::JobImpl(const std::string& prefix, std::unique_ptr<sup::sequencer::Procedure> proc)
+Job::JobImpl::JobImpl(const std::string& prefix, std::unique_ptr<sup::sequencer::Procedure> proc,
+                      AnyValueManagerInterface& anyvalue_mgr)
   : m_proc{std::move(proc)}
-  , m_epics_server{}
-  , m_job_interface{prefix, *m_proc, m_epics_server}
+  , m_anyvalue_mgr{anyvalue_mgr}
+  , m_job_interface{prefix, *m_proc, m_anyvalue_mgr}
   , m_runner{*m_proc, m_job_interface}
   , m_job_info{}
   , m_ordered_instructions{}
