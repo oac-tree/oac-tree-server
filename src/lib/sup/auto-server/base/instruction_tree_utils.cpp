@@ -29,6 +29,7 @@
 
 #include <sup/sequencer/instruction.h>
 
+#include <algorithm>
 #include <deque>
 
 namespace
@@ -168,11 +169,18 @@ std::vector<const InstructionInfo*> CreateInstructionInfoMap(const InstructionIn
     auto idx = it->first;
     if (idx >= result.size())
     {
-      // TODO: throw
+      const std::string error = "CreateInstructionInfoMap(): encountered index out of bounds";
+      throw InvalidOperationException(error);
     }
     result[it->first] = it->second;
   }
-  // TODO: check for absence of nullptr in result
+  auto iter = std::find(result.begin(), result.end(), nullptr);
+  if (iter != result.end())
+  {
+    const std::string error = "CreateInstructionInfoMap(): encountered duplicate index or "
+                              "nullptr to InstructionInfo";
+    throw InvalidOperationException(error);
+  }
   return result;
 }
 
