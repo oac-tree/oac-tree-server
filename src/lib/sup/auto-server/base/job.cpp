@@ -39,7 +39,6 @@ struct Job::JobImpl
   ~JobImpl() = default;
 
   std::unique_ptr<sup::sequencer::Procedure> m_proc;
-  AnyValueManagerInterface& m_anyvalue_mgr;
   AutomationJobInterface m_job_interface;
   sup::sequencer::AsyncRunner m_runner;
   std::unique_ptr<JobInfo> m_job_info;
@@ -117,17 +116,15 @@ sup::sequencer::AsyncRunner& Job::Runner()
 Job::JobImpl::JobImpl(const std::string& prefix, std::unique_ptr<sup::sequencer::Procedure> proc,
                       AnyValueManagerInterface& anyvalue_mgr)
   : m_proc{std::move(proc)}
-  , m_anyvalue_mgr{anyvalue_mgr}
-  , m_job_interface{prefix, *m_proc, m_anyvalue_mgr}
+  , m_job_interface{prefix, *m_proc, anyvalue_mgr}
   , m_runner{*m_proc, m_job_interface}
   , m_job_info{}
   , m_ordered_instructions{}
 {
-  const auto* root = m_proc->RootInstruction();
-  m_job_interface.InitializeInstructionTree(root);
+  m_job_interface.InitializeInstructionTree(m_proc->RootInstruction());
   m_ordered_instructions = m_job_interface.GetOrderedInstructions();
-  InstructionMap instr_map{root};
-  m_job_info.reset(new JobInfo{utils::CreateJobInfo(prefix, *m_proc, instr_map)});
+  m_job_info.reset(new JobInfo{utils::CreateJobInfo(prefix, *m_proc,
+                                                    m_job_interface.GetInstructionMap())});
 }
 
 }  // namespace auto_server

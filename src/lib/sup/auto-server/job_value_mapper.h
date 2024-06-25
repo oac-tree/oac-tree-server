@@ -48,6 +48,8 @@ public:
 
   std::string GetJobStateName() const;
 
+  const InstructionMap& GetInstructionMap() const;
+
   sup::dto::uint32 GetNumberOfInstructions() const;
 
   sup::dto::uint32 GetInstructionIndex(const sequencer::Instruction* instr) const;

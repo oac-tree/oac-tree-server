@@ -3,6 +3,7 @@
 ## Todo
 
 * Refactor server side regarding Instruction/Variable maps, user interfaces, etc.
+* Check rather extensive API of JobValueMapper...
 * Use factories (or factory methods) to manage the lifetime of multiple AnyValueManagerInterfaces?
 * Implement client side
 * Check for name attribute in variables??

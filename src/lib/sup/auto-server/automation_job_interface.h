@@ -42,6 +42,8 @@ public:
 
   void InitializeInstructionTree(const sequencer::Instruction* root);
 
+  const InstructionMap& GetInstructionMap() const;
+
   std::vector<const sequencer::Instruction*> GetOrderedInstructions() const;
 
   void UpdateInstructionStatus(const sequencer::Instruction* instruction) override;

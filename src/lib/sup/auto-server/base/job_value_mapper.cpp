@@ -50,6 +50,17 @@ std::string JobValueMapper::GetJobStateName() const
   return GetJobStatePVName(m_prefix);
 }
 
+const InstructionMap& JobValueMapper::GetInstructionMap() const
+{
+  if (!m_instruction_map)
+  {
+    const std::string error = "JobValueMapper::GetInstructionMap(): object was not "
+      "correctly initialized with a root instruction";
+    throw InvalidOperationException(error);
+  }
+  return *m_instruction_map;
+}
+
 sup::dto::uint32 JobValueMapper::GetNumberOfInstructions() const
 {
   if (!m_instruction_map)
