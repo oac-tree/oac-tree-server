@@ -33,6 +33,7 @@ install(TARGETS sup-auto-server EXPORT sup-auto-server-targets LIBRARY DESTINATI
 
 install(FILES
   anyvalue_manager_interface.h
+  anyvalue_manager_registry.h
   attribute_info.h
   automation_job_interface.h
   automation_server_protocol.h
