@@ -22,7 +22,7 @@
 #ifndef SUP_AUTO_SERVER_SUP_AUTOMATION_SERVER_UTILS_H_
 #define SUP_AUTO_SERVER_SUP_AUTOMATION_SERVER_UTILS_H_
 
-#include <sup/auto-server/automation_server.h>
+#include <sup/auto-server/automation_server_protocol.h>
 
 #include <sup/cli/command_line_parser.h>
 #include <sup/sequencer/procedure.h>
@@ -34,7 +34,7 @@ namespace auto_server
 namespace utils
 {
 
-AutomationServer::ProcedureList GetProcedureList(sup::cli::CommandLineParser& parser);
+ProcedureList GetProcedureList(sup::cli::CommandLineParser& parser);
 
 }  // namespace utils
 

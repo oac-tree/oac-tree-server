@@ -51,10 +51,10 @@ R"RAW(<?xml version="1.0" encoding="UTF-8"?>
 </Procedure>
 )RAW"};
 
-AutomationServer::ProcedureList GetProcedureList(sup::cli::CommandLineParser& parser)
+ProcedureList GetProcedureList(sup::cli::CommandLineParser& parser)
 {
   (void)parser;
-  AutomationServer::ProcedureList result;
+  ProcedureList result;
   result.emplace_back(sup::sequencer::ParseProcedureString(kSimpleCounterProcedureString));
   return result;
 }
