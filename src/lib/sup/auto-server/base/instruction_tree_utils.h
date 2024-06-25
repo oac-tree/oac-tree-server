@@ -81,7 +81,7 @@ sup::dto::AnyValue ToAnyValueTree(const InstructionInfo& instr_info);
  * @param instr_info InstructionInfo tree.
  * @return Ordered list of InstructionInfo pointers.
  */
-std::vector<const InstructionInfo*> CreateInstructionInfoMap(const InstructionInfo& instr_info);
+std::vector<const InstructionInfo*> CreateOrderedInstructionInfo(const InstructionInfo& instr_info);
 
 /**
  * @brief Create a InstructionInfo representation of a single Instruction, providing its type,

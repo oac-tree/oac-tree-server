@@ -147,7 +147,7 @@ sup::dto::AnyValue ToAnyValueTree(const InstructionInfo& instr_info)
   return root_av;
 }
 
-std::vector<const InstructionInfo*> CreateInstructionInfoMap(const InstructionInfo& instr_info)
+std::vector<const InstructionInfo*> CreateOrderedInstructionInfo(const InstructionInfo& instr_info)
 {
   std::vector<std::pair<sup::dto::uint32, const InstructionInfo*>> unordered{};
   std::deque<const InstructionInfo*> stack;
@@ -169,7 +169,7 @@ std::vector<const InstructionInfo*> CreateInstructionInfoMap(const InstructionIn
     auto idx = it->first;
     if (idx >= result.size())
     {
-      const std::string error = "CreateInstructionInfoMap(): encountered index out of bounds";
+      const std::string error = "CreateOrderedInstructionInfo(): encountered index out of bounds";
       throw InvalidOperationException(error);
     }
     result[it->first] = it->second;
@@ -177,7 +177,7 @@ std::vector<const InstructionInfo*> CreateInstructionInfoMap(const InstructionIn
   auto iter = std::find(result.begin(), result.end(), nullptr);
   if (iter != result.end())
   {
-    const std::string error = "CreateInstructionInfoMap(): encountered duplicate index or "
+    const std::string error = "CreateOrderedInstructionInfo(): encountered duplicate index or "
                               "nullptr to InstructionInfo";
     throw InvalidOperationException(error);
   }

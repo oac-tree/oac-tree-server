@@ -41,6 +41,7 @@ JobInfo::JobInfo(const std::string& job_prefix, const std::string& full_name,
   , m_full_name{full_name}
   , m_ws{ws_info}
   , m_root{std::move(root_info)}
+  , m_ordered_instr{utils::CreateOrderedInstructionInfo(*m_root)}
 {}
 
 JobInfo::~JobInfo() = default;
@@ -62,8 +63,7 @@ std::size_t JobInfo::GetNumberOfVariables() const
 
 std::size_t JobInfo::GetNumberOfInstructions() const
 {
-  // TODO: Fix this!
-  return 0;
+  return m_ordered_instr.size();
 }
 
 const WorkspaceInfo& JobInfo::GetWorkspaceInfo() const

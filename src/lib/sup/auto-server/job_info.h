@@ -58,6 +58,7 @@ private:
   std::string m_full_name;
   WorkspaceInfo m_ws;
   std::unique_ptr<InstructionInfo> m_root;
+  std::vector<const InstructionInfo*> m_ordered_instr;
 };
 
 /**
