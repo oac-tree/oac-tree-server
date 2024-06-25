@@ -42,28 +42,26 @@ protected:
   UnitTestHelper::TestServerInterface m_test_server_interface;
 };
 
-TEST_F(AutomationServerTests, EmptyProcedureList)
+TEST_F(AutomationServerTests, ServerWithoutProcedures)
 {
   using sup::sequencer::JobCommand;
   const std::string prefix = "AutomationServerTests:Empty";
-  AutomationServer::ProcedureList empty_list{};
-  AutomationServer auto_server{prefix, empty_list};
+  AutomationServer auto_server{prefix};
   EXPECT_EQ(auto_server.GetServerPrefix(), prefix);
   EXPECT_EQ(auto_server.GetNumberOfJobs(), 0);
   EXPECT_THROW(auto_server.GetJobInfo(0), InvalidOperationException);
   EXPECT_THROW(auto_server.SendJobCommand(0, JobCommand::kStart), InvalidOperationException);
 }
 
-TEST_F(AutomationServerTests, SingleProcedure)
+TEST_F(AutomationServerTests, ServerWithOneProcedure)
 {
   using sup::sequencer::JobCommand;
   const std::string prefix = "AutomationServerTests:Single";
   const auto procedure_string = UnitTestHelper::CreateProcedureString(kLongWaitProcedureBody);
   auto proc = sup::sequencer::ParseProcedureString(procedure_string);
   ASSERT_NE(proc.get(), nullptr);
-  AutomationServer::ProcedureList proc_list{};
-  proc_list.emplace_back(std::move(proc));
-  AutomationServer auto_server{prefix, proc_list};
+  AutomationServer auto_server{prefix};
+  auto_server.AddJob(std::move(proc), m_test_server_interface);
   EXPECT_EQ(auto_server.GetServerPrefix(), prefix);
   EXPECT_EQ(auto_server.GetNumberOfJobs(), 1);
   const auto& job_info = auto_server.GetJobInfo(0);
@@ -75,7 +73,7 @@ TEST_F(AutomationServerTests, SingleProcedure)
   EXPECT_THROW(auto_server.SendJobCommand(1, JobCommand::kStart), InvalidOperationException);
 }
 
-TEST_F(AutomationServerTests, TwoProcedures)
+TEST_F(AutomationServerTests, ServerWithTwoProcedures)
 {
   using sup::sequencer::JobCommand;
   const std::string prefix = "AutomationServerTests:Two";
@@ -84,10 +82,9 @@ TEST_F(AutomationServerTests, TwoProcedures)
   ASSERT_NE(proc_1.get(), nullptr);
   auto proc_2 = sup::sequencer::ParseProcedureString(procedure_string);
   ASSERT_NE(proc_2.get(), nullptr);
-  AutomationServer::ProcedureList proc_list{};
-  proc_list.emplace_back(std::move(proc_1));
-  proc_list.emplace_back(std::move(proc_2));
-  AutomationServer auto_server{prefix, proc_list};
+  AutomationServer auto_server{prefix};
+  auto_server.AddJob(std::move(proc_1), m_test_server_interface);
+  auto_server.AddJob(std::move(proc_2), m_test_server_interface);
   EXPECT_EQ(auto_server.GetServerPrefix(), prefix);
   EXPECT_EQ(auto_server.GetNumberOfJobs(), 2);
   const auto& job_info_1 = auto_server.GetJobInfo(0);
