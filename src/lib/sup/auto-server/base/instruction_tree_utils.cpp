@@ -258,7 +258,14 @@ bool ValidateInstructionInfo(const sup::dto::AnyValue& instr_info)
     {
       return false;
     }
-    // TODO: check member names are child_0, child_1, etc. ?
+    auto child_mem_names = instr_info[kChildInstructionsField].MemberNames();
+    for (std::size_t idx = 0; idx < child_mem_names.size(); ++idx)
+    {
+      if (child_mem_names[idx] != CreateIndexedInstrChildName(idx))
+      {
+        return false;
+      }
+    }
   }
   return true;
 }
