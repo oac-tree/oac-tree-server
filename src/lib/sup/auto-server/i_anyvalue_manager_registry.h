@@ -19,10 +19,10 @@
  * of the distribution package.
  ******************************************************************************/
 
-#ifndef SUP_AUTO_SERVER_ANYVALUE_MANAGER_REGISTRY_H_
-#define SUP_AUTO_SERVER_ANYVALUE_MANAGER_REGISTRY_H_
+#ifndef SUP_AUTO_SERVER_I_ANYVALUE_MANAGER_REGISTRY_H_
+#define SUP_AUTO_SERVER_I_ANYVALUE_MANAGER_REGISTRY_H_
 
-#include <sup/auto-server/anyvalue_manager_interface.h>
+#include <sup/auto-server/i_anyvalue_manager.h>
 
 namespace sup
 {
@@ -33,10 +33,10 @@ namespace auto_server
  * @brief Interface for classes that provide AnyValueManagerInterface implementations and manage
  * their lifecycle.
  */
-class AnyValueManagerRegistry
+class IAnyValueManagerRegistry
 {
 public:
-  virtual ~AnyValueManagerRegistry();
+  virtual ~IAnyValueManagerRegistry();
 
   /**
    * @brief Get a reference to an AnyValueManager object.
@@ -49,11 +49,11 @@ public:
    * @param idx Index that identifies which object to return.
    * @return Reference to an AnyValueManagerInterface implementation.
    */
-  virtual AnyValueManagerInterface& GetAnyValueManager(std::size_t idx) = 0;
+  virtual IAnyValueManager& GetAnyValueManager(std::size_t idx) = 0;
 };
 
 }  // namespace auto_server
 
 }  // namespace sup
 
-#endif  // SUP_AUTO_SERVER_ANYVALUE_MANAGER_REGISTRY_H_
+#endif  // SUP_AUTO_SERVER_I_ANYVALUE_MANAGER_REGISTRY_H_

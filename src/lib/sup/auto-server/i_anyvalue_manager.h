@@ -19,8 +19,8 @@
  * of the distribution package.
  ******************************************************************************/
 
-#ifndef SUP_AUTO_SERVER_ANYVALUE_MANAGER_INTERFACE_H_
-#define SUP_AUTO_SERVER_ANYVALUE_MANAGER_INTERFACE_H_
+#ifndef SUP_AUTO_SERVER_I_ANYVALUE_MANAGER_H_
+#define SUP_AUTO_SERVER_I_ANYVALUE_MANAGER_H_
 
 #include <sup/dto/anyvalue.h>
 
@@ -35,7 +35,7 @@ namespace auto_server
 {
 
 /**
- * @brief AnyValueManagerInterface defines the API for implementations that manage multiple sets of
+ * @brief IAnyValueManager defines the API for implementations that manage multiple sets of
  * (name, value) pairs, where value is encoded as an AnyValue.
  *
  * @details Implementations of this interface will be used on the server side to publish updates of
@@ -44,13 +44,13 @@ namespace auto_server
  *
  * @todo Provide the API for client input and message queues, i.e. values whose history may matter.
  */
-class AnyValueManagerInterface
+class IAnyValueManager
 {
 public:
   using NameAnyValuePair = std::pair<std::string, sup::dto::AnyValue>;
   using NameAnyValueSet = std::vector<NameAnyValuePair>;
 
-  virtual ~AnyValueManagerInterface();
+  virtual ~IAnyValueManager();
 
   /**
    * @brief Add a set of AnyValues with given unique names.
@@ -82,10 +82,10 @@ public:
  * @param name_value_set List of name/value pairs.
  * @return List of names.
  */
-std::set<std::string> GetNames(const AnyValueManagerInterface::NameAnyValueSet& name_value_set);
+std::set<std::string> GetNames(const IAnyValueManager::NameAnyValueSet& name_value_set);
 
 }  // namespace auto_server
 
 }  // namespace sup
 
-#endif  // SUP_AUTO_SERVER_ANYVALUE_MANAGER_INTERFACE_H_
+#endif  // SUP_AUTO_SERVER_I_ANYVALUE_MANAGER_H_

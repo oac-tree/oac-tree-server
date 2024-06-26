@@ -24,7 +24,7 @@
 
 #include "anyvalue_update_queue.h"
 
-#include <sup/auto-server/anyvalue_manager_interface.h>
+#include <sup/auto-server/i_anyvalue_manager.h>
 
 #include <future>
 
@@ -47,7 +47,7 @@ public:
    *
    * @note It is the user's responsibility to ensure the provided names are unique.
    */
-  EPICSServer(const AnyValueManagerInterface::NameAnyValueSet& name_value_set);
+  EPICSServer(const IAnyValueManager::NameAnyValueSet& name_value_set);
   ~EPICSServer();
 
   // No copy or move
@@ -65,7 +65,7 @@ public:
   void UpdateAnyValue(const std::string& name, const sup::dto::AnyValue& value);
 
 private:
-  void UpdateLoop(const AnyValueManagerInterface::NameAnyValueSet& name_value_set);
+  void UpdateLoop(const IAnyValueManager::NameAnyValueSet& name_value_set);
   AnyValueUpdateQueue m_update_queue;
   std::future<void> m_update_future;
 };

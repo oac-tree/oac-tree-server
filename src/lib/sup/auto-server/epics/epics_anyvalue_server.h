@@ -22,7 +22,7 @@
 #ifndef SUP_AUTO_SERVER_EPICS_ANYVALUE_SERVER_H_
 #define SUP_AUTO_SERVER_EPICS_ANYVALUE_SERVER_H_
 
-#include <sup/auto-server/anyvalue_manager_interface.h>
+#include <sup/auto-server/i_anyvalue_manager.h>
 
 #include <map>
 #include <memory>
@@ -35,10 +35,10 @@ namespace auto_server
 class EPICSServer;
 
 /**
- * @brief EPICSAnyValueServer implements AnyValueManagerInterface using EPICS PvAccess and publishes
+ * @brief EPICSAnyValueServer implements IAnyValueManager using EPICS PvAccess and publishes
  * the managed AnyValues over this protocol.
  */
-class EPICSAnyValueServer : public AnyValueManagerInterface
+class EPICSAnyValueServer : public IAnyValueManager
 {
 public:
   EPICSAnyValueServer();

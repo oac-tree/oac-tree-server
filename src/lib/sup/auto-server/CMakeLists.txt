@@ -32,14 +32,14 @@ target_link_libraries(sup-auto-server
 install(TARGETS sup-auto-server EXPORT sup-auto-server-targets LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR})
 
 install(FILES
-  anyvalue_manager_interface.h
-  anyvalue_manager_registry.h
   attribute_info.h
   automation_job_interface.h
   automation_server_protocol.h
   automation_server.h
   client_interface_mapper.h
   exceptions.h
+  i_anyvalue_manager_registry.h
+  i_anyvalue_manager.h
   instruction_info.h
   job_info.h
   job_value_mapper.h

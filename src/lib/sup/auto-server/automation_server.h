@@ -43,7 +43,7 @@ public:
   ~AutomationServer();
 
   void AddJob(std::unique_ptr<sup::sequencer::Procedure> proc,
-              AnyValueManagerInterface& anyvalue_mgr);
+              IAnyValueManager& anyvalue_mgr);
 
   std::string GetServerPrefix() const;
   std::size_t GetNumberOfJobs() const;

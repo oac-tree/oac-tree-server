@@ -22,7 +22,7 @@
 #ifndef SUP_AUTO_SERVER_AUTOMATION_SERVER_PROTOCOL_H_
 #define SUP_AUTO_SERVER_AUTOMATION_SERVER_PROTOCOL_H_
 
-#include <sup/auto-server/anyvalue_manager_interface.h>
+#include <sup/auto-server/i_anyvalue_manager.h>
 #include <sup/auto-server/automation_server.h>
 
 #include <sup/protocol/function_protocol.h>
@@ -52,7 +52,7 @@ public:
 private:
   static const sup::protocol::ProtocolMemberFunctionMap<AutomationServerProtocol>& FunctionMap();
   AutomationServer m_auto_server;
-  std::unique_ptr<AnyValueManagerInterface> m_anyvalue_mgr;
+  std::unique_ptr<IAnyValueManager> m_anyvalue_mgr;
   sup::protocol::ProtocolResult GetServerPrefix(const sup::dto::AnyValue& input,
                                                 sup::dto::AnyValue& output);
   sup::protocol::ProtocolResult GetNumberOfJobs(const sup::dto::AnyValue& input,

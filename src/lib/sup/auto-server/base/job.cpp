@@ -35,7 +35,7 @@ namespace auto_server
 struct Job::JobImpl
 {
   JobImpl(const std::string& prefix, std::unique_ptr<sup::sequencer::Procedure> proc,
-          AnyValueManagerInterface& anyvalue_mgr);
+          IAnyValueManager& anyvalue_mgr);
   ~JobImpl() = default;
 
   std::unique_ptr<sup::sequencer::Procedure> m_proc;
@@ -46,7 +46,7 @@ struct Job::JobImpl
 };
 
 Job::Job(const std::string& prefix, std::unique_ptr<sup::sequencer::Procedure> proc,
-         AnyValueManagerInterface& anyvalue_mgr)
+         IAnyValueManager& anyvalue_mgr)
   : m_impl{new JobImpl{prefix, std::move(proc), anyvalue_mgr}}
 {}
 
@@ -114,7 +114,7 @@ sup::sequencer::AsyncRunner& Job::Runner()
 }
 
 Job::JobImpl::JobImpl(const std::string& prefix, std::unique_ptr<sup::sequencer::Procedure> proc,
-                      AnyValueManagerInterface& anyvalue_mgr)
+                      IAnyValueManager& anyvalue_mgr)
   : m_proc{std::move(proc)}
   , m_job_interface{prefix, *m_proc, anyvalue_mgr}
   , m_runner{*m_proc, m_job_interface}

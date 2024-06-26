@@ -1,13 +1,13 @@
 target_sources(sup-auto-server
   PRIVATE
-  anyvalue_manager_interface.cpp
-  anyvalue_manager_registry.cpp
   anyvalue_utils.cpp
   automation_job_interface.cpp
   automation_server_protocol.cpp
   automation_server.cpp
   client_interface_mapper.cpp
   exceptions.cpp
+  i_anyvalue_manager_registry.cpp
+  i_anyvalue_manager.cpp
   instruction_map.cpp
   instruction_info.cpp
   instruction_tree_utils.cpp

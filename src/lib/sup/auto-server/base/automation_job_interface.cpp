@@ -33,7 +33,7 @@ namespace auto_server
 
 AutomationJobInterface::AutomationJobInterface(const std::string& prefix,
                                                const sequencer::Procedure& proc,
-                                               AnyValueManagerInterface& server_interface)
+                                               IAnyValueManager& server_interface)
   : m_job_value_mapper{prefix, proc}
   , m_instr_states{}
   , m_server_interface{server_interface}
@@ -140,9 +140,9 @@ void AutomationJobInterface::OnProcedureTick(const sequencer::Procedure& proc) n
   (void)proc;
 }
 
-AnyValueManagerInterface::NameAnyValueSet AutomationJobInterface::GetInitialValueSet() const
+IAnyValueManager::NameAnyValueSet AutomationJobInterface::GetInitialValueSet() const
 {
-  AnyValueManagerInterface::NameAnyValueSet result;
+  IAnyValueManager::NameAnyValueSet result;
   auto job_value_name = m_job_value_mapper.GetJobStateName();
   auto job_value = GetJobStateValue(sequencer::JobState::kInitial);
   result.emplace_back(job_value_name, job_value);
@@ -154,9 +154,9 @@ AnyValueManagerInterface::NameAnyValueSet AutomationJobInterface::GetInitialValu
   return result;
 }
 
-AnyValueManagerInterface::NameAnyValueSet AutomationJobInterface::GetInstructionValueSet() const
+IAnyValueManager::NameAnyValueSet AutomationJobInterface::GetInstructionValueSet() const
 {
-  AnyValueManagerInterface::NameAnyValueSet result;
+  IAnyValueManager::NameAnyValueSet result;
   auto instr_names = m_job_value_mapper.GetInstructionValueNames();
   for (const auto& name : instr_names)
   {

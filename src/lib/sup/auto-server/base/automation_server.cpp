@@ -36,7 +36,7 @@ AutomationServer::AutomationServer(const std::string& server_prefix)
 AutomationServer::~AutomationServer() = default;
 
 void AutomationServer::AddJob(std::unique_ptr<sup::sequencer::Procedure> proc,
-                              AnyValueManagerInterface& anyvalue_mgr)
+                              IAnyValueManager& anyvalue_mgr)
 {
   std::lock_guard<std::mutex> lk{m_mtx};
   auto idx = m_jobs.size();

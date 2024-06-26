@@ -22,7 +22,7 @@
 #ifndef SUP_AUTO_SERVER_ANYVALUE_MANAGER_CLIENT_H_
 #define SUP_AUTO_SERVER_ANYVALUE_MANAGER_CLIENT_H_
 
-#include <sup/auto-server/anyvalue_manager_interface.h>
+#include <sup/auto-server/i_anyvalue_manager.h>
 #include <sup/auto-server/client_interface_mapper.h>
 
 namespace sup
@@ -34,7 +34,7 @@ namespace auto_server
  * @brief AnyValueManagerClient is responsible for wiring updates of (name, value) pairs to the
  * appropriate methods of a JobInterface object.
  */
-class AnyValueManagerClient : public AnyValueManagerInterface
+class AnyValueManagerClient : public IAnyValueManager
 {
 public:
   explicit AnyValueManagerClient(ClientInterfaceMapper& interface_mapper);
