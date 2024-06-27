@@ -19,14 +19,13 @@
  * of the distribution package.
  ******************************************************************************/
 
-#include "job_utils.h"
+#include <sup/auto-server/job_utils.h>
 
-#include "anyvalue_utils.h"
-#include "variable_utils.h"
-#include "instruction_tree_utils.h"
-
+#include <sup/auto-server/anyvalue_utils.h>
 #include <sup/auto-server/exceptions.h>
+#include <sup/auto-server/instruction_tree_utils.h>
 #include <sup/auto-server/sup_auto_protocol.h>
+#include <sup/auto-server/variable_utils.h>
 
 #include <sup/sequencer/instruction.h>
 

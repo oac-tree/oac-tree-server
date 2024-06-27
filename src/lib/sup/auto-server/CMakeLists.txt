@@ -32,6 +32,7 @@ target_link_libraries(sup-auto-server
 install(TARGETS sup-auto-server EXPORT sup-auto-server-targets LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR})
 
 install(FILES
+  anyvalue_utils.h
   attribute_info.h
   automation_job_interface.h
   automation_server_protocol.h
@@ -41,11 +42,15 @@ install(FILES
   i_anyvalue_manager_registry.h
   i_anyvalue_manager.h
   instruction_info.h
+  instruction_map.h
+  instruction_tree_utils.h
   job_info.h
+  job_utils.h
   job_value_mapper.h
   job.h
   sup_auto_protocol.h
   variable_info.h
+  variable_utils.h
   workspace_info.h
   DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/sup/auto-server
 )

@@ -21,9 +21,8 @@
 
 #include "unit_test_helper.h"
 
-#include <sup/auto-server/base/variable_utils.h>
-
 #include <sup/auto-server/sup_auto_protocol.h>
+#include <sup/auto-server/variable_utils.h>
 
 #include <sup/sequencer/sequence_parser.h>
 #include <sup/sequencer/variable.h>

@@ -21,6 +21,10 @@
 
 #include <sup/auto-server/workspace_info.h>
 
+#include <sup/auto-server/exceptions.h>
+
+#include <algorithm>
+
 namespace sup
 {
 namespace auto_server
@@ -34,6 +38,12 @@ WorkspaceInfo::~WorkspaceInfo() = default;
 
 void WorkspaceInfo::AddVariableInfo(const std::string& var_name, const VariableInfo& var_info)
 {
+  if (!ValidateNewVariableInfo(var_name, var_info))
+  {
+    const std::string error = "WorkspaceInfo::AddVariableInfo(): trying to add VariableInfo with "
+                              "duplicate name or inconsistent index";
+    throw InvalidOperationException(error);
+  }
   m_vars.emplace_back(var_name, var_info);
 }
 
@@ -45,6 +55,20 @@ std::size_t WorkspaceInfo::GetNumberOfVariables() const
 const std::vector<std::pair<std::string, VariableInfo>>& WorkspaceInfo::GetVariableInfos() const
 {
   return m_vars;
+}
+
+bool WorkspaceInfo::ValidateNewVariableInfo(const std::string& var_name,
+                                            const VariableInfo& var_info) const
+{
+  auto pred = [var_name](const std::pair<std::string, VariableInfo>& var) {
+    return var.first == var_name;
+  };
+  auto iter = std::find_if(m_vars.begin(), m_vars.end(), pred);
+  if (iter != m_vars.end())
+  {
+    return false;
+  }
+  return var_info.GetIndex() == m_vars.size();
 }
 
 bool operator==(const WorkspaceInfo& left, const WorkspaceInfo& right)

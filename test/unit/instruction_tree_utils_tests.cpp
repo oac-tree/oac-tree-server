@@ -21,8 +21,8 @@
 
 #include "unit_test_helper.h"
 
-#include <sup/auto-server/base/instruction_tree_utils.h>
-#include <sup/auto-server/base/instruction_map.h>
+#include <sup/auto-server/instruction_map.h>
+#include <sup/auto-server/instruction_tree_utils.h>
 #include <sup/auto-server/sup_auto_protocol.h>
 
 #include <sup/sequencer/sequence_parser.h>

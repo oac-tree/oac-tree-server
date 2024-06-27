@@ -36,14 +36,15 @@ namespace auto_server
 {
 /**
  * @brief The WorkspaceInfo class represents the static information of a workspace, which consists
- * mainly of mapping variable names to VariableInfo objects.
+ * mainly of map from variable names to VariableInfo objects.
  *
  * @details When objects of this type are created from a real Workspace object, every VariableInfo,
  * representing a single Variable in the Workspace, will receive a unique index from the range
- * [0, N-1], with N the number of Variables. These indices is encoded inside the VariableInfo
+ * [0, N-1], with N the number of Variables. These indices are encoded inside the VariableInfo
  * objects, but are also reflected by their position inside the list that can be retrieved with
- * GetVariableInfos(). This duplication of information allows two-way lookup between VariableInfo
- * objects and their indices.
+ * GetVariableInfos(). This duplication of information allows faster two-way lookup between
+ * VariableInfo objects and their indices. The consistency of these indices is ensured at each
+ * addition of a new VariableInfo object, together with the uniqueness of their name.
  */
 class WorkspaceInfo
 {
@@ -51,13 +52,32 @@ public:
   WorkspaceInfo();
   ~WorkspaceInfo();
 
+  /**
+   * @brief Add a new VariableInfo to the list.
+   *
+   * @param var_name Variable name to use for the VariableInfo object.
+   * @param var_info VariableInfo object to add.
+   *
+   * @throws InvalidOperationException when using a duplicate name or an inconsistent index.
+   */
   void AddVariableInfo(const std::string& var_name, const VariableInfo& var_info);
 
+  /**
+   * @brief Get the number of registered VariableInfo objects.
+   *
+   * @return Number of registered VariableInfo objects.
+   */
   std::size_t GetNumberOfVariables() const;
 
+  /**
+   * @brief Get the list of variable names and their VariableInfo objects.
+   *
+   * @return List of variable names and their VariableInfo objects.
+   */
   const std::vector<std::pair<std::string, VariableInfo>>& GetVariableInfos() const;
 
 private:
+  bool ValidateNewVariableInfo(const std::string& var_name, const VariableInfo& var_info) const;
   std::vector<std::pair<std::string, VariableInfo>> m_vars;
 };
 

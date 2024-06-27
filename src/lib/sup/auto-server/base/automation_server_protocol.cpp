@@ -20,9 +20,9 @@
  ******************************************************************************/
 
 #include <sup/auto-server/automation_server_protocol.h>
+
+#include <sup/auto-server/job_utils.h>
 #include <sup/auto-server/sup_auto_protocol.h>
-#include <sup/auto-server/epics/epics_anyvalue_server.h>
-#include "job_utils.h"
 
 #include <sup/dto/anyvalue_helper.h>
 #include <sup/protocol/function_protocol_extract.h>

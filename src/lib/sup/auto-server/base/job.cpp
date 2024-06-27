@@ -21,11 +21,9 @@
 
 #include <sup/auto-server/job.h>
 
-#include <sup/auto-server/base/instruction_map.h>
-#include <sup/auto-server/base/job_utils.h>
-#include <sup/auto-server/epics/epics_anyvalue_server.h>
-
 #include <sup/auto-server/automation_job_interface.h>
+#include <sup/auto-server/instruction_map.h>
+#include <sup/auto-server/job_utils.h>
 
 namespace sup
 {

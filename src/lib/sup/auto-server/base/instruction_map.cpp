@@ -19,7 +19,7 @@
  * of the distribution package.
  ******************************************************************************/
 
-#include "instruction_map.h"
+#include <sup/auto-server/instruction_map.h>
 
 #include <sup/auto-server/exceptions.h>
 #include <sup/auto-server/sup_auto_protocol.h>

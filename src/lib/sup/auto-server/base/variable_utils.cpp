@@ -19,10 +19,9 @@
  * of the distribution package.
  ******************************************************************************/
 
-#include "variable_utils.h"
+#include <sup/auto-server/variable_utils.h>
 
-#include "anyvalue_utils.h"
-
+#include <sup/auto-server/anyvalue_utils.h>
 #include <sup/auto-server/exceptions.h>
 #include <sup/auto-server/sup_auto_protocol.h>
 

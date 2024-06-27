@@ -22,8 +22,7 @@
 #include <sup/auto-server/client_interface_mapper.h>
 
 #include <sup/auto-server/sup_auto_protocol.h>
-
-#include "variable_utils.h"
+#include <sup/auto-server/variable_utils.h>
 
 namespace sup
 {

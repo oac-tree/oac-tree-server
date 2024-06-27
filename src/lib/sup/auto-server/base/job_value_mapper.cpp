@@ -21,10 +21,10 @@
 
 #include <sup/auto-server/job_value_mapper.h>
 
-#include "instruction_map.h"
 #include "variable_map.h"
 
 #include <sup/auto-server/exceptions.h>
+#include <sup/auto-server/instruction_map.h>
 #include <sup/auto-server/sup_auto_protocol.h>
 
 namespace sup

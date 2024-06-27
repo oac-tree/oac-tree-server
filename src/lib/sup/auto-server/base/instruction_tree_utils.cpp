@@ -19,12 +19,11 @@
  * of the distribution package.
  ******************************************************************************/
 
-#include "instruction_tree_utils.h"
+#include <sup/auto-server/instruction_tree_utils.h>
 
-#include "anyvalue_utils.h"
-#include "instruction_map.h"
-
+#include <sup/auto-server/anyvalue_utils.h>
 #include <sup/auto-server/exceptions.h>
+#include <sup/auto-server/instruction_map.h>
 #include <sup/auto-server/sup_auto_protocol.h>
 
 #include <sup/sequencer/instruction.h>
