@@ -50,6 +50,10 @@ public:
   /**
    * @brief Construct a InstructionMap object from the given root instruction.
    *
+   * @details The constructor ensures that the mapping is between unique Instruction pointers, which
+   * are not nullptr, and indices from zero to N-1, where N is the number of Instructions in the
+   * provided Instruction tree.
+   *
    * @param root Root of an instruction tree.
    */
   explicit InstructionMap(const sequencer::Instruction* root);

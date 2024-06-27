@@ -70,10 +70,25 @@ void InstructionMap::InitializeMap(const sequencer::Instruction* root)
     return;
   }
   auto instr_list = sequencer::FlattenBFS(sequencer::CreateFullInstructionTree(root));
+  InstructionIndexMap instruction_map;
   for (sup::dto::uint32 idx = 0; idx < instr_list.size(); ++idx)
   {
-    m_instruction_map[instr_list[idx]] = idx;
+    const auto* instr = instr_list[idx];
+    if (instr == nullptr)
+    {
+      const std::string error =
+        "InstructionMap::InitializeMap(): nullptr to Instruction encountered";
+      throw InvalidOperationException(error);
+    }
+    instruction_map[instr] = idx;
   }
+  if (instruction_map.size() != instr_list.size())
+  {
+    const std::string error =
+      "InstructionMap::InitializeMap(): duplicate Instruction pointers found";
+    throw InvalidOperationException(error);
+  }
+  m_instruction_map = std::move(instruction_map);
 }
 
 std::vector<const sequencer::Instruction*> GetReverseMap(
