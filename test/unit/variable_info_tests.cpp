@@ -99,28 +99,65 @@ TEST_F(VariableInfoTest, ToFromAnyValue)
 
 TEST_F(VariableInfoTest, FromAnyValue)
 {
+  std::vector<StringAttribute> expected_attrs{
+      { "field_1", "val_1" },
+      { "field_2", "val_2" },
+      { "field_3", "val_3" }
+  };
   {
     // Without attributes
     sup::dto::AnyValue info_av = {{
       { kVariableInfoTypeField, "VarType" },
-      { kIndexField, { sup::dto::UnsignedInteger32Type, 0 }},
+      { kIndexField, { sup::dto::UnsignedInteger32Type, 42u }},
       { kAttributesField, sup::dto::EmptyStruct() }
     }};
-    EXPECT_NO_THROW(utils::ToVariableInfo(info_av));
+    ASSERT_NO_THROW(utils::ToVariableInfo(info_av));
+    auto var_info = utils::ToVariableInfo(info_av);
+    EXPECT_EQ(var_info.GetType(), "VarType");
+    EXPECT_EQ(var_info.GetIndex(), 42u);
+    auto attrs = var_info.GetAttributes();
+    EXPECT_EQ(attrs.size(), 0);
   }
   {
-    // Passing validation with attributes
-    sup::dto::AnyValue attrs = {{
+    // Passing translation with attributes
+    sup::dto::AnyValue attrs_av = {{
       { "field_1", "val_1" },
       { "field_2", "val_2" },
       { "field_3", "val_3" }
     }};
     sup::dto::AnyValue info_av = {{
       { kVariableInfoTypeField, "VarType" },
-      { kIndexField, { sup::dto::UnsignedInteger32Type, 0 }},
-      { kAttributesField, attrs }
+      { kIndexField, { sup::dto::UnsignedInteger32Type, 42u }},
+      { kAttributesField, attrs_av }
     }};
-    EXPECT_NO_THROW(utils::ToVariableInfo(info_av));
+    ASSERT_NO_THROW(utils::ToVariableInfo(info_av));
+    auto var_info = utils::ToVariableInfo(info_av);
+    EXPECT_EQ(var_info.GetType(), "VarType");
+    EXPECT_EQ(var_info.GetIndex(), 42u);
+    auto attrs = var_info.GetAttributes();
+    EXPECT_EQ(attrs.size(), 3);
+    EXPECT_EQ(attrs, expected_attrs);
+  }
+  {
+    // Passing translation with extra fields
+    sup::dto::AnyValue attrs_av = {{
+      { "field_1", "val_1" },
+      { "field_2", "val_2" },
+      { "field_3", "val_3" }
+    }};
+    sup::dto::AnyValue info_av = {{
+      { kVariableInfoTypeField, "VarType" },
+      { kIndexField, { sup::dto::UnsignedInteger32Type, 42u }},
+      { kAttributesField, attrs_av },
+      { "ignored_field", true }
+    }};
+    ASSERT_NO_THROW(utils::ToVariableInfo(info_av));
+    auto var_info = utils::ToVariableInfo(info_av);
+    EXPECT_EQ(var_info.GetType(), "VarType");
+    EXPECT_EQ(var_info.GetIndex(), 42u);
+    auto attrs = var_info.GetAttributes();
+    EXPECT_EQ(attrs.size(), 3);
+    EXPECT_EQ(attrs, expected_attrs);
   }
   {
     // Missing type field
@@ -220,6 +257,21 @@ TEST_F(VariableInfoTest, ValidateVariableInfoAnyValue)
       { kVariableInfoTypeField, "VarType" },
       { kIndexField, { sup::dto::UnsignedInteger32Type, 0 }},
       { kAttributesField, attrs }
+    }};
+    EXPECT_TRUE(utils::ValidateVariableInfoAnyValue(info_av));
+  }
+  {
+    // Passing validation with extra fields
+    sup::dto::AnyValue attrs = {{
+      { "field_1", "val_1" },
+      { "field_2", "val_2" },
+      { "field_3", "val_3" }
+    }};
+    sup::dto::AnyValue info_av = {{
+      { kVariableInfoTypeField, "VarType" },
+      { kIndexField, { sup::dto::UnsignedInteger32Type, 0 }},
+      { kAttributesField, attrs },
+      { "ignored_field", true }
     }};
     EXPECT_TRUE(utils::ValidateVariableInfoAnyValue(info_av));
   }
