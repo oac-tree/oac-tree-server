@@ -135,7 +135,7 @@ std::string CreateIndexedInstrChildName(std::size_t idx);
  * @param instr_info AnyValue to validate.
  * @return true when the provided AnyValue can be correctly parsed to a InstructionInfo node.
  */
-bool ValidateInstructionInfo(const sup::dto::AnyValue& instr_info);
+bool ValidateInstructionInfoAnyValue(const sup::dto::AnyValue& instr_info);
 
 }  // namespace utils
 

@@ -148,36 +148,22 @@ sup::dto::AnyValue ToAnyValueTree(const InstructionInfo& instr_info)
 
 std::vector<const InstructionInfo*> CreateOrderedInstructionInfo(const InstructionInfo& instr_info)
 {
-  std::vector<std::pair<sup::dto::uint32, const InstructionInfo*>> unordered{};
-  std::deque<const InstructionInfo*> stack;
-  auto root = std::addressof(instr_info);
-  stack.push_back(root);
-  while (!stack.empty())
+  auto flat_list = Flatten(instr_info);
+  std::vector<const InstructionInfo*> result(flat_list.size(), nullptr);
+  for (const auto* info : flat_list)
   {
-    auto p_info = stack.back();
-    stack.pop_back();
-    unordered.emplace_back(p_info->GetIndex(), p_info);
-    for (const auto* child : p_info->Children())
-    {
-      stack.push_back(child);
-    }
-  }
-  std::vector<const InstructionInfo*> result(unordered.size(), nullptr);
-  for (auto it = unordered.begin(); it != unordered.end(); ++it)
-  {
-    auto idx = it->first;
+    auto idx = info->GetIndex();
     if (idx >= result.size())
     {
       const std::string error = "CreateOrderedInstructionInfo(): encountered index out of bounds";
       throw InvalidOperationException(error);
     }
-    result[it->first] = it->second;
+    result[idx] = info;
   }
   auto iter = std::find(result.begin(), result.end(), nullptr);
   if (iter != result.end())
   {
-    const std::string error = "CreateOrderedInstructionInfo(): encountered duplicate index or "
-                              "nullptr to InstructionInfo";
+    const std::string error = "CreateOrderedInstructionInfo(): encountered duplicate index";
     throw InvalidOperationException(error);
   }
   return result;
@@ -194,7 +180,7 @@ std::unique_ptr<InstructionInfo> CreateInstructionInfoNode(const sequencer::Inst
 std::unique_ptr<InstructionInfo> ToInstructionInfoNode(
   const sup::dto::AnyValue& instr_info_anyvalue)
 {
-  if (!ValidateInstructionInfo(instr_info_anyvalue))
+  if (!ValidateInstructionInfoAnyValue(instr_info_anyvalue))
   {
     const std::string error = "ToInstructionInfoNode(): wrong format of instruction info AnyValue";
     throw InvalidOperationException(error);
@@ -227,7 +213,7 @@ std::string CreateIndexedInstrChildName(std::size_t idx)
   return kChildMemberFieldPrefix + std::to_string(idx);
 }
 
-bool ValidateInstructionInfo(const sup::dto::AnyValue& instr_info)
+bool ValidateInstructionInfoAnyValue(const sup::dto::AnyValue& instr_info)
 {
   if (!ValidateMemberType(instr_info, kInstructionInfoNodeTypeField, sup::dto::StringType))
   {

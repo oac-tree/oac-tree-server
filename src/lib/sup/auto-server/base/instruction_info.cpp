@@ -20,8 +20,11 @@
  ******************************************************************************/
 
 #include <sup/auto-server/instruction_info.h>
+#include <sup/auto-server/exceptions.h>
 
 #include <algorithm>
+#include <deque>
+#include <set>
 
 namespace sup
 {
@@ -80,6 +83,55 @@ std::vector<const InstructionInfo*> InstructionInfo::Children() const
   };
   std::transform(m_children.begin(), m_children.end(), std::back_inserter(result), func);
   return result;
+}
+
+std::vector<const InstructionInfo*> Flatten(const InstructionInfo& instr_info_tree)
+{
+  std::vector<const InstructionInfo*> result;
+  std::deque<const InstructionInfo*> stack;
+  std::set<const InstructionInfo*> info_pointers;
+  auto root = std::addressof(instr_info_tree);
+  stack.push_back(root);
+  while (!stack.empty())
+  {
+    auto p_info = stack.back();
+    stack.pop_back();
+    if (p_info == nullptr)
+    {
+      const std::string error = "Flatten(const InstructionInfo&): nullptr node found";
+      throw InvalidOperationException(error);
+    }
+    result.push_back(p_info);
+    info_pointers.insert(p_info);
+  }
+  if (info_pointers.size() != result.size())
+  {
+      const std::string error = "Flatten(const InstructionInfo&): duplicate pointers found";
+      throw InvalidOperationException(error);
+  }
+  return result;
+}
+
+void ValidateInstructionInfoTree(const InstructionInfo& instr_info_tree)
+{
+  // Flatten already checks for nullptr or duplicate InstructionInfo node pointers:
+  auto info_list = Flatten(instr_info_tree);
+  auto n_nodes = info_list.size();
+  std::set<sup::dto::uint32> indices;
+  for (const auto* info_pointer : info_list)
+  {
+    if (info_pointer->GetIndex() >= n_nodes)
+    {
+      const std::string error = "ValidateInstructionInfoTree(): index out of range found";
+      throw InvalidOperationException(error);
+    }
+    indices.insert(info_pointer->GetIndex());
+  }
+  if (indices.size() != n_nodes)
+  {
+    const std::string error = "ValidateInstructionInfoTree(): duplicate indices found";
+    throw InvalidOperationException(error);
+  }
 }
 
 bool operator==(const InstructionInfo& left, const InstructionInfo& right)

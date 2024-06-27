@@ -73,6 +73,28 @@ private:
 };
 
 /**
+ * @brief Flatten the InstructionInfo tree into a vector of pointers.
+ *
+ * @param instr_info_tree InstructionInfo tree.
+ * @return Flattened list of InstructionInfo pointers.
+ *
+ * @throws InvalidOperationException when encountering nullptr nodes.
+ */
+std::vector<const InstructionInfo*> Flatten(const InstructionInfo& instr_info_tree);
+
+/**
+ * @brief Validate the consistency of the given InstructionInfo tree. This function checks for
+ * nullptr's and unique indices in the correct range. Note that this validation is performed by
+ * a separate function, instead of automatically during the creation of a tree, since index
+ * validation can only make sense for a complete tree.
+ *
+ * @param instr_info_tree InstructionInfo tree to validate.
+ *
+ * @throws InvalidOperationException when validation fails.
+ */
+void ValidateInstructionInfoTree(const InstructionInfo& instr_info_tree);
+
+/**
  * @brief Compare two InstructionInfo objects for equality.
  */
 bool operator==(const InstructionInfo& left, const InstructionInfo& right);
