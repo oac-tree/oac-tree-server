@@ -54,14 +54,17 @@ enum AutomationServerStatus
 
 // TODO: currently there is only one AnyValueManager for the whole server and it is fixed to be
 // an EPICS implementation. This needs revisiting.
-AutomationServerProtocol::AutomationServerProtocol(const std::string& server_prefix,
-                                                   ProcedureList& proc_list)
+AutomationServerProtocol::AutomationServerProtocol(
+  const std::string& server_prefix, ProcedureList& proc_list,
+  IAnyValueManagerRegistry& anyvalue_manager_registry)
   : m_auto_server{server_prefix}
-  , m_anyvalue_mgr{new EPICSAnyValueServer{}}
 {
+  std::size_t registry_idx = 0;
   for (auto& proc : proc_list)
   {
-    m_auto_server.AddJob(std::move(proc), *m_anyvalue_mgr);
+    m_auto_server.AddJob(std::move(proc),
+                         anyvalue_manager_registry.GetAnyValueManager(registry_idx));
+    ++registry_idx;
   }
 }
 

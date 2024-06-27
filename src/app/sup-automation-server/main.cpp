@@ -52,8 +52,9 @@ int main(int argc, char* argv[])
   }
   auto proc_list = utils::GetProcedureList(parser);
   auto service_name = parser.GetValue<std::string>("--service");
+  auto anyvalue_manager_registry = utils::CreateAnyValueManagerRegistry(proc_list.size());
 
-  AutomationServerProtocol server_protocol{service_name, proc_list};
+  AutomationServerProtocol server_protocol{service_name, proc_list, *anyvalue_manager_registry};
   sup::epics::PvAccessRPCServerConfig server_config{service_name};
   auto server_stack = sup::epics::CreateEPICSRPCServerStack(server_protocol, server_config);
 

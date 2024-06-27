@@ -19,32 +19,35 @@
  * of the distribution package.
  ******************************************************************************/
 
-#ifndef SUP_AUTO_SERVER_SUP_AUTOMATION_SERVER_UTILS_H_
-#define SUP_AUTO_SERVER_SUP_AUTOMATION_SERVER_UTILS_H_
+#ifndef SUP_AUTO_SERVER_EPICS_ANYVALUE_MANAGER_REGISTRY_H_
+#define SUP_AUTO_SERVER_EPICS_ANYVALUE_MANAGER_REGISTRY_H_
 
-#include <sup/auto-server/automation_server_protocol.h>
 #include <sup/auto-server/i_anyvalue_manager_registry.h>
-
-#include <sup/cli/command_line_parser.h>
-#include <sup/sequencer/procedure.h>
-
-#include <memory>
 
 namespace sup
 {
 namespace auto_server
 {
-namespace utils
+
+  /**
+ * @brief EPICS PvAccess implementation of IAnyValueManagerRegistry. It manages a fixed number of
+ * AnyValueManager objects and will return the manager corresponding to the requested index modulo
+ * the supported number of managers.
+ */
+class EPICSAnyValueManagerRegistry : public IAnyValueManagerRegistry
 {
+public:
+  EPICSAnyValueManagerRegistry(std::size_t n_managers);
+  virtual ~EPICSAnyValueManagerRegistry();
 
-ProcedureList GetProcedureList(sup::cli::CommandLineParser& parser);
+  IAnyValueManager& GetAnyValueManager(std::size_t idx) override;
 
-std::unique_ptr<IAnyValueManagerRegistry> CreateAnyValueManagerRegistry(std::size_t n_managers);
-
-}  // namespace utils
+private:
+  std::vector<std::unique_ptr<IAnyValueManager>> m_anyvalue_managers;
+};
 
 }  // namespace auto_server
 
 }  // namespace sup
 
-#endif  // SUP_AUTO_SERVER_SUP_AUTOMATION_SERVER_UTILS_H_
+#endif  // SUP_AUTO_SERVER_EPICS_ANYVALUE_MANAGER_REGISTRY_H_

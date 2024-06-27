@@ -21,6 +21,8 @@
 
 #include "utils.h"
 
+#include <sup/auto-server/epics/epics_anyvalue_manager_registry.h>
+
 #include <sup/sequencer/sequence_parser.h>
 
 namespace sup
@@ -56,6 +58,12 @@ ProcedureList GetProcedureList(sup::cli::CommandLineParser& parser)
   (void)parser;
   ProcedureList result;
   result.emplace_back(sup::sequencer::ParseProcedureString(kSimpleCounterProcedureString));
+  return result;
+}
+
+std::unique_ptr<IAnyValueManagerRegistry> CreateAnyValueManagerRegistry(std::size_t n_managers)
+{
+  std::unique_ptr<IAnyValueManagerRegistry> result{new EPICSAnyValueManagerRegistry{n_managers}};
   return result;
 }
 

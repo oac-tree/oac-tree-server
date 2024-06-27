@@ -19,32 +19,33 @@
  * of the distribution package.
  ******************************************************************************/
 
-#ifndef SUP_AUTO_SERVER_SUP_AUTOMATION_SERVER_UTILS_H_
-#define SUP_AUTO_SERVER_SUP_AUTOMATION_SERVER_UTILS_H_
+#include "epics_anyvalue_manager_registry.h"
 
-#include <sup/auto-server/automation_server_protocol.h>
-#include <sup/auto-server/i_anyvalue_manager_registry.h>
-
-#include <sup/cli/command_line_parser.h>
-#include <sup/sequencer/procedure.h>
-
-#include <memory>
+#include "epics_anyvalue_server.h"
 
 namespace sup
 {
 namespace auto_server
 {
-namespace utils
+
+EPICSAnyValueManagerRegistry::EPICSAnyValueManagerRegistry(std::size_t n_managers)
+  : m_anyvalue_managers{}
 {
+  m_anyvalue_managers.reserve(n_managers);
+  for (std::size_t idx = 0; idx < n_managers; ++idx)
+  {
+    m_anyvalue_managers.emplace_back(new EPICSAnyValueServer{});
+  }
+}
 
-ProcedureList GetProcedureList(sup::cli::CommandLineParser& parser);
+EPICSAnyValueManagerRegistry::~EPICSAnyValueManagerRegistry() = default;
 
-std::unique_ptr<IAnyValueManagerRegistry> CreateAnyValueManagerRegistry(std::size_t n_managers);
-
-}  // namespace utils
+IAnyValueManager& EPICSAnyValueManagerRegistry::GetAnyValueManager(std::size_t idx)
+{
+  auto valid_idx = idx % m_anyvalue_managers.size();
+  return *m_anyvalue_managers[valid_idx];
+}
 
 }  // namespace auto_server
 
 }  // namespace sup
-
-#endif  // SUP_AUTO_SERVER_SUP_AUTOMATION_SERVER_UTILS_H_
