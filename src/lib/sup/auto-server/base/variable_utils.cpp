@@ -172,6 +172,11 @@ bool ValidateVariableInfoAnyValue(const sup::dto::AnyValue& var_info)
   {
     return false;
   }
+  auto type_str = var_info[kVariableInfoTypeField].As<std::string>();
+  if (type_str.empty())
+  {
+    return false;
+  }
   if (!ValidateMemberType(var_info, kIndexField, sup::dto::UnsignedInteger32Type))
   {
     return false;

@@ -32,41 +32,14 @@
 
 using namespace sup::auto_server;
 
-class VariableUtilsTest : public ::testing::Test
+class WorkspaceInfoTest : public ::testing::Test
 {
 protected:
-  VariableUtilsTest() = default;
-  virtual ~VariableUtilsTest() = default;
+  WorkspaceInfoTest() = default;
+  virtual ~WorkspaceInfoTest() = default;
 };
 
-TEST_F(VariableUtilsTest, VariableInfoFromVariable)
-{
-  const std::string var_type = "Local";
-  const sup::dto::uint32 var_idx = 42u;
-  auto var = sup::sequencer::GlobalVariableRegistry().Create(var_type);
-
-  // Check VariableInfo from Variable without attributes
-  auto var_info = utils::CreateVariableInfo(var.get(), var_idx);
-  EXPECT_EQ(var_info.GetType(), var_type);
-  EXPECT_EQ(var_info.GetIndex(), var_idx);
-  auto attributes = var_info.GetAttributes();
-  EXPECT_EQ(attributes.size(), 0);
-
-  // Check VariableInfo after adding attributes
-  StringAttribute attr_0{"one", "hello"};
-  StringAttribute attr_1{"two", "world"};
-  var->AddAttribute(attr_0.first, attr_0.second);
-  var->AddAttribute(attr_1.first, attr_1.second);
-  var_info = utils::CreateVariableInfo(var.get(), var_idx);
-  EXPECT_EQ(var_info.GetType(), var_type);
-  EXPECT_EQ(var_info.GetIndex(), var_idx);
-  attributes = var_info.GetAttributes();
-  ASSERT_EQ(attributes.size(), 2);
-  EXPECT_EQ(attributes[0], attr_0);
-  EXPECT_EQ(attributes[1], attr_1);
-}
-
-TEST_F(VariableUtilsTest, WorkspaceInfoFromVariable)
+TEST_F(WorkspaceInfoTest, WorkspaceInfoFromVariable)
 {
   // Construct procedure and extract Workspace
   const auto procedure_string = UnitTestHelper::CreateProcedureString(kWorkspaceSequenceBody);
@@ -109,31 +82,7 @@ TEST_F(VariableUtilsTest, WorkspaceInfoFromVariable)
   }
 }
 
-TEST_F(VariableUtilsTest, VariableInfoToFromAnyValue)
-{
-  {
-    // Variable without attributes
-    std::vector<StringAttribute> attributes;
-    VariableInfo var_info{"MyVarType", 33u, attributes};
-    auto var_info_av = utils::ToAnyValue(var_info);
-    auto var_info_read_back = utils::ToVariableInfo(var_info_av);
-    EXPECT_EQ(var_info_read_back, var_info);
-  }
-  {
-    // Variable with two attributes
-    StringAttribute attr_0{"one", "hello"};
-    StringAttribute attr_1{"two", "world"};
-    std::vector<StringAttribute> attributes;
-    attributes.push_back(attr_0);
-    attributes.push_back(attr_1);
-    VariableInfo var_info{"MyVarType", 0, attributes};
-    auto var_info_av = utils::ToAnyValue(var_info);
-    auto var_info_read_back = utils::ToVariableInfo(var_info_av);
-    EXPECT_EQ(var_info_read_back, var_info);
-  }
-}
-
-TEST_F(VariableUtilsTest, WorkspaceInfoToFromAnyValue)
+TEST_F(WorkspaceInfoTest, WorkspaceInfoToFromAnyValue)
 {
   // Construct procedure and extract Workspace
   const auto procedure_string = UnitTestHelper::CreateProcedureString(kWorkspaceSequenceBody);
@@ -149,4 +98,4 @@ TEST_F(VariableUtilsTest, WorkspaceInfoToFromAnyValue)
   EXPECT_EQ(ws_info_read_back, ws_info);
 }
 
-// TODO: add tests for failing parsing of AnyValue to VariableInfo/WorkspaceInfo
+// TODO: add tests for failing parsing of AnyValue to WorkspaceInfo
