@@ -64,6 +64,7 @@ namespace utils
 std::unique_ptr<InstructionInfo> CreateInstructionInfoTree(const sequencer::Instruction& root,
                                                            const InstructionMap& instr_map)
 {
+  // No explicit validation occurs here, since the InstructionMap ensure valid pointers and indices.
   std::deque<InstrToInstrInfoStackNode> stack;
   auto root_address = std::addressof(root);
   auto root_info =
@@ -111,6 +112,7 @@ std::unique_ptr<InstructionInfo> ToInstructionInfoTree(
       }
     }
   }
+  ValidateInstructionInfoTree(*root_info);
   return root_info;
 }
 

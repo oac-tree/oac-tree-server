@@ -45,6 +45,7 @@ namespace utils
  * attributes.
  *
  * @param ws Workspace to use.
+ *
  * @return WorkspaceInfo object representing all variables in the given workspace.
  */
 WorkspaceInfo CreateWorkspaceInfo(const sequencer::Workspace& ws);
@@ -53,6 +54,7 @@ WorkspaceInfo CreateWorkspaceInfo(const sequencer::Workspace& ws);
  * @brief Convert the given AnyValue to a list of VariableInfo objects that represent a workspace.
  *
  * @param ws_info_anyvalue AnyValue representation of all workspace variables.
+ *
  * @return WorkspaceInfo object.
  * @throw InvalidOperationException when the provided anyvalue has the wrong format.
  */
@@ -62,6 +64,7 @@ WorkspaceInfo ToWorkspaceInfo(const sup::dto::AnyValue& ws_info_anyvalue);
  * @brief Convert the given WorkspaceInfo object to an AnyValue.
  *
  * @param ws_info WorkspaceInfo object.
+ *
  * @return AnyValue representation of the WorkspaceInfo object.
  */
 sup::dto::AnyValue ToAnyValue(const WorkspaceInfo& ws_info);
@@ -74,6 +77,7 @@ sup::dto::AnyValue ToAnyValue(const WorkspaceInfo& ws_info);
  * parsed as a VariableInfo object.
  *
  * @param ws_info AnyValue to validate.
+ *
  * @return true when the provided AnyValue can be correctly parsed to a WorkspaceInfo object.
  */
 bool ValidateWorkspaceInfoAnyValue(const sup::dto::AnyValue& ws_info);
@@ -84,6 +88,7 @@ bool ValidateWorkspaceInfoAnyValue(const sup::dto::AnyValue& ws_info);
  * range from zero to (number_of_variables -1).
  *
  * @param ws_info WorkspaceInfo object.
+ *
  * @return List of variable names, ordered by index.
  */
 std::vector<std::string> BuildVariableNameMap(const WorkspaceInfo& ws_info);
@@ -94,6 +99,7 @@ std::vector<std::string> BuildVariableNameMap(const WorkspaceInfo& ws_info);
  *
  * @param var Variable to represent.
  * @param index Index to put inside the object (referring to the served variable AnyValue status).
+ *
  * @return VariableInfo representation.
  * @throw InvalidOperationException when a nullptr is passed.
  */
@@ -103,6 +109,7 @@ VariableInfo CreateVariableInfo(const sequencer::Variable* var, sup::dto::uint32
  * @brief Convert the given AnyValue to a VariableInfo object.
  *
  * @param var_info_anyvalue AnyValue representation of a variable.
+ *
  * @return VariableInfo object.
  * @throw InvalidOperationException when the provided anyvalue has the wrong format.
  */
@@ -112,6 +119,7 @@ VariableInfo ToVariableInfo(const sup::dto::AnyValue& var_info_anyvalue);
  * @brief Convert the given VariableInfo object to an AnyValue.
  *
  * @param var_info VariableInfo object.
+ *
  * @return AnyValue representation of the VariableInfo object.
  */
 sup::dto::AnyValue ToAnyValue(const VariableInfo& var_info);
@@ -124,6 +132,7 @@ sup::dto::AnyValue ToAnyValue(const VariableInfo& var_info);
  * member fields with the correct type. Any extra fields in the structure are ignored.
  *
  * @param ws_info AnyValue to validate.
+ *
  * @return true when the provided AnyValue can be correctly parsed to a VariableInfo object.
  */
 bool ValidateVariableInfoAnyValue(const sup::dto::AnyValue& var_info);

@@ -58,6 +58,7 @@ public:
    * @brief Append a child to the end of its list of children.
    *
    * @param child Child InstructionInfo to add.
+   *
    * @return Pointer to added child.
    */
   InstructionInfo* AppendChild(std::unique_ptr<InstructionInfo> child);
@@ -76,8 +77,8 @@ private:
  * @brief Flatten the InstructionInfo tree into a vector of pointers.
  *
  * @param instr_info_tree InstructionInfo tree.
- * @return Flattened list of InstructionInfo pointers.
  *
+ * @return Flattened list of InstructionInfo pointers.
  * @throws InvalidOperationException when encountering nullptr nodes.
  */
 std::vector<const InstructionInfo*> Flatten(const InstructionInfo& instr_info_tree);

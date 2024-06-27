@@ -51,6 +51,8 @@ namespace utils
  * @param instr_map Map of instructions to indices.
  *
  * @return InstructionInfo tree representation.
+ * @throw InvalidOperationException when the provided tree does not correspond to the mapped
+ * Instructions in the provided map.
  */
 std::unique_ptr<InstructionInfo> CreateInstructionInfoTree(const sequencer::Instruction& root,
                                                            const InstructionMap& instr_map);
@@ -59,8 +61,10 @@ std::unique_ptr<InstructionInfo> CreateInstructionInfoTree(const sequencer::Inst
  * @brief Convert the given AnyValue to an InstructionInfo tree.
  *
  * @param instr_info_anyvalue AnyValue representation of an instruction tree.
+ *
  * @return InstructionInfo tree.
- * @throw InvalidOperationException when the provided anyvalue has the wrong format.
+ * @throw InvalidOperationException when the provided anyvalue has the wrong format or the resulting
+ * InstructionInfo tree is inconsistent (nulltprs or inconsistent indices).
  */
 std::unique_ptr<InstructionInfo> ToInstructionInfoTree(
   const sup::dto::AnyValue& instr_info_anyvalue);
@@ -69,6 +73,7 @@ std::unique_ptr<InstructionInfo> ToInstructionInfoTree(
  * @brief Convert the given InstructionInfo tree to an AnyValue.
  *
  * @param instr_info InstructionInfo tree.
+ *
  * @return AnyValue representation of the InstructionInfo tree.
  */
 sup::dto::AnyValue ToAnyValueTree(const InstructionInfo& instr_info);
@@ -79,6 +84,7 @@ sup::dto::AnyValue ToAnyValueTree(const InstructionInfo& instr_info);
  * (number_of_instructions -1).
  *
  * @param instr_info InstructionInfo tree.
+ *
  * @return Ordered list of InstructionInfo pointers.
  */
 std::vector<const InstructionInfo*> CreateOrderedInstructionInfo(const InstructionInfo& instr_info);
@@ -101,6 +107,7 @@ std::unique_ptr<InstructionInfo> CreateInstructionInfoNode(const sequencer::Inst
  * possible child instructions.
  *
  * @param instr_info_anyvalue AnyValue representation of an instruction.
+ *
  * @return InstructionInfo node.
  * @throw InvalidOperationException when the provided anyvalue has the wrong format.
  */
@@ -112,6 +119,7 @@ std::unique_ptr<InstructionInfo> ToInstructionInfoNode(
  * possible child instructions.
  *
  * @param instr_info InstructionInfo node.
+ *
  * @return AnyValue representation of the InstructionInfo node.
  */
 sup::dto::AnyValue ToAnyValueNode(const InstructionInfo& instr_info);
@@ -121,6 +129,7 @@ sup::dto::AnyValue ToAnyValueNode(const InstructionInfo& instr_info);
  * An integer index is used to generate the member name to allow to easily deduce member order later.
  *
  * @param idx Index to use.
+ *
  * @return Unique member name.
  */
 std::string CreateIndexedInstrChildName(std::size_t idx);
@@ -133,6 +142,7 @@ std::string CreateIndexedInstrChildName(std::size_t idx);
  * children.
  *
  * @param instr_info AnyValue to validate.
+ *
  * @return true when the provided AnyValue can be correctly parsed to a InstructionInfo node.
  */
 bool ValidateInstructionInfoAnyValue(const sup::dto::AnyValue& instr_info);

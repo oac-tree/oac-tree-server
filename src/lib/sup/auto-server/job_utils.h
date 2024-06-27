@@ -49,6 +49,8 @@ namespace utils
  * @param instr_map Map of instructions to indices.
  *
  * @return JobInfo representation.
+ * @throw InvalidOperationException when there is an inconsistency between the provide Procedure
+ * and InstructionMap.
  */
 JobInfo CreateJobInfo(const std::string& job_prefix, const sequencer::Procedure& proc,
                       const InstructionMap& instr_map);
@@ -57,6 +59,7 @@ JobInfo CreateJobInfo(const std::string& job_prefix, const sequencer::Procedure&
  * @brief Convert the given AnyValue to a JobInfo object.
  *
  * @param job_info_anyvalue AnyValue representation of a Job.
+ *
  * @return JobInfo object.
  * @throw InvalidOperationException when the provided anyvalue has the wrong format.
  */
@@ -66,6 +69,7 @@ JobInfo ToJobInfo(const sup::dto::AnyValue& job_info_anyvalue);
  * @brief Convert the given JobInfo object to an AnyValue.
  *
  * @param job_info JobInfo object.
+ *
  * @return AnyValue representation of the JobInfo object.
  */
 sup::dto::AnyValue ToAnyValue(const JobInfo& job_info);
@@ -74,6 +78,7 @@ sup::dto::AnyValue ToAnyValue(const JobInfo& job_info);
  * @brief Validate if the given AnyValue has the right format to be parsed as a JobInfo object.
  *
  * @param job_info AnyValue to validate.
+ *
  * @return true when the provided AnyValue can be correctly parsed to a JobInfo object.
  */
 bool ValidateJobInfoAnyValue(const sup::dto::AnyValue& job_info);
