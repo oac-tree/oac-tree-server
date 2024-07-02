@@ -59,27 +59,11 @@ WorkspaceInfo ToWorkspaceInfo(const sup::dto::AnyValue& ws_info_anyvalue)
   }
   WorkspaceInfo result;
   auto var_names = ws_info_anyvalue.MemberNames();
-  auto n_vars = var_names.size();
-  std::set<sup::dto::uint32> used_indices{};
   for (const auto& var_name : var_names)
   {
     const auto& var_av = ws_info_anyvalue[var_name];
-    auto idx = var_av[kIndexField].As<sup::dto::uint32>();
-    if (idx >= n_vars)
-    {
-      const std::string error = "ToWorkspaceInfo(): encountered variable index larger or "
-                                "equal to number of variables";
-      throw InvalidOperationException(error);
-    }
     auto var_info = ToVariableInfo(var_av);
-
     result.AddVariableInfo(var_name, var_info);
-    used_indices.insert(idx);
-  }
-  if (used_indices.size() != n_vars)
-  {
-    const std::string error = "ToWorkspaceInfo(): duplicate indices found";
-    throw InvalidOperationException(error);
   }
   return result;
 }

@@ -87,7 +87,7 @@ TEST_F(WorkspaceInfoTest, AddVariableInfo)
   }
 }
 
-TEST_F(WorkspaceInfoTest, WorkspaceInfoFromVariable)
+TEST_F(WorkspaceInfoTest, FromWorkspace)
 {
   // Construct procedure and extract Workspace
   const auto procedure_string = UnitTestHelper::CreateProcedureString(kWorkspaceSequenceBody);
@@ -130,7 +130,7 @@ TEST_F(WorkspaceInfoTest, WorkspaceInfoFromVariable)
   }
 }
 
-TEST_F(WorkspaceInfoTest, WorkspaceInfoToFromAnyValue)
+TEST_F(WorkspaceInfoTest, ToFromAnyValue)
 {
   // Construct procedure and extract Workspace
   const auto procedure_string = UnitTestHelper::CreateProcedureString(kWorkspaceSequenceBody);
@@ -146,4 +146,68 @@ TEST_F(WorkspaceInfoTest, WorkspaceInfoToFromAnyValue)
   EXPECT_EQ(ws_info_read_back, ws_info);
 }
 
-// TODO: add tests for failing parsing of AnyValue to WorkspaceInfo
+TEST_F(WorkspaceInfoTest, FromAnyValue)
+{
+  {
+    // correct parsing
+    sup::dto::AnyValue var1_av = {{
+      { kVariableInfoTypeField, "VarType" },
+      { kIndexField, { sup::dto::UnsignedInteger32Type, 0 }},
+      { kAttributesField, sup::dto::EmptyStruct() }
+    }};
+    sup::dto::AnyValue var2_av = {{
+      { kVariableInfoTypeField, "VarType" },
+      { kIndexField, { sup::dto::UnsignedInteger32Type, 1 }},
+      { kAttributesField, sup::dto::EmptyStruct() }
+    }};
+    sup::dto::AnyValue ws_av = {{
+      { "var1", var1_av },
+      { "var2", var2_av }
+    }};
+    ASSERT_NO_THROW(utils::ToWorkspaceInfo(ws_av));
+    auto ws_info = utils::ToWorkspaceInfo(ws_av);
+    EXPECT_EQ(ws_info.GetNumberOfVariables(), 2u);
+  }
+  {
+    // The workspace AnyValue needs to be a structure
+    sup::dto::AnyValue ws_av{sup::dto::Float64Type, 3.14};
+    EXPECT_THROW(utils::ToWorkspaceInfo(ws_av), InvalidOperationException);
+  }
+  {
+    // The AnyValue members need to pass validation for VariableInfo structures
+    sup::dto::AnyValue ws_av = {{
+      { "var1", {sup::dto::UnsignedInteger16Type, 42u }}
+    }};
+    EXPECT_THROW(utils::ToWorkspaceInfo(ws_av), InvalidOperationException);
+  }
+  {
+    // The index of the variable is not correct
+    sup::dto::AnyValue info_av = {{
+      { kVariableInfoTypeField, "VarType" },
+      { kIndexField, { sup::dto::UnsignedInteger32Type, 42u }},
+      { kAttributesField, sup::dto::EmptyStruct() }
+    }};
+    sup::dto::AnyValue ws_av = {{
+      { "var1", info_av }
+    }};
+    EXPECT_THROW(utils::ToWorkspaceInfo(ws_av), InvalidOperationException);
+  }
+  {
+    // The index of the second variable is not correct
+    sup::dto::AnyValue var1_av = {{
+      { kVariableInfoTypeField, "VarType" },
+      { kIndexField, { sup::dto::UnsignedInteger32Type, 0 }},
+      { kAttributesField, sup::dto::EmptyStruct() }
+    }};
+    sup::dto::AnyValue var2_av = {{
+      { kVariableInfoTypeField, "VarType" },
+      { kIndexField, { sup::dto::UnsignedInteger32Type, 0 }},
+      { kAttributesField, sup::dto::EmptyStruct() }
+    }};
+    sup::dto::AnyValue ws_av = {{
+      { "var1", var1_av },
+      { "var2", var2_av }
+    }};
+    EXPECT_THROW(utils::ToWorkspaceInfo(ws_av), InvalidOperationException);
+  }
+}
