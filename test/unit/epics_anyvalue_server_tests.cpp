@@ -21,7 +21,7 @@
 
 #include "unit_test_helper.h"
 
-#include <sup/auto-server/epics/epics_anyvalue_server.h>
+#include <sup/auto-server/epics/epics_anyvalue_manager.h>
 
 #include <sup/epics/pv_access_client_pv.h>
 
@@ -73,7 +73,7 @@ protected:
     return m_cv.wait_for(lk, duration, pred);
   }
 
-  EPICSAnyValueServer m_epics_server_interface;
+  EPICSAnyValueManager m_epics_server_interface;
   sup::dto::AnyValue m_value_cache;
   std::mutex m_mtx;
   std::condition_variable m_cv;

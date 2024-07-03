@@ -21,7 +21,7 @@
 
 #include "epics_anyvalue_manager_registry.h"
 
-#include "epics_anyvalue_server.h"
+#include "epics_anyvalue_manager.h"
 
 namespace sup
 {
@@ -34,7 +34,7 @@ EPICSAnyValueManagerRegistry::EPICSAnyValueManagerRegistry(std::size_t n_manager
   m_anyvalue_managers.reserve(n_managers);
   for (std::size_t idx = 0; idx < n_managers; ++idx)
   {
-    m_anyvalue_managers.emplace_back(new EPICSAnyValueServer{});
+    m_anyvalue_managers.emplace_back(new EPICSAnyValueManager{});
   }
 }
 

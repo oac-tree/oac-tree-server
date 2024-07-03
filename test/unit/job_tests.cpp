@@ -24,7 +24,7 @@
 #include <sup/auto-server/job.h>
 #include <sup/auto-server/sup_auto_protocol.h>
 
-#include <sup/auto-server/epics/epics_anyvalue_server.h>
+#include <sup/auto-server/epics/epics_anyvalue_manager.h>
 
 #include <sup/epics/pv_access_client_pv.h>
 #include <sup/sequencer/sequence_parser.h>
@@ -59,7 +59,7 @@ protected:
     return m_cv.wait_for(lk, duration, pred);
   }
 
-  EPICSAnyValueServer m_anyvalue_mgr;
+  EPICSAnyValueManager m_anyvalue_mgr;
   sup::dto::AnyValue m_value_cache;
   std::mutex m_mtx;
   std::condition_variable m_cv;

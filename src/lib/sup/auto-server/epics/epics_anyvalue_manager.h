@@ -19,8 +19,8 @@
  * of the distribution package.
  ******************************************************************************/
 
-#ifndef SUP_AUTO_SERVER_EPICS_ANYVALUE_SERVER_H_
-#define SUP_AUTO_SERVER_EPICS_ANYVALUE_SERVER_H_
+#ifndef SUP_AUTO_SERVER_EPICS_ANYVALUE_MANAGER_H_
+#define SUP_AUTO_SERVER_EPICS_ANYVALUE_MANAGER_H_
 
 #include <sup/auto-server/i_anyvalue_manager.h>
 
@@ -35,14 +35,14 @@ namespace auto_server
 class EPICSServer;
 
 /**
- * @brief EPICSAnyValueServer implements IAnyValueManager using EPICS PvAccess and publishes
+ * @brief EPICSAnyValueManager implements IAnyValueManager using EPICS PvAccess and publishes
  * the managed AnyValues over this protocol.
  */
-class EPICSAnyValueServer : public IAnyValueManager
+class EPICSAnyValueManager : public IAnyValueManager
 {
 public:
-  EPICSAnyValueServer();
-  ~EPICSAnyValueServer();
+  EPICSAnyValueManager();
+  ~EPICSAnyValueManager();
 
   bool AddAnyValues(const NameAnyValueSet& name_value_set) override;
   bool UpdateAnyValue(const std::string& name, const sup::dto::AnyValue& value) override;
@@ -60,4 +60,4 @@ private:
 
 }  // namespace sup
 
-#endif  // SUP_AUTO_SERVER_EPICS_ANYVALUE_SERVER_H_
+#endif  // SUP_AUTO_SERVER_EPICS_ANYVALUE_MANAGER_H_

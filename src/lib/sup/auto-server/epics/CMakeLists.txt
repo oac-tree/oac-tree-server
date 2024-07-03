@@ -3,6 +3,6 @@ target_sources(sup-auto-server
   anyvalue_update_command.cpp
   anyvalue_update_queue.cpp
   epics_anyvalue_manager_registry.cpp
-  epics_anyvalue_server.cpp
+  epics_anyvalue_manager.cpp
   epics_server.cpp
 )
