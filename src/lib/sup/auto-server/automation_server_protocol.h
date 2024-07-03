@@ -23,7 +23,7 @@
 #define SUP_AUTO_SERVER_AUTOMATION_SERVER_PROTOCOL_H_
 
 #include <sup/auto-server/i_anyvalue_manager_registry.h>
-#include <sup/auto-server/automation_server.h>
+#include <sup/auto-server/i_job_manager.h>
 
 #include <sup/protocol/function_protocol.h>
 #include <sup/protocol/protocol.h>
@@ -34,15 +34,13 @@ namespace sup
 {
 namespace auto_server
 {
-using ProcedureList = std::vector<std::unique_ptr<sup::sequencer::Procedure>>;
 /**
  * @brief AutomationServerProtocol.
  */
 class AutomationServerProtocol : public sup::protocol::Protocol
 {
 public:
-  AutomationServerProtocol(const std::string& server_prefix, ProcedureList& proc_list,
-                           IAnyValueManagerRegistry& anyvalue_manager_registry);
+  AutomationServerProtocol(IJobManager& m_job_manager);
   ~AutomationServerProtocol();
 
   sup::protocol::ProtocolResult Invoke(const sup::dto::AnyValue& input,
@@ -52,7 +50,7 @@ public:
 
 private:
   static const sup::protocol::ProtocolMemberFunctionMap<AutomationServerProtocol>& FunctionMap();
-  AutomationServer m_auto_server;
+  IJobManager& m_job_manager;
   sup::protocol::ProtocolResult GetServerPrefix(const sup::dto::AnyValue& input,
                                                 sup::dto::AnyValue& output);
   sup::protocol::ProtocolResult GetNumberOfJobs(const sup::dto::AnyValue& input,

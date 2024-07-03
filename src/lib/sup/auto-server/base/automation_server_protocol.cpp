@@ -54,19 +54,9 @@ enum AutomationServerStatus
 
 // TODO: currently there is only one AnyValueManager for the whole server and it is fixed to be
 // an EPICS implementation. This needs revisiting.
-AutomationServerProtocol::AutomationServerProtocol(
-  const std::string& server_prefix, ProcedureList& proc_list,
-  IAnyValueManagerRegistry& anyvalue_manager_registry)
-  : m_auto_server{server_prefix}
-{
-  std::size_t registry_idx = 0;
-  for (auto& proc : proc_list)
-  {
-    m_auto_server.AddJob(std::move(proc),
-                         anyvalue_manager_registry.GetAnyValueManager(registry_idx));
-    ++registry_idx;
-  }
-}
+AutomationServerProtocol::AutomationServerProtocol(IJobManager& m_job_manager)
+  : m_job_manager{m_job_manager}
+{}
 
 AutomationServerProtocol::~AutomationServerProtocol() = default;
 
@@ -104,7 +94,7 @@ sup::protocol::ProtocolResult AutomationServerProtocol::GetServerPrefix(
   const sup::dto::AnyValue& input, sup::dto::AnyValue& output)
 {
   (void)input;
-  auto server_prefix = m_auto_server.GetServerPrefix();
+  auto server_prefix = m_job_manager.GetServerPrefix();
   sup::dto::AnyValue temp_out;
   sup::protocol::FunctionProtocolPack(temp_out, kServerPrefixFieldName, server_prefix);
   if (!sup::dto::TryAssignIfEmptyOrConvert(output, temp_out))
@@ -118,7 +108,7 @@ sup::protocol::ProtocolResult AutomationServerProtocol::GetNumberOfJobs(
   const sup::dto::AnyValue& input, sup::dto::AnyValue& output)
 {
   (void)input;
-  sup::dto::AnyValue number_jobs{sup::dto::UnsignedInteger64Type, m_auto_server.GetNumberOfJobs()};
+  sup::dto::AnyValue number_jobs{sup::dto::UnsignedInteger64Type, m_job_manager.GetNumberOfJobs()};
   sup::dto::AnyValue temp_out;
   sup::protocol::FunctionProtocolPack(temp_out, kNumberOfJobsFieldName, number_jobs);
   if (!sup::dto::TryAssignIfEmptyOrConvert(output, temp_out))
@@ -137,7 +127,7 @@ sup::protocol::ProtocolResult AutomationServerProtocol::GetJobInfo(
   {
     return result;
   }
-  const auto& job_info = m_auto_server.GetJobInfo(idx);
+  const auto& job_info = m_job_manager.GetJobInfo(idx);
   auto job_info_av = utils::ToAnyValue(job_info);
   sup::dto::AnyValue temp_out;
   sup::protocol::FunctionProtocolPack(temp_out, kJobInfoFieldName, job_info_av);
@@ -159,7 +149,7 @@ sup::protocol::ProtocolResult AutomationServerProtocol::EditBreakpoint(
     return result;
   }
   sup::dto::uint64 instr_idx{};
-  auto number_of_instructions = m_auto_server.GetJobInfo(job_idx).GetNumberOfInstructions();
+  auto number_of_instructions = m_job_manager.GetJobInfo(job_idx).GetNumberOfInstructions();
   result = ExtractInstructionIndex(input, number_of_instructions, instr_idx);
   if (result != sup::protocol::Success)
   {
@@ -170,7 +160,7 @@ sup::protocol::ProtocolResult AutomationServerProtocol::EditBreakpoint(
   {
     return sup::protocol::ServerProtocolDecodingError;
   }
-  m_auto_server.EditBreakpoint(job_idx, instr_idx, breakpoint_active);
+  m_job_manager.EditBreakpoint(job_idx, instr_idx, breakpoint_active);
   return sup::protocol::Success;
 }
 
@@ -190,7 +180,7 @@ sup::protocol::ProtocolResult AutomationServerProtocol::SendJobCommand(
   {
     return result;
   }
-  m_auto_server.SendJobCommand(idx, command);
+  m_job_manager.SendJobCommand(idx, command);
   return sup::protocol::Success;
 }
 
@@ -206,7 +196,7 @@ sup::protocol::ProtocolResult AutomationServerProtocol::ExtractJobIndex(
   {
     return sup::protocol::ServerProtocolDecodingError;
   }
-  if (idx >= m_auto_server.GetNumberOfJobs())
+  if (idx >= m_job_manager.GetNumberOfJobs())
   {
     return UnknownJob;
   }

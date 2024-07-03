@@ -36,13 +36,13 @@ namespace auto_server
 namespace UnitTestHelper
 {
 
-TestServerInterface::TestServerInterface()
+TestAnyValueManager::TestAnyValueManager()
     : m_value_map{}
 {}
 
-TestServerInterface::~TestServerInterface() = default;
+TestAnyValueManager::~TestAnyValueManager() = default;
 
-bool TestServerInterface::AddAnyValues(const NameAnyValueSet& name_value_set)
+bool TestAnyValueManager::AddAnyValues(const NameAnyValueSet& name_value_set)
 {
   std::lock_guard<std::mutex> lk{m_mtx};
   for (const auto& name : GetNames(name_value_set))
@@ -60,7 +60,7 @@ bool TestServerInterface::AddAnyValues(const NameAnyValueSet& name_value_set)
   return true;
 }
 
-bool TestServerInterface::UpdateAnyValue(const std::string& name, const sup::dto::AnyValue& value)
+bool TestAnyValueManager::UpdateAnyValue(const std::string& name, const sup::dto::AnyValue& value)
 {
   std::lock_guard<std::mutex> lk{m_mtx};
   auto iter = m_value_map.find(name);
@@ -73,25 +73,25 @@ bool TestServerInterface::UpdateAnyValue(const std::string& name, const sup::dto
   return true;
 }
 
-bool TestServerInterface::HasAnyValue(const std::string& name) const
+bool TestAnyValueManager::HasAnyValue(const std::string& name) const
 {
   std::lock_guard<std::mutex> lk{m_mtx};
   return HasAnyValueImpl(name);
 }
 
-sup::dto::AnyValue TestServerInterface::GetAnyValue(const std::string& name) const
+sup::dto::AnyValue TestAnyValueManager::GetAnyValue(const std::string& name) const
 {
   std::lock_guard<std::mutex> lk{m_mtx};
   return GetAnyValueImpl(name);
 }
 
-std::size_t TestServerInterface::GetSize() const
+std::size_t TestAnyValueManager::GetSize() const
 {
   std::lock_guard<std::mutex> lk{m_mtx};
   return m_value_map.size();
 }
 
-bool TestServerInterface::WaitForValue(const std::string& name, const sup::dto::AnyValue& value,
+bool TestAnyValueManager::WaitForValue(const std::string& name, const sup::dto::AnyValue& value,
                                        double seconds) const
 {
   auto duration = std::chrono::nanoseconds(std::lround(seconds * 1e9));
@@ -102,13 +102,13 @@ bool TestServerInterface::WaitForValue(const std::string& name, const sup::dto::
   return m_cv.wait_for(lk, duration, pred);
 }
 
-bool TestServerInterface::HasAnyValueImpl(const std::string& name) const
+bool TestAnyValueManager::HasAnyValueImpl(const std::string& name) const
 {
   auto iter = m_value_map.find(name);
   return iter != m_value_map.end();
 }
 
-sup::dto::AnyValue TestServerInterface::GetAnyValueImpl(const std::string& name) const
+sup::dto::AnyValue TestAnyValueManager::GetAnyValueImpl(const std::string& name) const
 {
   auto iter = m_value_map.find(name);
   if (iter == m_value_map.end())
@@ -118,7 +118,7 @@ sup::dto::AnyValue TestServerInterface::GetAnyValueImpl(const std::string& name)
   return iter->second;
 }
 
-std::ostream& operator<<(std::ostream& stream, const TestServerInterface& server_if)
+std::ostream& operator<<(std::ostream& stream, const TestAnyValueManager& server_if)
 {
   for (const auto& name_value_pair : server_if.m_value_map)
   {
@@ -127,6 +127,18 @@ std::ostream& operator<<(std::ostream& stream, const TestServerInterface& server
     stream << std::endl << std::endl;
   }
   return stream;
+}
+
+TestAnyValueManagerRegistry::TestAnyValueManagerRegistry()
+  : m_av_mgr{}
+{}
+
+TestAnyValueManagerRegistry::~TestAnyValueManagerRegistry() = default;
+
+IAnyValueManager& TestAnyValueManagerRegistry::GetAnyValueManager(std::size_t idx)
+{
+  (void)idx;
+  return m_av_mgr;
 }
 
 std::string CreateProcedureString(const std::string &body)

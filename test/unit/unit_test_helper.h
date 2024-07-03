@@ -22,7 +22,7 @@
 #ifndef SUP_AUTO_SERVER_UNIT_TEST_HELPER_H_
 #define SUP_AUTO_SERVER_UNIT_TEST_HELPER_H_
 
-#include <sup/auto-server/i_anyvalue_manager.h>
+#include <sup/auto-server/i_anyvalue_manager_registry.h>
 
 #include <sup/dto/anyvalue.h>
 
@@ -65,11 +65,11 @@ namespace auto_server
 {
 namespace UnitTestHelper
 {
-class TestServerInterface : public IAnyValueManager
+class TestAnyValueManager : public IAnyValueManager
 {
 public:
-  TestServerInterface();
-  ~TestServerInterface();
+  TestAnyValueManager();
+  ~TestAnyValueManager();
 
   bool AddAnyValues(const NameAnyValueSet& name_value_set) override;
   bool UpdateAnyValue(const std::string& name, const sup::dto::AnyValue& value) override;
@@ -82,13 +82,24 @@ public:
 
   bool WaitForValue(const std::string& name, const sup::dto::AnyValue& value, double seconds) const;
 
-  friend std::ostream& operator<<(std::ostream& stream, const TestServerInterface& server_if);
+  friend std::ostream& operator<<(std::ostream& stream, const TestAnyValueManager& server_if);
 private:
   bool HasAnyValueImpl(const std::string& name) const;
   sup::dto::AnyValue GetAnyValueImpl(const std::string& name) const;
   std::map<std::string, sup::dto::AnyValue> m_value_map;
   mutable std::mutex m_mtx;
   mutable std::condition_variable m_cv;
+};
+
+class TestAnyValueManagerRegistry : public IAnyValueManagerRegistry
+{
+public:
+  TestAnyValueManagerRegistry();
+  ~TestAnyValueManagerRegistry();
+
+  IAnyValueManager& GetAnyValueManager(std::size_t idx) override;
+private:
+  TestAnyValueManager m_av_mgr;
 };
 
 /**

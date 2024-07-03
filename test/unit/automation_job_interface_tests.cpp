@@ -40,7 +40,7 @@ protected:
   AutomationJobInterfaceTests() = default;
   virtual ~AutomationJobInterfaceTests() = default;
 
-  UnitTestHelper::TestServerInterface m_test_server_interface;
+  UnitTestHelper::TestAnyValueManager m_test_server_interface;
 };
 
 TEST_F(AutomationJobInterfaceTests, Construction)

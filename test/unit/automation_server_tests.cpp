@@ -39,14 +39,14 @@ protected:
   AutomationServerTests() = default;
   virtual ~AutomationServerTests() = default;
 
-  UnitTestHelper::TestServerInterface m_test_server_interface;
+  UnitTestHelper::TestAnyValueManagerRegistry m_test_av_mgr_registry;
 };
 
 TEST_F(AutomationServerTests, ServerWithoutProcedures)
 {
   using sup::sequencer::JobCommand;
   const std::string prefix = "AutomationServerTests:Empty";
-  AutomationServer auto_server{prefix};
+  AutomationServer auto_server{prefix, m_test_av_mgr_registry};
   EXPECT_EQ(auto_server.GetServerPrefix(), prefix);
   EXPECT_EQ(auto_server.GetNumberOfJobs(), 0);
   EXPECT_THROW(auto_server.GetJobInfo(0), InvalidOperationException);
@@ -60,8 +60,8 @@ TEST_F(AutomationServerTests, ServerWithOneProcedure)
   const auto procedure_string = UnitTestHelper::CreateProcedureString(kLongWaitProcedureBody);
   auto proc = sup::sequencer::ParseProcedureString(procedure_string);
   ASSERT_NE(proc.get(), nullptr);
-  AutomationServer auto_server{prefix};
-  auto_server.AddJob(std::move(proc), m_test_server_interface);
+  AutomationServer auto_server{prefix, m_test_av_mgr_registry};
+  auto_server.AddJob(std::move(proc));
   EXPECT_EQ(auto_server.GetServerPrefix(), prefix);
   EXPECT_EQ(auto_server.GetNumberOfJobs(), 1);
   const auto& job_info = auto_server.GetJobInfo(0);
@@ -82,9 +82,9 @@ TEST_F(AutomationServerTests, ServerWithTwoProcedures)
   ASSERT_NE(proc_1.get(), nullptr);
   auto proc_2 = sup::sequencer::ParseProcedureString(procedure_string);
   ASSERT_NE(proc_2.get(), nullptr);
-  AutomationServer auto_server{prefix};
-  auto_server.AddJob(std::move(proc_1), m_test_server_interface);
-  auto_server.AddJob(std::move(proc_2), m_test_server_interface);
+  AutomationServer auto_server{prefix, m_test_av_mgr_registry};
+  auto_server.AddJob(std::move(proc_1));
+  auto_server.AddJob(std::move(proc_2));
   EXPECT_EQ(auto_server.GetServerPrefix(), prefix);
   EXPECT_EQ(auto_server.GetNumberOfJobs(), 2);
   const auto& job_info_1 = auto_server.GetJobInfo(0);

@@ -36,6 +36,7 @@ namespace auto_server
 {
 namespace utils
 {
+using ProcedureList = std::vector<std::unique_ptr<sup::sequencer::Procedure>>;
 
 ProcedureList GetProcedureList(sup::cli::CommandLineParser& parser);
 

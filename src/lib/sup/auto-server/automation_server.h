@@ -22,6 +22,7 @@
 #ifndef SUP_AUTO_SERVER_AUTOMATION_SERVER_H_
 #define SUP_AUTO_SERVER_AUTOMATION_SERVER_H_
 
+#include <sup/auto-server/i_anyvalue_manager_registry.h>
 #include <sup/auto-server/i_job_manager.h>
 #include <sup/auto-server/job.h>
 
@@ -40,11 +41,10 @@ namespace auto_server
 class AutomationServer : public IJobManager
 {
 public:
-  AutomationServer(const std::string& server_prefix);
+  AutomationServer(const std::string& server_prefix, IAnyValueManagerRegistry& av_mgr_registry);
   virtual ~AutomationServer();
 
-  void AddJob(std::unique_ptr<sup::sequencer::Procedure> proc,
-              IAnyValueManager& anyvalue_mgr);
+  void AddJob(std::unique_ptr<sup::sequencer::Procedure> proc);
 
   std::string GetServerPrefix() const override;
   std::size_t GetNumberOfJobs() const override;
@@ -59,6 +59,7 @@ private:
   Job& GetJob(std::size_t job_idx);
   const Job& GetJob(std::size_t job_idx) const;
   const std::string m_server_prefix;
+  IAnyValueManagerRegistry& m_av_mgr_registry;
   std::vector<Job> m_jobs;
   mutable std::mutex m_mtx;
 };

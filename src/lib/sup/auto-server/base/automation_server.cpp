@@ -27,19 +27,21 @@ namespace sup
 namespace auto_server
 {
 
-AutomationServer::AutomationServer(const std::string& server_prefix)
+AutomationServer::AutomationServer(const std::string& server_prefix,
+                                   IAnyValueManagerRegistry& av_mgr_registry)
   : m_server_prefix{server_prefix}
+  , m_av_mgr_registry{av_mgr_registry}
   , m_jobs{}
   , m_mtx{}
 {}
 
 AutomationServer::~AutomationServer() = default;
 
-void AutomationServer::AddJob(std::unique_ptr<sup::sequencer::Procedure> proc,
-                              IAnyValueManager& anyvalue_mgr)
+void AutomationServer::AddJob(std::unique_ptr<sup::sequencer::Procedure> proc)
 {
   std::lock_guard<std::mutex> lk{m_mtx};
   auto idx = m_jobs.size();
+  auto& anyvalue_mgr = m_av_mgr_registry.GetAnyValueManager(idx);
   m_jobs.emplace_back(CreateJobPrefix(m_server_prefix, idx), std::move(proc), anyvalue_mgr);
 }
 
