@@ -22,7 +22,6 @@
 #ifndef SUP_AUTO_SERVER_SUP_AUTOMATION_SERVER_UTILS_H_
 #define SUP_AUTO_SERVER_SUP_AUTOMATION_SERVER_UTILS_H_
 
-#include <sup/auto-server/automation_server_protocol.h>
 #include <sup/auto-server/i_anyvalue_manager_registry.h>
 
 #include <sup/cli/command_line_parser.h>

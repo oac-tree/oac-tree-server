@@ -19,8 +19,8 @@
  * of the distribution package.
  ******************************************************************************/
 
-#ifndef SUP_AUTO_SERVER_AUTOMATION_SERVER_PROTOCOL_H_
-#define SUP_AUTO_SERVER_AUTOMATION_SERVER_PROTOCOL_H_
+#ifndef SUP_AUTO_SERVER_AUTOMATION_PROTOCOL_SERVER_H_
+#define SUP_AUTO_SERVER_AUTOMATION_PROTOCOL_SERVER_H_
 
 #include <sup/auto-server/i_anyvalue_manager_registry.h>
 #include <sup/auto-server/i_job_manager.h>
@@ -35,13 +35,13 @@ namespace sup
 namespace auto_server
 {
 /**
- * @brief AutomationServerProtocol.
+ * @brief AutomationProtocolServer.
  */
-class AutomationServerProtocol : public sup::protocol::Protocol
+class AutomationProtocolServer : public sup::protocol::Protocol
 {
 public:
-  AutomationServerProtocol(IJobManager& m_job_manager);
-  ~AutomationServerProtocol();
+  AutomationProtocolServer(IJobManager& m_job_manager);
+  ~AutomationProtocolServer();
 
   sup::protocol::ProtocolResult Invoke(const sup::dto::AnyValue& input,
                                        sup::dto::AnyValue& output) override;
@@ -49,7 +49,7 @@ public:
                                         sup::dto::AnyValue& output) override;
 
 private:
-  static const sup::protocol::ProtocolMemberFunctionMap<AutomationServerProtocol>& FunctionMap();
+  static const sup::protocol::ProtocolMemberFunctionMap<AutomationProtocolServer>& FunctionMap();
   IJobManager& m_job_manager;
   sup::protocol::ProtocolResult GetServerPrefix(const sup::dto::AnyValue& input,
                                                 sup::dto::AnyValue& output);
@@ -89,4 +89,4 @@ extern const sup::protocol::ProtocolResult UnknownJobCommand;
 
 }  // namespace sup
 
-#endif  // SUP_AUTO_SERVER_AUTOMATION_SERVER_PROTOCOL_H_
+#endif  // SUP_AUTO_SERVER_AUTOMATION_PROTOCOL_SERVER_H_

@@ -21,7 +21,7 @@
 
 #include "utils.h"
 
-#include <sup/auto-server/automation_server_protocol.h>
+#include <sup/auto-server/automation_protocol_server.h>
 #include <sup/auto-server/automation_server.h>
 
 #include <sup/cli/command_line_parser.h>
@@ -60,7 +60,7 @@ int main(int argc, char* argv[])
   {
     auto_server.AddJob(std::move(proc));
   }
-  AutomationServerProtocol server_protocol{auto_server};
+  AutomationProtocolServer server_protocol{auto_server};
   sup::epics::PvAccessRPCServerConfig server_config{service_name};
   auto server_stack = sup::epics::CreateEPICSRPCServerStack(server_protocol, server_config);
 
