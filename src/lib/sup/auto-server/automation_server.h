@@ -22,6 +22,7 @@
 #ifndef SUP_AUTO_SERVER_AUTOMATION_SERVER_H_
 #define SUP_AUTO_SERVER_AUTOMATION_SERVER_H_
 
+#include <sup/auto-server/i_job_manager.h>
 #include <sup/auto-server/job.h>
 
 #include <memory>
@@ -36,23 +37,23 @@ namespace auto_server
 /**
  * @brief AutomationServer.
  */
-class AutomationServer
+class AutomationServer : public IJobManager
 {
 public:
   AutomationServer(const std::string& server_prefix);
-  ~AutomationServer();
+  virtual ~AutomationServer();
 
   void AddJob(std::unique_ptr<sup::sequencer::Procedure> proc,
               IAnyValueManager& anyvalue_mgr);
 
-  std::string GetServerPrefix() const;
-  std::size_t GetNumberOfJobs() const;
+  std::string GetServerPrefix() const override;
+  std::size_t GetNumberOfJobs() const override;
 
-  const JobInfo& GetJobInfo(std::size_t job_idx) const;
+  const JobInfo& GetJobInfo(std::size_t job_idx) const override;
 
-  void EditBreakpoint(std::size_t job_idx, std::size_t instr_idx, bool breakpoint_active);
+  void EditBreakpoint(std::size_t job_idx, std::size_t instr_idx, bool breakpoint_active) override;
 
-  void SendJobCommand(std::size_t job_idx, sup::sequencer::JobCommand command);
+  void SendJobCommand(std::size_t job_idx, sup::sequencer::JobCommand command) override;
 
 private:
   Job& GetJob(std::size_t job_idx);

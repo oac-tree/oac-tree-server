@@ -41,6 +41,7 @@ install(FILES
   exceptions.h
   i_anyvalue_manager_registry.h
   i_anyvalue_manager.h
+  i_job_manager.h
   instruction_info.h
   instruction_map.h
   instruction_tree_utils.h

@@ -8,6 +8,7 @@ target_sources(sup-auto-server
   exceptions.cpp
   i_anyvalue_manager_registry.cpp
   i_anyvalue_manager.cpp
+  i_job_manager.cpp
   instruction_map.cpp
   instruction_info.cpp
   instruction_tree_utils.cpp
