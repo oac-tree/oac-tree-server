@@ -36,7 +36,12 @@ namespace sup
 namespace auto_server
 {
 /**
- * @brief AutomationServer.
+ * @brief Server implementation of the IJobManager interface. This class manages multiple jobs,
+ * i.e. procedures and their associated input/output interfaces. For each job, the class will
+ * instantiate an appropriate JobInterface implementation that will delegate its method calls to
+ * an IAnyValueManager implementation, managed by a registry. The AutomationJobInterface object will
+ * be responsible for mapping Instruction pointers and Variable names to plain string identifiers,
+ * allowing the IAnyValueManager to use these as channels for network implementations.
  */
 class AutomationServer : public IJobManager
 {

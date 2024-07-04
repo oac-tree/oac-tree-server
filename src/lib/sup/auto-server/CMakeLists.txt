@@ -38,6 +38,7 @@ install(FILES
   automation_protocol_server.h
   automation_server.h
   client_interface_mapper.h
+  client_job_interface.h
   exceptions.h
   i_anyvalue_manager_registry.h
   i_anyvalue_manager.h
