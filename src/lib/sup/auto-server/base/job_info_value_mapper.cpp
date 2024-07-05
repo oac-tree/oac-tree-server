@@ -32,7 +32,8 @@ namespace auto_server
 {
 
 JobInfoValueMapper::JobInfoValueMapper(const JobInfo& job_info)
-  : m_instr_map{}
+  : m_job_state_val_name{GetJobStatePVName(job_info.GetPrefix())}
+  , m_instr_map{}
   , m_var_map{}
 {
   InitInstructionMap(job_info);
@@ -40,6 +41,11 @@ JobInfoValueMapper::JobInfoValueMapper(const JobInfo& job_info)
 }
 
 JobInfoValueMapper::~JobInfoValueMapper() = default;
+
+std::string JobInfoValueMapper::GetJobStateValueName() const
+{
+  return m_job_state_val_name;
+}
 
 std::vector<std::string> JobInfoValueMapper::GetInstructionValueNames() const
 {

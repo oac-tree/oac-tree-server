@@ -42,6 +42,8 @@ public:
   explicit JobInfoValueMapper(const JobInfo& job_info);
   ~JobInfoValueMapper();
 
+  std::string GetJobStateValueName() const;
+
   std::vector<std::string> GetInstructionValueNames() const;
 
   const InstructionInfo* FindInstructionInfo(const std::string& val_name) const;
@@ -53,6 +55,7 @@ public:
 private:
   void InitInstructionMap(const JobInfo& job_info);
   void InitVariableMap(const JobInfo& job_info);
+  std::string m_job_state_val_name;
   std::map<std::string, const InstructionInfo*> m_instr_map;
   std::map<std::string, std::string> m_var_map;
 };
