@@ -1,11 +1,11 @@
 target_sources(sup-auto-server
   PRIVATE
   anyvalue_utils.cpp
+  automation_client_interface.cpp
   automation_job_interface.cpp
   automation_protocol_server.cpp
   automation_server.cpp
   client_interface_mapper.cpp
-  client_job_interface.cpp
   exceptions.cpp
   i_anyvalue_manager_registry.cpp
   i_anyvalue_manager.cpp

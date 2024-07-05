@@ -22,6 +22,7 @@
 #ifndef SUP_AUTO_SERVER_CLIENT_JOB_INTERFACE_H_
 #define SUP_AUTO_SERVER_CLIENT_JOB_INTERFACE_H_
 
+#include <sup/auto-server/instruction_state.h>
 #include <sup/auto-server/job_info.h>
 
 #include <sup/dto/anyvalue.h>
@@ -34,24 +35,25 @@ namespace sup
 {
 namespace auto_server
 {
-class InstructionState;
 
-class ClientJobInterface
+class AutomationClientInterface
 {
 public:
-  virtual ~ClientJobInterface();
+  virtual ~AutomationClientInterface();
 
-  virtual void InstructionUpdated(const InstructionInfo* instr_info,
+  virtual void InstructionUpdated(std::size_t job_idx, const InstructionInfo* instr_info,
                                   const InstructionState& state) = 0;
-  virtual void VariableUpdated(const std::string& name, const sup::dto::AnyValue& value,
-                               bool connected) = 0;
-  virtual bool PutValue(const sup::dto::AnyValue& value, const std::string& description) = 0;
-  virtual bool GetUserValue(sup::dto::AnyValue& value, const std::string& description) = 0;
-  virtual int GetUserChoice(const std::vector<std::string>& options,
+  virtual void VariableUpdated(std::size_t job_idx, const std::string& name,
+                               const sup::dto::AnyValue& value, bool connected) = 0;
+  virtual bool PutValue(std::size_t job_idx, const sup::dto::AnyValue& value,
+                        const std::string& description) = 0;
+  virtual bool GetUserValue(std::size_t job_idx, sup::dto::AnyValue& value,
+                            const std::string& description) = 0;
+  virtual int GetUserChoice(std::size_t job_idx, const std::vector<std::string>& options,
                             const sup::dto::AnyValue& metadata) = 0;
-  virtual void Message(const std::string& message) = 0;
-  virtual void Log(int severity, const std::string& message) = 0;
-  virtual void OnStateChange(sequencer::JobState state) = 0;
+  virtual void Message(std::size_t job_idx, const std::string& message) = 0;
+  virtual void Log(std::size_t job_idx, int severity, const std::string& message) = 0;
+  virtual void OnStateChange(std::size_t job_idx, sequencer::JobState state) = 0;
 };
 
 }  // namespace auto_server

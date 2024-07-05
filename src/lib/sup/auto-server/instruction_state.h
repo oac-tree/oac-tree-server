@@ -19,15 +19,24 @@
  * of the distribution package.
  ******************************************************************************/
 
-#include <sup/auto-server/client_job_interface.h>
+#ifndef SUP_AUTO_SERVER_INSTRUCTION_STATE_H_
+#define SUP_AUTO_SERVER_INSTRUCTION_STATE_H_
+
+#include <sup/sequencer/execution_status.h>
 
 namespace sup
 {
 namespace auto_server
 {
 
-ClientJobInterface::~ClientJobInterface() = default;
+struct InstructionState
+{
+  bool m_breakpoint_set;
+  sequencer::ExecutionStatus m_execution_status;
+};
 
 }  // namespace auto_server
 
 }  // namespace sup
+
+#endif  // SUP_AUTO_SERVER_INSTRUCTION_STATE_H_
