@@ -19,27 +19,25 @@
  * of the distribution package.
  ******************************************************************************/
 
-#ifndef SUP_AUTO_SERVER_INSTRUCTION_STATE_H_
-#define SUP_AUTO_SERVER_INSTRUCTION_STATE_H_
+#include <sup/auto-server/instruction_state.h>
 
-#include <sup/dto/anyvalue.h>
-#include <sup/sequencer/execution_status.h>
+#include <sup/auto-server/sup_auto_protocol.h>
 
 namespace sup
 {
 namespace auto_server
 {
 
-struct InstructionState
+InstructionState ToInstructionState(const sup::dto::AnyValue& state_av)
 {
-  bool m_breakpoint_set;
-  sequencer::ExecutionStatus m_execution_status;
-};
-
-InstructionState ToInstructionState(const sup::dto::AnyValue& state_av);
+  // TODO: validate
+  InstructionState result;
+  result.m_breakpoint_set = state_av[kBreakpointField].As<sup::dto::boolean>();
+  result.m_execution_status =
+    static_cast<sequencer::ExecutionStatus>(state_av[kExecStatusField].As<sup::dto::uint16>());
+  return result;
+}
 
 }  // namespace auto_server
 
 }  // namespace sup
-
-#endif  // SUP_AUTO_SERVER_INSTRUCTION_STATE_H_

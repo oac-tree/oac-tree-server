@@ -32,6 +32,7 @@ ClientAnyValueManager::ClientAnyValueManager(std::size_t job_idx,
   : m_job_idx{job_idx}
   , m_value_mapper{job_info}
   , m_client_if{client_if}
+  , m_cb_map{}
 {}
 
 ClientAnyValueManager::~ClientAnyValueManager() = default;
@@ -46,9 +47,12 @@ bool ClientAnyValueManager::AddAnyValues(const NameAnyValueSet& name_value_set)
 
 bool ClientAnyValueManager::UpdateAnyValue(const std::string& name, const sup::dto::AnyValue& value)
 {
-  (void)name;
-  (void)value;
-  // TODO: lookup function in map and call it with value
+  auto iter = m_cb_map.find(name);
+  if (iter == m_cb_map.end())
+  {
+    return false;
+  }
+  iter->second(value);
   return true;
 }
 
@@ -57,8 +61,7 @@ ClientAnyValueManager::AnyValueCallback ClientAnyValueManager::GetInstructionUpd
 {
   auto instr_info = m_value_mapper.FindInstructionInfo(val_name);
   auto func = [this, instr_info](const sup::dto::AnyValue& val) {
-    (void)val;
-    InstructionState instr_state;  // TODO: build from val
+    auto instr_state = ToInstructionState(val);
     m_client_if.InstructionUpdated(m_job_idx, instr_info, instr_state);
   };
   return func;

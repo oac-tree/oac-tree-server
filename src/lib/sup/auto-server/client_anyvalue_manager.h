@@ -27,6 +27,7 @@
 #include <sup/auto-server/job_info_value_mapper.h>
 
 #include <functional>
+#include <map>
 
 namespace sup
 {
@@ -54,6 +55,7 @@ private:
   std::size_t m_job_idx;
   JobInfoValueMapper m_value_mapper;
   AutomationClientInterface& m_client_if;
+  std::map<std::string, AnyValueCallback> m_cb_map;
 };
 
 }  // namespace auto_server
