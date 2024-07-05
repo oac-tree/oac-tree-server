@@ -13,6 +13,7 @@ target_sources(sup-auto-server
   instruction_map.cpp
   instruction_info.cpp
   instruction_tree_utils.cpp
+  job_info_value_mapper.cpp
   job_info.cpp
   job_utils.cpp
   job_value_mapper.cpp
