@@ -48,6 +48,7 @@ install(FILES
   instruction_map.h
   instruction_state.h
   instruction_tree_utils.h
+  job_info_interface.h
   job_info_value_mapper.h
   job_info.h
   job_utils.h
