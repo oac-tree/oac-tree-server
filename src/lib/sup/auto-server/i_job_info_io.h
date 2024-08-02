@@ -22,8 +22,6 @@
 #ifndef SUP_AUTO_SERVER_I_JOB_INFO_IO_H_
 #define SUP_AUTO_SERVER_I_JOB_INFO_IO_H_
 
-#include <sup/auto-server/job_info.h>
-
 #include <sup/dto/anyvalue.h>
 #include <sup/sequencer/execution_status.h>
 #include <sup/sequencer/job_states.h>
@@ -62,7 +60,7 @@ public:
   virtual void OnStateChange(sup::sequencer::JobState state) = 0;
 
   virtual void OnBreakpointChange(sup::dto::uint32 instr_idx,
-                                  bool breakpoint_set) noexcept = 0;
+                                  bool breakpoint_set) = 0;
 };
 
 }  // namespace auto_server
