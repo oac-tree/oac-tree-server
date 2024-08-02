@@ -22,6 +22,7 @@
 #ifndef SUP_AUTO_SERVER_SERVER_JOB_INFO_IO_H_
 #define SUP_AUTO_SERVER_SERVER_JOB_INFO_IO_H_
 
+#include <sup/auto-server/i_anyvalue_manager.h>
 #include <sup/auto-server/i_job_info_io.h>
 
 namespace sup
@@ -35,8 +36,11 @@ namespace auto_server
 class ServerJobInfoIO : public IJobInfoIO
 {
 public:
-  ServerJobInfoIO(const std::string& job_prefix);
+  ServerJobInfoIO(const std::string& job_prefix, sup::dto::uint32 n_vars,
+                  IAnyValueManager& av_manager);
   virtual ~ServerJobInfoIO();
+
+  void InitNumberOfInstructions(sup::dto::uint32 n_instr) override;
 
   void UpdateInstructionStatus(sup::dto::uint32 instr_idx,
                                sup::sequencer::ExecutionStatus status) override;
@@ -60,7 +64,11 @@ public:
   void OnBreakpointChange(sup::dto::uint32 instr_idx, bool breakpoint_set) override;
 
 private:
+  IAnyValueManager::NameAnyValueSet GetInitialValueSet() const;
   const std::string m_job_prefix;
+  const sup::dto::uint32 m_n_vars;
+  std::vector<sup::dto::AnyValue> m_instr_states;
+  IAnyValueManager& m_av_manager;
 };
 
 }  // namespace auto_server

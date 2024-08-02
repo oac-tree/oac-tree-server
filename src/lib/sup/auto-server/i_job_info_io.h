@@ -40,6 +40,8 @@ class IJobInfoIO
 public:
   virtual ~IJobInfoIO();
 
+  virtual void InitNumberOfInstructions(sup::dto::uint32 n_instr) = 0;
+
   virtual void UpdateInstructionStatus(sup::dto::uint32 instr_idx,
                                        sup::sequencer::ExecutionStatus status) = 0;
 
