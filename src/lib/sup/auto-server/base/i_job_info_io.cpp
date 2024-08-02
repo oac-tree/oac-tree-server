@@ -19,14 +19,14 @@
  * of the distribution package.
  ******************************************************************************/
 
-#include <sup/auto-server/job_info_interface.h>
+#include <sup/auto-server/i_job_info_io.h>
 
 namespace sup
 {
 namespace auto_server
 {
 
-JobInfoInterface::~JobInfoInterface() = default;
+IJobInfoIO::~IJobInfoIO() = default;
 
 }  // namespace auto_server
 

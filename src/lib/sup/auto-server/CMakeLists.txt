@@ -43,12 +43,12 @@ install(FILES
   exceptions.h
   i_anyvalue_manager_registry.h
   i_anyvalue_manager.h
+  i_job_info_io.h
   i_job_manager.h
   instruction_info.h
   instruction_map.h
   instruction_state.h
   instruction_tree_utils.h
-  job_info_interface.h
   job_info_value_mapper.h
   job_info.h
   job_utils.h

@@ -10,12 +10,12 @@ target_sources(sup-auto-server
   exceptions.cpp
   i_anyvalue_manager_registry.cpp
   i_anyvalue_manager.cpp
+  i_job_info_io.cpp
   i_job_manager.cpp
   instruction_info.cpp
   instruction_map.cpp
   instruction_state.cpp
   instruction_tree_utils.cpp
-  job_info_interface.cpp
   job_info_value_mapper.cpp
   job_info.cpp
   job_utils.cpp

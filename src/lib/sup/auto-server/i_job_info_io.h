@@ -19,8 +19,8 @@
  * of the distribution package.
  ******************************************************************************/
 
-#ifndef SUP_AUTO_SERVER_JOB_INFO_INTERFACE_H_
-#define SUP_AUTO_SERVER_JOB_INFO_INTERFACE_H_
+#ifndef SUP_AUTO_SERVER_I_JOB_INFO_IO_H_
+#define SUP_AUTO_SERVER_I_JOB_INFO_IO_H_
 
 #include <sup/auto-server/job_info.h>
 
@@ -37,10 +37,10 @@ namespace auto_server
  * a JobInfo.
  *
  */
-class JobInfoInterface
+class IJobInfoIO
 {
 public:
-  virtual ~JobInfoInterface();
+  virtual ~IJobInfoIO();
 
   virtual void UpdateInstructionStatus(sup::dto::uint32 instr_idx,
                                        sup::sequencer::ExecutionStatus status) = 0;
@@ -69,4 +69,4 @@ public:
 
 }  // namespace sup
 
-#endif  // SUP_AUTO_SERVER_JOB_INFO_INTERFACE_H_
+#endif  // SUP_AUTO_SERVER_I_JOB_INFO_IO_H_
