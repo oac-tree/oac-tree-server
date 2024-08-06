@@ -22,7 +22,7 @@
 #ifndef SUP_AUTO_SERVER_AUTOMATION_JOB_INTERFACE_H_
 #define SUP_AUTO_SERVER_AUTOMATION_JOB_INTERFACE_H_
 
-#include <sup/auto-server/i_anyvalue_manager.h>
+#include <sup/auto-server/i_job_info_io.h>
 #include <sup/auto-server/job_value_mapper.h>
 
 #include <sup/sequencer/job_interface.h>
@@ -36,7 +36,7 @@ class AutomationJobInterface : public sequencer::JobInterface
 {
 public:
   AutomationJobInterface(const std::string& prefix, const sequencer::Procedure& proc,
-                         IAnyValueManager& server_interface);
+                         IJobInfoIO& job_info_io);
 
   ~AutomationJobInterface();
 
@@ -62,11 +62,9 @@ public:
   void OnProcedureTick(const sequencer::Procedure& proc) noexcept override;
 
 private:
-  IAnyValueManager::NameAnyValueSet GetInitialValueSet() const;
-  IAnyValueManager::NameAnyValueSet GetInstructionValueSet() const;
   JobValueMapper m_job_value_mapper;
   std::vector<sup::dto::AnyValue> m_instr_states;
-  IAnyValueManager& m_server_interface;
+  IJobInfoIO& m_job_info_io;
 };
 
 }  // namespace auto_server

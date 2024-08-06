@@ -23,6 +23,7 @@
 #define SUP_AUTO_SERVER_UNIT_TEST_HELPER_H_
 
 #include <sup/auto-server/i_anyvalue_manager_registry.h>
+#include <sup/auto-server/i_job_info_io.h>
 
 #include <sup/dto/anyvalue.h>
 
@@ -30,6 +31,7 @@
 #include <map>
 #include <mutex>
 #include <string>
+#include <vector>
 
 const std::string kShortSequenceBody{
 R"RAW(
@@ -65,6 +67,47 @@ namespace auto_server
 {
 namespace UnitTestHelper
 {
+class TestJobInfoIO : public IJobInfoIO
+{
+public:
+  using InstrStatuses = std::vector<std::pair<sup::dto::uint32, sup::sequencer::ExecutionStatus>>;
+  using JobStates = std::vector<sup::sequencer::JobState>;
+  TestJobInfoIO();
+  virtual ~TestJobInfoIO();
+
+  sup::dto::uint32 GetNumberOfInstructions() const;
+  InstrStatuses GetInstrStatuses() const;
+  JobStates GetJobStates() const;
+
+  void InitNumberOfInstructions(sup::dto::uint32 n_instr) override;
+
+  void UpdateInstructionStatus(sup::dto::uint32 instr_idx,
+                               sup::sequencer::ExecutionStatus status) override;
+
+  void VariableUpdated(sup::dto::uint32 var_idx, const sup::dto::AnyValue& value,
+                       bool connected) override;
+
+  bool PutValue(const sup::dto::AnyValue& value, const std::string& description) override;
+
+  bool GetUserValue(sup::dto::AnyValue& value, const std::string& description) override;
+
+  int GetUserChoice(const std::vector<std::string>& options,
+                    const sup::dto::AnyValue& metadata) override;
+
+  void Message(const std::string& message) override;
+
+  void Log(int severity, const std::string& message) override;
+
+  void OnStateChange(sup::sequencer::JobState state) override;
+
+  void OnBreakpointChange(sup::dto::uint32 instr_idx, bool breakpoint_set) override;
+
+private:
+  sup::dto::uint32 m_n_instr;
+  InstrStatuses m_instr_statuses;
+  std::vector<sup::sequencer::JobState> m_job_states;
+};
+
 class TestAnyValueManager : public IAnyValueManager
 {
 public:

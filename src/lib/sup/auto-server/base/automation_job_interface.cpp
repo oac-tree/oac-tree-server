@@ -33,24 +33,18 @@ namespace auto_server
 
 AutomationJobInterface::AutomationJobInterface(const std::string& prefix,
                                                const sequencer::Procedure& proc,
-                                               IAnyValueManager& server_interface)
+                                               IJobInfoIO& job_info_io)
   : m_job_value_mapper{prefix, proc}
   , m_instr_states{}
-  , m_server_interface{server_interface}
-{
-  auto value_set = GetInitialValueSet();
-  m_server_interface.AddAnyValues(value_set);
-}
+  , m_job_info_io{job_info_io}
+{}
 
 AutomationJobInterface::~AutomationJobInterface() = default;
 
 void AutomationJobInterface::InitializeInstructionTree(const sequencer::Instruction* root)
 {
   m_job_value_mapper.InitializeInstructionTree(root);
-  m_instr_states = std::vector<sup::dto::AnyValue>(m_job_value_mapper.GetNumberOfInstructions(),
-                                                   kInstructionAnyValue);
-  auto instr_value_set = GetInstructionValueSet();
-  m_server_interface.AddAnyValues(instr_value_set);
+  m_job_info_io.InitNumberOfInstructions(m_job_value_mapper.GetNumberOfInstructions());
 }
 
 const InstructionMap& AutomationJobInterface::GetInstructionMap() const
@@ -65,21 +59,17 @@ std::vector<const sequencer::Instruction*> AutomationJobInterface::GetOrderedIns
 
 void AutomationJobInterface::UpdateInstructionStatus(const sequencer::Instruction* instruction)
 {
-  auto name = m_job_value_mapper.GetInstructionValueName(instruction);
-  auto status = instruction->GetStatus();
   auto instr_idx = m_job_value_mapper.GetInstructionIndex(instruction);
-  auto& instr_state = m_instr_states[instr_idx];
-  instr_state[kExecStatusField] = static_cast<sup::dto::uint16>(status);
-  m_server_interface.UpdateAnyValue(name, instr_state);
+  auto status = instruction->GetStatus();
+  m_job_info_io.UpdateInstructionStatus(instr_idx, status);
 }
 
 void AutomationJobInterface::VariableUpdated(const std::string& name,
                                              const sup::dto::AnyValue& value,
                                              bool connected)
 {
-  auto var_value_name = m_job_value_mapper.GetVariableValueName(name);
-  auto var_info = EncodeVariableState(value, connected);
-  m_server_interface.UpdateAnyValue(var_value_name, var_info);
+  auto var_idx = m_job_value_mapper.GetVariableIndex(name);
+  m_job_info_io.VariableUpdated(var_idx, value, connected);
 }
 
 bool AutomationJobInterface::PutValue(const sup::dto::AnyValue& value,
@@ -119,50 +109,20 @@ void AutomationJobInterface::Log(int severity, const std::string& message)
 
 void AutomationJobInterface::OnStateChange(sequencer::JobState state) noexcept
 {
-  auto name = m_job_value_mapper.GetJobStateName();
-  auto value = GetJobStateValue(state);
-  m_server_interface.UpdateAnyValue(name, value);
+  m_job_info_io.OnStateChange(state);
 }
 
 void AutomationJobInterface::OnBreakpointChange(const sequencer::Instruction* instruction,
                                                 bool breakpoint_set) noexcept
 {
-  auto name = m_job_value_mapper.GetInstructionValueName(instruction);
   auto instr_idx = m_job_value_mapper.GetInstructionIndex(instruction);
-  auto& instr_state = m_instr_states[instr_idx];
-  instr_state[kBreakpointField] = breakpoint_set;
-  m_server_interface.UpdateAnyValue(name, instr_state);
+  m_job_info_io.OnBreakpointChange(instr_idx, breakpoint_set);
 }
 
 void AutomationJobInterface::OnProcedureTick(const sequencer::Procedure& proc) noexcept
 {
   // TODO: update next instruction leaves
   (void)proc;
-}
-
-IAnyValueManager::NameAnyValueSet AutomationJobInterface::GetInitialValueSet() const
-{
-  IAnyValueManager::NameAnyValueSet result;
-  auto job_value_name = m_job_value_mapper.GetJobStateName();
-  auto job_value = GetJobStateValue(sequencer::JobState::kInitial);
-  result.emplace_back(job_value_name, job_value);
-  auto variable_names = m_job_value_mapper.GetVariableValueNames();
-  for (const auto& name : variable_names)
-  {
-    result.emplace_back(name, kVariableAnyValue);
-  }
-  return result;
-}
-
-IAnyValueManager::NameAnyValueSet AutomationJobInterface::GetInstructionValueSet() const
-{
-  IAnyValueManager::NameAnyValueSet result;
-  auto instr_names = m_job_value_mapper.GetInstructionValueNames();
-  for (const auto& name : instr_names)
-  {
-    result.emplace_back(name, kInstructionAnyValue);
-  }
-  return result;
 }
 
 }  // namespace auto_server

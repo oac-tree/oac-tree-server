@@ -25,6 +25,8 @@
 #include <sup/auto-server/instruction_map.h>
 #include <sup/auto-server/job_utils.h>
 
+#include <sup/sequencer/workspace.h>
+
 namespace sup
 {
 namespace auto_server
@@ -33,7 +35,7 @@ namespace auto_server
 struct Job::JobImpl
 {
   JobImpl(const std::string& prefix, std::unique_ptr<sup::sequencer::Procedure> proc,
-          IAnyValueManager& anyvalue_mgr);
+          IJobInfoIO& job_info_io);
   ~JobImpl() = default;
 
   std::unique_ptr<sup::sequencer::Procedure> m_proc;
@@ -44,8 +46,8 @@ struct Job::JobImpl
 };
 
 Job::Job(const std::string& prefix, std::unique_ptr<sup::sequencer::Procedure> proc,
-         IAnyValueManager& anyvalue_mgr)
-  : m_impl{new JobImpl{prefix, std::move(proc), anyvalue_mgr}}
+         IJobInfoIO& job_info_io)
+  : m_impl{new JobImpl{prefix, std::move(proc), job_info_io}}
 {}
 
 Job::~Job() = default;
@@ -112,9 +114,9 @@ sup::sequencer::AsyncRunner& Job::Runner()
 }
 
 Job::JobImpl::JobImpl(const std::string& prefix, std::unique_ptr<sup::sequencer::Procedure> proc,
-                      IAnyValueManager& anyvalue_mgr)
+                      IJobInfoIO& job_info_io)
   : m_proc{std::move(proc)}
-  , m_job_interface{prefix, *m_proc, anyvalue_mgr}
+  , m_job_interface{prefix, *m_proc, job_info_io}
   , m_runner{*m_proc, m_job_interface}
   , m_job_info{}
   , m_ordered_instructions{}

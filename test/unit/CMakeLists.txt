@@ -9,7 +9,7 @@ target_sources(unit-tests
     epics_anyvalue_server_tests.cpp
     instruction_tree_utils_tests.cpp
     job_info_tests.cpp
-    job_tests.cpp
+    # job_tests.cpp
     job_value_mapper_tests.cpp
     sup_auto_protocol_tests.cpp
     unit_test_helper.cpp

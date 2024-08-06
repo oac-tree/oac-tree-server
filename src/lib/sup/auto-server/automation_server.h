@@ -39,9 +39,9 @@ namespace auto_server
  * @brief Server implementation of the IJobManager interface. This class manages multiple jobs,
  * i.e. procedures and their associated input/output interfaces. For each job, the class will
  * instantiate an appropriate JobInterface implementation that will delegate its method calls to
- * an IAnyValueManager implementation, managed by a registry. The AutomationJobInterface object will
- * be responsible for mapping Instruction pointers and Variable names to plain string identifiers,
- * allowing the IAnyValueManager to use these as channels for network implementations.
+ * an IAnyValueManager implementation, managed by a registry. The JobInterface object will
+ * be responsible for mapping Instruction pointers and Variable names to the correct value names and
+ * methods of IAnyValueManager.
  */
 class AutomationServer : public IJobManager
 {
@@ -65,6 +65,7 @@ private:
   const Job& GetJob(std::size_t job_idx) const;
   const std::string m_server_prefix;
   IAnyValueManagerRegistry& m_av_mgr_registry;
+  std::vector<std::unique_ptr<IJobInfoIO>> m_job_info_ios;
   std::vector<Job> m_jobs;
   mutable std::mutex m_mtx;
 };

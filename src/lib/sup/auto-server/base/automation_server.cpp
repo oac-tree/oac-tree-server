@@ -19,8 +19,17 @@
  * of the distribution package.
  ******************************************************************************/
 
-#include <sup/auto-server/exceptions.h>
 #include <sup/auto-server/automation_server.h>
+#include <sup/auto-server/exceptions.h>
+#include <sup/auto-server/server_job_info_io.h>
+
+#include <sup/sequencer/procedure.h>
+#include <sup/sequencer/workspace.h>
+
+namespace
+{
+sup::dto::uint32 GetNumberOfVariables(const sup::sequencer::Procedure& proc);
+}  // unnamed namespace
 
 namespace sup
 {
@@ -31,6 +40,7 @@ AutomationServer::AutomationServer(const std::string& server_prefix,
                                    IAnyValueManagerRegistry& av_mgr_registry)
   : m_server_prefix{server_prefix}
   , m_av_mgr_registry{av_mgr_registry}
+  , m_job_info_ios{}
   , m_jobs{}
   , m_mtx{}
 {}
@@ -41,8 +51,12 @@ void AutomationServer::AddJob(std::unique_ptr<sup::sequencer::Procedure> proc)
 {
   std::lock_guard<std::mutex> lk{m_mtx};
   auto idx = m_jobs.size();
-  auto& anyvalue_mgr = m_av_mgr_registry.GetAnyValueManager(idx);
-  m_jobs.emplace_back(CreateJobPrefix(m_server_prefix, idx), std::move(proc), anyvalue_mgr);
+  auto job_prefix = CreateJobPrefix(m_server_prefix, idx);
+  auto n_vars = GetNumberOfVariables(*proc);
+  std::unique_ptr<IJobInfoIO> job_info_io{
+    new ServerJobInfoIO{job_prefix, n_vars, m_av_mgr_registry.GetAnyValueManager(idx)}};
+  m_job_info_ios.emplace_back(std::move(job_info_io));
+  m_jobs.emplace_back(job_prefix, std::move(proc), *m_job_info_ios.back());
 }
 
 std::string AutomationServer::GetServerPrefix() const
@@ -132,3 +146,15 @@ std::string CreateJobPrefix(const std::string& server_prefix, std::size_t idx)
 }  // namespace auto_server
 
 }  // namespace sup
+
+namespace
+{
+
+sup::dto::uint32 GetNumberOfVariables(const sup::sequencer::Procedure& proc)
+{
+  const auto& ws = proc.GetWorkspace();
+  auto var_names = ws.VariableNames();
+  return var_names.size();
+}
+
+}  // unnamed namespace

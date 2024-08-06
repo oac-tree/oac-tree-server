@@ -36,6 +36,87 @@ namespace auto_server
 namespace UnitTestHelper
 {
 
+TestJobInfoIO::TestJobInfoIO()
+  : m_n_instr{0}
+  , m_instr_statuses{}
+  , m_job_states{}
+{}
+
+TestJobInfoIO::~TestJobInfoIO() = default;
+
+sup::dto::uint32 TestJobInfoIO::GetNumberOfInstructions() const
+{
+  return m_n_instr;
+}
+
+TestJobInfoIO::InstrStatuses TestJobInfoIO::GetInstrStatuses() const
+{
+  return m_instr_statuses;
+}
+
+TestJobInfoIO::JobStates TestJobInfoIO::GetJobStates() const
+{
+  return m_job_states;
+}
+
+void TestJobInfoIO::InitNumberOfInstructions(sup::dto::uint32 n_instr)
+{
+  m_n_instr = n_instr;
+}
+
+void TestJobInfoIO::UpdateInstructionStatus(sup::dto::uint32 instr_idx,
+                                            sup::sequencer::ExecutionStatus status)
+{
+  m_instr_statuses.emplace_back(instr_idx, status);
+}
+
+void TestJobInfoIO::VariableUpdated(sup::dto::uint32 var_idx, const sup::dto::AnyValue& value,
+                                      bool connected)
+{
+}
+
+bool TestJobInfoIO::PutValue(const sup::dto::AnyValue& value, const std::string& description)
+{
+  (void)value;
+  (void)description;
+  return true;
+}
+
+bool TestJobInfoIO::GetUserValue(sup::dto::AnyValue& value, const std::string& description)
+{
+  (void)value;
+  (void)description;
+  return false;
+}
+
+int TestJobInfoIO::GetUserChoice(const std::vector<std::string>& options,
+                    const sup::dto::AnyValue& metadata)
+{
+  (void)options;
+  (void)metadata;
+  return -1;
+}
+
+void TestJobInfoIO::Message(const std::string& message)
+{
+  (void)message;
+}
+
+void TestJobInfoIO::Log(int severity, const std::string& message)
+{
+  (void)severity;
+  (void)message;
+}
+
+void TestJobInfoIO::OnStateChange(sup::sequencer::JobState state)
+{
+  m_job_states.push_back(state);
+}
+
+void TestJobInfoIO::OnBreakpointChange(sup::dto::uint32 instr_idx, bool breakpoint_set)
+{
+}
+
 TestAnyValueManager::TestAnyValueManager()
     : m_value_map{}
 {}

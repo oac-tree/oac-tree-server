@@ -23,7 +23,7 @@
 #define SUP_AUTO_SERVER_JOB_H_
 
 #include <sup/auto-server/job_info.h>
-#include <sup/auto-server/i_anyvalue_manager.h>
+#include <sup/auto-server/i_job_info_io.h>
 
 #include <sup/sequencer/async_runner.h>
 #include <sup/sequencer/instruction.h>
@@ -44,7 +44,7 @@ class Job
 {
 public:
   Job(const std::string& prefix, std::unique_ptr<sup::sequencer::Procedure> proc,
-      IAnyValueManager& anyvalue_mgr);
+      IJobInfoIO& job_info_io);
   ~Job();
 
   // Delete copy
