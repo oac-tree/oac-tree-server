@@ -8,6 +8,7 @@ target_sources(sup-auto-server
   client_anyvalue_manager.cpp
   client_interface_mapper.cpp
   exceptions.cpp
+  i_anyvalue_listener.cpp
   i_anyvalue_manager_registry.cpp
   i_anyvalue_manager.cpp
   i_job_info_io_registry.cpp
