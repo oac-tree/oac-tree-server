@@ -114,7 +114,7 @@ const std::string kJobCommandFieldName = "command";
 
 enum class ValueNameType
 {
-  kUnknown =0,
+  kUnknown = 0,
   kInstruction,
   kVariable,
   kJobStatus
