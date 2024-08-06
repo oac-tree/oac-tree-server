@@ -21,7 +21,17 @@
 
 #include <sup/auto-server/client_anyvalue_manager.h>
 
+#include <sup/auto-server/sup_auto_protocol.h>
 
+namespace
+{
+using namespace sup::auto_server;
+void UpdateJobState(IJobInfoIO& job_info_io, const sup::dto::AnyValue& anyvalue);
+void UpdateInstructionState(IJobInfoIO& job_info_io, sup::dto::uint32 instr_idx,
+                            const sup::dto::AnyValue& anyvalue);
+void UpdateVariableSate(IJobInfoIO& job_info_io, sup::dto::uint32 var_idx,
+                        const sup::dto::AnyValue& anyvalue);
+}  // unnamed namespace
 
 namespace sup
 {
@@ -64,15 +74,78 @@ bool ClientAnyValueManager::UpdateAnyValue(const std::string& name, const sup::d
 
 ClientAnyValueManager::AnyValueCallback CreateCallback(const std::string& value_name)
 {
-  (void)value_name;
-  auto dummy = [](IJobInfoIO& job_info_io, const sup::dto::AnyValue& value) {
+  auto ignore = [](IJobInfoIO& job_info_io, const sup::dto::AnyValue& value) {
     (void)job_info_io;
     (void)value;
     return;
   };
-  return dummy;
+  auto info = ParseValueName(value_name);
+  auto idx = info.idx;
+  switch (info.val_type)
+  {
+  case ValueNameType::kJobStatus:
+    return UpdateJobState;
+  case ValueNameType::kInstruction:
+    return [idx](IJobInfoIO& job_info_io, const sup::dto::AnyValue& anyvalue) {
+      return UpdateInstructionState(job_info_io, idx, anyvalue);
+    };
+  case ValueNameType::kVariable:
+    return [idx](IJobInfoIO& job_info_io, const sup::dto::AnyValue& anyvalue) {
+      return UpdateVariableSate(job_info_io, idx, anyvalue);
+    };
+  case ValueNameType::kUnknown:
+    break;
+  default:
+    break;
+  }
+  return ignore;
 }
 
 }  // namespace auto_server
 
 }  // namespace sup
+
+namespace
+{
+void UpdateJobState(IJobInfoIO& job_info_io, const sup::dto::AnyValue& anyvalue)
+{
+  if (!anyvalue.HasField(kJobStateField) ||
+      anyvalue[kJobStateField].GetType() != sup::dto::UnsignedInteger32Type)
+  {
+    return;
+  }
+  auto job_state_int = anyvalue[kJobStateField].As<sup::dto::uint32>();
+  auto job_state = static_cast<sup::sequencer::JobState>(job_state_int);
+  job_info_io.OnStateChange(job_state);
+}
+
+void UpdateInstructionState(IJobInfoIO& job_info_io, sup::dto::uint32 instr_idx,
+                            const sup::dto::AnyValue& anyvalue)
+{
+  if (anyvalue.HasField(kExecStatusField) &&
+      anyvalue[kExecStatusField].GetType() == sup::dto::UnsignedInteger16Type)
+  {
+    auto exec_state_int = anyvalue[kExecStatusField].As<sup::dto::uint16>();
+    auto exec_state = static_cast<sup::sequencer::ExecutionStatus>(exec_state_int);
+    job_info_io.UpdateInstructionStatus(instr_idx, exec_state);
+  }
+  if (anyvalue.HasField(kBreakpointField) &&
+      anyvalue[kBreakpointField].GetType() == sup::dto::BooleanType)
+  {
+    auto breakpoint_set = anyvalue[kBreakpointField].As<sup::dto::boolean>();
+    job_info_io.OnBreakpointChange(instr_idx, breakpoint_set);
+  }
+}
+
+void UpdateVariableSate(IJobInfoIO& job_info_io, sup::dto::uint32 var_idx,
+                        const sup::dto::AnyValue& anyvalue)
+{
+  auto var_state = DecodeVariableState(anyvalue);
+  if (sup::dto::IsEmptyValue(var_state.first))
+  {
+    return;
+  }
+  job_info_io.VariableUpdated(var_idx, var_state.first, var_state.second);
+}
+
+}  // unnamed namespace
