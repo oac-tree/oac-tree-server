@@ -42,6 +42,7 @@ public:
   ~EPICSAnyValueListener();
 
 private:
+  IAnyValueManager::NameAnyValueSet GetValueSet(const JobInfo& job_info) const;
   std::unique_ptr<EPICSAnyValueListenerImpl> m_impl;
 };
 

@@ -21,6 +21,8 @@
 
 #include "epics_anyvalue_listener.h"
 
+#include <sup/auto-server/sup_auto_protocol.h>
+
 #include <sup/epics/pv_access_client_pv.h>
 
 #include <vector>
@@ -50,11 +52,33 @@ private:
 EPICSAnyValueListener::EPICSAnyValueListener(const JobInfo& job_info, IAnyValueManager& av_mgr)
   : m_impl{new EPICSAnyValueListenerImpl(av_mgr)}
 {
-  // parse all required pv_names and add those to the AVMgr
-  // then add them as PVs to the impl
+  auto value_set = GetValueSet(job_info);
+  av_mgr.AddAnyValues(value_set);
+  auto value_names = GetNames(value_set);
+  for (const auto& value_name : value_names)
+  {
+    m_impl->AddMonitorPV(value_name);
+  }
 }
 
 EPICSAnyValueListener::~EPICSAnyValueListener() = default;
+
+IAnyValueManager::NameAnyValueSet EPICSAnyValueListener::GetValueSet(const JobInfo& job_info) const
+{
+  auto job_prefix = job_info.GetPrefix();
+  IAnyValueManager::NameAnyValueSet result;
+  auto job_value_name = GetJobStatePVName(job_prefix);
+  auto job_value = GetJobStateValue(sequencer::JobState::kInitial);
+  result.emplace_back(job_value_name, job_value);
+  for (sup::dto::uint32 var_idx = 0; var_idx < job_info.GetNumberOfVariables(); ++var_idx)
+  {
+    const auto name = GetVariablePVName(job_prefix, var_idx);
+    result.emplace_back(name, kVariableAnyValue);
+  }
+  // TODO: add instructions
+  return result;
+}
+
 
 std::unique_ptr<IAnyValueListener> EPICSListenerFactoryFunction(
   const JobInfo& job_info, IAnyValueManager& av_mgr)
@@ -64,6 +88,7 @@ std::unique_ptr<IAnyValueListener> EPICSListenerFactoryFunction(
 
 EPICSAnyValueListenerImpl::EPICSAnyValueListenerImpl(IAnyValueManager& av_mgr)
   : m_av_mgr{av_mgr}
+  , m_client_pvs{}
 {}
 
 EPICSAnyValueListenerImpl::~EPICSAnyValueListenerImpl() = default;
