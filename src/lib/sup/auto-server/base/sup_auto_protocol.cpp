@@ -27,9 +27,15 @@
 #include <sup/sequencer/execution_status.h>
 #include <sup/sequencer/job_states.h>
 
+#include <limits>
+
 namespace
 {
 bool ValidateVariablePayload(const sup::dto::AnyValue& payload);
+
+bool EndsWith(const std::string& str, const std::string& sub_str);
+
+bool ParseIndex(const std::string& idx_str, sup::dto::uint32& idx);
 }
 
 namespace sup
@@ -123,6 +129,40 @@ std::pair<sup::dto::AnyValue, bool> DecodeVariableState(const dto::AnyValue& enc
   return { payload[kVariableValueField], payload[kVariableConnectedField].As<sup::dto::boolean>() };
 }
 
+ValueNameInfo ParseValueName(const std::string& val_name)
+{
+  ValueNameInfo unknown{ ValueNameType::kUnknown, 0 };
+  if (EndsWith(val_name, kJobStateId))
+  {
+    if (val_name.size() == kJobStateId.size())
+    {
+      return unknown;
+    }
+    return { ValueNameType::kJobStatus, 0 };
+  }
+  auto pos = val_name.find_last_of("-");
+  if (pos == std::string::npos)
+  {
+    return unknown;
+  }
+  sup::dto::uint32 idx;
+  auto idx_str = val_name.substr(pos + 1);
+  if (!ParseIndex(idx_str, idx))
+  {
+    return unknown;
+  }
+  auto remainder = val_name.substr(0, pos+1);
+  if (EndsWith(remainder, kInstructionId) && remainder.size() != kInstructionId.size())
+  {
+    return { ValueNameType::kInstruction, idx };
+  }
+  if (EndsWith(remainder, kVariableId) && remainder.size() != kVariableId.size())
+  {
+    return { ValueNameType::kVariable, idx };
+  }
+  return unknown;
+}
+
 }  // namespace auto_server
 
 }  // namespace sup
@@ -146,5 +186,35 @@ bool ValidateVariablePayload(const sup::dto::AnyValue& payload)
   }
   return true;
 }
+
+bool EndsWith(const std::string& str, const std::string& sub_str)
+{
+  auto pos = str.rfind(sub_str);
+  return pos != std::string::npos && pos + sub_str.size() == str.size();
+}
+
+bool ParseIndex(const std::string& idx_str, sup::dto::uint32& idx)
+{
+  unsigned long result;
+  try
+  {
+    result = std::stoul(idx_str);
+  }
+  catch(const std::exception& e)
+  {
+    return false;
+  }
+  if (std::to_string(result) != idx_str)
+  {
+    return false;
+  }
+  if (result > std::numeric_limits<sup::dto::uint32>::max())
+  {
+    return false;
+  }
+  idx = static_cast<sup::dto::uint32>(result);
+  return true;
+}
+
 }
 

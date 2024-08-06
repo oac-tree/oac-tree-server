@@ -74,3 +74,148 @@ TEST_F(SupAutoProtocolTest, EncodeVariableState)
   EXPECT_EQ(payload[kVariableValueField], var_value);
   EXPECT_EQ(payload[kVariableConnectedField], true);
 }
+
+TEST_F(SupAutoProtocolTest, ParseValueName)
+{
+  {
+    // Job state field with prefix is correctly parsed as such
+    std::string val_name = "prefix:" + kJobStateId;
+    auto info = ParseValueName(val_name);
+    EXPECT_EQ(info.val_type, ValueNameType::kJobStatus);
+    EXPECT_EQ(info.idx, 0);
+  }
+  {
+    // Job state field with single character prefix is correctly parsed as such
+    std::string val_name = "p" + kJobStateId;
+    auto info = ParseValueName(val_name);
+    EXPECT_EQ(info.val_type, ValueNameType::kJobStatus);
+    EXPECT_EQ(info.idx, 0);
+  }
+  {
+    // Job state field without prefix is parsed as unknown
+    auto info = ParseValueName(kJobStateId);
+    EXPECT_EQ(info.val_type, ValueNameType::kUnknown);
+    EXPECT_EQ(info.idx, 0);
+  }
+  {
+    // Instruction state field correctly parsed
+    std::string val_name = "prefix:" + kInstructionId + "42";
+    auto info = ParseValueName(val_name);
+    EXPECT_EQ(info.val_type, ValueNameType::kInstruction);
+    EXPECT_EQ(info.idx, 42);
+  }
+  {
+    // Instruction state field with single character prefix correctly parsed
+    std::string val_name = "p" + kInstructionId + "17";
+    auto info = ParseValueName(val_name);
+    EXPECT_EQ(info.val_type, ValueNameType::kInstruction);
+    EXPECT_EQ(info.idx, 17);
+  }
+  {
+    // Instruction state field with zero index correctly parsed
+    std::string val_name = "prefix:" + kInstructionId + "0";
+    auto info = ParseValueName(val_name);
+    EXPECT_EQ(info.val_type, ValueNameType::kInstruction);
+    EXPECT_EQ(info.idx, 0);
+  }
+  {
+    // Instruction state field with max index correctly parsed
+    auto max_32 = std::numeric_limits<sup::dto::uint32>::max();
+    std::string val_name = "prefix:" + kInstructionId + std::to_string(max_32);
+    auto info = ParseValueName(val_name);
+    EXPECT_EQ(info.val_type, ValueNameType::kInstruction);
+    EXPECT_EQ(info.idx, max_32);
+  }
+  {
+    // Instruction state field without prefix is parsed as unknown
+    std::string val_name = kInstructionId + "42";
+    auto info = ParseValueName(val_name);
+    EXPECT_EQ(info.val_type, ValueNameType::kUnknown);
+    EXPECT_EQ(info.idx, 0);
+  }
+  {
+    // Instruction state field with bad integer encoding is parsed as unknown
+    std::string val_name = "prefix:" + kInstructionId + "abc";
+    auto info = ParseValueName(val_name);
+    EXPECT_EQ(info.val_type, ValueNameType::kUnknown);
+    EXPECT_EQ(info.idx, 0);
+  }
+  {
+    // Instruction state field where index part is not fully parsed as a number is parsed as unknown
+    std::string val_name = "prefix:" + kInstructionId + " 12";
+    auto info = ParseValueName(val_name);
+    EXPECT_EQ(info.val_type, ValueNameType::kUnknown);
+    EXPECT_EQ(info.idx, 0);
+  }
+  {
+    // Instruction state field where index does not fit 32bit unsigned is parsed as unknown
+    std::string val_name = "prefix:" + kInstructionId + "4294967296";
+    auto info = ParseValueName(val_name);
+    EXPECT_EQ(info.val_type, ValueNameType::kUnknown);
+    EXPECT_EQ(info.idx, 0);
+  }
+  {
+    // Variable state field correctly parsed
+    std::string val_name = "prefix:" + kVariableId + "42";
+    auto info = ParseValueName(val_name);
+    EXPECT_EQ(info.val_type, ValueNameType::kVariable);
+    EXPECT_EQ(info.idx, 42);
+  }
+  {
+    // Variable state field with single character prefix correctly parsed
+    std::string val_name = "p" + kVariableId + "17";
+    auto info = ParseValueName(val_name);
+    EXPECT_EQ(info.val_type, ValueNameType::kVariable);
+    EXPECT_EQ(info.idx, 17);
+  }
+  {
+    // Variable state field with zero index correctly parsed
+    std::string val_name = "prefix:" + kVariableId + "0";
+    auto info = ParseValueName(val_name);
+    EXPECT_EQ(info.val_type, ValueNameType::kVariable);
+    EXPECT_EQ(info.idx, 0);
+  }
+  {
+    // Variable state field with max index correctly parsed
+    auto max_32 = std::numeric_limits<sup::dto::uint32>::max();
+    std::string val_name = "prefix:" + kVariableId + std::to_string(max_32);
+    auto info = ParseValueName(val_name);
+    EXPECT_EQ(info.val_type, ValueNameType::kVariable);
+    EXPECT_EQ(info.idx, max_32);
+  }
+  {
+    // Variable state field without prefix is parsed as unknown
+    std::string val_name = kVariableId + "42";
+    auto info = ParseValueName(val_name);
+    EXPECT_EQ(info.val_type, ValueNameType::kUnknown);
+    EXPECT_EQ(info.idx, 0);
+  }
+  {
+    // Variable state field with bad integer encoding is parsed as unknown
+    std::string val_name = "prefix:" + kVariableId + "abc";
+    auto info = ParseValueName(val_name);
+    EXPECT_EQ(info.val_type, ValueNameType::kUnknown);
+    EXPECT_EQ(info.idx, 0);
+  }
+  {
+    // Variable state field where index part is not fully parsed as a number is parsed as unknown
+    std::string val_name = "prefix:" + kVariableId + " 12";
+    auto info = ParseValueName(val_name);
+    EXPECT_EQ(info.val_type, ValueNameType::kUnknown);
+    EXPECT_EQ(info.idx, 0);
+  }
+  {
+    // Variable state field where index does not fit 32bit unsigned is parsed as unknown
+    std::string val_name = "prefix:" + kVariableId + "4294967296";
+    auto info = ParseValueName(val_name);
+    EXPECT_EQ(info.val_type, ValueNameType::kUnknown);
+    EXPECT_EQ(info.idx, 0);
+  }
+  {
+    // Unknown type field is parsed as unknown
+    std::string val_name = "prefix:unknown-42";
+    auto info = ParseValueName(val_name);
+    EXPECT_EQ(info.val_type, ValueNameType::kUnknown);
+    EXPECT_EQ(info.idx, 0);
+  }
+}

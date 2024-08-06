@@ -21,17 +21,15 @@
 
 #include <sup/auto-server/client_anyvalue_manager.h>
 
+
+
 namespace sup
 {
 namespace auto_server
 {
 
-ClientAnyValueManager::ClientAnyValueManager(std::size_t job_idx,
-                                             const JobInfo& job_info,
-                                             AutomationClientInterface& client_if)
-  : m_job_idx{job_idx}
-  , m_value_mapper{job_info}
-  , m_client_if{client_if}
+ClientAnyValueManager::ClientAnyValueManager(IJobInfoIO& job_info_io)
+  : m_job_info_io{job_info_io}
   , m_cb_map{}
 {}
 
@@ -39,9 +37,17 @@ ClientAnyValueManager::~ClientAnyValueManager() = default;
 
 bool ClientAnyValueManager::AddAnyValues(const NameAnyValueSet& name_value_set)
 {
-  (void)name_value_set;
-  // TODO: initialize mapping between the name and a std::function<void(const AnyValue&)> that
-  // will propagate the parsed value to m_client_if
+  for (auto& name_value_pair : name_value_set)
+  {
+    auto& value_name = name_value_pair.first;
+    if (m_cb_map.find(value_name) != m_cb_map.end())
+    {
+      return false;
+    }
+    auto cb = CreateCallback(value_name);
+    cb(m_job_info_io, name_value_pair.second);
+    m_cb_map[value_name] = cb;
+  }
   return true;
 }
 
@@ -52,19 +58,19 @@ bool ClientAnyValueManager::UpdateAnyValue(const std::string& name, const sup::d
   {
     return false;
   }
-  iter->second(value);
+  iter->second(m_job_info_io, value);
   return true;
 }
 
-ClientAnyValueManager::AnyValueCallback ClientAnyValueManager::GetInstructionUpdateFunction(
-  const std::string& val_name)
+ClientAnyValueManager::AnyValueCallback CreateCallback(const std::string& value_name)
 {
-  auto instr_info = m_value_mapper.FindInstructionInfo(val_name);
-  auto func = [this, instr_info](const sup::dto::AnyValue& val) {
-    auto instr_state = ToInstructionState(val);
-    m_client_if.InstructionUpdated(m_job_idx, instr_info, instr_state);
+  (void)value_name;
+  auto dummy = [](IJobInfoIO& job_info_io, const sup::dto::AnyValue& value) {
+    (void)job_info_io;
+    (void)value;
+    return;
   };
-  return func;
+  return dummy;
 }
 
 }  // namespace auto_server

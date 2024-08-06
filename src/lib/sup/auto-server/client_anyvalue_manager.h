@@ -22,9 +22,8 @@
 #ifndef SUP_AUTO_SERVER_CLIENT_ANYVALUE_MANAGER_H_
 #define SUP_AUTO_SERVER_CLIENT_ANYVALUE_MANAGER_H_
 
-#include <sup/auto-server/automation_client_interface.h>
 #include <sup/auto-server/i_anyvalue_manager.h>
-#include <sup/auto-server/job_info_value_mapper.h>
+#include <sup/auto-server/i_job_info_io.h>
 
 #include <functional>
 #include <map>
@@ -40,8 +39,9 @@ namespace auto_server
 class ClientAnyValueManager : public IAnyValueManager
 {
 public:
-  ClientAnyValueManager(std::size_t job_idx, const JobInfo& job_info,
-                        AutomationClientInterface& client_if);
+  using AnyValueCallback = std::function<void(IJobInfoIO&, const sup::dto::AnyValue&)>;
+
+  ClientAnyValueManager(IJobInfoIO& job_info_io);
 
   virtual ~ClientAnyValueManager();
 
@@ -50,13 +50,11 @@ public:
   bool UpdateAnyValue(const std::string& name, const sup::dto::AnyValue& value) override;
 
 private:
-  using AnyValueCallback = std::function<void(const sup::dto::AnyValue&)>;
-  AnyValueCallback GetInstructionUpdateFunction(const std::string& val_name);
-  std::size_t m_job_idx;
-  JobInfoValueMapper m_value_mapper;
-  AutomationClientInterface& m_client_if;
+  IJobInfoIO& m_job_info_io;
   std::map<std::string, AnyValueCallback> m_cb_map;
 };
+
+ClientAnyValueManager::AnyValueCallback CreateCallback(const std::string& value_name);
 
 }  // namespace auto_server
 

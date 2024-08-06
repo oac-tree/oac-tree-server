@@ -112,6 +112,20 @@ const std::string kInstructionIndexFieldName = "instruction_index";
 const std::string kBreakpointActiveFieldName = "breakpoint_active";
 const std::string kJobCommandFieldName = "command";
 
+enum class ValueNameType
+{
+  kUnknown =0,
+  kInstruction,
+  kVariable,
+  kJobStatus
+};
+
+struct ValueNameInfo
+{
+  ValueNameType val_type;
+  sup::dto::uint32 idx;
+};
+
 /**
  * @brief Create a PV channel name for the job state from a given prefix.
  *
@@ -165,6 +179,15 @@ sup::dto::AnyValue EncodeVariableState(const dto::AnyValue& value, bool connecte
  * @return Pair of variable value and its connected state.
  */
 std::pair<sup::dto::AnyValue, bool> DecodeVariableState(const dto::AnyValue& encoded);
+
+/**
+ * @brief Parse a given AnyValue name into its type (instruction, variable, etc.) and optional
+ * index.
+ *
+ * @param val_name AnyValue name.
+ * @return Parsed information. Type kUnknown is returned if the name could not be correctly parsed.
+ */
+ValueNameInfo ParseValueName(const std::string& val_name);
 
 }  // namespace auto_server
 
