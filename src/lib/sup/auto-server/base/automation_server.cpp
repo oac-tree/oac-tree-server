@@ -121,12 +121,12 @@ void AutomationServer::SendJobCommand(std::size_t job_idx, sup::sequencer::JobCo
   }
 }
 
-Job& AutomationServer::GetJob(std::size_t job_idx)
+ServerJob& AutomationServer::GetJob(std::size_t job_idx)
 {
-  return const_cast<Job&>(const_cast<const AutomationServer*>(this)->GetJob(job_idx));
+  return const_cast<ServerJob&>(const_cast<const AutomationServer*>(this)->GetJob(job_idx));
 }
 
-const Job& AutomationServer::GetJob(std::size_t job_idx) const
+const ServerJob& AutomationServer::GetJob(std::size_t job_idx) const
 {
   std::lock_guard<std::mutex> lk{m_mtx};
   if (job_idx >= m_jobs.size())

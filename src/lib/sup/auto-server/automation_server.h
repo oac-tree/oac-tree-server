@@ -24,7 +24,7 @@
 
 #include <sup/auto-server/i_anyvalue_manager_registry.h>
 #include <sup/auto-server/i_job_manager.h>
-#include <sup/auto-server/job.h>
+#include <sup/auto-server/server_job.h>
 
 #include <memory>
 #include <mutex>
@@ -61,12 +61,12 @@ public:
   void SendJobCommand(std::size_t job_idx, sup::sequencer::JobCommand command) override;
 
 private:
-  Job& GetJob(std::size_t job_idx);
-  const Job& GetJob(std::size_t job_idx) const;
+  ServerJob& GetJob(std::size_t job_idx);
+  const ServerJob& GetJob(std::size_t job_idx) const;
   const std::string m_server_prefix;
   IAnyValueManagerRegistry& m_av_mgr_registry;
   std::vector<std::unique_ptr<IJobInfoIO>> m_job_info_ios;
-  std::vector<Job> m_jobs;
+  std::vector<ServerJob> m_jobs;
   mutable std::mutex m_mtx;
 };
 

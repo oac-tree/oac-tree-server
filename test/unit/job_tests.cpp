@@ -21,8 +21,8 @@
 
 #include "unit_test_helper.h"
 
-#include <sup/auto-server/job.h>
 #include <sup/auto-server/sup_auto_protocol.h>
+#include <sup/auto-server/server_job.h>
 
 #include <sup/auto-server/epics/epics_anyvalue_manager.h>
 
@@ -72,8 +72,8 @@ TEST_F(JobTest, Constructed)
   auto proc = sup::sequencer::ParseProcedureString(procedure_string);
   ASSERT_NE(proc.get(), nullptr);
 
-  // Create Job and wait for initial state
-  Job job{prefix, std::move(proc), m_anyvalue_mgr};
+  // Create ServerJob and wait for initial state
+  ServerJob job{prefix, std::move(proc), m_anyvalue_mgr};
 
   auto pv_callback = [this](const sup::epics::PvAccessClientPV::ExtendedValue& val) {
     if(val.connected)
@@ -107,9 +107,9 @@ TEST_F(JobTest, MoveConstructed)
   auto proc = sup::sequencer::ParseProcedureString(procedure_string);
   ASSERT_NE(proc.get(), nullptr);
 
-  // Create Job and wait for initial state
-  Job tmp_job{prefix, std::move(proc), m_anyvalue_mgr};
-  Job job{std::move(tmp_job)};
+  // Create ServerJob and wait for initial state
+  ServerJob tmp_job{prefix, std::move(proc), m_anyvalue_mgr};
+  ServerJob job{std::move(tmp_job)};
 
   auto pv_callback = [this](const sup::epics::PvAccessClientPV::ExtendedValue& val) {
     if(val.connected)

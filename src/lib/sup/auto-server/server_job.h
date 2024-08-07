@@ -37,23 +37,23 @@ namespace sup
 namespace auto_server
 {
 /**
- * @brief The Job class instantiates a AsyncRunner and an appropriate JobInterface to use.
+ * @brief The ServerJob class instantiates a AsyncRunner and an appropriate JobInterface to use.
  * It manages the lifetime of Procedure, AsyncRunner and JobInterface.
  */
-class Job
+class ServerJob
 {
 public:
-  Job(const std::string& prefix, std::unique_ptr<sup::sequencer::Procedure> proc,
+  ServerJob(const std::string& prefix, std::unique_ptr<sup::sequencer::Procedure> proc,
       IJobInfoIO& job_info_io);
-  ~Job();
+  ~ServerJob();
 
   // Delete copy
-  Job(const Job& other) = delete;
-  Job& operator=(const Job& other) = delete;
+  ServerJob(const ServerJob& other) = delete;
+  ServerJob& operator=(const ServerJob& other) = delete;
 
   // Only support move construction
-  Job(Job&& other);
-  Job& operator=(Job&& other) = delete;
+  ServerJob(ServerJob&& other);
+  ServerJob& operator=(ServerJob&& other) = delete;
 
   const JobInfo& GetInfo() const;
 

@@ -19,7 +19,7 @@
  * of the distribution package.
  ******************************************************************************/
 
-#include <sup/auto-server/job.h>
+#include <sup/auto-server/server_job.h>
 
 #include <sup/auto-server/automation_job_interface.h>
 #include <sup/auto-server/instruction_map.h>
@@ -32,7 +32,7 @@ namespace sup
 namespace auto_server
 {
 
-struct Job::JobImpl
+struct ServerJob::JobImpl
 {
   JobImpl(const std::string& prefix, std::unique_ptr<sup::sequencer::Procedure> proc,
           IJobInfoIO& job_info_io);
@@ -45,25 +45,25 @@ struct Job::JobImpl
   std::vector<const sequencer::Instruction*> m_ordered_instructions;
 };
 
-Job::Job(const std::string& prefix, std::unique_ptr<sup::sequencer::Procedure> proc,
+ServerJob::ServerJob(const std::string& prefix, std::unique_ptr<sup::sequencer::Procedure> proc,
          IJobInfoIO& job_info_io)
   : m_impl{new JobImpl{prefix, std::move(proc), job_info_io}}
 {}
 
-Job::~Job() = default;
+ServerJob::~ServerJob() = default;
 
-Job::Job(Job&& other)
+ServerJob::ServerJob(ServerJob&& other)
   : m_impl{}
 {
   std::swap(m_impl, other.m_impl);
 }
 
-const JobInfo& Job::GetInfo() const
+const JobInfo& ServerJob::GetInfo() const
 {
   return *m_impl->m_job_info;
 }
 
-void Job::SetBreakpoint(std::size_t instr_idx)
+void ServerJob::SetBreakpoint(std::size_t instr_idx)
 {
   if (instr_idx >= m_impl->m_ordered_instructions.size())
   {
@@ -73,7 +73,7 @@ void Job::SetBreakpoint(std::size_t instr_idx)
   return Runner().SetBreakpoint(instruction);
 }
 
-void Job::RemoveBreakpoint(std::size_t instr_idx)
+void ServerJob::RemoveBreakpoint(std::size_t instr_idx)
 {
   if (instr_idx >= m_impl->m_ordered_instructions.size())
   {
@@ -83,37 +83,37 @@ void Job::RemoveBreakpoint(std::size_t instr_idx)
   return Runner().RemoveBreakpoint(instruction);
 }
 
-void Job::Start()
+void ServerJob::Start()
 {
   return Runner().Start();
 }
 
-void Job::Step()
+void ServerJob::Step()
 {
   return Runner().Step();
 }
 
-void Job::Pause()
+void ServerJob::Pause()
 {
   return Runner().Pause();
 }
 
-void Job::Reset()
+void ServerJob::Reset()
 {
   return Runner().Reset();
 }
 
-void Job::Halt()
+void ServerJob::Halt()
 {
   return Runner().Halt();
 }
 
-sup::sequencer::AsyncRunner& Job::Runner()
+sup::sequencer::AsyncRunner& ServerJob::Runner()
 {
   return m_impl->m_runner;
 }
 
-Job::JobImpl::JobImpl(const std::string& prefix, std::unique_ptr<sup::sequencer::Procedure> proc,
+ServerJob::JobImpl::JobImpl(const std::string& prefix, std::unique_ptr<sup::sequencer::Procedure> proc,
                       IJobInfoIO& job_info_io)
   : m_proc{std::move(proc)}
   , m_job_interface{prefix, *m_proc, job_info_io}

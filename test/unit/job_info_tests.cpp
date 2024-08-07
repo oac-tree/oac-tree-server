@@ -23,9 +23,9 @@
 
 #include <sup/auto-server/instruction_map.h>
 #include <sup/auto-server/instruction_tree_utils.h>
-#include <sup/auto-server/job.h>
 #include <sup/auto-server/job_value_mapper.h>
 #include <sup/auto-server/job_utils.h>
+#include <sup/auto-server/server_job.h>
 #include <sup/auto-server/sup_auto_protocol.h>
 #include <sup/auto-server/variable_utils.h>
 

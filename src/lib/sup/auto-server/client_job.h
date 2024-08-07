@@ -28,7 +28,6 @@
 
 #include <memory>
 
-
 namespace sup
 {
 namespace auto_server
