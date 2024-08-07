@@ -64,7 +64,6 @@ public:
   void OnBreakpointChange(sup::dto::uint32 instr_idx, bool breakpoint_set) override;
 
 private:
-  IAnyValueManager::NameAnyValueSet GetInitialValueSet() const;
   const std::string m_job_prefix;
   const sup::dto::uint32 m_n_vars;
   std::vector<sup::dto::AnyValue> m_instr_states;

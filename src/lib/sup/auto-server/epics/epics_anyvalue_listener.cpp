@@ -66,19 +66,16 @@ EPICSAnyValueListener::~EPICSAnyValueListener() = default;
 IAnyValueManager::NameAnyValueSet EPICSAnyValueListener::GetValueSet(const JobInfo& job_info) const
 {
   auto job_prefix = job_info.GetPrefix();
-  IAnyValueManager::NameAnyValueSet result;
-  auto job_value_name = GetJobStatePVName(job_prefix);
-  auto job_value = GetJobStateValue(sequencer::JobState::kInitial);
-  result.emplace_back(job_value_name, job_value);
-  for (sup::dto::uint32 var_idx = 0; var_idx < job_info.GetNumberOfVariables(); ++var_idx)
+  auto n_vars = job_info.GetNumberOfVariables();
+  auto initial_set = GetInitialValueSet(job_prefix, n_vars);
+  auto n_instr = job_info.GetNumberOfInstructions();
+  auto instr_set = GetInstructionValueSet(job_prefix, n_instr);
+  for (const auto& instr_pair : instr_set)
   {
-    const auto name = GetVariablePVName(job_prefix, var_idx);
-    result.emplace_back(name, kVariableAnyValue);
+    initial_set.push_back(instr_pair);
   }
-  // TODO: add instructions
-  return result;
+  return initial_set;
 }
-
 
 std::unique_ptr<IAnyValueListener> EPICSListenerFactoryFunction(
   const JobInfo& job_info, IAnyValueManager& av_mgr)

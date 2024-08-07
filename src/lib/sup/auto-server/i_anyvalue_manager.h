@@ -84,6 +84,27 @@ public:
  */
 std::set<std::string> GetNames(const IAnyValueManager::NameAnyValueSet& name_value_set);
 
+/**
+ * @brief Get the set of initial AnyValues related to a job. These include the jobstate and
+ * variable AnyValues.
+ *
+ * @param job_prefix Job specific prefix to use for the AnyValue names.
+ * @param n_vars Number of variables in the job.
+ * @return List of pairs of AnyValue names and initial values.
+ */
+IAnyValueManager::NameAnyValueSet GetInitialValueSet(const std::string& job_prefix,
+                                                     sup::dto::uint32 n_vars);
+
+/**
+ * @brief Get the set of AnyValues related to all instructions of a job.
+ *
+ * @param job_prefix Job specific prefix to use for the AnyValue names.
+ * @param n_instr Number of instructions in the job.
+ * @return List of pairs of AnyValue names and initial values for all instructions.
+ */
+IAnyValueManager::NameAnyValueSet GetInstructionValueSet(const std::string& job_prefix,
+                                                         sup::dto::uint32 n_instr);
+
 }  // namespace auto_server
 
 }  // namespace sup

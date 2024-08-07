@@ -23,13 +23,6 @@
 
 #include <sup/auto-server/sup_auto_protocol.h>
 
-namespace
-{
-using namespace sup::auto_server;
-IAnyValueManager::NameAnyValueSet GetInstructionValueSet(const std::string& job_prefix,
-                                                         sup::dto::uint32 n_instr);
-}  // unnamed namespace
-
 namespace sup
 {
 namespace auto_server
@@ -41,7 +34,7 @@ ServerJobInfoIO::ServerJobInfoIO(const std::string& job_prefix, sup::dto::uint32
   , m_instr_states{}
   , m_av_manager{av_manager}
 {
-  auto value_set = GetInitialValueSet();
+  auto value_set = GetInitialValueSet(m_job_prefix, m_n_vars);
   m_av_manager.AddAnyValues(value_set);
 }
 
@@ -127,35 +120,6 @@ void ServerJobInfoIO::OnBreakpointChange(sup::dto::uint32 instr_idx, bool breakp
   m_av_manager.UpdateAnyValue(instr_val_name, instr_state);
 }
 
-IAnyValueManager::NameAnyValueSet ServerJobInfoIO::GetInitialValueSet() const
-{
-  IAnyValueManager::NameAnyValueSet result;
-  auto job_value_name = GetJobStatePVName(m_job_prefix);
-  auto job_value = GetJobStateValue(sequencer::JobState::kInitial);
-  result.emplace_back(job_value_name, job_value);
-  for (sup::dto::uint32 var_idx = 0; var_idx < m_n_vars; ++var_idx)
-  {
-    const auto name = GetVariablePVName(m_job_prefix, var_idx);
-    result.emplace_back(name, kVariableAnyValue);
-  }
-  return result;
-}
-
 }  // namespace auto_server
 
 }  // namespace sup
-
-namespace
-{
-IAnyValueManager::NameAnyValueSet GetInstructionValueSet(const std::string& job_prefix,
-                                                         sup::dto::uint32 n_instr)
-{
-  IAnyValueManager::NameAnyValueSet result;
-  for (sup::dto::uint32 instr_idx = 0; instr_idx < n_instr; ++instr_idx)
-  {
-    const auto name = GetInstructionPVName(job_prefix, instr_idx);
-    result.emplace_back(name, kInstructionAnyValue);
-  }
-  return result;
-}
-}  // unnamed namespace
