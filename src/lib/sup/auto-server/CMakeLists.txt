@@ -40,6 +40,7 @@ install(FILES
   automation_server.h
   client_anyvalue_manager.h
   client_interface_mapper.h
+  client_job.h
   exceptions.h
   i_anyvalue_listener.h
   i_anyvalue_manager_registry.h
