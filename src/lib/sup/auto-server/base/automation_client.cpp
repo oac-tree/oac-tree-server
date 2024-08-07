@@ -19,30 +19,23 @@
  * of the distribution package.
  ******************************************************************************/
 
-#ifndef SUP_AUTO_SERVER_AUTOMATION_CLIENT_H_
-#define SUP_AUTO_SERVER_AUTOMATION_CLIENT_H_
-
-#include <sup/auto-server/i_job_manager.h>
-#include <sup/auto-server/i_anyvalue_listener.h>
-#include <sup/auto-server/i_job_info_io_registry.h>
+#include <sup/auto-server/automation_client.h>
 
 namespace sup
 {
 namespace auto_server
 {
-/**
- * @brief AutomationClient.
- */
-class AutomationClient
+
+AutomationClient::AutomationClient(IJobManager& job_manager, IJobInfoIORegistry& job_info_io_reg,
+                                   const ListenerFactoryFunction& factory_func)
 {
-public:
-  AutomationClient(IJobManager& job_manager, IJobInfoIORegistry& job_info_io_reg,
-                   const ListenerFactoryFunction& factory_func);
-  ~AutomationClient();
-};
+  (void)job_manager;
+  (void)job_info_io_reg;
+  (void)factory_func;
+}
+
+AutomationClient::~AutomationClient() = default;
 
 }  // namespace auto_server
 
 }  // namespace sup
-
-#endif  // SUP_AUTO_SERVER_AUTOMATION_CLIENT_H_
