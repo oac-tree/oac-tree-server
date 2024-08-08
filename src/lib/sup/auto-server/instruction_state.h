@@ -30,12 +30,22 @@ namespace sup
 namespace auto_server
 {
 
+// TODO: this is currently unused, but may be a better way of transferring instruction state over
+// the network. This would imply changing the API of IJobInfoIO, where now a single methods would
+// exist: InstructionStateUpdated(job_idx, state).
 struct InstructionState
 {
   bool m_breakpoint_set;
   sequencer::ExecutionStatus m_execution_status;
 };
 
+/**
+ * @brief Parse an AnyValue to an InstructionState object.
+ *
+ * @param state_av AnyValue encoding of InstructionState object.
+ * @return Parsed InstructionState object.
+ * @throws InvalidOperationException when the AnyValue was not correctly encoded.
+ */
 InstructionState ToInstructionState(const sup::dto::AnyValue& state_av);
 
 }  // namespace auto_server

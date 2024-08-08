@@ -21,6 +21,7 @@
 
 #include <sup/auto-server/sup_auto_protocol.h>
 
+#include <sup/auto-server/anyvalue_utils.h>
 #include <sup/auto-server/exceptions.h>
 
 #include <sup/protocol/base64_variable_codec.h>
@@ -213,11 +214,7 @@ bool ValidateVariablePayload(const sup::dto::AnyValue& payload)
   {
     return false;
   }
-  if (!payload.HasField(kVariableConnectedField))
-  {
-    return false;
-  }
-  if (payload[kVariableConnectedField].GetType() != sup::dto::BooleanType)
+  if (!utils::ValidateMemberType(payload, kVariableConnectedField, sup::dto::BooleanType))
   {
     return false;
   }

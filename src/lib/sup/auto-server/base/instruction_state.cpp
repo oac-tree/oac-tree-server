@@ -21,6 +21,8 @@
 
 #include <sup/auto-server/instruction_state.h>
 
+#include <sup/auto-server/anyvalue_utils.h>
+#include <sup/auto-server/exceptions.h>
 #include <sup/auto-server/sup_auto_protocol.h>
 
 namespace sup
@@ -30,7 +32,18 @@ namespace auto_server
 
 InstructionState ToInstructionState(const sup::dto::AnyValue& state_av)
 {
-  // TODO: validate
+  if (!utils::ValidateMemberType(state_av, kBreakpointField, sup::dto::BooleanType))
+  {
+    const std::string error = "ToInstructionState(): could not parse provided AnyValue to an "
+      "InstructionState object";
+    throw InvalidOperationException(error);
+  }
+  if (!utils::ValidateMemberType(state_av, kExecStatusField, sup::dto::UnsignedInteger16Type))
+  {
+    const std::string error = "ToInstructionState(): could not parse provided AnyValue to an "
+      "InstructionState object";
+    throw InvalidOperationException(error);
+  }
   InstructionState result;
   result.m_breakpoint_set = state_av[kBreakpointField].As<sup::dto::boolean>();
   result.m_execution_status =
