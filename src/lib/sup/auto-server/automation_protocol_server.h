@@ -22,13 +22,10 @@
 #ifndef SUP_AUTO_SERVER_AUTOMATION_PROTOCOL_SERVER_H_
 #define SUP_AUTO_SERVER_AUTOMATION_PROTOCOL_SERVER_H_
 
-#include <sup/auto-server/i_anyvalue_manager_registry.h>
 #include <sup/auto-server/i_job_manager.h>
 
 #include <sup/protocol/function_protocol.h>
 #include <sup/protocol/protocol.h>
-
-#include <string>
 
 namespace sup
 {
@@ -40,7 +37,7 @@ namespace auto_server
 class AutomationProtocolServer : public sup::protocol::Protocol
 {
 public:
-  AutomationProtocolServer(IJobManager& m_job_manager);
+  explicit AutomationProtocolServer(IJobManager& job_manager);
   ~AutomationProtocolServer();
 
   sup::protocol::ProtocolResult Invoke(const sup::dto::AnyValue& input,
@@ -67,23 +64,6 @@ private:
                                                         std::size_t number_of_instructions,
                                                         sup::dto::uint64& idx);
 };
-
-/**
- * @brief The requested function is not supported.
-*/
-extern const sup::protocol::ProtocolResult NotSupported;
-/**
- * @brief The requested job is unknown.
-*/
-extern const sup::protocol::ProtocolResult UnknownJob;
-/**
- * @brief The requested instruction is unknown.
-*/
-extern const sup::protocol::ProtocolResult UnknownInstruction;
-/**
- * @brief The requested job is unknown.
-*/
-extern const sup::protocol::ProtocolResult UnknownJobCommand;
 
 }  // namespace auto_server
 

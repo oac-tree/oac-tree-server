@@ -36,6 +36,7 @@ install(FILES
   attribute_info.h
   automation_client.h
   automation_job_interface.h
+  automation_protocol_client.h
   automation_protocol_server.h
   automation_server.h
   client_anyvalue_manager.h

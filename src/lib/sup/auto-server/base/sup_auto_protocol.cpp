@@ -28,6 +28,7 @@
 #include <sup/sequencer/job_states.h>
 
 #include <limits>
+#include <map>
 
 namespace
 {
@@ -75,6 +76,42 @@ const dto::AnyValue kJobInfoAnyValue = {{
   { kWorkspaceInfoFieldName, sup::dto::AnyValue{} },
   { kInstructionTreeInfoFieldName, sup::dto::AnyValue{} }
 }, kJobInfoType };
+
+namespace status
+{
+enum AutomationServerStatus
+{
+  kNotSupported = sup::protocol::SPECIFIC_APPLICATION_ERROR_START,
+  kUnknownJob,
+  kUnknownInstruction,
+  kUnknownJobCommand
+};
+}  // namespace status
+
+const sup::protocol::ProtocolResult NotSupported{status::kNotSupported};
+const sup::protocol::ProtocolResult UnknownJob{status::kUnknownJob};
+const sup::protocol::ProtocolResult UnknownInstruction{status::kUnknownInstruction};
+const sup::protocol::ProtocolResult UnknownJobCommand{status::kUnknownJobCommand};
+
+std::string AutomationServerResultToString(const sup::protocol::ProtocolResult& result)
+{
+  static std::map<int, std::string> result_map = {
+      {status::kNotSupported, "NotSupported"},
+      {status::kUnknownJob, "UnknownJob"},
+      {status::kUnknownInstruction, "UnknownInstruction"},
+      {status::kUnknownJobCommand, "UnknownJobCommand"}};
+  if (result.GetValue() < sup::protocol::GENERIC_APPLICATION_ERROR_START)
+  {
+    return sup::protocol::ProtocolResultToString(result);
+  }
+  auto it = result_map.find(result.GetValue());
+  if (it != result_map.end())
+  {
+    return it->second;
+  }
+  return "Unknown ProtocolResult for SUP automation interface: " +
+         std::to_string(result.GetValue());
+}
 
 std::string GetJobStatePVName(const std::string& prefix)
 {

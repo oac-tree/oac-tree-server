@@ -40,22 +40,10 @@ namespace sup
 namespace auto_server
 {
 
-namespace status
-{
-enum AutomationServerStatus
-{
-  kNotSupported = sup::protocol::SPECIFIC_APPLICATION_ERROR_START,
-  kUnknownJob,
-  kUnknownInstruction,
-  kUnknownJobCommand
-};
-}  // namespace status
-
-
 // TODO: currently there is only one AnyValueManager for the whole server and it is fixed to be
 // an EPICS implementation. This needs revisiting.
-AutomationProtocolServer::AutomationProtocolServer(IJobManager& m_job_manager)
-  : m_job_manager{m_job_manager}
+AutomationProtocolServer::AutomationProtocolServer(IJobManager& job_manager)
+  : m_job_manager{job_manager}
 {}
 
 AutomationProtocolServer::~AutomationProtocolServer() = default;
@@ -221,11 +209,6 @@ sup::protocol::ProtocolResult AutomationProtocolServer::ExtractInstructionIndex(
   }
   return sup::protocol::Success;
 }
-
-const sup::protocol::ProtocolResult NotSupported{status::kNotSupported};
-const sup::protocol::ProtocolResult UnknownJob{status::kUnknownJob};
-const sup::protocol::ProtocolResult UnknownInstruction{status::kUnknownInstruction};
-const sup::protocol::ProtocolResult UnknownJobCommand{status::kUnknownJobCommand};
 
 }  // namespace auto_server
 

@@ -25,6 +25,8 @@
 #include <sup/dto/anyvalue.h>
 #include <sup/sequencer/job_states.h>
 
+#include <sup/protocol/protocol_result.h>
+
 #include <string>
 
 namespace sup
@@ -125,6 +127,36 @@ struct ValueNameInfo
   ValueNameType val_type;
   sup::dto::uint32 idx;
 };
+
+
+// Application specific protocol results:
+/**
+ * @brief The requested function is not supported.
+*/
+extern const sup::protocol::ProtocolResult NotSupported;
+/**
+ * @brief The requested job is unknown.
+*/
+extern const sup::protocol::ProtocolResult UnknownJob;
+/**
+ * @brief The requested instruction is unknown.
+*/
+extern const sup::protocol::ProtocolResult UnknownInstruction;
+/**
+ * @brief The requested job is unknown.
+*/
+extern const sup::protocol::ProtocolResult UnknownJobCommand;
+
+/**
+ * @brief Convert the protocol result to a human-readable string.
+ *
+ * @param result a protocol result object.
+ * @return The string representation of the result.
+ *
+ * @details If the provided protocol result is generic (i.e. defined in sup-protocol), this function
+ * will call the generic function sup::protocol::ProtocolResultToString.
+ */
+std::string AutomationServerResultToString(const sup::protocol::ProtocolResult& result);
 
 /**
  * @brief Create a PV channel name for the job state from a given prefix.
