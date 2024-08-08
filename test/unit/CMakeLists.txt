@@ -4,6 +4,7 @@ target_compile_features(unit-tests PRIVATE cxx_std_11)
 
 target_sources(unit-tests
   PRIVATE
+    anyvalue_utils_tests.cpp
     automation_job_interface_tests.cpp
     automation_server_tests.cpp
     client_anyvalue_manager_tests.cpp
