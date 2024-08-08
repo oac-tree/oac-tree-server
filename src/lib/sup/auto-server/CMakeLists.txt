@@ -45,7 +45,6 @@ install(FILES
   i_anyvalue_listener.h
   i_anyvalue_manager_registry.h
   i_anyvalue_manager.h
-  i_job_info_io_registry.h
   i_job_info_io.h
   i_job_manager.h
   instruction_info.h

@@ -22,9 +22,13 @@
 #ifndef SUP_AUTO_SERVER_AUTOMATION_CLIENT_H_
 #define SUP_AUTO_SERVER_AUTOMATION_CLIENT_H_
 
+#include <sup/auto-server/client_job.h>
 #include <sup/auto-server/i_job_manager.h>
 #include <sup/auto-server/i_anyvalue_listener.h>
-#include <sup/auto-server/i_job_info_io_registry.h>
+#include <sup/auto-server/i_job_info_io.h>
+
+#include <map>
+#include <memory>
 
 namespace sup
 {
@@ -36,9 +40,16 @@ namespace auto_server
 class AutomationClient
 {
 public:
-  AutomationClient(IJobManager& job_manager, IJobInfoIORegistry& job_info_io_reg,
-                   const ListenerFactoryFunction& factory_func);
+  AutomationClient(IJobManager& job_manager, const ListenerFactoryFunction& factory_func);
   ~AutomationClient();
+
+  bool Connect(std::size_t job_idx, IJobInfoIO& job_info_io);
+  bool Disconnect(std::size_t job_idx);
+
+private:
+  IJobManager& m_job_manager;
+  const ListenerFactoryFunction& m_factory_func;
+  std::map<std::size_t, std::unique_ptr<ClientJob>> m_jobs;
 };
 
 }  // namespace auto_server

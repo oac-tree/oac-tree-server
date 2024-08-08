@@ -28,6 +28,7 @@ namespace sup
 {
 namespace auto_server
 {
+// TODO: check if this is still needed.
 
   /**
  * @brief Interface for classes that provide IJobInfoIO implementations and manage

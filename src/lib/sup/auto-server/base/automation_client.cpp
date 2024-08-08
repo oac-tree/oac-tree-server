@@ -21,20 +21,45 @@
 
 #include <sup/auto-server/automation_client.h>
 
+#include <sup/auto-server/exceptions.h>
+
 namespace sup
 {
 namespace auto_server
 {
 
-AutomationClient::AutomationClient(IJobManager& job_manager, IJobInfoIORegistry& job_info_io_reg,
+AutomationClient::AutomationClient(IJobManager& job_manager,
                                    const ListenerFactoryFunction& factory_func)
-{
-  (void)job_manager;
-  (void)job_info_io_reg;
-  (void)factory_func;
-}
+  : m_job_manager{job_manager}
+  , m_factory_func{factory_func}
+  , m_jobs{}
+{}
 
 AutomationClient::~AutomationClient() = default;
+
+bool AutomationClient::Connect(std::size_t job_idx, IJobInfoIO& job_info_io)
+{
+  if (m_jobs.find(job_idx) != m_jobs.end())
+  {
+    return false;
+  }
+  try
+  {
+    const auto& job_info = m_job_manager.GetJobInfo(job_idx);
+    m_jobs[job_idx] =
+      std::unique_ptr<ClientJob>(new ClientJob{job_info, job_info_io, m_factory_func});
+  }
+  catch(const InvalidOperationException&)
+  {
+    return false;
+  }
+  return true;
+}
+
+bool AutomationClient::Disconnect(std::size_t job_idx)
+{
+  return m_jobs.erase(job_idx) == 1u;
+}
 
 }  // namespace auto_server
 

@@ -21,6 +21,7 @@
 
 #include <sup/auto-server/i_job_info_io_registry.h>
 
+// TODO: remove if no longer needed
 namespace sup
 {
 namespace auto_server

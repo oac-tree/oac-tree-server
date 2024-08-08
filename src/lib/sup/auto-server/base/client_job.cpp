@@ -46,6 +46,10 @@ ClientJob::ClientJob(const JobInfo& job_info, IJobInfoIO& job_info_io,
 
 ClientJob::~ClientJob() = default;
 
+ClientJob::ClientJob(ClientJob&&) = default;
+
+ClientJob& ClientJob::operator=(ClientJob&& other) = default;
+
 ClientJobImpl::ClientJobImpl(const JobInfo& job_info, IJobInfoIO& job_info_io,
                              const ListenerFactoryFunction& factory_func)
   : m_av_mgr{job_info_io}

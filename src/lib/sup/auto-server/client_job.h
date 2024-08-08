@@ -45,6 +45,9 @@ public:
             const ListenerFactoryFunction& factory_func);
   ~ClientJob();
 
+  ClientJob(ClientJob&& other);
+  ClientJob& operator=(ClientJob&& other);
+
 private:
   std::unique_ptr<ClientJobImpl> m_impl;
 };
