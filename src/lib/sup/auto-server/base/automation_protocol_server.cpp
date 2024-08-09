@@ -40,8 +40,6 @@ namespace sup
 namespace auto_server
 {
 
-// TODO: currently there is only one AnyValueManager for the whole server and it is fixed to be
-// an EPICS implementation. This needs revisiting.
 AutomationProtocolServer::AutomationProtocolServer(IJobManager& job_manager)
   : m_job_manager{job_manager}
 {}

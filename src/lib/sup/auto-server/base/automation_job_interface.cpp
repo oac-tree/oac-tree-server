@@ -63,7 +63,10 @@ void AutomationJobInterface::UpdateInstructionStatus(const sequencer::Instructio
 {
   auto instr_idx = m_job_value_mapper.GetInstructionIndex(instruction);
   auto status = instruction->GetStatus();
-  // TODO: avoid out of bounds
+  if (instr_idx >= m_instr_states.size())
+  {
+    return;
+  }
   m_instr_states[instr_idx][kExecStatusField] = static_cast<dto::uint16>(status);
   auto instr_state = ToInstructionState(m_instr_states[instr_idx]);
   m_job_info_io.InstructionStateUpdated(instr_idx, instr_state);
@@ -121,7 +124,10 @@ void AutomationJobInterface::OnBreakpointChange(const sequencer::Instruction* in
                                                 bool breakpoint_set) noexcept
 {
   auto instr_idx = m_job_value_mapper.GetInstructionIndex(instruction);
-  // TODO: avoid out of bounds
+  if (instr_idx >= m_instr_states.size())
+  {
+    return;
+  }
   m_instr_states[instr_idx][kBreakpointField] = breakpoint_set;
   auto instr_state = ToInstructionState(m_instr_states[instr_idx]);
   m_job_info_io.InstructionStateUpdated(instr_idx, instr_state);

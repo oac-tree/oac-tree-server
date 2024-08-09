@@ -30,9 +30,6 @@ namespace sup
 namespace auto_server
 {
 
-// TODO: this is currently unused, but may be a better way of transferring instruction state over
-// the network. This would imply changing the API of IJobInfoIO, where now a single methods would
-// exist: InstructionStateUpdated(job_idx, state).
 struct InstructionState
 {
   bool m_breakpoint_set;

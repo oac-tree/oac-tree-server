@@ -358,5 +358,3 @@ TEST_F(VariableInfoTest, ValidateVariableInfoAnyValue)
     EXPECT_FALSE(utils::ValidateVariableInfoAnyValue(info_av));
   }
 }
-
-// TODO: add tests for failing parsing of AnyValue to VariableInfo
