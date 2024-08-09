@@ -65,6 +65,14 @@ TEST_F(VariableInfoTest, FromVariable)
   ASSERT_EQ(attributes.size(), 2);
   EXPECT_EQ(attributes[0], attr_0);
   EXPECT_EQ(attributes[1], attr_1);
+
+  // Check copy
+  VariableInfo copy{var_info};
+  EXPECT_EQ(copy, var_info);
+
+  // Check move
+  VariableInfo moved{std::move(copy)};
+  EXPECT_EQ(moved, var_info);
 }
 
 TEST_F(VariableInfoTest, FromNullptrVariable)

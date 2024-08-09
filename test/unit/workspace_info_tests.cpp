@@ -61,6 +61,14 @@ TEST_F(WorkspaceInfoTest, AddVariableInfo)
     EXPECT_EQ(ws_info.GetNumberOfVariables(), 3);
     const auto& var_infos = ws_info.GetVariableInfos();
     EXPECT_EQ(var_infos.size(), 3);
+
+    // Test copy
+    WorkspaceInfo copy{ws_info};
+    EXPECT_EQ(copy, ws_info);
+
+    // Test move
+    WorkspaceInfo moved{std::move(copy)};
+    EXPECT_EQ(moved, ws_info);
   }
   {
     // Duplicate names throws

@@ -83,6 +83,14 @@ TEST_F(InstructionTreeUtilsTest, InstructionInfoFromInstructionTree)
   }
   std::set<sup::dto::uint32> expected_indices{0,1,2};
   EXPECT_EQ(indices, expected_indices);
+
+  // Test copy
+  InstructionInfo copy{*instr_info};
+  EXPECT_EQ(copy, *instr_info);
+
+  // Test move
+  InstructionInfo moved{std::move(copy)};
+  EXPECT_EQ(moved, *instr_info);
 }
 
 TEST_F(InstructionTreeUtilsTest, InstructionInfoToFromAnyValue)

@@ -66,7 +66,7 @@ InstructionInfo::InstructionInfo(const InstructionInfo& other)
   {
     auto node = stack.back();
     stack.pop_back();
-    auto children = node.dest.Children();
+    auto children = node.src.Children();
     for (auto child : children)
     {
       std::unique_ptr<InstructionInfo> child_info{

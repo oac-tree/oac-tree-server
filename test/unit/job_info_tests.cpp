@@ -122,6 +122,14 @@ TEST_F(JobInfoTest, FromProcedure)
   }
   std::set<sup::dto::uint32> expected_indices{0,1,2};
   EXPECT_EQ(indices, expected_indices);
+
+  // Test copy
+  JobInfo copy{job_info};
+  EXPECT_EQ(copy, job_info);
+
+  // Test move
+  JobInfo moved{std::move(copy)};
+  EXPECT_EQ(moved, job_info);
 }
 
 TEST_F(JobInfoTest, JobInfoToFromAnyValue)
