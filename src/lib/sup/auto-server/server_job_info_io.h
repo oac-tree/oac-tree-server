@@ -42,11 +42,12 @@ public:
 
   void InitNumberOfInstructions(sup::dto::uint32 n_instr) override;
 
-  void UpdateInstructionStatus(sup::dto::uint32 instr_idx,
-                               sup::sequencer::ExecutionStatus status) override;
+  void InstructionStateUpdated(sup::dto::uint32 instr_idx, InstructionState state) override;
 
   void VariableUpdated(sup::dto::uint32 var_idx, const sup::dto::AnyValue& value,
                        bool connected) override;
+
+  void JobStateUpdated(sup::sequencer::JobState state) override;
 
   bool PutValue(const sup::dto::AnyValue& value, const std::string& description) override;
 
@@ -59,14 +60,9 @@ public:
 
   void Log(int severity, const std::string& message) override;
 
-  void OnStateChange(sup::sequencer::JobState state) override;
-
-  void OnBreakpointChange(sup::dto::uint32 instr_idx, bool breakpoint_set) override;
-
 private:
   const std::string m_job_prefix;
   const sup::dto::uint32 m_n_vars;
-  std::vector<sup::dto::AnyValue> m_instr_states;
   IAnyValueManager& m_av_manager;
 };
 

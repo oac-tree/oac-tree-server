@@ -22,6 +22,8 @@
 #ifndef SUP_AUTO_SERVER_I_JOB_INFO_IO_H_
 #define SUP_AUTO_SERVER_I_JOB_INFO_IO_H_
 
+#include <sup/auto-server/instruction_state.h>
+
 #include <sup/dto/anyvalue.h>
 #include <sup/sequencer/execution_status.h>
 #include <sup/sequencer/job_states.h>
@@ -42,11 +44,12 @@ public:
 
   virtual void InitNumberOfInstructions(sup::dto::uint32 n_instr) = 0;
 
-  virtual void UpdateInstructionStatus(sup::dto::uint32 instr_idx,
-                                       sup::sequencer::ExecutionStatus status) = 0;
+  virtual void InstructionStateUpdated(sup::dto::uint32 instr_idx, InstructionState state) = 0;
 
   virtual void VariableUpdated(sup::dto::uint32 var_idx, const sup::dto::AnyValue& value,
                                bool connected) = 0;
+
+  virtual void JobStateUpdated(sup::sequencer::JobState state) = 0;
 
   virtual bool PutValue(const sup::dto::AnyValue& value, const std::string& description) = 0;
 
@@ -58,11 +61,6 @@ public:
   virtual void Message(const std::string& message) = 0;
 
   virtual void Log(int severity, const std::string& message) = 0;
-
-  virtual void OnStateChange(sup::sequencer::JobState state) = 0;
-
-  virtual void OnBreakpointChange(sup::dto::uint32 instr_idx,
-                                  bool breakpoint_set) = 0;
 };
 
 }  // namespace auto_server

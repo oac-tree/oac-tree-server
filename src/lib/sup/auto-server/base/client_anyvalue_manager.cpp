@@ -116,23 +116,22 @@ void UpdateJobState(IJobInfoIO& job_info_io, const sup::dto::AnyValue& anyvalue)
   }
   auto job_state_int = anyvalue[kJobStateField].As<sup::dto::uint32>();
   auto job_state = static_cast<sup::sequencer::JobState>(job_state_int);
-  job_info_io.OnStateChange(job_state);
+  job_info_io.JobStateUpdated(job_state);
 }
 
 void UpdateInstructionState(IJobInfoIO& job_info_io, sup::dto::uint32 instr_idx,
                             const sup::dto::AnyValue& anyvalue)
 {
-  if (utils::ValidateMemberType(anyvalue, kExecStatusField, sup::dto::UnsignedInteger16Type))
+  try
   {
-    auto exec_state_int = anyvalue[kExecStatusField].As<sup::dto::uint16>();
-    auto exec_state = static_cast<sup::sequencer::ExecutionStatus>(exec_state_int);
-    job_info_io.UpdateInstructionStatus(instr_idx, exec_state);
+    auto instr_state = ToInstructionState(anyvalue);
+    job_info_io.InstructionStateUpdated(instr_idx, instr_state);
   }
-  if (utils::ValidateMemberType(anyvalue, kBreakpointField, sup::dto::BooleanType))
+  catch(const std::exception&)
   {
-    auto breakpoint_set = anyvalue[kBreakpointField].As<sup::dto::boolean>();
-    job_info_io.OnBreakpointChange(instr_idx, breakpoint_set);
+    // Ignore wrong encoding of AnyValue
   }
+  return;
 }
 
 void UpdateVariableState(IJobInfoIO& job_info_io, sup::dto::uint32 var_idx,

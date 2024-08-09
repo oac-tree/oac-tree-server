@@ -53,20 +53,20 @@ TEST_F(AutomationJobInterfaceTests, Construction)
   {
     // Check absence of any updates/io
     auto n_instr = m_test_job_info_io.GetNumberOfInstructions();
-    auto instr_statuses = m_test_job_info_io.GetInstrStatuses();
+    auto instr_states = m_test_job_info_io.GetInstructionStates();
     auto job_states = m_test_job_info_io.GetJobStates();
     EXPECT_EQ(n_instr, 0);
-    EXPECT_EQ(instr_statuses.size(), 0);
+    EXPECT_EQ(instr_states.size(), 0);
     EXPECT_EQ(job_states.size(), 0);
   }
   AutomationJobInterface job_interface{kTestPrefix, *proc, m_test_job_info_io};
   {
     // Check absence of any updates/io
     auto n_instr = m_test_job_info_io.GetNumberOfInstructions();
-    auto instr_statuses = m_test_job_info_io.GetInstrStatuses();
+    auto instr_states = m_test_job_info_io.GetInstructionStates();
     auto job_states = m_test_job_info_io.GetJobStates();
     EXPECT_EQ(n_instr, 0);
-    EXPECT_EQ(instr_statuses.size(), 0);
+    EXPECT_EQ(instr_states.size(), 0);
     EXPECT_EQ(job_states.size(), 0);
   }
 }

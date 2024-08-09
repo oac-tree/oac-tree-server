@@ -40,6 +40,14 @@ struct InstructionState
 };
 
 /**
+ * @brief Encode an InstructionState object as an AnyValue.
+ *
+ * @param state InstructionState object.
+ * @return AnyValue encoding.
+ */
+sup::dto::AnyValue ToAnyValue(const InstructionState& state);
+
+/**
  * @brief Parse an AnyValue to an InstructionState object.
  *
  * @param state_av AnyValue encoding of InstructionState object.

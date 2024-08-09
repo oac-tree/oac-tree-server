@@ -30,15 +30,23 @@ namespace sup
 namespace auto_server
 {
 
+sup::dto::AnyValue ToAnyValue(const InstructionState& state)
+{
+  auto result = kInstructionAnyValue;
+  result[kExecStatusField] = static_cast<sup::dto::uint16>(state.m_execution_status);
+  result[kBreakpointField] = state.m_breakpoint_set;
+  return result;
+}
+
 InstructionState ToInstructionState(const sup::dto::AnyValue& state_av)
 {
-  if (!utils::ValidateMemberType(state_av, kBreakpointField, sup::dto::BooleanType))
+  if (!utils::ValidateMemberType(state_av, kExecStatusField, sup::dto::UnsignedInteger16Type))
   {
     const std::string error = "ToInstructionState(): could not parse provided AnyValue to an "
       "InstructionState object";
     throw InvalidOperationException(error);
   }
-  if (!utils::ValidateMemberType(state_av, kExecStatusField, sup::dto::UnsignedInteger16Type))
+  if (!utils::ValidateMemberType(state_av, kBreakpointField, sup::dto::BooleanType))
   {
     const std::string error = "ToInstructionState(): could not parse provided AnyValue to an "
       "InstructionState object";

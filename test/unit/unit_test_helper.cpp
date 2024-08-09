@@ -49,7 +49,7 @@ sup::dto::uint32 TestJobInfoIO::GetNumberOfInstructions() const
   return m_n_instr;
 }
 
-TestJobInfoIO::InstrStatuses TestJobInfoIO::GetInstrStatuses() const
+TestJobInfoIO::InstructionStates TestJobInfoIO::GetInstructionStates() const
 {
   return m_instr_statuses;
 }
@@ -64,10 +64,9 @@ void TestJobInfoIO::InitNumberOfInstructions(sup::dto::uint32 n_instr)
   m_n_instr = n_instr;
 }
 
-void TestJobInfoIO::UpdateInstructionStatus(sup::dto::uint32 instr_idx,
-                                            sup::sequencer::ExecutionStatus status)
+void TestJobInfoIO::InstructionStateUpdated(sup::dto::uint32 instr_idx, InstructionState state)
 {
-  m_instr_statuses.emplace_back(instr_idx, status);
+  m_instr_statuses.emplace_back(instr_idx, state);
 }
 
 void TestJobInfoIO::VariableUpdated(sup::dto::uint32 var_idx, const sup::dto::AnyValue& value,
@@ -108,13 +107,9 @@ void TestJobInfoIO::Log(int severity, const std::string& message)
   (void)message;
 }
 
-void TestJobInfoIO::OnStateChange(sup::sequencer::JobState state)
+void TestJobInfoIO::JobStateUpdated(sup::sequencer::JobState state)
 {
   m_job_states.push_back(state);
-}
-
-void TestJobInfoIO::OnBreakpointChange(sup::dto::uint32 instr_idx, bool breakpoint_set)
-{
 }
 
 TestAnyValueManager::TestAnyValueManager()

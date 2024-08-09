@@ -31,7 +31,6 @@ ServerJobInfoIO::ServerJobInfoIO(const std::string& job_prefix, sup::dto::uint32
                                  IAnyValueManager& av_manager)
   : m_job_prefix{job_prefix}
   , m_n_vars{n_vars}
-  , m_instr_states{}
   , m_av_manager{av_manager}
 {
   auto value_set = GetInitialValueSet(m_job_prefix, m_n_vars);
@@ -42,22 +41,15 @@ ServerJobInfoIO::~ServerJobInfoIO() = default;
 
 void ServerJobInfoIO::InitNumberOfInstructions(sup::dto::uint32 n_instr)
 {
-  m_instr_states = std::vector<sup::dto::AnyValue>(n_instr, kInstructionAnyValue);
   auto instr_value_set = GetInstructionValueSet(m_job_prefix, n_instr);
   m_av_manager.AddAnyValues(instr_value_set);
 }
 
-void ServerJobInfoIO::UpdateInstructionStatus(sup::dto::uint32 instr_idx,
-                                              sup::sequencer::ExecutionStatus status)
+void ServerJobInfoIO::InstructionStateUpdated(sup::dto::uint32 instr_idx, InstructionState state)
 {
-  if (instr_idx >= m_instr_states.size())
-  {
-    return;
-  }
   auto instr_val_name = GetInstructionPVName(m_job_prefix, instr_idx);
-  auto& instr_state = m_instr_states[instr_idx];
-  instr_state[kExecStatusField] = static_cast<sup::dto::uint16>(status);
-  m_av_manager.UpdateAnyValue(instr_val_name, instr_state);
+  auto instr_state_av = ToAnyValue(state);
+  m_av_manager.UpdateAnyValue(instr_val_name, instr_state_av);
 }
 
 void ServerJobInfoIO::VariableUpdated(sup::dto::uint32 var_idx, const sup::dto::AnyValue& value,
@@ -101,23 +93,11 @@ void ServerJobInfoIO::Log(int severity, const std::string& message)
   (void)message;
 }
 
-void ServerJobInfoIO::OnStateChange(sup::sequencer::JobState state)
+void ServerJobInfoIO::JobStateUpdated(sup::sequencer::JobState state)
 {
   auto job_state_name = GetJobStatePVName(m_job_prefix);
   auto job_state_value = GetJobStateValue(state);
   m_av_manager.UpdateAnyValue(job_state_name, job_state_value);
-}
-
-void ServerJobInfoIO::OnBreakpointChange(sup::dto::uint32 instr_idx, bool breakpoint_set)
-{
-  if (instr_idx >= m_instr_states.size())
-  {
-    return;
-  }
-  auto instr_val_name = GetInstructionPVName(m_job_prefix, instr_idx);
-  auto& instr_state = m_instr_states[instr_idx];
-  instr_state[kBreakpointField] = breakpoint_set;
-  m_av_manager.UpdateAnyValue(instr_val_name, instr_state);
 }
 
 }  // namespace auto_server

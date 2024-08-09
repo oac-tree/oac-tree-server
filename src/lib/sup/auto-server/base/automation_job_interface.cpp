@@ -44,7 +44,9 @@ AutomationJobInterface::~AutomationJobInterface() = default;
 void AutomationJobInterface::InitializeInstructionTree(const sequencer::Instruction* root)
 {
   m_job_value_mapper.InitializeInstructionTree(root);
-  m_job_info_io.InitNumberOfInstructions(m_job_value_mapper.GetNumberOfInstructions());
+  auto n_instr = m_job_value_mapper.GetNumberOfInstructions();
+  m_job_info_io.InitNumberOfInstructions(n_instr);
+  m_instr_states = std::vector<sup::dto::AnyValue>(n_instr, kInstructionAnyValue);
 }
 
 const InstructionMap& AutomationJobInterface::GetInstructionMap() const
@@ -61,7 +63,10 @@ void AutomationJobInterface::UpdateInstructionStatus(const sequencer::Instructio
 {
   auto instr_idx = m_job_value_mapper.GetInstructionIndex(instruction);
   auto status = instruction->GetStatus();
-  m_job_info_io.UpdateInstructionStatus(instr_idx, status);
+  // TODO: avoid out of bounds
+  m_instr_states[instr_idx][kExecStatusField] = static_cast<dto::uint16>(status);
+  auto instr_state = ToInstructionState(m_instr_states[instr_idx]);
+  m_job_info_io.InstructionStateUpdated(instr_idx, instr_state);
 }
 
 void AutomationJobInterface::VariableUpdated(const std::string& name,
@@ -109,14 +114,17 @@ void AutomationJobInterface::Log(int severity, const std::string& message)
 
 void AutomationJobInterface::OnStateChange(sequencer::JobState state) noexcept
 {
-  m_job_info_io.OnStateChange(state);
+  m_job_info_io.JobStateUpdated(state);
 }
 
 void AutomationJobInterface::OnBreakpointChange(const sequencer::Instruction* instruction,
                                                 bool breakpoint_set) noexcept
 {
   auto instr_idx = m_job_value_mapper.GetInstructionIndex(instruction);
-  m_job_info_io.OnBreakpointChange(instr_idx, breakpoint_set);
+  // TODO: avoid out of bounds
+  m_instr_states[instr_idx][kBreakpointField] = breakpoint_set;
+  auto instr_state = ToInstructionState(m_instr_states[instr_idx]);
+  m_job_info_io.InstructionStateUpdated(instr_idx, instr_state);
 }
 
 void AutomationJobInterface::OnProcedureTick(const sequencer::Procedure& proc) noexcept
