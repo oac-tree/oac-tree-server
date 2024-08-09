@@ -19,7 +19,7 @@
  * of the distribution package.
  ******************************************************************************/
 
-#include "epics_anyvalue_listener.h"
+#include <sup/auto-server/epics_anyvalue_listener.h>
 
 #include <sup/auto-server/sup_auto_protocol.h>
 
