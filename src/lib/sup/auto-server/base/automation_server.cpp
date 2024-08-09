@@ -65,7 +65,7 @@ std::size_t AutomationServer::GetNumberOfJobs() const
   return m_jobs.size();
 }
 
-const JobInfo& AutomationServer::GetJobInfo(std::size_t job_idx) const
+JobInfo AutomationServer::GetJobInfo(std::size_t job_idx) const
 {
   auto& job = GetJob(job_idx);
   return job.GetInfo();

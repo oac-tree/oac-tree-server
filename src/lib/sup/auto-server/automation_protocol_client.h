@@ -45,7 +45,7 @@ public:
 
   std::size_t GetNumberOfJobs() const override;
 
-  const JobInfo& GetJobInfo(std::size_t job_idx) const override;
+  JobInfo GetJobInfo(std::size_t job_idx) const override;
 
   void EditBreakpoint(std::size_t job_idx, std::size_t instr_idx, bool breakpoint_active) override;
 
@@ -53,7 +53,6 @@ public:
 
 private:
   sup::protocol::Protocol& m_protocol;
-  mutable std::map<std::size_t, std::unique_ptr<JobInfo>> m_job_info_cache;
 };
 
 }  // namespace auto_server

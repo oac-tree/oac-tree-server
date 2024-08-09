@@ -36,7 +36,6 @@ namespace auto_server
 {
 AutomationProtocolClient::AutomationProtocolClient(sup::protocol::Protocol& protocol)
   : m_protocol{protocol}
-  , m_job_info_cache{}
 {}
 
 AutomationProtocolClient::~AutomationProtocolClient() = default;
@@ -84,7 +83,7 @@ std::size_t AutomationProtocolClient::GetNumberOfJobs() const
   return result.As<sup::dto::uint64>();
 }
 
-const JobInfo& AutomationProtocolClient::GetJobInfo(std::size_t job_idx) const
+JobInfo AutomationProtocolClient::GetJobInfo(std::size_t job_idx) const
 {
   auto input = sup::protocol::FunctionProtocolInput(kGetJobInfoFunctionName);
   sup::dto::AnyValue job_idx_av{sup::dto::UnsignedInteger64Type, job_idx};
@@ -107,7 +106,7 @@ const JobInfo& AutomationProtocolClient::GetJobInfo(std::size_t job_idx) const
   try
   {
     auto job_info = utils::ToJobInfo(job_info_av);
-    m_job_info_cache[job_idx] = std::unique_ptr<JobInfo>{new JobInfo(std::move(job_info))};
+    return job_info;
   }
   catch(const InvalidOperationException&)
   {
@@ -115,7 +114,6 @@ const JobInfo& AutomationProtocolClient::GetJobInfo(std::size_t job_idx) const
       "AnyValue to JobInfo";
     throw InvalidOperationException(error);
   }
-  return *m_job_info_cache[job_idx];
 }
 
 void AutomationProtocolClient::EditBreakpoint(std::size_t job_idx, std::size_t instr_idx,

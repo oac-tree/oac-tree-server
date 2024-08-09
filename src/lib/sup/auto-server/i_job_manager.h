@@ -64,9 +64,9 @@ public:
    * @brief Get the JobInfo for the specified job.
    *
    * @param job_idx Index that identifies a single job.
-   * @return Reference to JobInfo object for the requested job.
+   * @return JobInfo object for the requested job.
    */
-  virtual const JobInfo& GetJobInfo(std::size_t job_idx) const = 0;
+  virtual JobInfo GetJobInfo(std::size_t job_idx) const = 0;
 
   /**
    * @brief (De)activate a breakpoint for the given instruction of the specified job.
