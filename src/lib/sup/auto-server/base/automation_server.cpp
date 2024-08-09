@@ -26,11 +26,6 @@
 #include <sup/sequencer/procedure.h>
 #include <sup/sequencer/workspace.h>
 
-namespace
-{
-sup::dto::uint32 GetNumberOfVariables(const sup::sequencer::Procedure& proc);
-}  // unnamed namespace
-
 namespace sup
 {
 namespace auto_server
@@ -143,13 +138,6 @@ std::string CreateJobPrefix(const std::string& server_prefix, std::size_t idx)
   return server_prefix + ":PROC-" + std::to_string(idx) + ":";
 }
 
-}  // namespace auto_server
-
-}  // namespace sup
-
-namespace
-{
-
 sup::dto::uint32 GetNumberOfVariables(const sup::sequencer::Procedure& proc)
 {
   const auto& ws = proc.GetWorkspace();
@@ -157,4 +145,6 @@ sup::dto::uint32 GetNumberOfVariables(const sup::sequencer::Procedure& proc)
   return var_names.size();
 }
 
-}  // unnamed namespace
+}  // namespace auto_server
+
+}  // namespace sup

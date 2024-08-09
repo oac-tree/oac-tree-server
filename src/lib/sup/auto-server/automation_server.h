@@ -70,6 +70,8 @@ private:
   mutable std::mutex m_mtx;
 };
 
+sup::dto::uint32 GetNumberOfVariables(const sup::sequencer::Procedure& proc);
+
 std::string CreateJobPrefix(const std::string& server_prefix, std::size_t idx);
 
 }  // namespace auto_server

@@ -21,8 +21,10 @@
 
 #include "unit_test_helper.h"
 
-#include <sup/auto-server/sup_auto_protocol.h>
+#include <sup/auto-server/automation_server.h>
+#include <sup/auto-server/server_job_info_io.h>
 #include <sup/auto-server/server_job.h>
+#include <sup/auto-server/sup_auto_protocol.h>
 
 #include <sup/auto-server/epics/epics_anyvalue_manager.h>
 
@@ -36,11 +38,11 @@
 
 using namespace sup::auto_server;
 
-class JobTest : public ::testing::Test
+class ServerJobTest : public ::testing::Test
 {
 protected:
-  JobTest() = default;
-  virtual ~JobTest() = default;
+  ServerJobTest() = default;
+  virtual ~ServerJobTest() = default;
 
   void OnUpdateValue(const sup::dto::AnyValue& value)
   {
@@ -65,15 +67,17 @@ protected:
   std::condition_variable m_cv;
 };
 
-TEST_F(JobTest, Constructed)
+TEST_F(ServerJobTest, Constructed)
 {
-  const std::string prefix = "JobTest:Constructed:";
+  const std::string prefix = "ServerJobTest:Constructed:";
   const auto procedure_string = UnitTestHelper::CreateProcedureString(kLongWaitProcedureBody);
   auto proc = sup::sequencer::ParseProcedureString(procedure_string);
   ASSERT_NE(proc.get(), nullptr);
 
   // Create ServerJob and wait for initial state
-  ServerJob job{prefix, std::move(proc), m_anyvalue_mgr};
+  auto n_vars = GetNumberOfVariables(*proc);
+  ServerJobInfoIO server_job_info_io{prefix, n_vars, m_anyvalue_mgr};
+  ServerJob job{prefix, std::move(proc), server_job_info_io};
 
   auto pv_callback = [this](const sup::epics::PvAccessClientPV::ExtendedValue& val) {
     if(val.connected)
@@ -100,15 +104,17 @@ TEST_F(JobTest, Constructed)
   EXPECT_TRUE(WaitForValue(failed_state, 1.0));
 }
 
-TEST_F(JobTest, MoveConstructed)
+TEST_F(ServerJobTest, MoveConstructed)
 {
-  const std::string prefix = "JobTest:MoveConstructed:";
+  const std::string prefix = "ServerJobTest:MoveConstructed:";
   const auto procedure_string = UnitTestHelper::CreateProcedureString(kLongWaitProcedureBody);
   auto proc = sup::sequencer::ParseProcedureString(procedure_string);
   ASSERT_NE(proc.get(), nullptr);
 
   // Create ServerJob and wait for initial state
-  ServerJob tmp_job{prefix, std::move(proc), m_anyvalue_mgr};
+  auto n_vars = GetNumberOfVariables(*proc);
+  ServerJobInfoIO server_job_info_io{prefix, n_vars, m_anyvalue_mgr};
+  ServerJob tmp_job{prefix, std::move(proc), server_job_info_io};
   ServerJob job{std::move(tmp_job)};
 
   auto pv_callback = [this](const sup::epics::PvAccessClientPV::ExtendedValue& val) {
