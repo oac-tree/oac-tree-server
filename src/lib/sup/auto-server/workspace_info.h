@@ -52,6 +52,12 @@ public:
   WorkspaceInfo();
   ~WorkspaceInfo();
 
+  // Copy/move construction/assignment
+  WorkspaceInfo(const WorkspaceInfo& other);
+  WorkspaceInfo(WorkspaceInfo&& other);
+  WorkspaceInfo& operator=(const WorkspaceInfo& other);
+  WorkspaceInfo& operator=(WorkspaceInfo&& other);
+
   /**
    * @brief Add a new VariableInfo to the list.
    *

@@ -43,8 +43,11 @@ public:
           const WorkspaceInfo& ws_info, std::unique_ptr<InstructionInfo> root_info);
   ~JobInfo();
 
-  JobInfo(JobInfo&& other) = default;
-  JobInfo& operator=(JobInfo&& other) = default;
+  // Copy/move construction/assignment
+  JobInfo(const JobInfo& other);
+  JobInfo(JobInfo&& other);
+  JobInfo& operator=(const JobInfo& other);
+  JobInfo& operator=(JobInfo&& other);
 
   std::string GetPrefix() const;
   std::string GetProcedureName() const;

@@ -45,6 +45,12 @@ public:
                std::vector<AttributeInfo> attributes);
   ~VariableInfo();
 
+  // Copy/move construction/assignment
+  VariableInfo(const VariableInfo& other);
+  VariableInfo(VariableInfo&& other);
+  VariableInfo& operator=(const VariableInfo& other);
+  VariableInfo& operator=(VariableInfo&& other);
+
   std::string GetType() const;
   sup::dto::uint32 GetIndex() const;
   std::vector<AttributeInfo> GetAttributes() const;

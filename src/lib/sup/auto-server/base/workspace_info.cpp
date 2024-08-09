@@ -36,6 +36,11 @@ WorkspaceInfo::WorkspaceInfo()
 
 WorkspaceInfo::~WorkspaceInfo() = default;
 
+WorkspaceInfo::WorkspaceInfo(const WorkspaceInfo&) = default;
+WorkspaceInfo::WorkspaceInfo(WorkspaceInfo&&) = default;
+WorkspaceInfo& WorkspaceInfo::operator=(const WorkspaceInfo&) = default;
+WorkspaceInfo& WorkspaceInfo::operator=(WorkspaceInfo&&) = default;
+
 void WorkspaceInfo::AddVariableInfo(const std::string& var_name, const VariableInfo& var_info)
 {
   if (!ValidateNewVariableInfo(var_name, var_info))

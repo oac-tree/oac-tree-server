@@ -26,6 +26,18 @@
 #include <deque>
 #include <set>
 
+namespace
+{
+using namespace sup::auto_server;
+
+struct InstrInfoCopyNode
+{
+  const InstructionInfo& src;
+  InstructionInfo& dest;
+};
+
+}  // unnamed namespace
+
 namespace sup
 {
 namespace auto_server
@@ -41,7 +53,39 @@ InstructionInfo::InstructionInfo(const std::string& instr_type, sup::dto::uint32
 
 InstructionInfo::~InstructionInfo() = default;
 
-InstructionInfo::InstructionInfo(InstructionInfo&& other) = default;
+InstructionInfo::InstructionInfo(const InstructionInfo& other)
+  : m_instr_type{other.m_instr_type}
+  , m_index{other.m_index}
+  , m_attributes{other.m_attributes}
+  , m_children{}
+{
+  std::deque<InstrInfoCopyNode> stack;
+  InstrInfoCopyNode root_node{ other, *this };
+  stack.push_back(root_node);
+  while (!stack.empty())
+  {
+    auto node = stack.back();
+    stack.pop_back();
+    auto children = node.dest.Children();
+    for (auto child : children)
+    {
+      std::unique_ptr<InstructionInfo> child_info{
+        new InstructionInfo{child->GetType(), child->GetIndex(), child->GetAttributes()}};
+      auto child_info_p = node.dest.AppendChild(std::move(child_info));
+      InstrInfoCopyNode child_node{*child, *child_info_p};
+      stack.push_back(child_node);
+    }
+  }
+}
+
+InstructionInfo::InstructionInfo(InstructionInfo&&) = default;
+
+InstructionInfo& InstructionInfo::operator=(const InstructionInfo& other)
+{
+  InstructionInfo copy{other};
+  return this->operator=(std::move(copy));
+}
+
 InstructionInfo& InstructionInfo::operator=(InstructionInfo&& other) = default;
 
 std::string InstructionInfo::GetType() const

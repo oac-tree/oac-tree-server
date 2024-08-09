@@ -46,8 +46,10 @@ public:
                   std::vector<AttributeInfo> attributes);
   ~InstructionInfo();
 
-  // Default move constructor/assignment
+  // Copy/move construction/assignment
+  InstructionInfo(const InstructionInfo& other);
   InstructionInfo(InstructionInfo&& other);
+  InstructionInfo& operator=(const InstructionInfo& other);
   InstructionInfo& operator=(InstructionInfo&& other);
 
   std::string GetType() const;

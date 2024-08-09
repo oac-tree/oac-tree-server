@@ -46,6 +46,24 @@ JobInfo::JobInfo(const std::string& job_prefix, const std::string& full_name,
 
 JobInfo::~JobInfo() = default;
 
+JobInfo::JobInfo(const JobInfo& other)
+  : m_job_prefix{other.m_job_prefix}
+  , m_full_name{other.m_full_name}
+  , m_ws{other.m_ws}
+  , m_root{new InstructionInfo{*other.m_root}}
+  , m_ordered_instr{utils::CreateOrderedInstructionInfo(*m_root)}
+{}
+
+JobInfo::JobInfo(JobInfo&&) = default;
+
+JobInfo& JobInfo::operator=(const JobInfo& other)
+{
+  JobInfo copy{other};
+  return this->operator=(std::move(copy));
+}
+
+JobInfo& JobInfo::operator=(JobInfo&&) = default;
+
 std::string JobInfo::GetPrefix() const
 {
   return m_job_prefix;
