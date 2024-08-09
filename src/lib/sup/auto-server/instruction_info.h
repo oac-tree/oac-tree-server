@@ -43,7 +43,7 @@ class InstructionInfo
 {
 public:
   InstructionInfo(const std::string& instr_type, sup::dto::uint32 idx,
-                  std::vector<StringAttribute> attributes);
+                  std::vector<AttributeInfo> attributes);
   ~InstructionInfo();
 
   // Default move constructor/assignment
@@ -52,7 +52,7 @@ public:
 
   std::string GetType() const;
   sup::dto::uint32 GetIndex() const;
-  std::vector<StringAttribute> GetAttributes() const;
+  std::vector<AttributeInfo> GetAttributes() const;
 
   /**
    * @brief Append a child to the end of its list of children.
@@ -69,7 +69,7 @@ public:
 private:
   std::string m_instr_type;
   sup::dto::uint32 m_index;
-  std::vector<StringAttribute> m_attributes;
+  std::vector<AttributeInfo> m_attributes;
   std::vector<std::unique_ptr<InstructionInfo>> m_children;
 };
 

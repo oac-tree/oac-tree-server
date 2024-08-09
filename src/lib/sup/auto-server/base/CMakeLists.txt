@@ -1,6 +1,7 @@
 target_sources(sup-auto-server
   PRIVATE
   anyvalue_utils.cpp
+  attribute_info.cpp
   automation_client.cpp
   automation_job_interface.cpp
   automation_protocol_client.cpp

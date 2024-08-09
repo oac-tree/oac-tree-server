@@ -19,25 +19,18 @@
  * of the distribution package.
  ******************************************************************************/
 
-#ifndef SUP_AUTO_SERVER_ATTRIBUTE_INFO_H_
-#define SUP_AUTO_SERVER_ATTRIBUTE_INFO_H_
-
-#include <sup/sequencer/constraint.h>
-
-#include <string>
-#include <vector>
-#include <utility>
+#include <sup/auto-server/attribute_info.h>
 
 namespace sup
 {
 namespace auto_server
 {
-using AttributeInfo = std::pair<std::string, std::string>;
 
-std::vector<AttributeInfo> ToAttributeInfos(const sup::sequencer::StringAttributeList& attrs);
+std::vector<AttributeInfo> ToAttributeInfos(const sup::sequencer::StringAttributeList& attrs)
+{
+  return attrs;
+}
 
 }  // namespace auto_server
 
 }  // namespace sup
-
-#endif  // SUP_AUTO_SERVER_ATTRIBUTE_INFO_H_

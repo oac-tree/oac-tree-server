@@ -32,7 +32,7 @@ namespace auto_server
 {
 
 InstructionInfo::InstructionInfo(const std::string& instr_type, sup::dto::uint32 idx,
-                                   std::vector<StringAttribute> attributes)
+                                 std::vector<AttributeInfo> attributes)
   : m_instr_type{instr_type}
   , m_index{idx}
   , m_attributes{std::move(attributes)}
@@ -54,7 +54,7 @@ sup::dto::uint32 InstructionInfo::GetIndex() const
   return m_index;
 }
 
-std::vector<StringAttribute> InstructionInfo::GetAttributes() const
+std::vector<AttributeInfo> InstructionInfo::GetAttributes() const
 {
   return m_attributes;
 }

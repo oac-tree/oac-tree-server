@@ -116,7 +116,7 @@ VariableInfo CreateVariableInfo(const sequencer::Variable* var, sup::dto::uint32
     throw InvalidOperationException(error);
   }
   auto var_type = var->GetType();
-  std::vector<StringAttribute> attributes = var->GetStringAttributes();
+  std::vector<AttributeInfo> attributes = ToAttributeInfos(var->GetStringAttributes());
   return VariableInfo{ var_type, index, attributes };
 }
 
@@ -130,7 +130,7 @@ VariableInfo ToVariableInfo(const sup::dto::AnyValue& var_info_anyvalue)
   auto var_type = var_info_anyvalue[kVariableInfoTypeField].As<std::string>();
   auto var_idx = var_info_anyvalue[kIndexField].As<sup::dto::uint32>();
   auto& attr_av = var_info_anyvalue[kAttributesField];
-  std::vector<StringAttribute> attributes;
+  std::vector<AttributeInfo> attributes;
   for (const auto& attr_name : attr_av.MemberNames())
   {
     attributes.emplace_back(attr_name, attr_av[attr_name].As<std::string>());

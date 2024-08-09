@@ -175,7 +175,7 @@ std::unique_ptr<InstructionInfo> CreateInstructionInfoNode(const sequencer::Inst
                                                            sup::dto::uint32 index)
 {
   auto instr_type = instr.GetType();
-  std::vector<StringAttribute> attributes = instr.GetStringAttributes();
+  std::vector<AttributeInfo> attributes = ToAttributeInfos(instr.GetStringAttributes());
   return std::unique_ptr<InstructionInfo>{new InstructionInfo{instr_type, index, attributes}};
 }
 
@@ -190,7 +190,7 @@ std::unique_ptr<InstructionInfo> ToInstructionInfoNode(
   auto instr_type = instr_info_anyvalue[kInstructionInfoNodeTypeField].As<std::string>();
   auto instr_idx = instr_info_anyvalue[kIndexField].As<sup::dto::uint32>();
   auto& attr_av = instr_info_anyvalue[kAttributesField];
-  std::vector<StringAttribute> attributes;
+  std::vector<AttributeInfo> attributes;
   for (const auto& attr_name : attr_av.MemberNames())
   {
     attributes.emplace_back(attr_name, attr_av[attr_name].As<std::string>());

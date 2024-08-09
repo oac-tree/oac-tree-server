@@ -42,17 +42,17 @@ class VariableInfo
 {
 public:
   VariableInfo(const std::string& var_type, sup::dto::uint32 idx,
-               std::vector<StringAttribute> attributes);
+               std::vector<AttributeInfo> attributes);
   ~VariableInfo();
 
   std::string GetType() const;
   sup::dto::uint32 GetIndex() const;
-  std::vector<StringAttribute> GetAttributes() const;
+  std::vector<AttributeInfo> GetAttributes() const;
 
 private:
   std::string m_var_type;
   sup::dto::uint32 m_index;
-  std::vector<StringAttribute> m_attributes;
+  std::vector<AttributeInfo> m_attributes;
 };
 
 /**

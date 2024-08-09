@@ -54,8 +54,8 @@ TEST_F(VariableInfoTest, FromVariable)
   EXPECT_EQ(attributes.size(), 0);
 
   // Check VariableInfo after adding attributes
-  StringAttribute attr_0{"one", "hello"};
-  StringAttribute attr_1{"two", "world"};
+  AttributeInfo attr_0{"one", "hello"};
+  AttributeInfo attr_1{"two", "world"};
   var->AddAttribute(attr_0.first, attr_0.second);
   var->AddAttribute(attr_1.first, attr_1.second);
   var_info = utils::CreateVariableInfo(var.get(), var_idx);
@@ -77,7 +77,7 @@ TEST_F(VariableInfoTest, ToFromAnyValue)
 {
   {
     // Variable without attributes
-    std::vector<StringAttribute> attributes;
+    std::vector<AttributeInfo> attributes;
     VariableInfo var_info{"MyVarType", 33u, attributes};
     auto var_info_av = utils::ToAnyValue(var_info);
     auto var_info_read_back = utils::ToVariableInfo(var_info_av);
@@ -85,9 +85,9 @@ TEST_F(VariableInfoTest, ToFromAnyValue)
   }
   {
     // Variable with two attributes
-    StringAttribute attr_0{"one", "hello"};
-    StringAttribute attr_1{"two", "world"};
-    std::vector<StringAttribute> attributes;
+    AttributeInfo attr_0{"one", "hello"};
+    AttributeInfo attr_1{"two", "world"};
+    std::vector<AttributeInfo> attributes;
     attributes.push_back(attr_0);
     attributes.push_back(attr_1);
     VariableInfo var_info{"MyVarType", 0, attributes};
@@ -99,7 +99,7 @@ TEST_F(VariableInfoTest, ToFromAnyValue)
 
 TEST_F(VariableInfoTest, FromAnyValue)
 {
-  std::vector<StringAttribute> expected_attrs{
+  std::vector<AttributeInfo> expected_attrs{
       { "field_1", "val_1" },
       { "field_2", "val_2" },
       { "field_3", "val_3" }
