@@ -20,10 +20,13 @@ target_include_directories(sup-auto-server PUBLIC
 find_package(sup-dto REQUIRED)
 find_package(sup-epics REQUIRED)
 find_package(sequencer REQUIRED)
+find_package(sup-protocol REQUIRED)
+
 target_link_libraries(sup-auto-server
   PUBLIC
     sequencer::sequencer
     sup-dto::sup-dto
+    sup-protocol::sup-protocol
   PRIVATE
     sup-epics::sup-epics
 )

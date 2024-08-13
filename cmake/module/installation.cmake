@@ -44,6 +44,6 @@ install(FILES ${PACKAGE_VERSION_FILE} DESTINATION ${INSTALL_CONFIGDIR})
 set(PACKAGE_CONFIG_FILE ${BUILD_CONFIGDIR}/sup-auto-server-config.cmake)
 
 # Generate the package config file, shared in both build tree and installation usage
-write_package_config_file(sup-auto-server OUTPUT ${PACKAGE_CONFIG_FILE} INSTALL_DESTINATION ${INSTALL_CONFIGDIR})
+write_package_config_file(sup-auto-server OUTPUT ${PACKAGE_CONFIG_FILE} INSTALL_DESTINATION ${INSTALL_CONFIGDIR} DEPENDENCIES sequencer sup-protocol)
 
 install(FILES ${PACKAGE_CONFIG_FILE} DESTINATION ${INSTALL_CONFIGDIR})
