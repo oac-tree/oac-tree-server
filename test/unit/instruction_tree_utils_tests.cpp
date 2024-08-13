@@ -29,7 +29,6 @@
 
 #include <gtest/gtest.h>
 
-#include <algorithm>
 #include <set>
 
 using namespace sup::auto_server;

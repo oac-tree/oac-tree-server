@@ -28,9 +28,6 @@
 #include <sup/auto-server/variable_info.h>
 #include <sup/auto-server/variable_utils.h>
 
-#include <deque>
-#include <set>
-
 namespace sup
 {
 namespace auto_server

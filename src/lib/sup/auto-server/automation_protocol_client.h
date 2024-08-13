@@ -26,8 +26,6 @@
 
 #include <sup/protocol/protocol.h>
 
-#include <map>
-
 namespace sup
 {
 namespace auto_server
