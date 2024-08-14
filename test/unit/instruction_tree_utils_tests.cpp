@@ -24,7 +24,6 @@
 #include <sup/auto-server/instruction_map.h>
 #include <sup/auto-server/instruction_tree_utils.h>
 #include <sup/auto-server/sup_auto_protocol.h>
-
 #include <sup/sequencer/sequence_parser.h>
 
 #include <gtest/gtest.h>
@@ -80,7 +79,7 @@ TEST_F(InstructionTreeUtilsTest, InstructionInfoFromInstructionTree)
     EXPECT_EQ(child_attrs.size(), 2);
     EXPECT_EQ(child->Children().size(), 0);
   }
-  std::set<sup::dto::uint32> expected_indices{0,1,2};
+  std::set<sup::dto::uint32> expected_indices{0, 1, 2};
   EXPECT_EQ(indices, expected_indices);
 
   // Test copy
@@ -90,6 +89,25 @@ TEST_F(InstructionTreeUtilsTest, InstructionInfoFromInstructionTree)
   // Test move
   InstructionInfo moved{std::move(copy)};
   EXPECT_EQ(moved, *instr_info);
+}
+
+TEST_F(InstructionTreeUtilsTest, CreateOrderedInstructionInfo)
+{
+  InstructionInfo sequence("sequence", 0, {});
+  auto child0 = std::unique_ptr<InstructionInfo>(new InstructionInfo("child0", 1, {}));
+  auto child0_ptr = child0.get();
+  auto child1 = std::unique_ptr<InstructionInfo>(new InstructionInfo("child1", 2, {}));
+  auto child1_ptr = child1.get();
+
+  sequence.AppendChild(std::move(child0));
+  sequence.AppendChild(std::move(child1));
+
+  auto ordered_info = utils::CreateOrderedInstructionInfo(sequence);
+  ASSERT_EQ(ordered_info.size(), 3);  // <- Failing here with "1" instead of "3"
+
+  EXPECT_EQ(ordered_info[0], &sequence);
+  EXPECT_EQ(ordered_info[1], child0_ptr);
+  EXPECT_EQ(ordered_info[2], child1_ptr);
 }
 
 TEST_F(InstructionTreeUtilsTest, InstructionInfoToFromAnyValue)
