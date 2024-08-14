@@ -103,7 +103,7 @@ TEST_F(InstructionTreeUtilsTest, CreateOrderedInstructionInfo)
   sequence.AppendChild(std::move(child1));
 
   auto ordered_info = utils::CreateOrderedInstructionInfo(sequence);
-  ASSERT_EQ(ordered_info.size(), 3);  // <- Failing here with "1" instead of "3"
+  ASSERT_EQ(ordered_info.size(), 3);
 
   EXPECT_EQ(ordered_info[0], &sequence);
   EXPECT_EQ(ordered_info[1], child0_ptr);

@@ -147,6 +147,11 @@ std::vector<const InstructionInfo*> Flatten(const InstructionInfo& instr_info_tr
     }
     result.push_back(p_info);
     info_pointers.insert(p_info);
+
+    for (const auto child : p_info->Children())
+    {
+      stack.push_back(child);
+    }
   }
   if (info_pointers.size() != result.size())
   {
