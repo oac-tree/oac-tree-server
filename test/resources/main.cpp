@@ -44,7 +44,8 @@ int main(int argc, char* argv[])
 
   // automation client classes:
   AutomationProtocolClient auto_protocol_client{protocol_rpc_client};
-  AutomationClient auto_client{auto_protocol_client, EPICSListenerFactoryFunction};
+  ListenerFactoryFunction listener_func(EPICSListenerFactoryFunction);
+  AutomationClient auto_client{auto_protocol_client, listener_func};
 
   // Use AutomationClient to connect a IJobInfoIO object to a specific job.
   // This will make that object handle all job updates and user I/O.
