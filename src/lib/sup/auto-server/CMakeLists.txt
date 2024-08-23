@@ -35,6 +35,7 @@ target_link_libraries(sup-auto-server
 install(TARGETS sup-auto-server EXPORT sup-auto-server-targets LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR})
 
 install(FILES
+  anyvalue_input_request.h
   anyvalue_utils.h
   attribute_info.h
   automation_client.h
