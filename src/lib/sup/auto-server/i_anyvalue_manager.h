@@ -67,6 +67,17 @@ public:
   virtual bool AddAnyValues(const NameAnyValueSet& name_value_set) = 0;
 
   /**
+   * @brief Add a server that will handle client calls to provide user input.
+   *
+   * @details Typical implementations should be able to support multiple calls to this member
+   * function, allowing to manage multiple input channels for one or more jobs.
+   *
+   * @param input_server_name Name to use for the server.
+   * @return true when successful. In case of failure, no server is instantiated.
+   */
+  virtual bool AddInputServer(const std::string& input_server_name) = 0;
+
+  /**
    * @brief Update the value of the managed AnyValue with the given name.
    *
    * @param name Name of the managed AnyValue to be updated.

@@ -75,7 +75,7 @@ bool ServerJobInfoIO::GetUserValue(sup::dto::AnyValue& value, const std::string&
 }
 
 int ServerJobInfoIO::GetUserChoice(const std::vector<std::string>& options,
-                    const sup::dto::AnyValue& metadata)
+                                   const sup::dto::AnyValue& metadata)
 {
   (void)options;
   (void)metadata;

@@ -54,6 +54,12 @@ bool EPICSAnyValueManager::AddAnyValues(const NameAnyValueSet &name_value_set)
   return true;
 }
 
+bool EPICSAnyValueManager::AddInputServer(const std::string& input_server_name)
+{
+  (void)input_server_name;
+  return true;
+}
+
 bool EPICSAnyValueManager::UpdateAnyValue(const std::string& name, const sup::dto::AnyValue& value)
 {
   // A mutex lock is only needed during the find operation:

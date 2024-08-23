@@ -136,6 +136,12 @@ bool TestAnyValueManager::AddAnyValues(const NameAnyValueSet& name_value_set)
   return true;
 }
 
+bool TestAnyValueManager::AddInputServer(const std::string& input_server_name)
+{
+  (void)input_server_name;
+  return true;
+}
+
 bool TestAnyValueManager::UpdateAnyValue(const std::string& name, const sup::dto::AnyValue& value)
 {
   std::lock_guard<std::mutex> lk{m_mtx};
