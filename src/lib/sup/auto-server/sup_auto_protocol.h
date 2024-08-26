@@ -82,6 +82,9 @@ const std::string kJobStateId = "STATE";
 const std::string kJobStateType = "sup::jobState/v1.0";
 const std::string kJobStateField = "state";
 
+// User input server names:
+const std::string kInputServerName = "INPUT";
+
 // Basic job state AnyValue
 extern const sup::dto::AnyValue kJobStateAnyValue;
 
@@ -165,6 +168,14 @@ std::string AutomationServerResultToString(const sup::protocol::ProtocolResult& 
  * @return PV channel name for the job state.
  */
 std::string GetJobStatePVName(const std::string& prefix);
+
+/**
+ * @brief Create a name for the server that handles user input for a job.
+ *
+ * @param prefix Prefix that needs to be unique among all running jobs in the network.
+ * @return Name for the input server.
+ */
+std::string GetInputServerName(const std::string& prefix);
 
 /**
  * @brief Create a PV channel name for an instruction with the given index and prefix.

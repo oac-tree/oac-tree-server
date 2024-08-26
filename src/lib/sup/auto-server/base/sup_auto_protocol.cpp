@@ -119,6 +119,11 @@ std::string GetJobStatePVName(const std::string& prefix)
   return prefix + kJobStateId;
 }
 
+std::string GetInputServerName(const std::string& prefix)
+{
+  return prefix + kInputServerName;
+}
+
 std::string GetInstructionPVName(const std::string& prefix, dto::uint32 index)
 {
   return prefix + kInstructionId + std::to_string(index);
