@@ -21,6 +21,7 @@
 
 #include <sup/auto-server/server_job_info_io.h>
 
+#include <sup/auto-server/anyvalue_input_request.h>
 #include <sup/auto-server/sup_auto_protocol.h>
 
 namespace sup
@@ -69,16 +70,20 @@ bool ServerJobInfoIO::PutValue(const sup::dto::AnyValue& value, const std::strin
 
 bool ServerJobInfoIO::GetUserValue(sup::dto::AnyValue& value, const std::string& description)
 {
-  (void)value;
-  (void)description;
+  auto input_request = CreateUserValueRequest(value, description);
+  // auto input_server_name = GetInputServerName(m_job_prefix);
+  // auto response = m_av_manager.GetUserInput(input_server_name, input_request);
+  // Parse response to AnyValue and return true/false accordingly.
   return false;
 }
 
 int ServerJobInfoIO::GetUserChoice(const std::vector<std::string>& options,
                                    const sup::dto::AnyValue& metadata)
 {
-  (void)options;
-  (void)metadata;
+  auto input_request = CreateUserChoiceRequest(options, metadata);
+  // auto input_server_name = GetInputServerName(m_job_prefix);
+  // auto response = m_av_manager.GetUserInput(input_server_name, input_request);
+  // Parse response to int and return true/false accordingly.
   return -1;
 }
 

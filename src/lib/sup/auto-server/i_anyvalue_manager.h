@@ -22,6 +22,8 @@
 #ifndef SUP_AUTO_SERVER_I_ANYVALUE_MANAGER_H_
 #define SUP_AUTO_SERVER_I_ANYVALUE_MANAGER_H_
 
+#include <sup/auto-server/anyvalue_input_request.h>
+
 #include <sup/dto/anyvalue.h>
 
 #include <set>
@@ -85,6 +87,16 @@ public:
    * @return true on success. Failure may include the case of an unknown name.
    */
   virtual bool UpdateAnyValue(const std::string& name, const sup::dto::AnyValue& value) = 0;
+
+  /**
+   * @brief Get user input using the given input server and request information.
+   *
+   * @param input_server_name Name of the input server.
+   * @param request Description of the input requested.
+   * @return AnyValue response from the user.
+   */
+  virtual sup::dto::AnyValue GetUserInput(const std::string& input_server_name,
+                                          const AnyValueInputRequest& request) = 0;
 };
 
 /**

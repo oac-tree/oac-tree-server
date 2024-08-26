@@ -26,7 +26,7 @@ namespace sup
 namespace auto_server
 {
 
-AnyValueInputRequest CreateUserValueRequest(sup::dto::AnyValue& value,
+AnyValueInputRequest CreateUserValueRequest(const sup::dto::AnyValue& value,
                                             const std::string& description)
 {
   sup::dto::AnyValue meta_data = description;

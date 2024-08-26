@@ -56,7 +56,7 @@ public:
   sup::dto::AnyType m_input_type;
 };
 
-AnyValueInputRequest CreateUserValueRequest(sup::dto::AnyValue& value,
+AnyValueInputRequest CreateUserValueRequest(const sup::dto::AnyValue& value,
                                             const std::string& description);
 
 AnyValueInputRequest CreateUserChoiceRequest(const std::vector<std::string>& options,

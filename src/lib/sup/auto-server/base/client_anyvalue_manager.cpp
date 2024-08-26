@@ -79,6 +79,14 @@ bool ClientAnyValueManager::UpdateAnyValue(const std::string& name, const sup::d
   return true;
 }
 
+sup::dto::AnyValue ClientAnyValueManager::GetUserInput(const std::string& input_server_name,
+                                                       const AnyValueInputRequest& request)
+{
+  (void)input_server_name;
+  (void)request;
+  return {};
+}
+
 ClientAnyValueManager::AnyValueCallback CreateCallback(const std::string& value_name)
 {
   auto ignore = [](IJobInfoIO& job_info_io, const sup::dto::AnyValue& value) {

@@ -51,6 +51,9 @@ public:
 
   bool UpdateAnyValue(const std::string& name, const sup::dto::AnyValue& value) override;
 
+  sup::dto::AnyValue GetUserInput(const std::string& input_server_name,
+                                  const AnyValueInputRequest& request) override;
+
 private:
   IJobInfoIO& m_job_info_io;
   std::map<std::string, AnyValueCallback> m_cb_map;

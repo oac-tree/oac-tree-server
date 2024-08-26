@@ -47,6 +47,8 @@ public:
   bool AddAnyValues(const NameAnyValueSet& name_value_set) override;
   bool AddInputServer(const std::string& input_server_name) override;
   bool UpdateAnyValue(const std::string& name, const sup::dto::AnyValue& value) override;
+  sup::dto::AnyValue GetUserInput(const std::string& input_server_name,
+                                  const AnyValueInputRequest& request) override;
 
 private:
   bool ValidateNameValueSet(const NameAnyValueSet& name_value_set) const;

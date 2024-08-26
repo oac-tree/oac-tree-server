@@ -72,6 +72,14 @@ bool EPICSAnyValueManager::UpdateAnyValue(const std::string& name, const sup::dt
   return true;
 }
 
+sup::dto::AnyValue EPICSAnyValueManager::GetUserInput(const std::string& input_server_name,
+                                                      const AnyValueInputRequest& request)
+{
+  (void)input_server_name;
+  (void)request;
+  return {};
+}
+
 bool EPICSAnyValueManager::ValidateNameValueSet(const NameAnyValueSet& name_value_set) const
 {
   auto names = GetNames(name_value_set);

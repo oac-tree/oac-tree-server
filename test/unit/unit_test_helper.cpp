@@ -155,6 +155,14 @@ bool TestAnyValueManager::UpdateAnyValue(const std::string& name, const sup::dto
   return true;
 }
 
+sup::dto::AnyValue TestAnyValueManager::GetUserInput(const std::string& input_server_name,
+                                                     const AnyValueInputRequest& request)
+{
+  (void)input_server_name;
+  (void)request;
+  return {};
+}
+
 bool TestAnyValueManager::HasAnyValue(const std::string& name) const
 {
   std::lock_guard<std::mutex> lk{m_mtx};
