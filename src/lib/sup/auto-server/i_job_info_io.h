@@ -35,7 +35,6 @@ namespace auto_server
 /**
  * @brief Abstract interface for runtime updates and user input/output of a job, represented by
  * a JobInfo.
- *
  */
 class IJobInfoIO
 {

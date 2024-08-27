@@ -83,36 +83,29 @@ void AutomationJobInterface::VariableUpdated(const std::string& name,
 bool AutomationJobInterface::PutValue(const sup::dto::AnyValue& value,
                                       const std::string& description)
 {
-  (void)value;
-  (void)description;
-  return true;
+  return m_job_info_io.PutValue(value, description);
 }
 
 bool AutomationJobInterface::GetUserValue(sup::dto::AnyValue& value,
                                           const std::string& description)
 {
-  (void)value;
-  (void)description;
-  return false;
+  return m_job_info_io.GetUserValue(value, description);
 }
 
 int AutomationJobInterface::GetUserChoice(const std::vector<std::string>& options,
                                           const sup::dto::AnyValue& metadata)
 {
-  (void)options;
-  (void)metadata;
-  return -1;
+  return m_job_info_io.GetUserChoice(options, metadata);
 }
 
 void AutomationJobInterface::Message(const std::string& message)
 {
-  (void)message;
+  return m_job_info_io.Message(message);
 }
 
 void AutomationJobInterface::Log(int severity, const std::string& message)
 {
-  (void)severity;
-  (void)message;
+  return m_job_info_io.Log(severity, message);
 }
 
 void AutomationJobInterface::OnStateChange(sequencer::JobState state) noexcept
