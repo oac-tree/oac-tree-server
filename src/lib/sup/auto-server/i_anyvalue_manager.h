@@ -74,6 +74,9 @@ public:
    * @details Typical implementations should be able to support multiple calls to this member
    * function, allowing to manage multiple input channels for one or more jobs.
    *
+   * @note An implementation may use multiple channels to create a single server, e.g. an RPC
+   * server channel to receive replies and a simple PV channel to publish requests.
+   *
    * @param input_server_name Name to use for the server.
    * @return true when successful. In case of failure, no server is instantiated.
    */

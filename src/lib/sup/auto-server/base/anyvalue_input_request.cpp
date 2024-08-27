@@ -21,6 +21,8 @@
 
 #include <sup/auto-server/anyvalue_input_request.h>
 
+#include <sup/auto-server/anyvalue_utils.h>
+
 namespace sup
 {
 namespace auto_server
@@ -49,6 +51,42 @@ AnyValueInputRequest CreateUserChoiceRequest(const std::vector<std::string>& opt
   AnyValueInputRequest input_request{ InputRequestType::kUserChoice, meta,
                                       sup::dto::SignedInteger32Type};
   return input_request;
+}
+
+std::pair<bool, sup::dto::AnyValue> ParseUserValueReply(const sup::dto::AnyValue& reply)
+{
+  std::pair<bool, sup::dto::AnyValue> failure{ false, {} };
+  if (!utils::ValidateMemberType(reply, kInputReplyResultFieldName, sup::dto::BooleanType))
+  {
+    return failure;
+  }
+  if (!reply[kInputReplyResultFieldName].As<sup::dto::boolean>())
+  {
+    return failure;
+  }
+  if (!reply.HasField(kInputReplyValueFieldName))
+  {
+    return failure;
+  }
+  return { true, reply[kInputReplyValueFieldName] };
+}
+
+std::pair<bool, int> ParseUserChoiceReply(const sup::dto::AnyValue& reply)
+{
+  std::pair<bool, int> failure{ false, -1 };
+  if (!utils::ValidateMemberType(reply, kInputReplyResultFieldName, sup::dto::BooleanType))
+  {
+    return failure;
+  }
+  if (!reply[kInputReplyResultFieldName].As<sup::dto::boolean>())
+  {
+    return failure;
+  }
+  if (!utils::ValidateMemberType(reply, kInputReplyValueFieldName, sup::dto::SignedInteger32Type))
+  {
+    return failure;
+  }
+  return { true, reply[kInputReplyValueFieldName].As<sup::dto::int32>() };
 }
 
 }  // namespace auto_server

@@ -25,6 +25,7 @@
 #include <sup/dto/anyvalue.h>
 
 #include <string>
+#include <utility>
 #include <vector>
 
 namespace sup
@@ -34,6 +35,9 @@ namespace auto_server
 
 const std::string kInputRequestOptionsFieldName = "options";
 const std::string kInputRequestMetadataFieldName = "metadata";
+
+const std::string kInputReplyResultFieldName = "result";
+const std::string kInputReplyValueFieldName = "value";
 
 /**
  * @brief Enumeration for the different types of user input.
@@ -61,6 +65,10 @@ AnyValueInputRequest CreateUserValueRequest(const sup::dto::AnyValue& value,
 
 AnyValueInputRequest CreateUserChoiceRequest(const std::vector<std::string>& options,
                                              const sup::dto::AnyValue& metadata);
+
+std::pair<bool, sup::dto::AnyValue> ParseUserValueReply(const sup::dto::AnyValue& reply);
+
+std::pair<bool, int> ParseUserChoiceReply(const sup::dto::AnyValue& reply);
 
 }  // namespace auto_server
 

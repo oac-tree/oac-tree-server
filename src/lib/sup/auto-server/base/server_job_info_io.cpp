@@ -24,6 +24,8 @@
 #include <sup/auto-server/anyvalue_input_request.h>
 #include <sup/auto-server/sup_auto_protocol.h>
 
+#include <sup/dto/anyvalue_helper.h>
+
 namespace sup
 {
 namespace auto_server
@@ -36,6 +38,8 @@ ServerJobInfoIO::ServerJobInfoIO(const std::string& job_prefix, sup::dto::uint32
 {
   auto value_set = GetInitialValueSet(m_job_prefix, m_n_vars);
   m_av_manager.AddAnyValues(value_set);
+  auto input_server_name = GetInputServerName(m_job_prefix);
+  m_av_manager.AddInputServer(input_server_name);
 }
 
 ServerJobInfoIO::~ServerJobInfoIO() = default;
@@ -73,8 +77,16 @@ bool ServerJobInfoIO::GetUserValue(sup::dto::AnyValue& value, const std::string&
   auto input_request = CreateUserValueRequest(value, description);
   auto input_server_name = GetInputServerName(m_job_prefix);
   auto response = m_av_manager.GetUserInput(input_server_name, input_request);
-  // Parse response to AnyValue and return true/false accordingly.
-  return false;
+  auto parsed_reply = ParseUserValueReply(response);
+  if (!parsed_reply.first)
+  {
+    return false;
+  }
+  if (!sup::dto::TryAssign(value, parsed_reply.second))
+  {
+    return false;
+  }
+  return true;
 }
 
 int ServerJobInfoIO::GetUserChoice(const std::vector<std::string>& options,
@@ -83,8 +95,12 @@ int ServerJobInfoIO::GetUserChoice(const std::vector<std::string>& options,
   auto input_request = CreateUserChoiceRequest(options, metadata);
   auto input_server_name = GetInputServerName(m_job_prefix);
   auto response = m_av_manager.GetUserInput(input_server_name, input_request);
-  // Parse response to int and return true/false accordingly.
-  return -1;
+  auto parsed_reply = ParseUserChoiceReply(response);
+  if (!parsed_reply.first)
+  {
+    return -1;
+  }
+  return parsed_reply.second;
 }
 
 void ServerJobInfoIO::Message(const std::string& message)
