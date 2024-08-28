@@ -53,6 +53,11 @@ InputRequestServer::~InputRequestServer() = default;
 
 bool InputRequestServer::SetClientReply(sup::dto::uint64 req_idx, const sup::dto::AnyValue& reply)
 {
+  // Request index zero is not a valid index
+  if (req_idx == 0)
+  {
+    return false;
+  }
   // Do not allow setting an empty reply:
   if (sup::dto::IsEmptyValue(reply))
   {
@@ -60,7 +65,8 @@ bool InputRequestServer::SetClientReply(sup::dto::uint64 req_idx, const sup::dto
   }
   {
     std::lock_guard<std::mutex> lk{m_mtx};
-    if (req_idx != m_request_idx)
+    // Refuse to set reply if index doesn't match or value was already set:
+    if (req_idx != m_request_idx || !sup::dto::IsEmptyValue(m_reply))
     {
       return false;
     }
