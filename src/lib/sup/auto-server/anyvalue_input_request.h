@@ -70,6 +70,24 @@ std::pair<bool, sup::dto::AnyValue> ParseUserValueReply(const sup::dto::AnyValue
 
 std::pair<bool, int> ParseUserChoiceReply(const sup::dto::AnyValue& reply);
 
+/**
+ * @brief Pack an AnyValueInputRequest into a base64 encoded AnyValue.
+ *
+ * @param input_request AnyValueInputRequest object to encode.
+ *
+ * @return Encoded AnyValue.
+ */
+sup::dto::AnyValue EncodeInputRequest(const AnyValueInputRequest& input_request);
+
+/**
+ * @brief Decode the packed and encoded AnyValue into an AnyValueInputRequest.
+ *
+ * @param encoded Encoded AnyValue.
+ *
+ * @return Pair of AnyValueInputRequest and its connected state.
+ */
+std::pair<bool, AnyValueInputRequest> DecodeInputRequest(const dto::AnyValue& encoded);
+
 }  // namespace auto_server
 
 }  // namespace sup

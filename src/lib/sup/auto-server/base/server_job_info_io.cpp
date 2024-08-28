@@ -82,6 +82,7 @@ bool ServerJobInfoIO::GetUserValue(sup::dto::AnyValue& value, const std::string&
   {
     return false;
   }
+  // Use TryAssign, since it is up to concrete Instructions to handle possible type mismatches:
   if (!sup::dto::TryAssign(value, parsed_reply.second))
   {
     return false;

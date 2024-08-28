@@ -22,6 +22,17 @@
 #include <sup/auto-server/anyvalue_input_request.h>
 
 #include <sup/auto-server/anyvalue_utils.h>
+#include <sup/auto-server/exceptions.h>
+#include <sup/auto-server/sup_auto_protocol.h>
+
+#include <sup/dto/anytype_helper.h>
+#include <sup/dto/json_type_parser.h>
+#include <sup/protocol/base64_variable_codec.h>
+
+namespace
+{
+bool ValidateInputRequestPayload(const sup::dto::AnyValue& payload);
+}  // unnamed namespace
 
 namespace sup
 {
@@ -40,7 +51,7 @@ AnyValueInputRequest CreateUserChoiceRequest(const std::vector<std::string>& opt
                                              const sup::dto::AnyValue& metadata)
 {
   sup::dto::AnyValue options_av{ options.size(), sup::dto::StringType };
-  for (std::size_t idx = 0; idx < options.size(); ++ idx)
+  for (std::size_t idx = 0; idx < options.size(); ++idx)
   {
     options_av[idx] = options[idx];
   }
@@ -89,6 +100,72 @@ std::pair<bool, int> ParseUserChoiceReply(const sup::dto::AnyValue& reply)
   return { true, reply[kInputReplyValueFieldName].As<sup::dto::int32>() };
 }
 
+sup::dto::AnyValue EncodeInputRequest(const AnyValueInputRequest& input_request)
+{
+  sup::dto::AnyValue request_type_av{ sup::dto::UnsignedInteger32Type,
+                                      static_cast<sup::dto::uint32>(input_request.m_request_type)};
+  dto::AnyValue payload = {{
+    { kInputRequestTypeField, request_type_av },
+    { kInputRequestMetadataField, input_request.m_meta_data },
+    { kInputRequestInputTypeField, sup::dto::AnyTypeToJSONString(input_request.m_input_type) }
+  }};
+  auto encoded = protocol::Base64VariableCodec::Encode(payload);
+  if (!encoded.first)
+  {
+    const std::string error = "EncodeInputRequest(): could not encode the input request";
+    throw InvalidOperationException(error);
+  }
+  return encoded.second;
+}
+
+std::pair<bool, AnyValueInputRequest> DecodeInputRequest(const dto::AnyValue& encoded)
+{
+  const std::pair<bool, AnyValueInputRequest> failure{ false, {} };
+  auto decoded = protocol::Base64VariableCodec::Decode(encoded);
+  if (!decoded.first)
+  {
+    return failure;
+  }
+  auto& payload = decoded.second;
+  if (!ValidateInputRequestPayload(payload))
+  {
+    return failure;
+  }
+  InputRequestType request_type =
+    static_cast<InputRequestType>(payload[kInputRequestTypeField].As<sup::dto::uint32>());
+  sup::dto::JSONAnyTypeParser type_parser;
+  if (!type_parser.ParseString(payload[kInputRequestInputTypeField].As<std::string>()))
+  {
+    return failure;
+  }
+  AnyValueInputRequest input_request{ request_type, payload[kInputRequestMetadataField],
+                                      type_parser.MoveAnyType() };
+  return { true, input_request };
+}
+
 }  // namespace auto_server
 
 }  // namespace sup
+
+namespace
+{
+using namespace sup::auto_server;
+bool ValidateInputRequestPayload(const sup::dto::AnyValue& payload)
+{
+  if (!utils::ValidateMemberType(payload, kInputRequestTypeField, sup::dto::UnsignedInteger32Type))
+  {
+    return false;
+  }
+  if (!payload.HasField(kInputRequestMetadataField))
+  {
+    return false;
+  }
+  if (!utils::ValidateMemberType(payload, kInputRequestInputTypeField, sup::dto::StringType))
+  {
+    return false;
+  }
+  return true;
+
+}
+}  // unnamed namespace
+

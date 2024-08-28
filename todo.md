@@ -2,6 +2,7 @@
 
 * Implement AddInputServer in all IAnyValueManager implementations
 * Adapt Listener accordingly (and call the appropriate methods of the member IAnyValueManager)
+* Reorganise the stuff in sup_auto_protocol.h and anyvalue_input_request.h
 * Make user input interruptable
 * Add more extensive unit tests
 * Implement other JobInterface methods over the network

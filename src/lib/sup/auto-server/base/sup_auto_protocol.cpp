@@ -67,6 +67,11 @@ const dto::AnyValue kVariableInfoAnyValue = {{
   { kAttributesField, sup::dto::EmptyStruct() }
 }, kVariableInfoType };
 
+const dto::AnyValue kInputRequestAnyValue = {{
+  { protocol::kEncodingField, protocol::kBase64Encoding},
+  { protocol::kValueField, "" }
+}, kInputRequestType };
+
 const dto::AnyValue kJobStateAnyValue = {{
   { kJobStateField, static_cast<dto::uint32>(sequencer::JobState::kInitial)}
 }, kJobStateType };
@@ -122,6 +127,11 @@ std::string GetJobStatePVName(const std::string& prefix)
 std::string GetInputServerName(const std::string& prefix)
 {
   return prefix + kInputServerName;
+}
+
+std::string GetInputRequestPVName(const std::string& server_name)
+{
+  return server_name + kInputRequestName;
 }
 
 std::string GetInstructionPVName(const std::string& prefix, dto::uint32 index)

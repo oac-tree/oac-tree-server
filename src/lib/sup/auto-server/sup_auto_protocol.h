@@ -76,14 +76,23 @@ const std::string kVariableInfoTypeField = "type";
 // Basic variable info node AnyValue
 extern const sup::dto::AnyValue kVariableInfoAnyValue;
 
+// Basic input request AnyValue
+extern const sup::dto::AnyValue kInputRequestAnyValue;
+
+// User input server and request names:
+const std::string kInputServerName = "INPUT";
+const std::string kInputRequestName = "-REQ";
+// Input request fields:
+const std::string kInputRequestType = "sup::inputRequestType/v1.0";
+const std::string kInputRequestTypeField = "request_type";
+const std::string kInputRequestMetadataField = "metadata";
+const std::string kInputRequestInputTypeField = "input_type";
+
 // Job state postfix:
 const std::string kJobStateId = "STATE";
 // Job state type name and fields:
 const std::string kJobStateType = "sup::jobState/v1.0";
 const std::string kJobStateField = "state";
-
-// User input server names:
-const std::string kInputServerName = "INPUT";
 
 // Basic job state AnyValue
 extern const sup::dto::AnyValue kJobStateAnyValue;
@@ -176,6 +185,14 @@ std::string GetJobStatePVName(const std::string& prefix);
  * @return Name for the input server.
  */
 std::string GetInputServerName(const std::string& prefix);
+
+/**
+ * @brief Create a PV name for publishing input requests.
+ *
+ * @param server_name Name of the server associated with the input requests.
+ * @return PV name for publishing input requests.
+ */
+std::string GetInputRequestPVName(const std::string& server_name);
 
 /**
  * @brief Create a PV channel name for an instruction with the given index and prefix.
