@@ -23,6 +23,9 @@
 
 #include "epics_server.h"
 
+#include <sup/auto-server/anyvalue_input_request.h>
+#include <sup/auto-server/sup_auto_protocol.h>
+
 namespace sup
 {
 namespace auto_server
@@ -56,7 +59,14 @@ bool EPICSAnyValueManager::AddAnyValues(const NameAnyValueSet &name_value_set)
 
 bool EPICSAnyValueManager::AddInputServer(const std::string& input_server_name)
 {
-  (void)input_server_name;
+  // Instantiate a RPC server
+  auto input_request_name = GetInputRequestPVName(input_server_name);
+  NameAnyValueSet value_set;
+  value_set.emplace_back( input_request_name, kInputRequestAnyValue);
+  if (!AddAnyValues(value_set))
+  {
+    return false;
+  }
   return true;
 }
 
@@ -75,8 +85,14 @@ bool EPICSAnyValueManager::UpdateAnyValue(const std::string& name, const sup::dt
 sup::dto::AnyValue EPICSAnyValueManager::GetUserInput(const std::string& input_server_name,
                                                       const AnyValueInputRequest& request)
 {
-  (void)input_server_name;
-  (void)request;
+  // TODO: protect with mutex!
+  auto input_request_name = GetInputRequestPVName(input_server_name);
+  auto input_request = EncodeInputRequest(request);
+  // Clear reply: ask server
+  UpdateAnyValue(input_request_name, input_request);
+  // TODO: Wait for reply from RPC server and parse it
+  // Clear input request PV
+  UpdateAnyValue(input_request_name, kInputRequestAnyValue);
   return {};
 }
 
