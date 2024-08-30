@@ -52,6 +52,7 @@ install(FILES
   i_anyvalue_manager.h
   i_job_info_io.h
   i_job_manager.h
+  input_protocol_server.h
   input_request_server.h
   instruction_info.h
   instruction_map.h

@@ -37,7 +37,8 @@ namespace auto_server
 
 /**
  * @brief InputRequestServer is a helper class that manages a single request for user input at
- * a time.
+ * a time. It is intended to be used in a multithreaded context, e.g. the server is waiting for a
+ * reply, while a client thread sets it.
  *
  * @note This class does not prevent users to instantiate new requests when an older one was still
  * not satisfied, i.e. replied to by a client. Users of this class are thus responsible for

@@ -16,6 +16,7 @@ target_sources(sup-auto-server
   i_anyvalue_manager.cpp
   i_job_info_io.cpp
   i_job_manager.cpp
+  input_protocol_server.cpp
   input_request_server.cpp
   instruction_info.cpp
   instruction_map.cpp

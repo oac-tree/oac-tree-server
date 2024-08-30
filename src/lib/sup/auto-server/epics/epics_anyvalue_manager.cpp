@@ -62,7 +62,7 @@ bool EPICSAnyValueManager::AddInputServer(const std::string& input_server_name)
   // Instantiate a RPC server
   auto input_request_name = GetInputRequestPVName(input_server_name);
   NameAnyValueSet value_set;
-  value_set.emplace_back( input_request_name, kInputRequestAnyValue);
+  value_set.emplace_back(input_request_name, kInputRequestAnyValue);
   if (!AddAnyValues(value_set))
   {
     return false;

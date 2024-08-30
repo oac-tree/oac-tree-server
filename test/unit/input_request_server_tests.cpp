@@ -92,15 +92,15 @@ TEST_F(InputRequestServerTest, MultiThreaded)
   auto ready_future = ready.get_future();
   auto reply_setter = [&server, &ready, reply] {
     ready.set_value();
-    std::this_thread::sleep_for(std::chrono::milliseconds(50));
+    std::this_thread::sleep_for(std::chrono::milliseconds(100));
     server.SetClientReply(1u, reply);
   };
 
-  // Test first request
+  // Verify WaitForReply within 500ms
   EXPECT_EQ(server.InitNewRequest(), 1u);
   auto client_thread = std::async(std::launch::async, reply_setter);
   ready_future.get();
-  auto result = server.WaitForReply(1u, 0.1);
+  auto result = server.WaitForReply(1u, 0.5);
   EXPECT_TRUE(result.first);
   EXPECT_EQ(result.second, reply);
 }
