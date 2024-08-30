@@ -50,11 +50,11 @@ IAnyValueManager::NameAnyValueSet value_set_3 = {
   { "val1", scalar}
 };
 
-class EPICSServerInterfaceTest : public ::testing::Test
+class EPICSAnyValueManagerTest : public ::testing::Test
 {
 protected:
-  EPICSServerInterfaceTest() = default;
-  virtual ~EPICSServerInterfaceTest() = default;
+  EPICSAnyValueManagerTest() = default;
+  virtual ~EPICSAnyValueManagerTest() = default;
 
   void OnUpdateValue(const sup::dto::AnyValue& value)
   {
@@ -73,16 +73,16 @@ protected:
     return m_cv.wait_for(lk, duration, pred);
   }
 
-  EPICSAnyValueManager m_epics_server_interface;
+  EPICSAnyValueManager m_epics_av_manager;
   sup::dto::AnyValue m_value_cache;
   std::mutex m_mtx;
   std::condition_variable m_cv;
 };
 
-TEST_F(EPICSServerInterfaceTest, ServeAndUpdate)
+TEST_F(EPICSAnyValueManagerTest, ServeAndUpdate)
 {
   // Serve value set and construct client PV for monitoring
-  ASSERT_TRUE(m_epics_server_interface.AddAnyValues(value_set_1));
+  ASSERT_TRUE(m_epics_av_manager.AddAnyValues(value_set_1));
   auto pv_callback = [this](const sup::epics::PvAccessClientPV::ExtendedValue& val) {
     if(val.connected)
     {
@@ -97,11 +97,11 @@ TEST_F(EPICSServerInterfaceTest, ServeAndUpdate)
   // Update variable and wait for update to be published
   auto update_1 = scalar;
   update_1["value"].ConvertFrom(42);
-  EXPECT_TRUE(m_epics_server_interface.UpdateAnyValue("val0", update_1));
+  EXPECT_TRUE(m_epics_av_manager.UpdateAnyValue("val0", update_1));
   EXPECT_TRUE(WaitForValue(update_1, 1.0));
 
   // Serve second set and construct client PV for monitoring
-  ASSERT_TRUE(m_epics_server_interface.AddAnyValues(value_set_2));
+  ASSERT_TRUE(m_epics_av_manager.AddAnyValues(value_set_2));
   sup::epics::PvAccessClientPV val2_pv{"val2", pv_callback};
   EXPECT_TRUE(val2_pv.WaitForValidValue(1.0));
   auto val2 = val2_pv.GetValue();
@@ -110,12 +110,12 @@ TEST_F(EPICSServerInterfaceTest, ServeAndUpdate)
   // Update variable and wait for update to be published
   auto update_2 = scalar;
   update_2["value"].ConvertFrom(1999);
-  EXPECT_TRUE(m_epics_server_interface.UpdateAnyValue("val2", update_2));
+  EXPECT_TRUE(m_epics_av_manager.UpdateAnyValue("val2", update_2));
   EXPECT_TRUE(WaitForValue(update_2, 1.0));
 
   // Check failure to serve variables with known names
-  EXPECT_FALSE(m_epics_server_interface.AddAnyValues(value_set_3));
+  EXPECT_FALSE(m_epics_av_manager.AddAnyValues(value_set_3));
 
   // Check failure to update variables with unknown names
-  EXPECT_FALSE(m_epics_server_interface.UpdateAnyValue("unknown", scalar));
+  EXPECT_FALSE(m_epics_av_manager.UpdateAnyValue("unknown", scalar));
 }

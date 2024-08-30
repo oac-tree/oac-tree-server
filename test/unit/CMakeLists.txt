@@ -8,7 +8,7 @@ target_sources(unit-tests
     automation_job_interface_tests.cpp
     automation_server_tests.cpp
     client_anyvalue_manager_tests.cpp
-    epics_anyvalue_server_tests.cpp
+    epics_anyvalue_manager_tests.cpp
     input_request_server_tests.cpp
     instruction_tree_utils_tests.cpp
     job_info_tests.cpp
