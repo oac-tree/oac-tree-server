@@ -33,6 +33,7 @@ namespace sup
 namespace auto_server
 {
 class EPICSServer;
+class EPICSInputServer;
 
 /**
  * @brief EPICSAnyValueManager implements IAnyValueManager using EPICS PvAccess and publishes
@@ -53,10 +54,14 @@ public:
 private:
   bool ValidateNameValueSet(const NameAnyValueSet& name_value_set) const;
   EPICSServer* FindServer(const std::string& name) const;
+  EPICSInputServer* FindInputServer(const std::string& server_name) const;
 
-  mutable std::mutex m_map_mutex;
+  mutable std::mutex m_map_mtx;
+  mutable std::mutex m_user_input_mtx;
   std::map<std::string, EPICSServer*> m_name_server_map;
-  std::vector<std::unique_ptr<EPICSServer>> m_set_servers;
+  std::vector<std::unique_ptr<EPICSServer>> m_servers;
+  std::map<std::string, EPICSInputServer*> m_name_input_server_map;
+  std::vector<std::unique_ptr<EPICSInputServer>> m_input_servers;
 };
 
 }  // namespace auto_server

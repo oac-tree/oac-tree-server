@@ -35,6 +35,7 @@ EPICSInputServer::EPICSInputServer(const std::string& server_name)
 {}
 
 EPICSInputServer::~EPICSInputServer() = default;
+
 sup::dto::uint64 EPICSInputServer::InitNewRequest()
 {
   return m_protocol_server.InitNewRequest();
