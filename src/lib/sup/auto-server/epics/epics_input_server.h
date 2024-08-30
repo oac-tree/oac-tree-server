@@ -22,13 +22,11 @@
 #ifndef SUP_AUTO_SERVER_EPICS_INPUT_SERVER_H_
 #define SUP_AUTO_SERVER_EPICS_INPUT_SERVER_H_
 
-#include <sup/dto/anyvalue.h>
+#include <sup/auto-server/input_protocol_server.h>
 
-#include <condition_variable>
+#include <sup/protocol/protocol_factory.h>
+
 #include <memory>
-#include <mutex>
-#include <string>
-#include <utility>
 
 namespace sup
 {
@@ -68,6 +66,10 @@ public:
    * provided AnyValue (if true).
    */
   std::pair<bool, sup::dto::AnyValue> WaitForReply(sup::dto::uint64 req_idx, double timeout_sec);
+
+private:
+  InputProtocolServer m_protocol_server;
+  std::unique_ptr<sup::protocol::RPCServerInterface> m_server_stack;
 };
 
 }  // namespace auto_server

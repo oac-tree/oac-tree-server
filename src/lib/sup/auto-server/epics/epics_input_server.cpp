@@ -21,27 +21,29 @@
 
 #include "epics_input_server.h"
 
+#include <sup/epics/epics_protocol_factory.h>
+#include <sup/epics/pv_access_rpc_server.h>
+
 namespace sup
 {
 namespace auto_server
 {
 EPICSInputServer::EPICSInputServer(const std::string& server_name)
-{
-  (void)server_name;
-}
+  : m_protocol_server{}
+  , m_server_stack{sup::epics::CreateEPICSRPCServerStack(
+      m_protocol_server, sup::epics::GetDefaultRPCServerConfig(server_name))}
+{}
 
 EPICSInputServer::~EPICSInputServer() = default;
 sup::dto::uint64 EPICSInputServer::InitNewRequest()
 {
-  return 0;
+  return m_protocol_server.InitNewRequest();
 }
 
 std::pair<bool, sup::dto::AnyValue> EPICSInputServer::WaitForReply(sup::dto::uint64 req_idx,
                                                                    double timeout_sec)
 {
-  (void)req_idx;
-  (void)timeout_sec;
-  return { false, {} };
+  return m_protocol_server.WaitForReply(req_idx, timeout_sec);
 }
 
 }  // namespace auto_server
