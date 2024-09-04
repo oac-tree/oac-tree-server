@@ -90,7 +90,8 @@ enum AutomationServerStatus
   kNotSupported = sup::protocol::SPECIFIC_APPLICATION_ERROR_START,
   kUnknownJob,
   kUnknownInstruction,
-  kUnknownJobCommand
+  kUnknownJobCommand,
+  kClientReplyRefused
 };
 }  // namespace status
 
@@ -98,6 +99,7 @@ const sup::protocol::ProtocolResult NotSupported{status::kNotSupported};
 const sup::protocol::ProtocolResult UnknownJob{status::kUnknownJob};
 const sup::protocol::ProtocolResult UnknownInstruction{status::kUnknownInstruction};
 const sup::protocol::ProtocolResult UnknownJobCommand{status::kUnknownJobCommand};
+const sup::protocol::ProtocolResult ClientReplyRefused{status::kClientReplyRefused};
 
 std::string AutomationServerResultToString(const sup::protocol::ProtocolResult& result)
 {
@@ -105,7 +107,8 @@ std::string AutomationServerResultToString(const sup::protocol::ProtocolResult& 
       {status::kNotSupported, "NotSupported"},
       {status::kUnknownJob, "UnknownJob"},
       {status::kUnknownInstruction, "UnknownInstruction"},
-      {status::kUnknownJobCommand, "UnknownJobCommand"}};
+      {status::kUnknownJobCommand, "UnknownJobCommand"},
+      {status::kClientReplyRefused, "ClientReplyRefused"}};
   if (result.GetValue() < sup::protocol::GENERIC_APPLICATION_ERROR_START)
   {
     return sup::protocol::ProtocolResultToString(result);

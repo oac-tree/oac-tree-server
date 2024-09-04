@@ -107,7 +107,7 @@ sup::dto::AnyValue EPICSAnyValueManager::GetUserInput(const std::string& input_s
     return {};  // TODO: is this the right return value??
   }
   auto input_request_idx = input_server->InitNewRequest();
-  auto input_request = EncodeInputRequest(request);
+  auto input_request = EncodeInputRequest(input_request_idx, request);
   auto input_request_name = GetInputRequestPVName(input_server_name);
   UpdateAnyValue(input_request_name, input_request);
   // TODO: do this in a loop with a small timeout (to allow halting this):

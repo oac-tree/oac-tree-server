@@ -25,6 +25,7 @@
 #include <sup/dto/anyvalue.h>
 
 #include <string>
+#include <tuple>
 #include <utility>
 #include <vector>
 
@@ -87,7 +88,8 @@ std::pair<bool, int> ParseUserChoiceReply(const sup::dto::AnyValue& reply);
  *
  * @return Encoded AnyValue.
  */
-sup::dto::AnyValue EncodeInputRequest(const AnyValueInputRequest& input_request);
+sup::dto::AnyValue EncodeInputRequest(sup::dto::uint64 req_id,
+                                      const AnyValueInputRequest& input_request);
 
 /**
  * @brief Decode the packed and encoded AnyValue into an AnyValueInputRequest.
@@ -96,7 +98,7 @@ sup::dto::AnyValue EncodeInputRequest(const AnyValueInputRequest& input_request)
  *
  * @return Pair of AnyValueInputRequest and its connected state.
  */
-std::pair<bool, AnyValueInputRequest> DecodeInputRequest(const dto::AnyValue& encoded);
+std::tuple<bool, sup::dto::uint64, AnyValueInputRequest> DecodeInputRequest(const dto::AnyValue& encoded);
 
 }  // namespace auto_server
 

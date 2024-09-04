@@ -84,6 +84,7 @@ const std::string kInputServerName = "INPUT";
 const std::string kInputRequestName = "-REQ";
 // Input request fields:
 const std::string kInputRequestType = "sup::inputRequestType/v1.0";
+const std::string kInputRequestIndexField = "idx";
 const std::string kInputRequestTypeField = "request_type";
 const std::string kInputRequestMetadataField = "metadata";
 const std::string kInputRequestInputTypeField = "input_type";
@@ -126,6 +127,17 @@ const std::string kInstructionIndexFieldName = "instruction_index";
 const std::string kBreakpointActiveFieldName = "breakpoint_active";
 const std::string kJobCommandFieldName = "command";
 
+// Input request servers will report the following type and version:
+const std::string kAutomationInputRequestServerType = "SUP::AutoInputServerProtocol";
+const std::string kAutomationInputRequestServerVersion = "1.0";
+
+// Supported function names for input request servers:
+const std::string KSetReplyFunctionName = "SetReply";
+
+// Field names used for the supported functions of input request servers:
+const std::string kUserRequestIndexFieldName = "index";
+const std::string kUserReplyValueFieldName = "value";
+
 enum class ValueNameType
 {
   kUnknown = 0,
@@ -158,6 +170,11 @@ extern const sup::protocol::ProtocolResult UnknownInstruction;
  * @brief The requested job is unknown.
 */
 extern const sup::protocol::ProtocolResult UnknownJobCommand;
+/**
+ * @brief The client reply to user input is refused.
+*/
+extern const sup::protocol::ProtocolResult ClientReplyRefused;
+
 
 /**
  * @brief Convert the protocol result to a human-readable string.

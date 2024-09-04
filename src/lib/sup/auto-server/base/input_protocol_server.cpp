@@ -21,6 +21,8 @@
 
 #include <sup/auto-server/input_protocol_server.h>
 
+#include <sup/auto-server/sup_auto_protocol.h>
+
 #include <sup/dto/anyvalue_helper.h>
 #include <sup/protocol/function_protocol_extract.h>
 #include <sup/protocol/protocol_rpc.h>
@@ -29,29 +31,6 @@ namespace sup
 {
 namespace auto_server
 {
-
-namespace status
-{
-enum ConfigurationStatus
-{
-  kNotSupported = sup::protocol::SPECIFIC_APPLICATION_ERROR_START,
-  kClientReplyRefused
-};
-}  // namespace status
-
-const sup::protocol::ProtocolResult NotSupported{status::kNotSupported};
-const sup::protocol::ProtocolResult ClientReplyRefused{status::kClientReplyRefused};
-
-// Input request servers will report the following type and version:
-const std::string kAutomationInputRequestServerType = "SUP::AutoInputServerProtocol";
-const std::string kAutomationInputRequestServerVersion = "1.0";
-
-// Supported function names for input request servers:
-const std::string KSetReplyFunctionName = "SetReply";
-
-// Field names used for the supported functions of input request servers:
-const std::string kUserRequestIndexFieldName = "index";
-const std::string kUserReplyValueFieldName = "value";
 
 InputProtocolServer::InputProtocolServer()
   : m_request_server{}

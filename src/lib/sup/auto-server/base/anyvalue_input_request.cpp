@@ -168,11 +168,13 @@ std::pair<bool, int> ParseUserChoiceReply(const sup::dto::AnyValue& reply)
   return { true, reply[kInputReplyValueFieldName].As<sup::dto::int32>() };
 }
 
-sup::dto::AnyValue EncodeInputRequest(const AnyValueInputRequest& input_request)
+sup::dto::AnyValue EncodeInputRequest(sup::dto::uint64 req_id,
+                                      const AnyValueInputRequest& input_request)
 {
   sup::dto::AnyValue request_type_av{ sup::dto::UnsignedInteger32Type,
                                       static_cast<sup::dto::uint32>(input_request.m_request_type)};
   dto::AnyValue payload = {{
+    { kInputRequestIndexField, { sup::dto::UnsignedInteger64Type, req_id }},
     { kInputRequestTypeField, request_type_av },
     { kInputRequestMetadataField, input_request.m_meta_data },
     { kInputRequestInputTypeField, sup::dto::AnyTypeToJSONString(input_request.m_input_type) }
@@ -186,9 +188,9 @@ sup::dto::AnyValue EncodeInputRequest(const AnyValueInputRequest& input_request)
   return encoded.second;
 }
 
-std::pair<bool, AnyValueInputRequest> DecodeInputRequest(const dto::AnyValue& encoded)
+std::tuple<bool, sup::dto::uint64, AnyValueInputRequest> DecodeInputRequest(const dto::AnyValue& encoded)
 {
-  const std::pair<bool, AnyValueInputRequest> failure{ false, {} };
+  const std::tuple<bool, sup::dto::uint64, AnyValueInputRequest> failure{ false, 0, {} };
   auto decoded = protocol::Base64VariableCodec::Decode(encoded);
   if (!decoded.first)
   {
@@ -199,6 +201,7 @@ std::pair<bool, AnyValueInputRequest> DecodeInputRequest(const dto::AnyValue& en
   {
     return failure;
   }
+  auto req_idx = payload[kInputRequestIndexField].As<sup::dto::uint64>();
   InputRequestType request_type =
     static_cast<InputRequestType>(payload[kInputRequestTypeField].As<sup::dto::uint32>());
   sup::dto::JSONAnyTypeParser type_parser;
@@ -208,7 +211,7 @@ std::pair<bool, AnyValueInputRequest> DecodeInputRequest(const dto::AnyValue& en
   }
   AnyValueInputRequest input_request{ request_type, payload[kInputRequestMetadataField],
                                       type_parser.MoveAnyType() };
-  return { true, input_request };
+  return { true, req_idx, input_request };
 }
 
 }  // namespace auto_server
@@ -220,6 +223,10 @@ namespace
 using namespace sup::auto_server;
 bool ValidateInputRequestPayload(const sup::dto::AnyValue& payload)
 {
+  if (!utils::ValidateMemberType(payload, kInputRequestIndexField, sup::dto::UnsignedInteger64Type))
+  {
+    return false;
+  }
   if (!utils::ValidateMemberType(payload, kInputRequestTypeField, sup::dto::UnsignedInteger32Type))
   {
     return false;

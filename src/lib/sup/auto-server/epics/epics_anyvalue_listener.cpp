@@ -44,7 +44,10 @@ public:
 
   void AddMonitorPV(const std::string& channel);
 
+  void AddInputServer(const std::string& input_server_name);
+
 private:
+  void HandleUserInput(const std::string& input_server_name, const sup::dto::AnyValue& req_av);
   IAnyValueManager& m_av_mgr;
   std::vector<sup::epics::PvAccessClientPV> m_client_pvs;
 };
@@ -59,6 +62,9 @@ EPICSAnyValueListener::EPICSAnyValueListener(const JobInfo& job_info, IAnyValueM
   {
     m_impl->AddMonitorPV(value_name);
   }
+  auto input_server_name = GetInputServerName(job_info.GetPrefix());
+  av_mgr.AddInputServer(input_server_name);
+  m_impl->AddInputServer(input_server_name);
 }
 
 EPICSAnyValueListener::~EPICSAnyValueListener() = default;
@@ -100,6 +106,33 @@ void EPICSAnyValueListenerImpl::AddMonitorPV(const std::string& channel)
     }
   };
   m_client_pvs.emplace_back(channel, cb);
+}
+
+void EPICSAnyValueListenerImpl::AddInputServer(const std::string& input_server_name)
+{
+  using sup::epics::PvAccessClientPV;
+  // construct input server
+  auto input_request_pv_name = GetInputRequestPVName(input_server_name);
+  auto cb = [this, input_server_name](const PvAccessClientPV::ExtendedValue& ext_val) {
+    if (ext_val.connected)
+    {
+      HandleUserInput(input_server_name, ext_val.value);
+    }
+  };
+  m_client_pvs.emplace_back(input_request_pv_name, cb);
+}
+
+void EPICSAnyValueListenerImpl::HandleUserInput(const std::string& input_server_name,
+                                                const sup::dto::AnyValue& req_av)
+{
+  auto req = DecodeInputRequest(req_av);
+  if (!std::get<0>(req))
+  {
+    return;  // only react to active input requests
+  }
+  auto req_idx = std::get<1>(req);
+  auto reply = m_av_mgr.GetUserInput(input_server_name, std::get<2>(req));
+  // TODO: use rpc client to post this answer
 }
 
 }  // namespace auto_server
