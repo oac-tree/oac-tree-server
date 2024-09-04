@@ -21,6 +21,8 @@
 
 #include <sup/auto-server/epics_anyvalue_listener.h>
 
+#include "epics_input_client.h"
+
 #include <sup/auto-server/sup_auto_protocol.h>
 
 #include <sup/epics/pv_access_client_pv.h>
@@ -50,6 +52,7 @@ private:
   void HandleUserInput(const std::string& input_server_name, const sup::dto::AnyValue& req_av);
   IAnyValueManager& m_av_mgr;
   std::vector<sup::epics::PvAccessClientPV> m_client_pvs;
+  std::unique_ptr<EPICSInputClient> m_input_client;
 };
 
 EPICSAnyValueListener::EPICSAnyValueListener(const JobInfo& job_info, IAnyValueManager& av_mgr)
@@ -92,6 +95,7 @@ std::unique_ptr<IAnyValueListener> EPICSListenerFactoryFunction(
 EPICSAnyValueListenerImpl::EPICSAnyValueListenerImpl(IAnyValueManager& av_mgr)
   : m_av_mgr{av_mgr}
   , m_client_pvs{}
+  , m_input_client{}
 {}
 
 EPICSAnyValueListenerImpl::~EPICSAnyValueListenerImpl() = default;
@@ -111,7 +115,7 @@ void EPICSAnyValueListenerImpl::AddMonitorPV(const std::string& channel)
 void EPICSAnyValueListenerImpl::AddInputServer(const std::string& input_server_name)
 {
   using sup::epics::PvAccessClientPV;
-  // construct input server
+  m_input_client = std::unique_ptr<EPICSInputClient>(new EPICSInputClient{input_server_name});
   auto input_request_pv_name = GetInputRequestPVName(input_server_name);
   auto cb = [this, input_server_name](const PvAccessClientPV::ExtendedValue& ext_val) {
     if (ext_val.connected)
@@ -132,7 +136,7 @@ void EPICSAnyValueListenerImpl::HandleUserInput(const std::string& input_server_
   }
   auto req_idx = std::get<1>(req);
   auto reply = m_av_mgr.GetUserInput(input_server_name, std::get<2>(req));
-  // TODO: use rpc client to post this answer
+  (void)m_input_client->SetClientReply(req_idx, reply);
 }
 
 }  // namespace auto_server
