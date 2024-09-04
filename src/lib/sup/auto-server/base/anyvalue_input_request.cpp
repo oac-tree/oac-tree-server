@@ -26,6 +26,7 @@
 #include <sup/auto-server/sup_auto_protocol.h>
 
 #include <sup/dto/anytype_helper.h>
+#include <sup/dto/anyvalue_helper.h>
 #include <sup/dto/json_type_parser.h>
 #include <sup/protocol/base64_variable_codec.h>
 
@@ -62,6 +63,73 @@ AnyValueInputRequest CreateUserChoiceRequest(const std::vector<std::string>& opt
   AnyValueInputRequest input_request{ InputRequestType::kUserChoice, meta,
                                       sup::dto::SignedInteger32Type};
   return input_request;
+}
+
+bool ParseUserValueRequest(const AnyValueInputRequest& request, sup::dto::AnyValue& value,
+                           std::string& description)
+{
+  if (request.m_request_type != InputRequestType::kUserValue)
+  {
+    return false;
+  }
+  if (request.m_meta_data.GetType() != sup::dto::StringType)
+  {
+    return false;
+  }
+  description = request.m_meta_data.As<std::string>();
+  return sup::dto::TryAssign(value, sup::dto::AnyValue{request.m_input_type});
+}
+
+bool ParseUserChoiceRequest(const AnyValueInputRequest& request, std::vector<std::string>& options,
+                            sup::dto::AnyValue& metadata)
+{
+  if (request.m_request_type != InputRequestType::kUserChoice)
+  {
+    return false;
+  }
+  if (!request.m_meta_data.HasField(kInputRequestOptionsFieldName))
+  {
+    return false;
+  }
+  if (!request.m_meta_data.HasField(kInputRequestMetadataFieldName))
+  {
+    return false;
+  }
+  auto& options_av = request.m_meta_data[kInputRequestOptionsFieldName];
+  if (!sup::dto::IsArrayValue(options_av) ||
+      options_av.GetType().ElementType() != sup::dto::StringType)
+  {
+    return false;
+  }
+  if (!sup::dto::TryAssign(metadata, request.m_meta_data[kInputRequestMetadataFieldName]))
+  {
+    return false;
+  }
+  std::vector<std::string> options_loc;
+  for (std::size_t idx = 0; idx < options_av.NumberOfElements(); ++idx)
+  {
+    options_loc.push_back(options_av[idx].As<std::string>());
+  }
+  options = std::move(options_loc);
+  return true;
+}
+
+sup::dto::AnyValue CreateUserValueReply(bool result, const sup::dto::AnyValue& value)
+{
+  sup::dto::AnyValue reply_av = {{
+    { kInputReplyResultFieldName, result },
+    { kInputReplyValueFieldName, value }
+  }};
+  return reply_av;
+}
+
+sup::dto::AnyValue CreateUserChoiceReply(bool result, int choice)
+{
+  sup::dto::AnyValue reply_av = {{
+    { kInputReplyResultFieldName, result },
+    { kInputReplyValueFieldName, { sup::dto::SignedInteger32Type, choice } }
+  }};
+  return reply_av;
 }
 
 std::pair<bool, sup::dto::AnyValue> ParseUserValueReply(const sup::dto::AnyValue& reply)

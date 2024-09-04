@@ -66,6 +66,16 @@ AnyValueInputRequest CreateUserValueRequest(const sup::dto::AnyValue& value,
 AnyValueInputRequest CreateUserChoiceRequest(const std::vector<std::string>& options,
                                              const sup::dto::AnyValue& metadata);
 
+bool ParseUserValueRequest(const AnyValueInputRequest& request, sup::dto::AnyValue& value,
+                           std::string& description);
+
+bool ParseUserChoiceRequest(const AnyValueInputRequest& request, std::vector<std::string>& options,
+                            sup::dto::AnyValue& metadata);
+
+sup::dto::AnyValue CreateUserValueReply(bool result, const sup::dto::AnyValue& value);
+
+sup::dto::AnyValue CreateUserChoiceReply(bool result, int choice);
+
 std::pair<bool, sup::dto::AnyValue> ParseUserValueReply(const sup::dto::AnyValue& reply);
 
 std::pair<bool, int> ParseUserChoiceReply(const sup::dto::AnyValue& reply);

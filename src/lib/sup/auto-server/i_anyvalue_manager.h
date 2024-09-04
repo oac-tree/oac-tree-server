@@ -43,8 +43,6 @@ namespace auto_server
  * @details Implementations of this interface will be used on the server side to publish updates of
  * instructions, variables, etc. On the client side, the implementation will be used to map such
  * updates to the appropriate JobInterface methods.
- *
- * @todo Provide the API for client input and message queues, i.e. values whose history may matter.
  */
 class IAnyValueManager
 {

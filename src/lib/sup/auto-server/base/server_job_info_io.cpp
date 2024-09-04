@@ -39,8 +39,7 @@ ServerJobInfoIO::ServerJobInfoIO(const std::string& job_prefix, sup::dto::uint32
   auto value_set = GetInitialValueSet(m_job_prefix, m_n_vars);
   m_av_manager.AddAnyValues(value_set);
   auto input_server_name = GetInputServerName(m_job_prefix);
-  // TODO: uncomment
-  // m_av_manager.AddInputServer(input_server_name);
+  m_av_manager.AddInputServer(input_server_name);
 }
 
 ServerJobInfoIO::~ServerJobInfoIO() = default;

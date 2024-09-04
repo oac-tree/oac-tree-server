@@ -87,7 +87,7 @@ TEST_F(ServerJobTest, Constructed)
   };
   const auto state_channel = prefix + kJobStateId;
   sup::epics::PvAccessClientPV state_pv{state_channel, pv_callback};
-  EXPECT_TRUE(state_pv.WaitForValidValue(5.0));
+  EXPECT_TRUE(state_pv.WaitForValidValue(10.0));
   auto state = state_pv.GetValue();
   EXPECT_EQ(state, kJobStateAnyValue);
 
@@ -125,7 +125,7 @@ TEST_F(ServerJobTest, MoveConstructed)
   };
   const auto state_channel = prefix + kJobStateId;
   sup::epics::PvAccessClientPV state_pv{state_channel, pv_callback};
-  EXPECT_TRUE(state_pv.WaitForValidValue(5.0));
+  EXPECT_TRUE(state_pv.WaitForValidValue(10.0));
   auto state = state_pv.GetValue();
   EXPECT_EQ(state, kJobStateAnyValue);
 

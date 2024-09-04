@@ -83,7 +83,33 @@ sup::dto::AnyValue ClientAnyValueManager::GetUserInput(const std::string& input_
                                                        const AnyValueInputRequest& request)
 {
   (void)input_server_name;
-  (void)request;
+  switch (request.m_request_type)
+  {
+  case InputRequestType::kUserValue:
+    {
+      std::string description;
+      sup::dto::AnyValue value;
+      if (!ParseUserValueRequest(request, value, description))
+      {
+        return {};
+      }
+      auto result = m_job_info_io.GetUserValue(value, description);
+      return CreateUserValueReply(result, value);
+    }
+  case InputRequestType::kUserChoice:
+    {
+      std::vector<std::string> options{};
+      sup::dto::AnyValue metadata{};
+      if (!ParseUserChoiceRequest(request, options, metadata))
+      {
+        return false;
+      }
+      auto choice = m_job_info_io.GetUserChoice(options, metadata);
+      return CreateUserChoiceReply(true, choice);
+    }
+  default:
+    break;
+  }
   return {};
 }
 
