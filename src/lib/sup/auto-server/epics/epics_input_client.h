@@ -19,11 +19,14 @@
  * of the distribution package.
  ******************************************************************************/
 
-#ifndef SUP_AUTO_SERVER_INPUT_PROTOCOL_CLIENT_H_
-#define SUP_AUTO_SERVER_INPUT_PROTOCOL_CLIENT_H_
+#ifndef SUP_AUTO_SERVER_EPICS_INPUT_CLIENT_H_
+#define SUP_AUTO_SERVER_EPICS_INPUT_CLIENT_H_
 
-#include <sup/dto/anyvalue.h>
-#include <sup/protocol/protocol.h>
+#include <sup/auto-server/input_protocol_client.h>
+
+#include <sup/protocol/protocol_factory.h>
+
+#include <memory>
 
 namespace sup
 {
@@ -31,27 +34,29 @@ namespace auto_server
 {
 
 /**
- * @brief InputProtocolClient .
+ * @brief EPICSInputClient is the EPICS implementation of an RPC client that responds to user input
+ * requests.
  */
-class InputProtocolClient
+class EPICSInputClient
 {
 public:
-  InputProtocolClient(sup::protocol::Protocol& protocol);
-  ~InputProtocolClient();
+  explicit EPICSInputClient(const std::string& server_name);
+  ~EPICSInputClient();
 
   // No copy or move
-  InputProtocolClient(const InputProtocolClient& other) = delete;
-  InputProtocolClient(InputProtocolClient&& other) = delete;
-  InputProtocolClient& operator=(const InputProtocolClient& other) = delete;
-  InputProtocolClient& operator=(InputProtocolClient&& other) = delete;
+  EPICSInputClient(const EPICSInputClient& other) = delete;
+  EPICSInputClient(EPICSInputClient&& other) = delete;
+  EPICSInputClient& operator=(const EPICSInputClient& other) = delete;
+  EPICSInputClient& operator=(EPICSInputClient&& other) = delete;
 
   bool SetClientReply(sup::dto::uint64 req_idx, const sup::dto::AnyValue& reply);
 private:
-  sup::protocol::Protocol& m_protocol;
+  std::unique_ptr<sup::protocol::Protocol> m_client_stack;
+  InputProtocolClient m_protocol_client;
 };
 
 }  // namespace auto_server
 
 }  // namespace sup
 
-#endif  // SUP_AUTO_SERVER_INPUT_PROTOCOL_CLIENT_H_
+#endif  // SUP_AUTO_SERVER_EPICS_INPUT_CLIENT_H_
