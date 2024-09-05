@@ -32,6 +32,8 @@
 
 using namespace sup::auto_server;
 
+namespace
+{
 const sup::dto::AnyValue scalar = {{
   { "value", {sup::dto::SignedInteger32Type, 0}}
 }};
@@ -49,6 +51,7 @@ IAnyValueManager::NameAnyValueSet value_set_2 = {
 IAnyValueManager::NameAnyValueSet value_set_3 = {
   { "val1", scalar}
 };
+}  // unnamed namespace
 
 class EPICSAnyValueManagerTest : public ::testing::Test
 {
