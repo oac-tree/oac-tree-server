@@ -36,11 +36,11 @@ namespace auto_server
 
 /**
  * @brief This is the interface definition of the counterpart of IAnyValueManager. Implementations
- * are expected to monitor published AnyValues from an IAnyValueManager and propagates updates to
- * a dedicated member class. This interface is empty but is used to be able to store polymorphic
- * objects of this type.
+ * are expected to monitor published AnyValues from an IAnyValueManager and propagate updates to
+ * a dedicated member class.
  *
- * @details The member class that handles updates is typically an IAnyValueManager implementation.
+ * @details The member class that handles updates is typically another IAnyValueManager
+ * implementation.
  */
 class IAnyValueListener
 {
@@ -66,15 +66,29 @@ public:
 
 /**
  * @brief ListenerFactoryFunction defines the signature of a factory function that can be injected
- * into other classes and that will be used to create an IAnyValueListener from a given JobInfo
- * that will forward all its updates to an IAnyValueManager object.
- *
+ * into other classes and that will be used to create an IAnyValueListener that will forward all its
+ * updates to an IAnyValueManager object.
  */
 using ListenerFactoryFunction =
   std::function<std::unique_ptr<IAnyValueListener>(IAnyValueManager&)>;
 
+/**
+ * @brief Get the set of names and AnyValues corresponding to the job's state, variables and
+ * instructions.
+ *
+ * @param job_info JobInfo object describing the job.
+ * @return Set of names and AnyValues.
+ */
 IAnyValueManager::NameAnyValueSet GetJobMonitorSet(const JobInfo& job_info);
 
+/**
+ * @brief Parse the JobInfo object and initialize all monitors and input servers required for
+ * the given job.
+ *
+ * @param listener IAnyValueListener object to initialize.
+ * @param job_info JobInfo object describing the job to listen to.
+ * @return true on success.
+ */
 bool ListenToJob(IAnyValueListener& listener, const JobInfo& job_info);
 
 }  // namespace auto_server

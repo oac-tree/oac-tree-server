@@ -112,6 +112,12 @@ bool EPICSAnyValueListenerImpl::AddInputClient(const std::string& input_server_n
   }
   m_input_client = std::unique_ptr<EPICSInputClient>(new EPICSInputClient{input_server_name});
   auto input_request_pv_name = GetInputRequestPVName(input_server_name);
+  IAnyValueManager::NameAnyValueSet input_pv_set;
+  input_pv_set.emplace_back(input_request_pv_name, kInputRequestAnyValue);
+  if (!m_av_mgr.AddAnyValues(input_pv_set))
+  {
+    return false;
+  }
   auto cb = [this, input_server_name](const PvAccessClientPV::ExtendedValue& ext_val) {
     if (ext_val.connected)
     {
