@@ -125,11 +125,14 @@ public:
 
   bool WaitForValue(const std::string& name, const sup::dto::AnyValue& value, double seconds) const;
 
+  bool WaitForInputRequest(const AnyValueInputRequest& request, double seconds) const;
+
   friend std::ostream& operator<<(std::ostream& stream, const TestAnyValueManager& server_if);
 private:
   bool HasAnyValueImpl(const std::string& name) const;
   sup::dto::AnyValue GetAnyValueImpl(const std::string& name) const;
   std::map<std::string, sup::dto::AnyValue> m_value_map;
+  std::vector<std::pair<std::string, AnyValueInputRequest>> m_input_requests;
   mutable std::mutex m_mtx;
   mutable std::condition_variable m_cv;
 };

@@ -61,6 +61,9 @@ public:
   sup::dto::AnyType m_input_type;
 };
 
+bool operator==(const AnyValueInputRequest& left, const AnyValueInputRequest& right);
+bool operator!=(const AnyValueInputRequest& left, const AnyValueInputRequest& right);
+
 AnyValueInputRequest CreateUserValueRequest(const sup::dto::AnyValue& value,
                                             const std::string& description);
 

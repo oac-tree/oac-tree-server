@@ -40,6 +40,24 @@ namespace sup
 namespace auto_server
 {
 
+bool operator==(const AnyValueInputRequest& left, const AnyValueInputRequest& right)
+{
+  if (left.m_request_type != right.m_request_type)
+  {
+    return false;
+  }
+  if (left.m_meta_data != right.m_meta_data)
+  {
+    return false;
+  }
+  return left.m_input_type == right.m_input_type;
+}
+
+bool operator!=(const AnyValueInputRequest& left, const AnyValueInputRequest& right)
+{
+  return !(left == right);
+}
+
 AnyValueInputRequest CreateUserValueRequest(const sup::dto::AnyValue& value,
                                             const std::string& description)
 {

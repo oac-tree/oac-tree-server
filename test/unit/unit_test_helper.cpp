@@ -114,23 +114,28 @@ void TestJobInfoIO::JobStateUpdated(sup::sequencer::JobState state)
 
 TestAnyValueManager::TestAnyValueManager()
     : m_value_map{}
+    , m_input_requests{}
+    , m_mtx{}
+    , m_cv{}
 {}
 
 TestAnyValueManager::~TestAnyValueManager() = default;
 
 bool TestAnyValueManager::AddAnyValues(const NameAnyValueSet& name_value_set)
 {
-  std::lock_guard<std::mutex> lk{m_mtx};
-  for (const auto& name : GetNames(name_value_set))
   {
-    if (HasAnyValueImpl(name))
+    std::lock_guard<std::mutex> lk{m_mtx};
+    for (const auto& name : GetNames(name_value_set))
     {
-      return false;
+      if (HasAnyValueImpl(name))
+      {
+        return false;
+      }
     }
-  }
-  for (const auto& name_value_pair : name_value_set)
-  {
-    m_value_map[name_value_pair.first] = name_value_pair.second;
+    for (const auto& name_value_pair : name_value_set)
+    {
+      m_value_map[name_value_pair.first] = name_value_pair.second;
+    }
   }
   m_cv.notify_one();
   return true;
@@ -144,13 +149,15 @@ bool TestAnyValueManager::AddInputServer(const std::string& input_server_name)
 
 bool TestAnyValueManager::UpdateAnyValue(const std::string& name, const sup::dto::AnyValue& value)
 {
-  std::lock_guard<std::mutex> lk{m_mtx};
-  auto iter = m_value_map.find(name);
-  if (iter == m_value_map.end())
   {
-    return false;
+    std::lock_guard<std::mutex> lk{m_mtx};
+    auto iter = m_value_map.find(name);
+    if (iter == m_value_map.end())
+    {
+      return false;
+    }
+    iter->second = value;
   }
-  iter->second = value;
   m_cv.notify_one();
   return true;
 }
@@ -158,8 +165,11 @@ bool TestAnyValueManager::UpdateAnyValue(const std::string& name, const sup::dto
 sup::dto::AnyValue TestAnyValueManager::GetUserInput(const std::string& input_server_name,
                                                      const AnyValueInputRequest& request)
 {
-  (void)input_server_name;
-  (void)request;
+  {
+    std::lock_guard<std::mutex> lk{m_mtx};
+    m_input_requests.emplace_back(input_server_name, request);
+  }
+  m_cv.notify_one();
   return {};
 }
 
@@ -188,6 +198,21 @@ bool TestAnyValueManager::WaitForValue(const std::string& name, const sup::dto::
   std::unique_lock<std::mutex> lk{m_mtx};
   auto pred = [this, name, value](){
     return GetAnyValueImpl(name) == value;
+  };
+  return m_cv.wait_for(lk, duration, pred);
+}
+
+bool TestAnyValueManager::WaitForInputRequest(const AnyValueInputRequest& request,
+                                              double seconds) const
+{
+  auto duration = std::chrono::nanoseconds(std::lround(seconds * 1e9));
+  std::unique_lock<std::mutex> lk{m_mtx};
+  auto pred = [this, request](){
+    if (m_input_requests.size() == 0)
+    {
+      return false;
+    }
+    return m_input_requests.back().second == request;
   };
   return m_cv.wait_for(lk, duration, pred);
 }
