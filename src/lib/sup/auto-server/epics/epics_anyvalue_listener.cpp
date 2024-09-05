@@ -58,14 +58,9 @@ private:
   std::unique_ptr<EPICSInputClient> m_input_client;
 };
 
-EPICSAnyValueListener::EPICSAnyValueListener(const JobInfo& job_info, IAnyValueManager& av_mgr)
+EPICSAnyValueListener::EPICSAnyValueListener(IAnyValueManager& av_mgr)
   : m_impl{new EPICSAnyValueListenerImpl(av_mgr)}
-{
-  auto value_set = GetJobMonitorSet(job_info);
-  AddAnyValueMonitors(value_set);
-  auto input_server_name = GetInputServerName(job_info.GetPrefix());
-  AddInputClient(input_server_name);
-}
+{}
 
 EPICSAnyValueListener::~EPICSAnyValueListener() = default;
 
@@ -80,10 +75,9 @@ bool EPICSAnyValueListener::AddInputClient(const std::string& input_server_name)
   return m_impl->AddInputClient(input_server_name);
 }
 
-std::unique_ptr<IAnyValueListener> EPICSListenerFactoryFunction(
-  const JobInfo& job_info, IAnyValueManager& av_mgr)
+std::unique_ptr<IAnyValueListener> EPICSListenerFactoryFunction(IAnyValueManager& av_mgr)
 {
-  return std::unique_ptr<IAnyValueListener>(new EPICSAnyValueListener(job_info, av_mgr));
+  return std::unique_ptr<IAnyValueListener>(new EPICSAnyValueListener(av_mgr));
 }
 
 EPICSAnyValueListenerImpl::EPICSAnyValueListenerImpl(IAnyValueManager& av_mgr)

@@ -71,7 +71,7 @@ public:
  *
  */
 using ListenerFactoryFunction =
-  std::function<std::unique_ptr<IAnyValueListener>(const JobInfo&, IAnyValueManager&)>;
+  std::function<std::unique_ptr<IAnyValueListener>(IAnyValueManager&)>;
 
 IAnyValueManager::NameAnyValueSet GetJobMonitorSet(const JobInfo& job_info);
 

@@ -32,13 +32,12 @@ namespace auto_server
 {
 class EPICSAnyValueListenerImpl;
 /**
- * @brief EPICSAnyValueListener implements IAnyValueListener using EPICS PvAccess and monitors
- * a set of AnyValues over this protocol.
+ * @brief EPICSAnyValueListener implements IAnyValueListener using EPICS PvAccess.
  */
 class EPICSAnyValueListener : public IAnyValueListener
 {
 public:
-  EPICSAnyValueListener(const JobInfo& job_info, IAnyValueManager& av_mgr);
+  EPICSAnyValueListener(IAnyValueManager& av_mgr);
   ~EPICSAnyValueListener();
 
   bool AddAnyValueMonitors(const IAnyValueManager::NameAnyValueSet& monitor_set) override;
@@ -49,8 +48,7 @@ private:
   std::unique_ptr<EPICSAnyValueListenerImpl> m_impl;
 };
 
-std::unique_ptr<IAnyValueListener> EPICSListenerFactoryFunction(
-  const JobInfo& job_info, IAnyValueManager& av_mgr);
+std::unique_ptr<IAnyValueListener> EPICSListenerFactoryFunction(IAnyValueManager& av_mgr);
 
 }  // namespace auto_server
 
