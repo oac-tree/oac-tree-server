@@ -46,6 +46,22 @@ class IAnyValueListener
 {
 public:
   virtual ~IAnyValueListener();
+
+  /**
+   * @brief Add a set of AnyValues with given unique names that need to be monitored.
+   *
+   * @param monitor_set List of pairs of names and AnyValues to monitor.
+   * @return true when successful. In case of failure, none of the values is assumed to be added.
+   */
+  virtual bool AddAnyValueMonitors(const IAnyValueManager::NameAnyValueSet& monitor_set) = 0;
+
+  /**
+   * @brief Add a client that can handle requests for user input.
+   *
+   * @param input_server_name Name of the corresponding input server.
+   * @return true when successful. In case of failure, no client is instantiated.
+   */
+  virtual bool AddInputClient(const std::string& input_server_name) = 0;
 };
 
 /**
@@ -56,6 +72,10 @@ public:
  */
 using ListenerFactoryFunction =
   std::function<std::unique_ptr<IAnyValueListener>(const JobInfo&, IAnyValueManager&)>;
+
+IAnyValueManager::NameAnyValueSet GetJobMonitorSet(const JobInfo& job_info);
+
+bool ListenToJob(IAnyValueListener& listener, const JobInfo& job_info);
 
 }  // namespace auto_server
 

@@ -44,12 +44,15 @@ public:
   EPICSAnyValueListenerImpl(IAnyValueManager& av_mgr);
   ~EPICSAnyValueListenerImpl();
 
-  void AddMonitorPV(const std::string& channel);
+  bool AddAnyValueMonitors(const IAnyValueManager::NameAnyValueSet& monitor_set);
 
-  void AddInputServer(const std::string& input_server_name);
+  bool AddInputClient(const std::string& input_server_name);
 
 private:
+  void AddMonitorPV(const std::string& channel);
+
   void HandleUserInput(const std::string& input_server_name, const sup::dto::AnyValue& req_av);
+
   IAnyValueManager& m_av_mgr;
   std::vector<sup::epics::PvAccessClientPV> m_client_pvs;
   std::unique_ptr<EPICSInputClient> m_input_client;
@@ -58,32 +61,23 @@ private:
 EPICSAnyValueListener::EPICSAnyValueListener(const JobInfo& job_info, IAnyValueManager& av_mgr)
   : m_impl{new EPICSAnyValueListenerImpl(av_mgr)}
 {
-  auto value_set = GetValueSet(job_info);
-  av_mgr.AddAnyValues(value_set);
-  auto value_names = GetNames(value_set);
-  for (const auto& value_name : value_names)
-  {
-    m_impl->AddMonitorPV(value_name);
-  }
+  auto value_set = GetJobMonitorSet(job_info);
+  AddAnyValueMonitors(value_set);
   auto input_server_name = GetInputServerName(job_info.GetPrefix());
-  av_mgr.AddInputServer(input_server_name);
-  m_impl->AddInputServer(input_server_name);
+  AddInputClient(input_server_name);
 }
 
 EPICSAnyValueListener::~EPICSAnyValueListener() = default;
 
-IAnyValueManager::NameAnyValueSet EPICSAnyValueListener::GetValueSet(const JobInfo& job_info) const
+bool EPICSAnyValueListener::AddAnyValueMonitors(
+  const IAnyValueManager::NameAnyValueSet& monitor_set)
 {
-  auto job_prefix = job_info.GetPrefix();
-  auto n_vars = job_info.GetNumberOfVariables();
-  auto initial_set = GetInitialValueSet(job_prefix, n_vars);
-  auto n_instr = job_info.GetNumberOfInstructions();
-  auto instr_set = GetInstructionValueSet(job_prefix, n_instr);
-  for (const auto& instr_pair : instr_set)
-  {
-    initial_set.push_back(instr_pair);
-  }
-  return initial_set;
+  return m_impl->AddAnyValueMonitors(monitor_set);
+}
+
+bool EPICSAnyValueListener::AddInputClient(const std::string& input_server_name)
+{
+  return m_impl->AddInputClient(input_server_name);
 }
 
 std::unique_ptr<IAnyValueListener> EPICSListenerFactoryFunction(
@@ -100,6 +94,40 @@ EPICSAnyValueListenerImpl::EPICSAnyValueListenerImpl(IAnyValueManager& av_mgr)
 
 EPICSAnyValueListenerImpl::~EPICSAnyValueListenerImpl() = default;
 
+bool EPICSAnyValueListenerImpl::AddAnyValueMonitors(
+  const IAnyValueManager::NameAnyValueSet& monitor_set)
+{
+  if (!m_av_mgr.AddAnyValues(monitor_set))
+  {
+    return false;
+  }
+  auto value_names = GetNames(monitor_set);
+  for (const auto& value_name : value_names)
+  {
+    AddMonitorPV(value_name);
+  }
+  return true;
+}
+
+bool EPICSAnyValueListenerImpl::AddInputClient(const std::string& input_server_name)
+{
+  using sup::epics::PvAccessClientPV;
+  if (!m_av_mgr.AddInputServer(input_server_name))
+  {
+    return false;
+  }
+  m_input_client = std::unique_ptr<EPICSInputClient>(new EPICSInputClient{input_server_name});
+  auto input_request_pv_name = GetInputRequestPVName(input_server_name);
+  auto cb = [this, input_server_name](const PvAccessClientPV::ExtendedValue& ext_val) {
+    if (ext_val.connected)
+    {
+      HandleUserInput(input_server_name, ext_val.value);
+    }
+  };
+  m_client_pvs.emplace_back(input_request_pv_name, cb);
+  return true;
+}
+
 void EPICSAnyValueListenerImpl::AddMonitorPV(const std::string& channel)
 {
   using sup::epics::PvAccessClientPV;
@@ -110,20 +138,6 @@ void EPICSAnyValueListenerImpl::AddMonitorPV(const std::string& channel)
     }
   };
   m_client_pvs.emplace_back(channel, cb);
-}
-
-void EPICSAnyValueListenerImpl::AddInputServer(const std::string& input_server_name)
-{
-  using sup::epics::PvAccessClientPV;
-  m_input_client = std::unique_ptr<EPICSInputClient>(new EPICSInputClient{input_server_name});
-  auto input_request_pv_name = GetInputRequestPVName(input_server_name);
-  auto cb = [this, input_server_name](const PvAccessClientPV::ExtendedValue& ext_val) {
-    if (ext_val.connected)
-    {
-      HandleUserInput(input_server_name, ext_val.value);
-    }
-  };
-  m_client_pvs.emplace_back(input_request_pv_name, cb);
 }
 
 void EPICSAnyValueListenerImpl::HandleUserInput(const std::string& input_server_name,

@@ -41,8 +41,11 @@ public:
   EPICSAnyValueListener(const JobInfo& job_info, IAnyValueManager& av_mgr);
   ~EPICSAnyValueListener();
 
+  bool AddAnyValueMonitors(const IAnyValueManager::NameAnyValueSet& monitor_set) override;
+
+  bool AddInputClient(const std::string& input_server_name) override;
+
 private:
-  IAnyValueManager::NameAnyValueSet GetValueSet(const JobInfo& job_info) const;
   std::unique_ptr<EPICSAnyValueListenerImpl> m_impl;
 };
 

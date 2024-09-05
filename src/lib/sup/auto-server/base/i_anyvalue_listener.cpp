@@ -21,12 +21,39 @@
 
 #include <sup/auto-server/i_anyvalue_listener.h>
 
+#include <sup/auto-server/sup_auto_protocol.h>
+
 namespace sup
 {
 namespace auto_server
 {
 
 IAnyValueListener::~IAnyValueListener() = default;
+
+IAnyValueManager::NameAnyValueSet GetJobMonitorSet(const JobInfo& job_info)
+{
+  auto job_prefix = job_info.GetPrefix();
+  auto n_vars = job_info.GetNumberOfVariables();
+  auto monitor_set = GetInitialValueSet(job_prefix, n_vars);
+  auto n_instr = job_info.GetNumberOfInstructions();
+  auto instr_set = GetInstructionValueSet(job_prefix, n_instr);
+  for (const auto& instr_pair : instr_set)
+  {
+    monitor_set.push_back(instr_pair);
+  }
+  return monitor_set;
+}
+
+bool ListenToJob(IAnyValueListener& listener, const JobInfo& job_info)
+{
+  auto monitor_set = GetJobMonitorSet(job_info);
+  if (!listener.AddAnyValueMonitors(monitor_set))
+  {
+    return false;
+  }
+  auto input_server_name = GetInputServerName(job_info.GetPrefix());
+  return listener.AddInputClient(input_server_name);
+}
 
 }  // namespace auto_server
 
