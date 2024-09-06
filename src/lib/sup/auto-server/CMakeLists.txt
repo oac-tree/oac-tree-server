@@ -45,6 +45,7 @@ install(FILES
   automation_server.h
   client_anyvalue_manager.h
   client_job.h
+  client_reply_delegator.h
   epics_anyvalue_listener.h
   exceptions.h
   i_anyvalue_listener.h

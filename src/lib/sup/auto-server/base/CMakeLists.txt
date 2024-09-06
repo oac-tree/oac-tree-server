@@ -9,6 +9,7 @@ target_sources(sup-auto-server
   automation_protocol_server.cpp
   automation_server.cpp
   client_anyvalue_manager.cpp
+  client_reply_delegator.cpp
   client_job.cpp
   exceptions.cpp
   i_anyvalue_listener.cpp

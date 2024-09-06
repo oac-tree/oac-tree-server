@@ -23,6 +23,9 @@
 
 #include <sup/auto-server/sup_auto_protocol.h>
 
+#include <sup/protocol/function_protocol.h>
+#include <sup/protocol/function_protocol_pack.h>
+
 namespace sup
 {
 namespace auto_server
@@ -36,10 +39,9 @@ InputProtocolClient::~InputProtocolClient() = default;
 
 bool InputProtocolClient::SetClientReply(sup::dto::uint64 req_idx, const sup::dto::AnyValue& reply)
 {
-  sup::dto::AnyValue input = {{
-    { kUserRequestIndexFieldName, sup::dto::AnyValue{req_idx} },
-    { kUserReplyValueFieldName, reply }
-  }};
+  auto input = sup::protocol::FunctionProtocolInput(KSetReplyFunctionName);
+  input.AddMember(kUserRequestIndexFieldName, sup::dto::AnyValue{req_idx});
+  sup::protocol::FunctionProtocolPack(input, kUserReplyValueFieldName, reply);
   sup::dto::AnyValue output;
   auto result = m_protocol.Invoke(input, output);
   if (result != sup::protocol::Success)

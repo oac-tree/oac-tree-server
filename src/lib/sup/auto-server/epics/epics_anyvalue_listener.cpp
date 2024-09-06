@@ -23,6 +23,7 @@
 
 #include "epics_input_client.h"
 
+#include <sup/auto-server/client_reply_delegator.h>
 #include <sup/auto-server/sup_auto_protocol.h>
 
 #include <sup/epics/pv_access_client_pv.h>
@@ -56,6 +57,7 @@ private:
   IAnyValueManager& m_av_mgr;
   std::vector<sup::epics::PvAccessClientPV> m_client_pvs;
   std::unique_ptr<EPICSInputClient> m_input_client;
+  std::unique_ptr<ClientReplyDelegator> m_reply_delegator;
 };
 
 EPICSAnyValueListener::EPICSAnyValueListener(IAnyValueManager& av_mgr)
@@ -84,6 +86,7 @@ EPICSAnyValueListenerImpl::EPICSAnyValueListenerImpl(IAnyValueManager& av_mgr)
   : m_av_mgr{av_mgr}
   , m_client_pvs{}
   , m_input_client{}
+  , m_reply_delegator{}
 {}
 
 EPICSAnyValueListenerImpl::~EPICSAnyValueListenerImpl() = default;
@@ -110,7 +113,11 @@ bool EPICSAnyValueListenerImpl::AddInputClient(const std::string& input_server_n
   {
     return false;
   }
-  m_input_client = std::unique_ptr<EPICSInputClient>(new EPICSInputClient{input_server_name});
+  m_input_client.reset(new EPICSInputClient{input_server_name});
+  auto reply_func = [this](sup::dto::uint64 req_idx, const sup::dto::AnyValue& reply) {
+    (void)m_input_client->SetClientReply(req_idx, reply);
+  };
+  m_reply_delegator.reset(new ClientReplyDelegator(reply_func));
   auto input_request_pv_name = GetInputRequestPVName(input_server_name);
   IAnyValueManager::NameAnyValueSet input_pv_set;
   input_pv_set.emplace_back(input_request_pv_name, kInputRequestAnyValue);
@@ -144,13 +151,14 @@ void EPICSAnyValueListenerImpl::HandleUserInput(const std::string& input_server_
                                                 const sup::dto::AnyValue& req_av)
 {
   auto req = DecodeInputRequest(req_av);
-  if (!std::get<0>(req))
+  auto success = std::get<0>(req);
+  auto req_idx = std::get<1>(req);
+  if (!success)
   {
     return;  // only react to active input requests
   }
-  auto req_idx = std::get<1>(req);
   auto reply = m_av_mgr.GetUserInput(input_server_name, std::get<2>(req));
-  (void)m_input_client->SetClientReply(req_idx, reply);
+  m_reply_delegator->QueueReply(req_idx, reply);
 }
 
 }  // namespace auto_server

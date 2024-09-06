@@ -114,9 +114,11 @@ void TestJobInfoIO::JobStateUpdated(sup::sequencer::JobState state)
 
 TestAnyValueManager::TestAnyValueManager()
     : m_value_map{}
+    , m_user_input{}
     , m_input_requests{}
     , m_mtx{}
     , m_cv{}
+    , m_n_input_requests{}
 {}
 
 TestAnyValueManager::~TestAnyValueManager() = default;
@@ -165,12 +167,11 @@ bool TestAnyValueManager::UpdateAnyValue(const std::string& name, const sup::dto
 sup::dto::AnyValue TestAnyValueManager::GetUserInput(const std::string& input_server_name,
                                                      const AnyValueInputRequest& request)
 {
-  {
-    std::lock_guard<std::mutex> lk{m_mtx};
-    m_input_requests.emplace_back(input_server_name, request);
-  }
+  std::lock_guard<std::mutex> lk{m_mtx};
+  m_input_requests.emplace_back(input_server_name, request);
+  ++m_n_input_requests;
   m_cv.notify_one();
-  return {};
+  return m_user_input;
 }
 
 bool TestAnyValueManager::HasAnyValue(const std::string& name) const
@@ -202,6 +203,12 @@ bool TestAnyValueManager::WaitForValue(const std::string& name, const sup::dto::
   return m_cv.wait_for(lk, duration, pred);
 }
 
+void TestAnyValueManager::SetUserInput(const sup::dto::AnyValue& val)
+{
+  std::unique_lock<std::mutex> lk{m_mtx};
+  m_user_input = val;
+}
+
 bool TestAnyValueManager::WaitForInputRequest(const AnyValueInputRequest& request,
                                               double seconds) const
 {
@@ -215,6 +222,12 @@ bool TestAnyValueManager::WaitForInputRequest(const AnyValueInputRequest& reques
     return m_input_requests.back().second == request;
   };
   return m_cv.wait_for(lk, duration, pred);
+}
+
+std::size_t TestAnyValueManager::GetNbrInputRequests() const
+{
+  std::unique_lock<std::mutex> lk{m_mtx};
+  return m_n_input_requests;
 }
 
 bool TestAnyValueManager::HasAnyValueImpl(const std::string& name) const

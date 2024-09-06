@@ -31,7 +31,7 @@ namespace auto_server
 
 EPICSInputClient::EPICSInputClient(const std::string& server_name)
   : m_client_stack{sup::epics::CreateEPICSRPCClientStack(
-                       sup::epics::GetDefaultRPCClientConfig(server_name))}
+                       sup::epics::PvAccessRPCClientConfig{server_name, 10.0})}
   , m_protocol_client{*m_client_stack}
 {}
 

@@ -111,7 +111,8 @@ sup::dto::AnyValue EPICSAnyValueManager::GetUserInput(const std::string& input_s
   auto input_request_name = GetInputRequestPVName(input_server_name);
   UpdateAnyValue(input_request_name, input_request);
   // TODO: do this in a loop with a small timeout (to allow halting this):
-  auto result = input_server->WaitForReply(input_request_idx, 1e9);
+  auto result = input_server->WaitForReply(input_request_idx, 1.0);
+  // auto result = input_server->WaitForReply(input_request_idx, 1e9);
   // TODO: what on timeout??
   UpdateAnyValue(input_request_name, kInputRequestAnyValue);
   return result.second;
