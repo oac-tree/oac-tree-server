@@ -32,9 +32,6 @@
 
 #include <gtest/gtest.h>
 
-#include <thread>
-#include <chrono>
-
 using namespace sup::auto_server;
 
 namespace

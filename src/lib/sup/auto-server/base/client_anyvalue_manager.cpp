@@ -127,13 +127,19 @@ ClientAnyValueManager::AnyValueCallback CreateCallback(const std::string& value_
   case ValueNameType::kJobStatus:
     return UpdateJobState;
   case ValueNameType::kInstruction:
-    return [idx](IJobInfoIO& job_info_io, const sup::dto::AnyValue& anyvalue) {
-      return UpdateInstructionState(job_info_io, idx, anyvalue);
-    };
+    {
+      auto callback = [idx](IJobInfoIO& job_info_io, const sup::dto::AnyValue& anyvalue) {
+        return UpdateInstructionState(job_info_io, idx, anyvalue);
+      };
+      return callback;
+    }
   case ValueNameType::kVariable:
-    return [idx](IJobInfoIO& job_info_io, const sup::dto::AnyValue& anyvalue) {
-      return UpdateVariableState(job_info_io, idx, anyvalue);
-    };
+    {
+      auto callback = [idx](IJobInfoIO& job_info_io, const sup::dto::AnyValue& anyvalue) {
+        return UpdateVariableState(job_info_io, idx, anyvalue);
+      };
+      return callback;
+    }
   case ValueNameType::kUnknown:
     break;
   default:
