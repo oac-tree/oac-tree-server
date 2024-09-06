@@ -24,6 +24,7 @@
 #include <future>
 
 #include <gtest/gtest.h>
+#include <thread>
 
 using namespace sup::auto_server;
 
