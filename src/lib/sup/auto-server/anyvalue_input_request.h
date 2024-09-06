@@ -34,12 +34,6 @@ namespace sup
 namespace auto_server
 {
 
-const std::string kInputRequestOptionsFieldName = "options";
-const std::string kInputRequestMetadataFieldName = "metadata";
-
-const std::string kInputReplyResultFieldName = "result";
-const std::string kInputReplyValueFieldName = "value";
-
 /**
  * @brief Enumeration for the different types of user input.
  *
@@ -51,7 +45,8 @@ enum class InputRequestType
 };
 
 /**
- * @brief e.
+ * @brief AnyValueInputRequest collects all the required information for all the supported user
+ * input requests.
  */
 struct AnyValueInputRequest
 {

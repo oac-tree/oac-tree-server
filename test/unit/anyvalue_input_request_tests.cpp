@@ -20,6 +20,7 @@
  ******************************************************************************/
 
 #include <sup/auto-server/anyvalue_input_request.h>
+#include <sup/auto-server/sup_auto_protocol.h>
 
 #include <gtest/gtest.h>
 

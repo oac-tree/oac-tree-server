@@ -1,8 +1,6 @@
 # Todo
 
-* Implement AddInputServer in all IAnyValueManager implementations
-* Adapt Listener accordingly (and call the appropriate methods of the member IAnyValueManager)
-* Reorganise the stuff in sup_auto_protocol.h and anyvalue_input_request.h
+* Provide client feedback on refused user input (e.g. because other client already responded)
 * Make user input interruptable
 * Add more extensive unit tests
 * Add output methods over the network: PutValue, Message and Log
