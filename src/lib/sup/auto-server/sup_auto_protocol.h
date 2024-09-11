@@ -89,6 +89,38 @@ const std::string kInputRequestTypeField = "request_type";
 const std::string kInputRequestMetadataField = "metadata";
 const std::string kInputRequestInputTypeField = "input_type";
 
+// Log entry pv identifier
+const std::string kLogEntryId = "LOG";
+// Log entry fields
+const std::string kLogEntryType = "sup::logEntryType/v1.0";
+// const std::string kIndexField already defined
+const std::string kSeverityField = "severity";
+const std::string kMessageField = "message";
+
+// Basic log entry AnyValue
+extern const sup::dto::AnyValue kLogEntryAnyValue;
+
+// Message entry pv identifier
+const std::string kMessageEntryId = "MSG";
+// Message entry fields
+const std::string kMessageEntryType = "sup::messageEntryType/v1.0";
+// const std::string kIndexField already defined
+// const std::string kMessageField already defined
+
+// Basic message entry AnyValue
+extern const sup::dto::AnyValue kMessageEntryAnyValue;
+
+// Output value entry pv identifier
+const std::string kOutputValueEntryId = "OUT";
+// Output value entry fields
+const std::string kOutputValueEntryType = "sup::outputValueEntryType/v1.0";
+// const std::string kIndexField already defined
+const std::string kDescriptionField = "description";
+const std::string kValueField = "value";
+
+// Basic output value entry AnyValue
+extern const sup::dto::AnyValue kOutputValueEntryAnyValue;
+
 // Job state postfix:
 const std::string kJobStateId = "STATE";
 // Job state type name and fields:

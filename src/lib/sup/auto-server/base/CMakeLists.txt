@@ -28,6 +28,7 @@ target_sources(sup-auto-server
   job_info.cpp
   job_utils.cpp
   job_value_mapper.cpp
+  output_entries.cpp
   server_job_info_io.cpp
   server_job.cpp
   sup_auto_protocol.cpp

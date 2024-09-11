@@ -72,6 +72,23 @@ const dto::AnyValue kInputRequestAnyValue = {{
   { protocol::kValueField, "" }
 }, kInputRequestType };
 
+const dto::AnyValue kLogEntryAnyValue = {{
+  { kIndexField, { sup::dto::UnsignedInteger64Type, 0 } },
+  { kSeverityField, { sup::dto::SignedInteger32Type, 0 } },
+  { kMessageField, "" }
+}, kLogEntryType };
+
+const dto::AnyValue kMessageEntryAnyValue = {{
+  { kIndexField, { sup::dto::UnsignedInteger64Type, 0 } },
+  { kMessageField, "" }
+}, kMessageEntryType };
+
+const dto::AnyValue kOutputValueEntryAnyValue = {{
+  { kIndexField, { sup::dto::UnsignedInteger64Type, 0 } },
+  { kDescriptionField, "" },
+  { kValueField, {} }
+}, kOutputValueEntryType };
+
 const dto::AnyValue kJobStateAnyValue = {{
   { kJobStateField, static_cast<dto::uint32>(sequencer::JobState::kInitial)}
 }, kJobStateType };
