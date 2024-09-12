@@ -53,6 +53,7 @@ install(FILES
   i_anyvalue_manager.h
   i_job_info_io.h
   i_job_manager.h
+  index_generator.h
   input_protocol_client.h
   input_protocol_server.h
   input_request_server.h

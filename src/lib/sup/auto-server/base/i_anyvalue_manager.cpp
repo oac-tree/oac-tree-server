@@ -50,6 +50,12 @@ IAnyValueManager::NameAnyValueSet GetInitialValueSet(const std::string& job_pref
   auto job_value_name = GetJobStatePVName(job_prefix);
   auto job_value = GetJobStateValue(sequencer::JobState::kInitial);
   result.emplace_back(job_value_name, job_value);
+  auto log_entry_name = GetLogEntryName(job_prefix);
+  result.emplace_back(log_entry_name, kLogEntryAnyValue);
+  auto msg_entry_name = GetMessageEntryName(job_prefix);
+  result.emplace_back(msg_entry_name, kMessageEntryAnyValue);
+  auto out_val_entry_name = GetOutputValueEntryName(job_prefix);
+  result.emplace_back(out_val_entry_name, kOutputValueEntryAnyValue);
   for (sup::dto::uint32 var_idx = 0; var_idx < n_vars; ++var_idx)
   {
     const auto name = GetVariablePVName(job_prefix, var_idx);

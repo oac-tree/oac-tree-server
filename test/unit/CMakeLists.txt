@@ -11,6 +11,7 @@ target_sources(unit-tests
     client_anyvalue_manager_tests.cpp
     epics_anyvalue_manager_tests.cpp
     epics_manager_listener_tests.cpp
+    index_generator_tests.cpp
     input_request_server_tests.cpp
     instruction_tree_utils_tests.cpp
     job_info_tests.cpp

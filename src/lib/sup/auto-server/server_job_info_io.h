@@ -24,6 +24,7 @@
 
 #include <sup/auto-server/i_anyvalue_manager.h>
 #include <sup/auto-server/i_job_info_io.h>
+#include <sup/auto-server/index_generator.h>
 
 namespace sup
 {
@@ -64,6 +65,9 @@ private:
   const std::string m_job_prefix;
   const sup::dto::uint32 m_n_vars;
   IAnyValueManager& m_av_manager;
+  IndexGenerator m_log_idx_gen;
+  IndexGenerator m_msg_idx_gen;
+  IndexGenerator m_out_val_idx_gen;
 };
 
 }  // namespace auto_server

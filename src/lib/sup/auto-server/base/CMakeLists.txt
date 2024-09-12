@@ -17,6 +17,7 @@ target_sources(sup-auto-server
   i_anyvalue_manager.cpp
   i_job_info_io.cpp
   i_job_manager.cpp
+  index_generator.cpp
   input_protocol_client.cpp
   input_protocol_server.cpp
   input_request_server.cpp

@@ -36,6 +36,9 @@ ServerJobInfoIO::ServerJobInfoIO(const std::string& job_prefix, sup::dto::uint32
   : m_job_prefix{job_prefix}
   , m_n_vars{n_vars}
   , m_av_manager{av_manager}
+  , m_log_idx_gen{}
+  , m_msg_idx_gen{}
+  , m_out_val_idx_gen{}
 {
   auto value_set = GetInitialValueSet(m_job_prefix, m_n_vars);
   m_av_manager.AddAnyValues(value_set);
@@ -68,9 +71,10 @@ void ServerJobInfoIO::VariableUpdated(sup::dto::uint32 var_idx, const sup::dto::
 
 bool ServerJobInfoIO::PutValue(const sup::dto::AnyValue& value, const std::string& description)
 {
-  // TODO: get index
-  OutputValueEntry out_val{ 0, description, value };
-  return true;
+  auto idx = m_out_val_idx_gen.NewIndex();
+  auto out_val_name = GetOutputValueEntryName(m_job_prefix);
+  OutputValueEntry out_val{ idx, description, value };
+  return m_av_manager.UpdateAnyValue(out_val_name, EncodeOutputValueEntry(out_val));
 }
 
 bool ServerJobInfoIO::GetUserValue(sup::dto::AnyValue& value, const std::string& description)
@@ -107,14 +111,18 @@ int ServerJobInfoIO::GetUserChoice(const std::vector<std::string>& options,
 
 void ServerJobInfoIO::Message(const std::string& message)
 {
-  // TODO: get index
-  MessageEntry msg_val{ 0, message };
+  auto idx = m_msg_idx_gen.NewIndex();
+  auto msg_val_name = GetMessageEntryName(m_job_prefix);
+  MessageEntry msg_val{ idx, message };
+  m_av_manager.UpdateAnyValue(msg_val_name, EncodeMessageEntry(msg_val));
 }
 
 void ServerJobInfoIO::Log(int severity, const std::string& message)
 {
-  // TODO: get index
-  LogEntry log_val{ 0, severity, message };
+  auto idx = m_log_idx_gen.NewIndex();
+  auto log_val_name = GetLogEntryName(m_job_prefix);
+  LogEntry log_val{ idx, severity, message };
+  m_av_manager.UpdateAnyValue(log_val_name, EncodeLogEntry(log_val));
 }
 
 void ServerJobInfoIO::JobStateUpdated(sup::sequencer::JobState state)
