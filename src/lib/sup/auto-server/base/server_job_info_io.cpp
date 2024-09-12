@@ -22,6 +22,7 @@
 #include <sup/auto-server/server_job_info_io.h>
 
 #include <sup/auto-server/anyvalue_input_request.h>
+#include <sup/auto-server/output_entries.h>
 #include <sup/auto-server/sup_auto_protocol.h>
 
 #include <sup/dto/anyvalue_helper.h>
@@ -67,8 +68,8 @@ void ServerJobInfoIO::VariableUpdated(sup::dto::uint32 var_idx, const sup::dto::
 
 bool ServerJobInfoIO::PutValue(const sup::dto::AnyValue& value, const std::string& description)
 {
-  (void)value;
-  (void)description;
+  // TODO: get index
+  OutputValueEntry out_val{ 0, description, value };
   return true;
 }
 
@@ -106,13 +107,14 @@ int ServerJobInfoIO::GetUserChoice(const std::vector<std::string>& options,
 
 void ServerJobInfoIO::Message(const std::string& message)
 {
-  (void)message;
+  // TODO: get index
+  MessageEntry msg_val{ 0, message };
 }
 
 void ServerJobInfoIO::Log(int severity, const std::string& message)
 {
-  (void)severity;
-  (void)message;
+  // TODO: get index
+  LogEntry log_val{ 0, severity, message };
 }
 
 void ServerJobInfoIO::JobStateUpdated(sup::sequencer::JobState state)

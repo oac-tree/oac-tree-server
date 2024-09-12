@@ -139,9 +139,14 @@ std::string AutomationServerResultToString(const sup::protocol::ProtocolResult& 
          std::to_string(result.GetValue());
 }
 
-std::string GetJobStatePVName(const std::string& prefix)
+std::string GetInstructionPVName(const std::string& prefix, dto::uint32 index)
 {
-  return prefix + kJobStateId;
+  return prefix + kInstructionId + std::to_string(index);
+}
+
+std::string GetVariablePVName(const std::string& prefix, dto::uint32 index)
+{
+  return prefix + kVariableId + std::to_string(index);
 }
 
 std::string GetInputServerName(const std::string& prefix)
@@ -154,14 +159,24 @@ std::string GetInputRequestPVName(const std::string& server_name)
   return server_name + kInputRequestName;
 }
 
-std::string GetInstructionPVName(const std::string& prefix, dto::uint32 index)
+std::string GetLogEntryName(const std::string& prefix)
 {
-  return prefix + kInstructionId + std::to_string(index);
+  return prefix + kLogEntryId;
 }
 
-std::string GetVariablePVName(const std::string& prefix, dto::uint32 index)
+std::string GetMessageEntryName(const std::string& prefix)
 {
-  return prefix + kVariableId + std::to_string(index);
+  return prefix + kMessageEntryId;
+}
+
+std::string GetOutputValueEntryName(const std::string& prefix)
+{
+  return prefix + kOutputValueEntryId;
+}
+
+std::string GetJobStatePVName(const std::string& prefix)
+{
+  return prefix + kJobStateId;
 }
 
 dto::AnyValue GetJobStateValue(sequencer::JobState state)
@@ -212,6 +227,30 @@ ValueNameInfo ParseValueName(const std::string& val_name)
       return unknown;
     }
     return { ValueNameType::kJobStatus, 0 };
+  }
+  if (EndsWith(val_name, kLogEntryId))
+  {
+    if (val_name.size() == kLogEntryId.size())
+    {
+      return unknown;
+    }
+    return { ValueNameType::kLogEntry, 0 };
+  }
+  if (EndsWith(val_name, kMessageEntryId))
+  {
+    if (val_name.size() == kMessageEntryId.size())
+    {
+      return unknown;
+    }
+    return { ValueNameType::kMessageEntry, 0 };
+  }
+  if (EndsWith(val_name, kOutputValueEntryId))
+  {
+    if (val_name.size() == kOutputValueEntryId.size())
+    {
+      return unknown;
+    }
+    return { ValueNameType::kOutputValueEntry, 0 };
   }
   auto pos = val_name.find_last_of("-");
   if (pos == std::string::npos)

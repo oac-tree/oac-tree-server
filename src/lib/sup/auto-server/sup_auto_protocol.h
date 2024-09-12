@@ -181,6 +181,9 @@ enum class ValueNameType
   kUnknown = 0,
   kInstruction,
   kVariable,
+  kLogEntry,
+  kMessageEntry,
+  kOutputValueEntry,
   kJobStatus
 };
 
@@ -189,7 +192,6 @@ struct ValueNameInfo
   ValueNameType val_type;
   sup::dto::uint32 idx;
 };
-
 
 // Application specific protocol results:
 /**
@@ -226,12 +228,22 @@ extern const sup::protocol::ProtocolResult ClientReplyRefused;
 std::string AutomationServerResultToString(const sup::protocol::ProtocolResult& result);
 
 /**
- * @brief Create a PV channel name for the job state from a given prefix.
+ * @brief Create a PV channel name for an instruction with the given index and prefix.
  *
  * @param prefix Prefix that needs to be unique among all running jobs in the network.
- * @return PV channel name for the job state.
+ * @param index Index of the instruction inside the procedure.
+ * @return PV channel name for the instruction.
  */
-std::string GetJobStatePVName(const std::string& prefix);
+std::string GetInstructionPVName(const std::string& prefix, sup::dto::uint32 index);
+
+/**
+ * @brief Create a PV channel name for a variable with the given index and prefix.
+ *
+ * @param prefix Prefix that needs to be unique among all running jobs in the network.
+ * @param index Index of the variable inside the workspace.
+ * @return PV channel name for the variable.
+ */
+std::string GetVariablePVName(const std::string& prefix, sup::dto::uint32 index);
 
 /**
  * @brief Create a name for the server that handles user input for a job.
@@ -250,22 +262,36 @@ std::string GetInputServerName(const std::string& prefix);
 std::string GetInputRequestPVName(const std::string& server_name);
 
 /**
- * @brief Create a PV channel name for an instruction with the given index and prefix.
+ * @brief Create a PV channel name for the log entries.
  *
  * @param prefix Prefix that needs to be unique among all running jobs in the network.
- * @param index Index of the instruction inside the procedure.
- * @return PV channel name for the instruction.
+ * @return Name for the log entries.
  */
-std::string GetInstructionPVName(const std::string& prefix, sup::dto::uint32 index);
+std::string GetLogEntryName(const std::string& prefix);
 
 /**
- * @brief Create a PV channel name for a variable with the given index and prefix.
+ * @brief Create a PV channel name for the message entries.
  *
  * @param prefix Prefix that needs to be unique among all running jobs in the network.
- * @param index Index of the variable inside the workspace.
- * @return PV channel name for the variable.
+ * @return Name for the message entries.
  */
-std::string GetVariablePVName(const std::string& prefix, sup::dto::uint32 index);
+std::string GetMessageEntryName(const std::string& prefix);
+
+/**
+ * @brief Create a PV channel name for the output value entries.
+ *
+ * @param prefix Prefix that needs to be unique among all running jobs in the network.
+ * @return Name for the output value entries.
+ */
+std::string GetOutputValueEntryName(const std::string& prefix);
+
+/**
+ * @brief Create a PV channel name for the job state from a given prefix.
+ *
+ * @param prefix Prefix that needs to be unique among all running jobs in the network.
+ * @return PV channel name for the job state.
+ */
+std::string GetJobStatePVName(const std::string& prefix);
 
 /**
  * @brief Create an AnyValue representing the given job state.
