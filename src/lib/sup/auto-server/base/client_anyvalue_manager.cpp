@@ -22,6 +22,7 @@
 #include <sup/auto-server/client_anyvalue_manager.h>
 
 #include <sup/auto-server/anyvalue_utils.h>
+#include <sup/auto-server/output_entries.h>
 #include <sup/auto-server/sup_auto_protocol.h>
 
 namespace
@@ -32,6 +33,9 @@ void UpdateInstructionState(IJobInfoIO& job_info_io, sup::dto::uint32 instr_idx,
                             const sup::dto::AnyValue& anyvalue);
 void UpdateVariableState(IJobInfoIO& job_info_io, sup::dto::uint32 var_idx,
                         const sup::dto::AnyValue& anyvalue);
+void UpdateLogEntry(IJobInfoIO& job_info_io, const sup::dto::AnyValue& anyvalue);
+void UpdateMessageEntry(IJobInfoIO& job_info_io, const sup::dto::AnyValue& anyvalue);
+void UpdateOutputValueEntry(IJobInfoIO& job_info_io, const sup::dto::AnyValue& anyvalue);
 }  // unnamed namespace
 
 namespace sup
@@ -140,6 +144,12 @@ ClientAnyValueManager::AnyValueCallback CreateCallback(const std::string& value_
       };
       return callback;
     }
+  case ValueNameType::kLogEntry:
+    return UpdateLogEntry;
+  case ValueNameType::kMessageEntry:
+    return UpdateMessageEntry;
+  case ValueNameType::kOutputValueEntry:
+    return UpdateOutputValueEntry;
   case ValueNameType::kUnknown:
     break;
   default:
@@ -190,5 +200,36 @@ void UpdateVariableState(IJobInfoIO& job_info_io, sup::dto::uint32 var_idx,
   }
   job_info_io.VariableUpdated(var_idx, var_state.first, var_state.second);
 }
+
+void UpdateLogEntry(IJobInfoIO& job_info_io, const sup::dto::AnyValue& anyvalue)
+{
+  if (!ValidateLogEntryAnyValue(anyvalue))
+  {
+    return;
+  }
+  auto log_entry = DecodeLogEntry(anyvalue);
+  job_info_io.Log(log_entry.m_severity, log_entry.m_message);
+}
+
+void UpdateMessageEntry(IJobInfoIO& job_info_io, const sup::dto::AnyValue& anyvalue)
+{
+  if (!ValidateMessageEntryAnyValue(anyvalue))
+  {
+    return;
+  }
+  auto msg_entry = DecodeMessageEntry(anyvalue);
+  job_info_io.Message(msg_entry.m_message);
+}
+
+void UpdateOutputValueEntry(IJobInfoIO& job_info_io, const sup::dto::AnyValue& anyvalue)
+{
+  if (!ValidateOutputValueEntryAnyValue(anyvalue))
+  {
+    return;
+  }
+  auto out_val_entry = DecodeOutputValueEntry(anyvalue);
+  job_info_io.PutValue(out_val_entry.m_value, out_val_entry.m_description);
+}
+
 
 }  // unnamed namespace
