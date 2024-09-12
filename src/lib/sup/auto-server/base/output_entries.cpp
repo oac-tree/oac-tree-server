@@ -24,17 +24,49 @@
 #include <sup/auto-server/anyvalue_utils.h>
 #include <sup/auto-server/sup_auto_protocol.h>
 
-namespace
-{
-bool ValidateLogEntryAnyValue(const sup::dto::AnyValue& anyvalue);
-bool ValidateMessageEntryAnyValue(const sup::dto::AnyValue& anyvalue);
-bool ValidateOutputValueEntryAnyValue(const sup::dto::AnyValue& anyvalue);
-}  // unnamed namespace
-
 namespace sup
 {
 namespace auto_server
 {
+
+bool operator==(const LogEntry& left, const LogEntry& right)
+{
+  if (left.m_index != right.m_index)
+  {
+    return false;
+  }
+  if (left.m_severity != right.m_severity)
+  {
+    return false;
+  }
+  if (left.m_message != right.m_message)
+  {
+    return false;
+  }
+  return true;
+}
+
+bool operator!=(const LogEntry& left, const LogEntry& right)
+{
+  return !(left == right);
+}
+
+bool ValidateLogEntryAnyValue(const sup::dto::AnyValue& anyvalue)
+{
+  if (!utils::ValidateMemberType(anyvalue, kIndexField, sup::dto::UnsignedInteger64Type))
+  {
+    return false;
+  }
+  if (!utils::ValidateMemberType(anyvalue, kSeverityField, sup::dto::SignedInteger32Type))
+  {
+    return false;
+  }
+  if (!utils::ValidateMemberType(anyvalue, kMessageField, sup::dto::StringType))
+  {
+    return false;
+  }
+  return true;
+}
 
 sup::dto::AnyValue EncodeLogEntry(const LogEntry& log_entry)
 {
@@ -57,6 +89,37 @@ LogEntry DecodeLogEntry(const sup::dto::AnyValue& anyvalue)
   return result;
 }
 
+bool operator==(const MessageEntry& left, const MessageEntry& right)
+{
+  if (left.m_index != right.m_index)
+  {
+    return false;
+  }
+  if (left.m_message != right.m_message)
+  {
+    return false;
+  }
+  return true;
+}
+
+bool operator!=(const MessageEntry& left, const MessageEntry& right)
+{
+  return !(left == right);
+}
+
+bool ValidateMessageEntryAnyValue(const sup::dto::AnyValue& anyvalue)
+{
+  if (!utils::ValidateMemberType(anyvalue, kIndexField, sup::dto::UnsignedInteger64Type))
+  {
+    return false;
+  }
+  if (!utils::ValidateMemberType(anyvalue, kMessageField, sup::dto::StringType))
+  {
+    return false;
+  }
+  return true;
+}
+
 sup::dto::AnyValue EncodeMessageEntry(const MessageEntry& msg_entry)
 {
   auto result = kMessageEntryAnyValue;
@@ -75,6 +138,45 @@ MessageEntry DecodeMessageEntry(const sup::dto::AnyValue& anyvalue)
     result.m_message = anyvalue[kMessageField].As<std::string>();
   }
   return result;
+}
+
+bool operator==(const OutputValueEntry& left, const OutputValueEntry& right)
+{
+  if (left.m_index != right.m_index)
+  {
+    return false;
+  }
+  if (left.m_description != right.m_description)
+  {
+    return false;
+  }
+  if (left.m_value != right.m_value)
+  {
+    return false;
+  }
+  return true;
+}
+
+bool operator!=(const OutputValueEntry& left, const OutputValueEntry& right)
+{
+  return !(left == right);
+}
+
+bool ValidateOutputValueEntryAnyValue(const sup::dto::AnyValue& anyvalue)
+{
+  if (!utils::ValidateMemberType(anyvalue, kIndexField, sup::dto::UnsignedInteger64Type))
+  {
+    return false;
+  }
+  if (!utils::ValidateMemberType(anyvalue, kDescriptionField, sup::dto::StringType))
+  {
+    return false;
+  }
+  if (!anyvalue.HasField(kValueField))
+  {
+    return false;
+  }
+  return true;
 }
 
 sup::dto::AnyValue EncodeOutputValueEntry(const OutputValueEntry& output_entry)
@@ -101,57 +203,3 @@ OutputValueEntry DecodeOutputValueEntry(const sup::dto::AnyValue& anyvalue)
 }  // namespace auto_server
 
 }  // namespace sup
-
-namespace
-{
-using namespace sup::auto_server;
-
-bool ValidateLogEntryAnyValue(const sup::dto::AnyValue& anyvalue)
-{
-  if (!utils::ValidateMemberType(anyvalue, kIndexField, sup::dto::UnsignedInteger64Type))
-  {
-    return false;
-  }
-  if (!utils::ValidateMemberType(anyvalue, kSeverityField, sup::dto::SignedInteger32Type))
-  {
-    return false;
-  }
-  if (!utils::ValidateMemberType(anyvalue, kMessageField, sup::dto::StringType))
-  {
-    return false;
-  }
-  return true;
-}
-
-bool ValidateMessageEntryAnyValue(const sup::dto::AnyValue& anyvalue)
-{
-  if (!utils::ValidateMemberType(anyvalue, kIndexField, sup::dto::UnsignedInteger64Type))
-  {
-    return false;
-  }
-  if (!utils::ValidateMemberType(anyvalue, kMessageField, sup::dto::StringType))
-  {
-    return false;
-  }
-  return true;
-}
-
-bool ValidateOutputValueEntryAnyValue(const sup::dto::AnyValue& anyvalue)
-{
-  if (!utils::ValidateMemberType(anyvalue, kIndexField, sup::dto::UnsignedInteger64Type))
-  {
-    return false;
-  }
-  if (!utils::ValidateMemberType(anyvalue, kDescriptionField, sup::dto::StringType))
-  {
-    return false;
-  }
-  if (!anyvalue.HasField(kValueField))
-  {
-    return false;
-  }
-  return true;
-}
-
-}  // unnamed namespace
-

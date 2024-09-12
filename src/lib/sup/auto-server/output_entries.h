@@ -38,6 +38,11 @@ struct LogEntry
   std::string m_message;
 };
 
+bool operator==(const LogEntry& left, const LogEntry& right);
+bool operator!=(const LogEntry& left, const LogEntry& right);
+
+bool ValidateLogEntryAnyValue(const sup::dto::AnyValue& anyvalue);
+
 sup::dto::AnyValue EncodeLogEntry(const LogEntry& log_entry);
 
 LogEntry DecodeLogEntry(const sup::dto::AnyValue& anyvalue);
@@ -47,6 +52,11 @@ struct MessageEntry
   sup::dto::uint64 m_index;
   std::string m_message;
 };
+
+bool operator==(const MessageEntry& left, const MessageEntry& right);
+bool operator!=(const MessageEntry& left, const MessageEntry& right);
+
+bool ValidateMessageEntryAnyValue(const sup::dto::AnyValue& anyvalue);
 
 sup::dto::AnyValue EncodeMessageEntry(const MessageEntry& msg_entry);
 
@@ -58,6 +68,11 @@ struct OutputValueEntry
   std::string m_description;
   sup::dto::AnyValue m_value;
 };
+
+bool operator==(const OutputValueEntry& left, const OutputValueEntry& right);
+bool operator!=(const OutputValueEntry& left, const OutputValueEntry& right);
+
+bool ValidateOutputValueEntryAnyValue(const sup::dto::AnyValue& anyvalue);
 
 sup::dto::AnyValue EncodeOutputValueEntry(const OutputValueEntry& output_entry);
 

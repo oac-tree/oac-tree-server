@@ -15,6 +15,7 @@ target_sources(unit-tests
     instruction_tree_utils_tests.cpp
     job_info_tests.cpp
     job_value_mapper_tests.cpp
+    output_entries_tests.cpp
     server_job_tests.cpp
     sup_auto_protocol_tests.cpp
     unit_test_helper.cpp
