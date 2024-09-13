@@ -27,6 +27,8 @@
 
 #include <sup/dto/anyvalue.h>
 
+#include <gmock/gmock.h>
+
 #include <condition_variable>
 #include <map>
 #include <mutex>
@@ -67,42 +69,19 @@ namespace auto_server
 {
 namespace UnitTestHelper
 {
+// TODO: use mock methods
 class TestJobInfoIO : public IJobInfoIO
 {
 public:
-  using InstructionStates = std::vector<std::pair<sup::dto::uint32, InstructionState>>;
-  using JobStates = std::vector<sup::sequencer::JobState>;
-  TestJobInfoIO();
-  virtual ~TestJobInfoIO();
-
-  sup::dto::uint32 GetNumberOfInstructions() const;
-  InstructionStates GetInstructionStates() const;
-  JobStates GetJobStates() const;
-
-  void InitNumberOfInstructions(sup::dto::uint32 n_instr) override;
-
-  void InstructionStateUpdated(sup::dto::uint32 instr_idx, InstructionState state) override;
-
-  void VariableUpdated(sup::dto::uint32 var_idx, const sup::dto::AnyValue& value,
-                       bool connected) override;
-
-  void JobStateUpdated(sup::sequencer::JobState state) override;
-
-  bool PutValue(const sup::dto::AnyValue& value, const std::string& description) override;
-
-  bool GetUserValue(sup::dto::AnyValue& value, const std::string& description) override;
-
-  int GetUserChoice(const std::vector<std::string>& options,
-                    const sup::dto::AnyValue& metadata) override;
-
-  void Message(const std::string& message) override;
-
-  void Log(int severity, const std::string& message) override;
-
-private:
-  sup::dto::uint32 m_n_instr;
-  InstructionStates m_instr_statuses;
-  std::vector<sup::sequencer::JobState> m_job_states;
+  MOCK_METHOD1(InitNumberOfInstructions, void(sup::dto::uint32));
+  MOCK_METHOD2(InstructionStateUpdated, void(sup::dto::uint32, InstructionState));
+  MOCK_METHOD3(VariableUpdated, void(sup::dto::uint32, const sup::dto::AnyValue&, bool));
+  MOCK_METHOD1(JobStateUpdated, void(sup::sequencer::JobState));
+  MOCK_METHOD2(PutValue, bool(const sup::dto::AnyValue&, const std::string&));
+  MOCK_METHOD2(GetUserValue, bool(sup::dto::AnyValue&, const std::string&));
+  MOCK_METHOD2(GetUserChoice, int(const std::vector<std::string>&, const sup::dto::AnyValue&));
+  MOCK_METHOD1(Message, void(const std::string&));
+  MOCK_METHOD2(Log, void(int, const std::string&));
 };
 
 class TestAnyValueManager : public IAnyValueManager

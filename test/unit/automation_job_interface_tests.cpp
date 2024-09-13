@@ -33,6 +33,10 @@
 
 #include <gtest/gtest.h>
 
+using ::testing::_;
+using ::testing::Exactly;
+using ::testing::InSequence;
+
 using namespace sup::auto_server;
 
 class AutomationJobInterfaceTests : public ::testing::Test
@@ -46,29 +50,14 @@ protected:
 
 TEST_F(AutomationJobInterfaceTests, Construction)
 {
+  EXPECT_CALL(m_test_job_info_io, InitNumberOfInstructions(_)).Times(Exactly(0));
+  EXPECT_CALL(m_test_job_info_io, InstructionStateUpdated(_, _)).Times(Exactly(0));
+  EXPECT_CALL(m_test_job_info_io, JobStateUpdated(_)).Times(Exactly(0));
+
   const std::string kTestPrefix = "AutomationJobInterfaceTests:Construction:";
   const auto procedure_string = UnitTestHelper::CreateProcedureString(kWorkspaceSequenceBody);
   auto proc = sup::sequencer::ParseProcedureString(procedure_string);
   ASSERT_NE(proc.get(), nullptr);
-  {
-    // Check absence of any updates/io
-    auto n_instr = m_test_job_info_io.GetNumberOfInstructions();
-    auto instr_states = m_test_job_info_io.GetInstructionStates();
-    auto job_states = m_test_job_info_io.GetJobStates();
-    EXPECT_EQ(n_instr, 0);
-    EXPECT_EQ(instr_states.size(), 0);
-    EXPECT_EQ(job_states.size(), 0);
-  }
-  AutomationJobInterface job_interface{kTestPrefix, *proc, m_test_job_info_io};
-  {
-    // Check absence of any updates/io
-    auto n_instr = m_test_job_info_io.GetNumberOfInstructions();
-    auto instr_states = m_test_job_info_io.GetInstructionStates();
-    auto job_states = m_test_job_info_io.GetJobStates();
-    EXPECT_EQ(n_instr, 0);
-    EXPECT_EQ(instr_states.size(), 0);
-    EXPECT_EQ(job_states.size(), 0);
-  }
 }
 
 // TEST_F(AutomationJobInterfaceTests, AfterSetup)

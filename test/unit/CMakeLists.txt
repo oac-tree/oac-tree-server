@@ -5,6 +5,7 @@ target_compile_features(unit-tests PRIVATE cxx_std_11)
 target_sources(unit-tests
   PRIVATE
     anyvalue_input_request_tests.cpp
+    anyvalue_manager_server_client_tests.cpp
     anyvalue_utils_tests.cpp
     automation_job_interface_tests.cpp
     automation_server_tests.cpp
@@ -37,6 +38,7 @@ target_link_libraries(unit-tests
   PRIVATE
     GTest::GTest
     GTest::Main
+    GTest::gmock
     sup-auto-server
     sup-epics::sup-epics
 )

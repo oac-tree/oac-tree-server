@@ -28,6 +28,9 @@
 
 using namespace sup::auto_server;
 
+using ::testing::_;
+using ::testing::InSequence;
+
 class ClientAnyValueManagerTests : public ::testing::Test
 {
 protected:
@@ -41,23 +44,21 @@ TEST_F(ClientAnyValueManagerTests, Construction)
 {
   ClientAnyValueManager client_av_mgr{m_test_job_info_io};
   {
+    // Set Expectations on mock IJobInfoIO calls
+    {
+      InSequence seq;
+      EXPECT_CALL(m_test_job_info_io, JobStateUpdated(sup::sequencer::JobState::kInitial));
+      EXPECT_CALL(m_test_job_info_io, JobStateUpdated(sup::sequencer::JobState::kRunning));
+    }
     // Add only job state anyvalue
     IAnyValueManager::NameAnyValueSet value_set;
     std::string val_name = "prefix:" + kJobStateId;
     value_set.emplace_back(val_name, kJobStateAnyValue);
     client_av_mgr.AddAnyValues(value_set);
-    auto job_states = m_test_job_info_io.GetJobStates();
-    ASSERT_EQ(job_states.size(), 1);
-    auto last_job_state = job_states.back();
-    EXPECT_EQ(last_job_state, sup::sequencer::JobState::kInitial);
 
     // Update job state anyvalue
     auto new_job_state = kJobStateAnyValue;
     new_job_state[kJobStateField] = static_cast<sup::dto::uint32>(sup::sequencer::JobState::kRunning);
     client_av_mgr.UpdateAnyValue(val_name, new_job_state);
-    job_states = m_test_job_info_io.GetJobStates();
-    ASSERT_EQ(job_states.size(), 2);
-    last_job_state = job_states.back();
-    EXPECT_EQ(last_job_state, sup::sequencer::JobState::kRunning);
   }
 }
