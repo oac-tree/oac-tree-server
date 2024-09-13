@@ -36,6 +36,9 @@ struct InstructionState
   sequencer::ExecutionStatus m_execution_status;
 };
 
+bool operator==(const InstructionState& left, const InstructionState& right);
+bool operator!=(const InstructionState& left, const InstructionState& right);
+
 /**
  * @brief Encode an InstructionState object as an AnyValue.
  *

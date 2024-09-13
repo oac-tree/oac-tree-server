@@ -58,6 +58,7 @@ TEST_F(AutomationJobInterfaceTests, Construction)
   const auto procedure_string = UnitTestHelper::CreateProcedureString(kWorkspaceSequenceBody);
   auto proc = sup::sequencer::ParseProcedureString(procedure_string);
   ASSERT_NE(proc.get(), nullptr);
+  AutomationJobInterface job_interface{kTestPrefix, *proc, m_test_job_info_io};
 }
 
 // TEST_F(AutomationJobInterfaceTests, AfterSetup)
