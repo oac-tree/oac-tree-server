@@ -65,7 +65,8 @@ install(FILES
   job_info.h
   job_utils.h
   job_value_mapper.h
-  output_entries.h
+  output_entry_helper.h
+  output_entry_types.h
   server_job_info_io.h
   server_job.h
   sup_auto_protocol.h

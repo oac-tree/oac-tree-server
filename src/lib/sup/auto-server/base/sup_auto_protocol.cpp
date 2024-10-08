@@ -219,38 +219,23 @@ std::pair<sup::dto::AnyValue, bool> DecodeVariableState(const dto::AnyValue& enc
 
 ValueNameInfo ParseValueName(const std::string& val_name)
 {
+  static const std::vector<std::pair<std::string, ValueNameType>> postfixes = {
+    { kJobStateId, ValueNameType::kJobStatus },
+    { kLogEntryId, ValueNameType::kLogEntry },
+    { kMessageEntryId, ValueNameType::kMessageEntry },
+    { kOutputValueEntryId, ValueNameType::kOutputValueEntry }
+  };
   ValueNameInfo unknown{ ValueNameType::kUnknown, 0 };
-  if (EndsWith(val_name, kJobStateId))
+  for (const auto& postfix_type : postfixes)
   {
-    if (val_name.size() == kJobStateId.size())
+    if (EndsWith(val_name, postfix_type.first))
     {
-      return unknown;
+      if (val_name.size() == postfix_type.first.size())
+      {
+        return unknown;
+      }
+      return { postfix_type.second, 0 };
     }
-    return { ValueNameType::kJobStatus, 0 };
-  }
-  if (EndsWith(val_name, kLogEntryId))
-  {
-    if (val_name.size() == kLogEntryId.size())
-    {
-      return unknown;
-    }
-    return { ValueNameType::kLogEntry, 0 };
-  }
-  if (EndsWith(val_name, kMessageEntryId))
-  {
-    if (val_name.size() == kMessageEntryId.size())
-    {
-      return unknown;
-    }
-    return { ValueNameType::kMessageEntry, 0 };
-  }
-  if (EndsWith(val_name, kOutputValueEntryId))
-  {
-    if (val_name.size() == kOutputValueEntryId.size())
-    {
-      return unknown;
-    }
-    return { ValueNameType::kOutputValueEntry, 0 };
   }
   auto pos = val_name.find_last_of("-");
   if (pos == std::string::npos)

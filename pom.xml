@@ -97,8 +97,8 @@
                             <requires codac="true" buildOnly="true">sup-dto-devel</requires>
                             <requires codac="true" buildOnly="true">sup-epics-devel</requires>
                             <requires codac="true" buildOnly="true">sequencer-devel</requires>
+                            <requires codac="true" buildOnly="true">gtest-1.12.1-devel</requires>
                             <requires version="current" buildOnly="true">cmake</requires>
-                            <requires version="current" buildOnly="true">gtest-devel</requires>
                         </package>
                         <package name="devel">
                             <!-- CMAKE -->

@@ -19,7 +19,8 @@
  * of the distribution package.
  ******************************************************************************/
 
-#include <sup/auto-server/output_entries.h>
+#include <sup/auto-server/output_entry_helper.h>
+#include <sup/auto-server/output_entry_types.h>
 #include <sup/auto-server/sup_auto_protocol.h>
 
 #include <gtest/gtest.h>

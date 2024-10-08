@@ -19,7 +19,7 @@
  * of the distribution package.
  ******************************************************************************/
 
-#include <sup/auto-server/output_entries.h>
+#include <sup/auto-server/output_entry_helper.h>
 
 #include <sup/auto-server/anyvalue_utils.h>
 #include <sup/auto-server/sup_auto_protocol.h>
@@ -28,28 +28,6 @@ namespace sup
 {
 namespace auto_server
 {
-
-bool operator==(const LogEntry& left, const LogEntry& right)
-{
-  if (left.m_index != right.m_index)
-  {
-    return false;
-  }
-  if (left.m_severity != right.m_severity)
-  {
-    return false;
-  }
-  if (left.m_message != right.m_message)
-  {
-    return false;
-  }
-  return true;
-}
-
-bool operator!=(const LogEntry& left, const LogEntry& right)
-{
-  return !(left == right);
-}
 
 bool ValidateLogEntryAnyValue(const sup::dto::AnyValue& anyvalue)
 {
@@ -89,24 +67,6 @@ LogEntry DecodeLogEntry(const sup::dto::AnyValue& anyvalue)
   return result;
 }
 
-bool operator==(const MessageEntry& left, const MessageEntry& right)
-{
-  if (left.m_index != right.m_index)
-  {
-    return false;
-  }
-  if (left.m_message != right.m_message)
-  {
-    return false;
-  }
-  return true;
-}
-
-bool operator!=(const MessageEntry& left, const MessageEntry& right)
-{
-  return !(left == right);
-}
-
 bool ValidateMessageEntryAnyValue(const sup::dto::AnyValue& anyvalue)
 {
   if (!utils::ValidateMemberType(anyvalue, kIndexField, sup::dto::UnsignedInteger64Type))
@@ -138,28 +98,6 @@ MessageEntry DecodeMessageEntry(const sup::dto::AnyValue& anyvalue)
     result.m_message = anyvalue[kMessageField].As<std::string>();
   }
   return result;
-}
-
-bool operator==(const OutputValueEntry& left, const OutputValueEntry& right)
-{
-  if (left.m_index != right.m_index)
-  {
-    return false;
-  }
-  if (left.m_description != right.m_description)
-  {
-    return false;
-  }
-  if (left.m_value != right.m_value)
-  {
-    return false;
-  }
-  return true;
-}
-
-bool operator!=(const OutputValueEntry& left, const OutputValueEntry& right)
-{
-  return !(left == right);
 }
 
 bool ValidateOutputValueEntryAnyValue(const sup::dto::AnyValue& anyvalue)

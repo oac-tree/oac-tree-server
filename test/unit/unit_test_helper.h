@@ -73,15 +73,15 @@ namespace UnitTestHelper
 class TestJobInfoIO : public IJobInfoIO
 {
 public:
-  MOCK_METHOD1(InitNumberOfInstructions, void(sup::dto::uint32));
-  MOCK_METHOD2(InstructionStateUpdated, void(sup::dto::uint32, InstructionState));
-  MOCK_METHOD3(VariableUpdated, void(sup::dto::uint32, const sup::dto::AnyValue&, bool));
-  MOCK_METHOD1(JobStateUpdated, void(sup::sequencer::JobState));
-  MOCK_METHOD2(PutValue, bool(const sup::dto::AnyValue&, const std::string&));
-  MOCK_METHOD2(GetUserValue, bool(sup::dto::AnyValue&, const std::string&));
-  MOCK_METHOD2(GetUserChoice, int(const std::vector<std::string>&, const sup::dto::AnyValue&));
-  MOCK_METHOD1(Message, void(const std::string&));
-  MOCK_METHOD2(Log, void(int, const std::string&));
+  MOCK_METHOD(void, InitNumberOfInstructions, (sup::dto::uint32), (override));
+  MOCK_METHOD(void, InstructionStateUpdated, (sup::dto::uint32, InstructionState), (override));
+  MOCK_METHOD(void, VariableUpdated, (sup::dto::uint32, const sup::dto::AnyValue&, bool), (override));
+  MOCK_METHOD(void, JobStateUpdated, (sup::sequencer::JobState), (override));
+  MOCK_METHOD(bool, PutValue, (const sup::dto::AnyValue&, const std::string&), (override));
+  MOCK_METHOD(bool, GetUserValue, (sup::dto::AnyValue&, const std::string&), (override));
+  MOCK_METHOD(int, GetUserChoice, (const std::vector<std::string>&, const sup::dto::AnyValue&), (override));
+  MOCK_METHOD(void, Message, (const std::string&), (override));
+  MOCK_METHOD(void, Log, (int, const std::string&), (override));
 };
 
 class TestAnyValueManager : public IAnyValueManager

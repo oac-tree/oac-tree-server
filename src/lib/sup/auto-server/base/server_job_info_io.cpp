@@ -22,7 +22,8 @@
 #include <sup/auto-server/server_job_info_io.h>
 
 #include <sup/auto-server/anyvalue_input_request.h>
-#include <sup/auto-server/output_entries.h>
+#include <sup/auto-server/output_entry_helper.h>
+#include <sup/auto-server/output_entry_types.h>
 #include <sup/auto-server/sup_auto_protocol.h>
 
 #include <sup/dto/anyvalue_helper.h>

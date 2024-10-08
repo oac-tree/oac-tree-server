@@ -19,27 +19,15 @@
  * of the distribution package.
  ******************************************************************************/
 
-#ifndef SUP_AUTO_SERVER_OUTPUT_ENTRIES_H_
-#define SUP_AUTO_SERVER_OUTPUT_ENTRIES_H_
+#ifndef SUP_AUTO_SERVER_OUTPUT_ENTRY_HELPER_H_
+#define SUP_AUTO_SERVER_OUTPUT_ENTRY_HELPER_H_
 
-#include <sup/dto/anyvalue.h>
-
-#include <string>
+#include <sup/auto-server/output_entry_types.h>
 
 namespace sup
 {
 namespace auto_server
 {
-
-struct LogEntry
-{
-  sup::dto::uint64 m_index;
-  sup::dto::int32 m_severity;
-  std::string m_message;
-};
-
-bool operator==(const LogEntry& left, const LogEntry& right);
-bool operator!=(const LogEntry& left, const LogEntry& right);
 
 bool ValidateLogEntryAnyValue(const sup::dto::AnyValue& anyvalue);
 
@@ -47,30 +35,11 @@ sup::dto::AnyValue EncodeLogEntry(const LogEntry& log_entry);
 
 LogEntry DecodeLogEntry(const sup::dto::AnyValue& anyvalue);
 
-struct MessageEntry
-{
-  sup::dto::uint64 m_index;
-  std::string m_message;
-};
-
-bool operator==(const MessageEntry& left, const MessageEntry& right);
-bool operator!=(const MessageEntry& left, const MessageEntry& right);
-
 bool ValidateMessageEntryAnyValue(const sup::dto::AnyValue& anyvalue);
 
 sup::dto::AnyValue EncodeMessageEntry(const MessageEntry& msg_entry);
 
 MessageEntry DecodeMessageEntry(const sup::dto::AnyValue& anyvalue);
-
-struct OutputValueEntry
-{
-  sup::dto::uint64 m_index;
-  std::string m_description;
-  sup::dto::AnyValue m_value;
-};
-
-bool operator==(const OutputValueEntry& left, const OutputValueEntry& right);
-bool operator!=(const OutputValueEntry& left, const OutputValueEntry& right);
 
 bool ValidateOutputValueEntryAnyValue(const sup::dto::AnyValue& anyvalue);
 
@@ -82,4 +51,4 @@ OutputValueEntry DecodeOutputValueEntry(const sup::dto::AnyValue& anyvalue);
 
 }  // namespace sup
 
-#endif  // SUP_AUTO_SERVER_OUTPUT_ENTRIES_H_
+#endif  // SUP_AUTO_SERVER_OUTPUT_ENTRY_HELPER_H_

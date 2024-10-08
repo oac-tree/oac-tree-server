@@ -32,15 +32,8 @@ namespace auto_server
 
 bool operator==(const InstructionState& left, const InstructionState& right)
 {
-  if (left.m_breakpoint_set != right.m_breakpoint_set)
-  {
-    return false;
-  }
-  if (left.m_execution_status != right.m_execution_status)
-  {
-    return false;
-  }
-  return true;
+  return left.m_breakpoint_set == right.m_breakpoint_set &&
+         left.m_execution_status == right.m_execution_status;
 }
 
 bool operator!=(const InstructionState& left, const InstructionState& right)

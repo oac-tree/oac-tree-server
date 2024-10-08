@@ -22,7 +22,8 @@
 #include <sup/auto-server/client_anyvalue_manager.h>
 
 #include <sup/auto-server/anyvalue_utils.h>
-#include <sup/auto-server/output_entries.h>
+#include <sup/auto-server/output_entry_helper.h>
+#include <sup/auto-server/output_entry_types.h>
 #include <sup/auto-server/sup_auto_protocol.h>
 
 namespace
