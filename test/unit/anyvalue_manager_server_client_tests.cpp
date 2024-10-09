@@ -67,7 +67,7 @@ TEST_F(AnyValueManagerServerClientTest, InitNrInstructions)
   // When InitNumberOfInstructions is called, there will be additional calls to
   // InitNumberOfInstructions and InstructionStateUpdated.
   unsigned nr_instr = 10u;
-  EXPECT_CALL(m_test_job_info_io, InitNumberOfInstructions(_)).Times(Exactly(0));
+  EXPECT_CALL(m_test_job_info_io, InitNumberOfInstructions(10)).Times(Exactly(1));
   InstructionState initial_instr_state{ false, sup::sequencer::ExecutionStatus::NOT_STARTED };
   EXPECT_CALL(m_test_job_info_io, InstructionStateUpdated(_, initial_instr_state)).Times(Exactly(nr_instr));
   EXPECT_CALL(m_test_job_info_io, VariableUpdated(_, _, _)).Times(Exactly(0));

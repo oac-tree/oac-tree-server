@@ -24,6 +24,7 @@
 
 #include <sup/auto-server/i_anyvalue_manager.h>
 #include <sup/auto-server/i_job_info_io.h>
+#include <sup/auto-server/sup_auto_protocol.h>
 
 #include <functional>
 #include <map>
@@ -59,7 +60,7 @@ private:
   std::map<std::string, AnyValueCallback> m_cb_map;
 };
 
-ClientAnyValueManager::AnyValueCallback CreateCallback(const std::string& value_name);
+ClientAnyValueManager::AnyValueCallback CreateCallback(const ValueNameInfo& value_name_info);
 
 }  // namespace auto_server
 

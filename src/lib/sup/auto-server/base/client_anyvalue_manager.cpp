@@ -24,7 +24,6 @@
 #include <sup/auto-server/anyvalue_utils.h>
 #include <sup/auto-server/output_entry_helper.h>
 #include <sup/auto-server/output_entry_types.h>
-#include <sup/auto-server/sup_auto_protocol.h>
 
 namespace
 {
@@ -53,6 +52,7 @@ ClientAnyValueManager::~ClientAnyValueManager() = default;
 
 bool ClientAnyValueManager::AddAnyValues(const NameAnyValueSet& name_value_set)
 {
+  sup::dto::uint32 n_instr = 0;
   for (auto& name_value_pair : name_value_set)
   {
     auto& value_name = name_value_pair.first;
@@ -60,9 +60,18 @@ bool ClientAnyValueManager::AddAnyValues(const NameAnyValueSet& name_value_set)
     {
       return false;
     }
-    auto cb = CreateCallback(value_name);
+    auto value_name_info = ParseValueName(value_name);
+    if (value_name_info.val_type == ValueNameType::kInstruction)
+    {
+      ++n_instr;
+    }
+    auto cb = CreateCallback(value_name_info);
     cb(m_job_info_io, name_value_pair.second);
     m_cb_map[value_name] = cb;
+  }
+  if (n_instr > 0)
+  {
+    m_job_info_io.InitNumberOfInstructions(n_instr);
   }
   return true;
 }
@@ -118,16 +127,10 @@ sup::dto::AnyValue ClientAnyValueManager::GetUserInput(const std::string& input_
   return {};
 }
 
-ClientAnyValueManager::AnyValueCallback CreateCallback(const std::string& value_name)
+ClientAnyValueManager::AnyValueCallback CreateCallback(const ValueNameInfo& value_name_info)
 {
-  auto ignore = [](IJobInfoIO& job_info_io, const sup::dto::AnyValue& value) {
-    (void)job_info_io;
-    (void)value;
-    return;
-  };
-  auto info = ParseValueName(value_name);
-  auto idx = info.idx;
-  switch (info.val_type)
+  auto idx = value_name_info.idx;
+  switch (value_name_info.val_type)
   {
   case ValueNameType::kJobStatus:
     return UpdateJobState;
@@ -156,6 +159,11 @@ ClientAnyValueManager::AnyValueCallback CreateCallback(const std::string& value_
   default:
     break;
   }
+  auto ignore = [](IJobInfoIO& job_info_io, const sup::dto::AnyValue& value) {
+    (void)job_info_io;
+    (void)value;
+    return;
+  };
   return ignore;
 }
 

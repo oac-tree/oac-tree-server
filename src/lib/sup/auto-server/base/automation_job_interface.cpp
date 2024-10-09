@@ -83,7 +83,8 @@ void AutomationJobInterface::VariableUpdated(const std::string& name,
 bool AutomationJobInterface::PutValue(const sup::dto::AnyValue& value,
                                       const std::string& description)
 {
-  return m_job_info_io.PutValue(value, description);
+  m_job_info_io.PutValue(value, description);
+  return true;
 }
 
 bool AutomationJobInterface::GetUserValue(sup::dto::AnyValue& value,

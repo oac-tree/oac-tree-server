@@ -50,7 +50,7 @@ public:
 
   virtual void JobStateUpdated(sup::sequencer::JobState state) = 0;
 
-  virtual bool PutValue(const sup::dto::AnyValue& value, const std::string& description) = 0;
+  virtual void PutValue(const sup::dto::AnyValue& value, const std::string& description) = 0;
 
   virtual bool GetUserValue(sup::dto::AnyValue& value, const std::string& description) = 0;
 

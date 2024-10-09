@@ -70,12 +70,12 @@ void ServerJobInfoIO::VariableUpdated(sup::dto::uint32 var_idx, const sup::dto::
   m_av_manager.UpdateAnyValue(var_val_name, var_info);
 }
 
-bool ServerJobInfoIO::PutValue(const sup::dto::AnyValue& value, const std::string& description)
+void ServerJobInfoIO::PutValue(const sup::dto::AnyValue& value, const std::string& description)
 {
   auto idx = m_out_val_idx_gen.NewIndex();
   auto out_val_name = GetOutputValueEntryName(m_job_prefix);
   OutputValueEntry out_val{ idx, description, value };
-  return m_av_manager.UpdateAnyValue(out_val_name, EncodeOutputValueEntry(out_val));
+  m_av_manager.UpdateAnyValue(out_val_name, EncodeOutputValueEntry(out_val));
 }
 
 bool ServerJobInfoIO::GetUserValue(sup::dto::AnyValue& value, const std::string& description)
