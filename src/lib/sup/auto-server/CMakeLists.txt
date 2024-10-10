@@ -1,8 +1,6 @@
 add_library(sup-auto-server SHARED)
 add_library(sup-auto-server::sup-auto-server ALIAS sup-auto-server) # alias for build-tree usage
 
-target_compile_features(sup-auto-server PRIVATE cxx_std_11)
-
 add_subdirectory(base)
 add_subdirectory(epics)
 

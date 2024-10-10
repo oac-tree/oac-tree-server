@@ -1,7 +1,5 @@
 add_executable(sup-automation-server)
 
-target_compile_features(sup-automation-server PRIVATE cxx_std_11)
-
 find_package(sup-utils REQUIRED)
 find_package(sup-epics REQUIRED)
 
