@@ -19,17 +19,37 @@
  * of the distribution package.
  ******************************************************************************/
 
+#ifndef SUP_AUTO_SERVER_LISTENER_INITIALIZER_H_
+#define SUP_AUTO_SERVER_LISTENER_INITIALIZER_H_
+
 #include <sup/auto-server/i_anyvalue_listener.h>
 
-#include <sup/auto-server/sup_auto_protocol.h>
+#include <memory>
 
 namespace sup
 {
 namespace auto_server
 {
 
-IAnyValueListener::~IAnyValueListener() = default;
+/**
+ * @brief ListenerInitializer is a class that will initialize an IAnyValueListener object so it
+ * monitors the correct AnyValues.
+ */
+class ListenerInitializer
+{
+public:
+  ListenerInitializer(const std::string& job_prefix, sup::dto::uint32 n_vars,
+                      std::unique_ptr<IAnyValueListener> av_listener);
+  ~ListenerInitializer();
+
+  void InitNumberOfInstructions(sup::dto::uint32 n_instr);
+private:
+  const std::string m_job_prefix;
+  std::unique_ptr<IAnyValueListener> m_av_listener;
+};
 
 }  // namespace auto_server
 
 }  // namespace sup
+
+#endif  // SUP_AUTO_SERVER_LISTENER_INITIALIZER_H_

@@ -51,8 +51,8 @@ public:
 
   std::string GetPrefix() const;
   std::string GetProcedureName() const;
-  std::size_t GetNumberOfVariables() const;
-  std::size_t GetNumberOfInstructions() const;
+  sup::dto::uint32 GetNumberOfVariables() const;
+  sup::dto::uint32 GetNumberOfInstructions() const;
   const WorkspaceInfo& GetWorkspaceInfo() const;
   const InstructionInfo* GetRootInstructionInfo() const;
 

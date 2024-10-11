@@ -71,12 +71,12 @@ std::string JobInfo::GetProcedureName() const
   return m_full_name;
 }
 
-std::size_t JobInfo::GetNumberOfVariables() const
+sup::dto::uint32 JobInfo::GetNumberOfVariables() const
 {
   return m_ws.GetNumberOfVariables();
 }
 
-std::size_t JobInfo::GetNumberOfInstructions() const
+sup::dto::uint32 JobInfo::GetNumberOfInstructions() const
 {
   return m_ordered_instr.size();
 }

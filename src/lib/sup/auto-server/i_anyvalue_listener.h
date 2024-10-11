@@ -72,25 +72,6 @@ public:
 using ListenerFactoryFunction =
   std::function<std::unique_ptr<IAnyValueListener>(IAnyValueManager&)>;
 
-/**
- * @brief Get the set of names and AnyValues corresponding to the job's state, variables and
- * instructions.
- *
- * @param job_info JobInfo object describing the job.
- * @return Set of names and AnyValues.
- */
-IAnyValueManager::NameAnyValueSet GetJobMonitorSet(const JobInfo& job_info);
-
-/**
- * @brief Parse the JobInfo object and initialize all monitors and input servers required for
- * the given job.
- *
- * @param listener IAnyValueListener object to initialize.
- * @param job_info JobInfo object describing the job to listen to.
- * @return true on success.
- */
-bool ListenToJob(IAnyValueListener& listener, const JobInfo& job_info);
-
 }  // namespace auto_server
 
 }  // namespace sup
