@@ -52,6 +52,7 @@ public:
                                   const AnyValueInputRequest& request) override;
 
 private:
+  bool AddAnyValuesImpl(const NameAnyValueSet& name_value_set);
   bool ValidateNameValueSet(const NameAnyValueSet& name_value_set) const;
   EPICSServer* FindServer(const std::string& name) const;
   EPICSInputServer* FindInputServer(const std::string& server_name) const;

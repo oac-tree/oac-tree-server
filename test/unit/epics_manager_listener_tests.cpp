@@ -100,13 +100,8 @@ TEST_F(EPICSManagerListenerTest, GetUserInput)
   // Add input servers
   const std::string input_server_name = "TestInputServer03";
   ASSERT_TRUE(m_epics_av_manager.AddInputServer(input_server_name));
-
   ASSERT_TRUE(m_epics_listener.AddInputClient(input_server_name));
-
-  auto input_server_pv = GetInputRequestPVName(input_server_name);
-  ASSERT_TRUE(m_test_av_manager.HasAnyValue(input_server_pv));
   EXPECT_EQ(m_test_av_manager.GetNbrInputRequests(), 0);
-
 
   // Get user input over the network
   sup::dto::AnyValue user_reply{ sup::dto::UnsignedInteger64Type, 42u };

@@ -47,18 +47,7 @@ bool EPICSAnyValueManager::AddAnyValues(const NameAnyValueSet &name_value_set)
 {
   // Since we are updating the map, we need to hold a lock during the whole operation.
   std::lock_guard<std::mutex> lk{m_map_mtx};
-  if (!ValidateNameValueSet(name_value_set))
-  {
-    return false;
-  }
-  auto names = GetNames(name_value_set);
-  std::unique_ptr<EPICSServer> server{new EPICSServer(name_value_set)};
-  for (const auto &name : names)
-  {
-    m_name_server_map[name] = server.get();
-  }
-  m_servers.emplace_back(std::move(server));
-  return true;
+  return AddAnyValuesImpl(name_value_set);
 }
 
 bool EPICSAnyValueManager::AddInputServer(const std::string& input_server_name)
@@ -77,9 +66,12 @@ bool EPICSAnyValueManager::AddInputServer(const std::string& input_server_name)
   auto input_request_name = GetInputRequestPVName(input_server_name);
   NameAnyValueSet value_set;
   value_set.emplace_back(input_request_name, kInputRequestAnyValue);
-  if (!AddAnyValues(value_set))
   {
-    return false;
+    std::lock_guard<std::mutex> lk{m_map_mtx};
+    if (!AddAnyValuesImpl(value_set))
+    {
+      return false;
+    }
   }
   return true;
 }
@@ -115,6 +107,24 @@ sup::dto::AnyValue EPICSAnyValueManager::GetUserInput(const std::string& input_s
   // TODO: what on timeout??
   UpdateAnyValue(input_request_name, kInputRequestAnyValue);
   return result.second;
+}
+
+bool EPICSAnyValueManager::AddAnyValuesImpl(const NameAnyValueSet &name_value_set)
+{
+  // This private method does everything without holding a lock. Public methods requiring this
+  // functionality should make sure to manage the mutex lock properly!
+  if (!ValidateNameValueSet(name_value_set))
+  {
+    return false;
+  }
+  auto names = GetNames(name_value_set);
+  std::unique_ptr<EPICSServer> server{new EPICSServer(name_value_set)};
+  for (const auto &name : names)
+  {
+    m_name_server_map[name] = server.get();
+  }
+  m_servers.emplace_back(std::move(server));
+  return true;
 }
 
 bool EPICSAnyValueManager::ValidateNameValueSet(const NameAnyValueSet& name_value_set) const
