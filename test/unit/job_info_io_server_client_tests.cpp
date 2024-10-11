@@ -32,16 +32,16 @@ using ::testing::InSequence;
 
 using namespace sup::auto_server;
 
-class AnyValueManagerServerClientTest : public ::testing::Test
+class JobInfoIOServerClientTest : public ::testing::Test
 {
 protected:
-  AnyValueManagerServerClientTest() = default;
-  virtual ~AnyValueManagerServerClientTest() = default;
+  JobInfoIOServerClientTest() = default;
+  virtual ~JobInfoIOServerClientTest() = default;
 
   UnitTestHelper::TestJobInfoIO m_test_job_info_io;
 };
 
-TEST_F(AnyValueManagerServerClientTest, Construction)
+TEST_F(JobInfoIOServerClientTest, Construction)
 {
   // On construction, only static PVs that are always used will be trigger a first update.
   // This include JobState, OutputValue, Message and Log updates.
@@ -62,7 +62,7 @@ TEST_F(AnyValueManagerServerClientTest, Construction)
   ServerJobInfoIO server_job_info_io{job_prefix, 5, client_av_mgr};
 }
 
-TEST_F(AnyValueManagerServerClientTest, InitNrInstructions)
+TEST_F(JobInfoIOServerClientTest, InitNrInstructions)
 {
   // When InitNumberOfInstructions is called, there will be additional calls to
   // InitNumberOfInstructions and InstructionStateUpdated.

@@ -3,7 +3,6 @@ add_executable(unit-tests)
 target_sources(unit-tests
   PRIVATE
     anyvalue_input_request_tests.cpp
-    anyvalue_manager_server_client_tests.cpp
     anyvalue_utils_tests.cpp
     automation_job_interface_tests.cpp
     automation_server_tests.cpp
@@ -13,6 +12,7 @@ target_sources(unit-tests
     index_generator_tests.cpp
     input_request_server_tests.cpp
     instruction_tree_utils_tests.cpp
+    job_info_io_server_client_tests.cpp
     job_info_tests.cpp
     job_value_mapper_tests.cpp
     output_entry_tests.cpp
