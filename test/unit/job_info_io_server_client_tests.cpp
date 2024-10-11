@@ -24,11 +24,16 @@
 
 #include "unit_test_helper.h"
 
+#include <sup/sequencer/log_severity.h>
+
 #include <gtest/gtest.h>
 
 using ::testing::_;
+using ::testing::DoAll;
 using ::testing::Exactly;
 using ::testing::InSequence;
+using ::testing::Return;
+using ::testing::SetArgReferee;
 
 using namespace sup::auto_server;
 
@@ -43,8 +48,9 @@ protected:
 
 TEST_F(JobInfoIOServerClientTest, Construction)
 {
-  // On construction, only static PVs that are always used will be trigger a first update.
-  // This include JobState, OutputValue, Message and Log updates.
+  // On construction, only static PVs that are always used will trigger a first update.
+  // These include JobState, OutputValue, Message and Log updates.
+  // Not that no variable state is updated, as they contain no meaningful value
   EXPECT_CALL(m_test_job_info_io, InitNumberOfInstructions(_)).Times(Exactly(0));
   EXPECT_CALL(m_test_job_info_io, InstructionStateUpdated(_, _)).Times(Exactly(0));
   EXPECT_CALL(m_test_job_info_io, VariableUpdated(_, _, _)).Times(Exactly(0));
@@ -82,4 +88,225 @@ TEST_F(JobInfoIOServerClientTest, InitNrInstructions)
   ClientAnyValueManager client_av_mgr{m_test_job_info_io};
   ServerJobInfoIO server_job_info_io{job_prefix, 5, client_av_mgr};
   server_job_info_io.InitNumberOfInstructions(nr_instr);
+}
+
+TEST_F(JobInfoIOServerClientTest, InstructionStateUpdated)
+{
+  // When InstructionStateUpdated is called, there will be an additional call to
+  // InstructionStateUpdated of the mock class.
+  unsigned nr_instr = 10u;
+  InstructionState initial_instr_state{ false, sup::sequencer::ExecutionStatus::NOT_STARTED };
+  InstructionState instr_state{ true, sup::sequencer::ExecutionStatus::NOT_FINISHED };
+  EXPECT_CALL(m_test_job_info_io, InitNumberOfInstructions(10)).Times(Exactly(1));
+  EXPECT_CALL(m_test_job_info_io, VariableUpdated(_, _, _)).Times(Exactly(0));
+  EXPECT_CALL(m_test_job_info_io, JobStateUpdated(_)).Times(Exactly(1));
+  EXPECT_CALL(m_test_job_info_io, PutValue(_, _)).Times(Exactly(1));
+  EXPECT_CALL(m_test_job_info_io, GetUserValue(_, _)).Times(Exactly(0));
+  EXPECT_CALL(m_test_job_info_io, GetUserChoice(_, _)).Times(Exactly(0));
+  EXPECT_CALL(m_test_job_info_io, Message(_)).Times(Exactly(1));
+  EXPECT_CALL(m_test_job_info_io, Log(_, _)).Times(Exactly(1));
+  {
+    InSequence seq;
+    EXPECT_CALL(m_test_job_info_io, InstructionStateUpdated(_, initial_instr_state)).Times(Exactly(nr_instr));
+    EXPECT_CALL(m_test_job_info_io, InstructionStateUpdated(5, instr_state)).Times(Exactly(1));
+  }
+  const std::string job_prefix = "AVMgrServerClientConstruction";
+  ClientAnyValueManager client_av_mgr{m_test_job_info_io};
+  ServerJobInfoIO server_job_info_io{job_prefix, 5, client_av_mgr};
+  server_job_info_io.InitNumberOfInstructions(nr_instr);
+  server_job_info_io.InstructionStateUpdated(5, instr_state);
+}
+
+TEST_F(JobInfoIOServerClientTest, VariableUpdated)
+{
+  // When VariableUpdated is called, there will be an additional call to
+  // VariableUpdated of the mock class.
+  unsigned nr_instr = 10u;
+  sup::dto::AnyValue var_value{ sup::dto::UnsignedInteger64Type, 42u };
+  EXPECT_CALL(m_test_job_info_io, InitNumberOfInstructions(10)).Times(Exactly(1));
+  InstructionState initial_instr_state{ false, sup::sequencer::ExecutionStatus::NOT_STARTED };
+  EXPECT_CALL(m_test_job_info_io, InstructionStateUpdated(_, initial_instr_state)).Times(Exactly(nr_instr));
+  EXPECT_CALL(m_test_job_info_io, VariableUpdated(2, var_value, true)).Times(Exactly(1));
+  EXPECT_CALL(m_test_job_info_io, JobStateUpdated(_)).Times(Exactly(1));
+  EXPECT_CALL(m_test_job_info_io, PutValue(_, _)).Times(Exactly(1));
+  EXPECT_CALL(m_test_job_info_io, GetUserValue(_, _)).Times(Exactly(0));
+  EXPECT_CALL(m_test_job_info_io, GetUserChoice(_, _)).Times(Exactly(0));
+  EXPECT_CALL(m_test_job_info_io, Message(_)).Times(Exactly(1));
+  EXPECT_CALL(m_test_job_info_io, Log(_, _)).Times(Exactly(1));
+
+  const std::string job_prefix = "AVMgrServerClientConstruction";
+  ClientAnyValueManager client_av_mgr{m_test_job_info_io};
+  ServerJobInfoIO server_job_info_io{job_prefix, 5, client_av_mgr};
+  server_job_info_io.InitNumberOfInstructions(nr_instr);
+  server_job_info_io.VariableUpdated(2, var_value, true);
+}
+
+TEST_F(JobInfoIOServerClientTest, JobStateUpdated)
+{
+  // When JobStateUpdated is called, there will be an additional call to
+  // JobStateUpdated of the mock class.
+  unsigned nr_instr = 10u;
+  sup::sequencer::JobState initial_job_state = sup::sequencer::JobState::kInitial;
+  sup::sequencer::JobState new_job_state = sup::sequencer::JobState::kSucceeded;
+  EXPECT_CALL(m_test_job_info_io, InitNumberOfInstructions(10)).Times(Exactly(1));
+  InstructionState initial_instr_state{ false, sup::sequencer::ExecutionStatus::NOT_STARTED };
+  EXPECT_CALL(m_test_job_info_io, InstructionStateUpdated(_, initial_instr_state)).Times(Exactly(nr_instr));
+  EXPECT_CALL(m_test_job_info_io, VariableUpdated(_, _, _)).Times(Exactly(0));
+  EXPECT_CALL(m_test_job_info_io, PutValue(_, _)).Times(Exactly(1));
+  EXPECT_CALL(m_test_job_info_io, GetUserValue(_, _)).Times(Exactly(0));
+  EXPECT_CALL(m_test_job_info_io, GetUserChoice(_, _)).Times(Exactly(0));
+  EXPECT_CALL(m_test_job_info_io, Message(_)).Times(Exactly(1));
+  EXPECT_CALL(m_test_job_info_io, Log(_, _)).Times(Exactly(1));
+  {
+    InSequence seq;
+    EXPECT_CALL(m_test_job_info_io, JobStateUpdated(initial_job_state)).Times(Exactly(1));
+    EXPECT_CALL(m_test_job_info_io, JobStateUpdated(new_job_state)).Times(Exactly(1));
+  }
+
+  const std::string job_prefix = "AVMgrServerClientConstruction";
+  ClientAnyValueManager client_av_mgr{m_test_job_info_io};
+  ServerJobInfoIO server_job_info_io{job_prefix, 5, client_av_mgr};
+  server_job_info_io.InitNumberOfInstructions(nr_instr);
+  server_job_info_io.JobStateUpdated(new_job_state);
+}
+
+TEST_F(JobInfoIOServerClientTest, PutValue)
+{
+  // When PutValue is called, there will be an additional call to
+  // PutValue of the mock class.
+  unsigned nr_instr = 10u;
+  const std::string description = "Look at this value!";
+  sup::dto::AnyValue new_value{ sup::dto::UnsignedInteger64Type, 42u };
+  EXPECT_CALL(m_test_job_info_io, InitNumberOfInstructions(10)).Times(Exactly(1));
+  InstructionState initial_instr_state{ false, sup::sequencer::ExecutionStatus::NOT_STARTED };
+  EXPECT_CALL(m_test_job_info_io, InstructionStateUpdated(_, initial_instr_state)).Times(Exactly(nr_instr));
+  EXPECT_CALL(m_test_job_info_io, VariableUpdated(_, _, _)).Times(Exactly(0));
+  EXPECT_CALL(m_test_job_info_io, JobStateUpdated(_)).Times(Exactly(1));
+  EXPECT_CALL(m_test_job_info_io, GetUserValue(_, _)).Times(Exactly(0));
+  EXPECT_CALL(m_test_job_info_io, GetUserChoice(_, _)).Times(Exactly(0));
+  EXPECT_CALL(m_test_job_info_io, Message(_)).Times(Exactly(1));
+  EXPECT_CALL(m_test_job_info_io, Log(_, _)).Times(Exactly(1));
+  {
+    InSequence seq;
+    EXPECT_CALL(m_test_job_info_io, PutValue(_, _)).Times(Exactly(1));
+    EXPECT_CALL(m_test_job_info_io, PutValue(new_value, description)).Times(Exactly(1));
+  }
+
+  const std::string job_prefix = "AVMgrServerClientConstruction";
+  ClientAnyValueManager client_av_mgr{m_test_job_info_io};
+  ServerJobInfoIO server_job_info_io{job_prefix, 5, client_av_mgr};
+  server_job_info_io.InitNumberOfInstructions(nr_instr);
+  server_job_info_io.PutValue(new_value, description);
+}
+
+TEST_F(JobInfoIOServerClientTest, Message)
+{
+  // When Message is called, there will be an additional call to
+  // Message of the mock class.
+  unsigned nr_instr = 10u;
+  const std::string message = "This is an important message!";
+  EXPECT_CALL(m_test_job_info_io, InitNumberOfInstructions(10)).Times(Exactly(1));
+  InstructionState initial_instr_state{ false, sup::sequencer::ExecutionStatus::NOT_STARTED };
+  EXPECT_CALL(m_test_job_info_io, InstructionStateUpdated(_, initial_instr_state)).Times(Exactly(nr_instr));
+  EXPECT_CALL(m_test_job_info_io, VariableUpdated(_, _, _)).Times(Exactly(0));
+  EXPECT_CALL(m_test_job_info_io, JobStateUpdated(_)).Times(Exactly(1));
+  EXPECT_CALL(m_test_job_info_io, PutValue(_, _)).Times(Exactly(1));
+  EXPECT_CALL(m_test_job_info_io, GetUserValue(_, _)).Times(Exactly(0));
+  EXPECT_CALL(m_test_job_info_io, GetUserChoice(_, _)).Times(Exactly(0));
+  EXPECT_CALL(m_test_job_info_io, Log(_, _)).Times(Exactly(1));
+  {
+    InSequence seq;
+    EXPECT_CALL(m_test_job_info_io, Message(_)).Times(Exactly(1));
+    EXPECT_CALL(m_test_job_info_io, Message(message)).Times(Exactly(1));
+  }
+
+  const std::string job_prefix = "AVMgrServerClientConstruction";
+  ClientAnyValueManager client_av_mgr{m_test_job_info_io};
+  ServerJobInfoIO server_job_info_io{job_prefix, 5, client_av_mgr};
+  server_job_info_io.InitNumberOfInstructions(nr_instr);
+  server_job_info_io.Message(message);
+}
+
+TEST_F(JobInfoIOServerClientTest, Log)
+{
+  // When Log is called, there will be an additional call to
+  // Log of the mock class.
+  unsigned nr_instr = 10u;
+  auto severity = sup::sequencer::log::SUP_SEQ_LOG_CRIT;
+  const std::string message = "A critical issue was detected!";
+  EXPECT_CALL(m_test_job_info_io, InitNumberOfInstructions(10)).Times(Exactly(1));
+  InstructionState initial_instr_state{ false, sup::sequencer::ExecutionStatus::NOT_STARTED };
+  EXPECT_CALL(m_test_job_info_io, InstructionStateUpdated(_, initial_instr_state)).Times(Exactly(nr_instr));
+  EXPECT_CALL(m_test_job_info_io, VariableUpdated(_, _, _)).Times(Exactly(0));
+  EXPECT_CALL(m_test_job_info_io, JobStateUpdated(_)).Times(Exactly(1));
+  EXPECT_CALL(m_test_job_info_io, PutValue(_, _)).Times(Exactly(1));
+  EXPECT_CALL(m_test_job_info_io, GetUserValue(_, _)).Times(Exactly(0));
+  EXPECT_CALL(m_test_job_info_io, GetUserChoice(_, _)).Times(Exactly(0));
+  EXPECT_CALL(m_test_job_info_io, Message(_)).Times(Exactly(1));
+  {
+    InSequence seq;
+    EXPECT_CALL(m_test_job_info_io, Log(_, _)).Times(Exactly(1));
+    EXPECT_CALL(m_test_job_info_io, Log(severity, message)).Times(Exactly(1));
+  }
+
+  const std::string job_prefix = "AVMgrServerClientConstruction";
+  ClientAnyValueManager client_av_mgr{m_test_job_info_io};
+  ServerJobInfoIO server_job_info_io{job_prefix, 5, client_av_mgr};
+  server_job_info_io.InitNumberOfInstructions(nr_instr);
+  server_job_info_io.Log(severity, message);
+}
+
+TEST_F(JobInfoIOServerClientTest, GetUserValue)
+{
+  // When GetUserValue is called, there will be an additional call to
+  // GetUserValue of the mock class.
+  unsigned nr_instr = 10u;
+  const std::string description = "Please provide me some value";
+  sup::dto::AnyValue user_val{ sup::dto::UnsignedInteger64Type, 42u };
+  EXPECT_CALL(m_test_job_info_io, InitNumberOfInstructions(10)).Times(Exactly(1));
+  InstructionState initial_instr_state{ false, sup::sequencer::ExecutionStatus::NOT_STARTED };
+  EXPECT_CALL(m_test_job_info_io, InstructionStateUpdated(_, initial_instr_state)).Times(Exactly(nr_instr));
+  EXPECT_CALL(m_test_job_info_io, VariableUpdated(_, _, _)).Times(Exactly(0));
+  EXPECT_CALL(m_test_job_info_io, JobStateUpdated(_)).Times(Exactly(1));
+  EXPECT_CALL(m_test_job_info_io, PutValue(_, _)).Times(Exactly(1));
+  EXPECT_CALL(m_test_job_info_io, GetUserValue(_, description)).Times(Exactly(1)).WillOnce(
+    DoAll(SetArgReferee<0>(user_val), Return(true)));
+  EXPECT_CALL(m_test_job_info_io, GetUserChoice(_, _)).Times(Exactly(0));
+  EXPECT_CALL(m_test_job_info_io, Message(_)).Times(Exactly(1));
+  EXPECT_CALL(m_test_job_info_io, Log(_, _)).Times(Exactly(1));
+
+  const std::string job_prefix = "AVMgrServerClientConstruction";
+  ClientAnyValueManager client_av_mgr{m_test_job_info_io};
+  ServerJobInfoIO server_job_info_io{job_prefix, 5, client_av_mgr};
+  server_job_info_io.InitNumberOfInstructions(nr_instr);
+  sup::dto::AnyValue response;
+  EXPECT_TRUE(server_job_info_io.GetUserValue(response, description));
+  EXPECT_EQ(response, user_val);
+}
+
+TEST_F(JobInfoIOServerClientTest, GetUserChoice)
+{
+  // When GetUserChoice is called, there will be an additional call to
+  // GetUserChoice of the mock class.
+  unsigned nr_instr = 10u;
+  const std::vector<std::string> choices{ "vanilla", "strawberry", "chocolate"};
+  sup::dto::AnyValue metadata{ sup::dto::StringType, "Choose your favorite flavour"};
+  int choice = 2;
+  EXPECT_CALL(m_test_job_info_io, InitNumberOfInstructions(10)).Times(Exactly(1));
+  InstructionState initial_instr_state{ false, sup::sequencer::ExecutionStatus::NOT_STARTED };
+  EXPECT_CALL(m_test_job_info_io, InstructionStateUpdated(_, initial_instr_state)).Times(Exactly(nr_instr));
+  EXPECT_CALL(m_test_job_info_io, VariableUpdated(_, _, _)).Times(Exactly(0));
+  EXPECT_CALL(m_test_job_info_io, JobStateUpdated(_)).Times(Exactly(1));
+  EXPECT_CALL(m_test_job_info_io, PutValue(_, _)).Times(Exactly(1));
+  EXPECT_CALL(m_test_job_info_io, GetUserValue(_, _)).Times(Exactly(0));
+  EXPECT_CALL(m_test_job_info_io, GetUserChoice(choices, metadata)).Times(Exactly(1))
+    .WillOnce(Return(choice));
+  EXPECT_CALL(m_test_job_info_io, Message(_)).Times(Exactly(1));
+  EXPECT_CALL(m_test_job_info_io, Log(_, _)).Times(Exactly(1));
+
+  const std::string job_prefix = "AVMgrServerClientConstruction";
+  ClientAnyValueManager client_av_mgr{m_test_job_info_io};
+  ServerJobInfoIO server_job_info_io{job_prefix, 5, client_av_mgr};
+  server_job_info_io.InitNumberOfInstructions(nr_instr);
+  EXPECT_EQ(server_job_info_io.GetUserChoice(choices, metadata), choice);
 }
