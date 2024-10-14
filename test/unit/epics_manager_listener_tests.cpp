@@ -62,7 +62,7 @@ TEST_F(EPICSManagerListenerTest, AddValuesAndUpdate)
 {
   // Add values and wait for first value (must be immediate)
   ASSERT_TRUE(m_epics_av_manager.AddAnyValues(value_set_1));
-  ASSERT_TRUE(m_epics_listener.AddAnyValueMonitors(value_set_1));
+  ASSERT_TRUE(m_epics_listener.AddAnyValues(value_set_1));
   EXPECT_TRUE(m_test_av_manager.WaitForValue("val0", scalar, 0.0));
   EXPECT_TRUE(m_test_av_manager.WaitForValue("val1", scalar, 0.0));
 

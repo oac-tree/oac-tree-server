@@ -40,7 +40,7 @@ public:
   EPICSAnyValueListener(IAnyValueManager& av_mgr);
   ~EPICSAnyValueListener();
 
-  bool AddAnyValueMonitors(const IAnyValueManager::NameAnyValueSet& monitor_set) override;
+  bool AddAnyValues(const IAnyValueManager::NameAnyValueSet& monitor_set) override;
 
   bool AddInputClient(const std::string& input_server_name) override;
 

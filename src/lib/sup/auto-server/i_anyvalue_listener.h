@@ -53,7 +53,7 @@ public:
    * @param monitor_set List of pairs of names and AnyValues to monitor.
    * @return true when successful. In case of failure, none of the values is assumed to be added.
    */
-  virtual bool AddAnyValueMonitors(const IAnyValueManager::NameAnyValueSet& monitor_set) = 0;
+  virtual bool AddAnyValues(const IAnyValueManager::NameAnyValueSet& monitor_set) = 0;
 
   /**
    * @brief Add a client that can handle requests for user input.

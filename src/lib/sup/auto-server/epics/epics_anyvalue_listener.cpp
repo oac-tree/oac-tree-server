@@ -45,7 +45,7 @@ public:
   EPICSAnyValueListenerImpl(IAnyValueManager& av_mgr);
   ~EPICSAnyValueListenerImpl();
 
-  bool AddAnyValueMonitors(const IAnyValueManager::NameAnyValueSet& monitor_set);
+  bool AddAnyValues(const IAnyValueManager::NameAnyValueSet& monitor_set);
 
   bool AddInputClient(const std::string& input_server_name);
 
@@ -66,10 +66,10 @@ EPICSAnyValueListener::EPICSAnyValueListener(IAnyValueManager& av_mgr)
 
 EPICSAnyValueListener::~EPICSAnyValueListener() = default;
 
-bool EPICSAnyValueListener::AddAnyValueMonitors(
+bool EPICSAnyValueListener::AddAnyValues(
   const IAnyValueManager::NameAnyValueSet& monitor_set)
 {
-  return m_impl->AddAnyValueMonitors(monitor_set);
+  return m_impl->AddAnyValues(monitor_set);
 }
 
 bool EPICSAnyValueListener::AddInputClient(const std::string& input_server_name)
@@ -91,7 +91,7 @@ EPICSAnyValueListenerImpl::EPICSAnyValueListenerImpl(IAnyValueManager& av_mgr)
 
 EPICSAnyValueListenerImpl::~EPICSAnyValueListenerImpl() = default;
 
-bool EPICSAnyValueListenerImpl::AddAnyValueMonitors(
+bool EPICSAnyValueListenerImpl::AddAnyValues(
   const IAnyValueManager::NameAnyValueSet& monitor_set)
 {
   if (!m_av_mgr.AddAnyValues(monitor_set))
