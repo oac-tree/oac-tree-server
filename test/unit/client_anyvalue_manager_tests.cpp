@@ -51,7 +51,7 @@ TEST_F(ClientAnyValueManagerTests, Construction)
       EXPECT_CALL(m_test_job_info_io, JobStateUpdated(sup::sequencer::JobState::kRunning));
     }
     // Add only job state anyvalue
-    IAnyValueManager::NameAnyValueSet value_set;
+    IAnyValueIO::NameAnyValueSet value_set;
     std::string val_name = "prefix:" + kJobStateId;
     value_set.emplace_back(val_name, kJobStateAnyValue);
     client_av_mgr.AddAnyValues(value_set);

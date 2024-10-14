@@ -22,7 +22,7 @@
 #include <sup/auto-server/client_job.h>
 
 #include <sup/auto-server/client_anyvalue_manager.h>
-#include <sup/auto-server/listener_initializer.h>
+#include <sup/auto-server/anyvalue_io_initializer.h>
 
 namespace sup
 {
@@ -37,7 +37,7 @@ public:
 
 private:
   ClientAnyValueManager m_av_mgr;
-  ListenerInitializer m_listener;
+  std::unique_ptr<IAnyValueIO> m_anyvalue_io;
 };
 
 ClientJob::ClientJob(const JobInfo& job_info, IJobInfoIO& job_info_io,
@@ -54,9 +54,10 @@ ClientJob& ClientJob::operator=(ClientJob&& other) = default;
 ClientJobImpl::ClientJobImpl(const JobInfo& job_info, IJobInfoIO& job_info_io,
                              const ListenerFactoryFunction& factory_func)
   : m_av_mgr{job_info_io}
-  , m_listener{job_info.GetPrefix(), job_info.GetNumberOfVariables(), factory_func(m_av_mgr)}
+  , m_anyvalue_io{factory_func(m_av_mgr)}
 {
-  m_listener.InitNumberOfInstructions(job_info.GetNumberOfInstructions());
+  InitializeJobAndVariables(*m_anyvalue_io, job_info.GetPrefix(), job_info.GetNumberOfVariables());
+  InitializeInstructions(*m_anyvalue_io, job_info.GetPrefix(), job_info.GetNumberOfInstructions());
 }
 
 ClientJobImpl::~ClientJobImpl() = default;

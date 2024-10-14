@@ -23,6 +23,7 @@
 
 #include "epics_input_client.h"
 
+#include <sup/auto-server/i_anyvalue_manager.h>
 #include <sup/auto-server/client_reply_delegator.h>
 #include <sup/auto-server/sup_auto_protocol.h>
 
@@ -45,7 +46,7 @@ public:
   EPICSAnyValueListenerImpl(IAnyValueManager& av_mgr);
   ~EPICSAnyValueListenerImpl();
 
-  bool AddAnyValues(const IAnyValueManager::NameAnyValueSet& monitor_set);
+  bool AddAnyValues(const IAnyValueIO::NameAnyValueSet& monitor_set);
 
   bool AddInputHandler(const std::string& input_server_name);
 
@@ -67,7 +68,7 @@ EPICSAnyValueListener::EPICSAnyValueListener(IAnyValueManager& av_mgr)
 EPICSAnyValueListener::~EPICSAnyValueListener() = default;
 
 bool EPICSAnyValueListener::AddAnyValues(
-  const IAnyValueManager::NameAnyValueSet& monitor_set)
+  const IAnyValueIO::NameAnyValueSet& monitor_set)
 {
   return m_impl->AddAnyValues(monitor_set);
 }
@@ -77,9 +78,9 @@ bool EPICSAnyValueListener::AddInputHandler(const std::string& input_server_name
   return m_impl->AddInputHandler(input_server_name);
 }
 
-std::unique_ptr<IAnyValueListener> EPICSListenerFactoryFunction(IAnyValueManager& av_mgr)
+std::unique_ptr<IAnyValueIO> EPICSListenerFactoryFunction(IAnyValueManager& av_mgr)
 {
-  return std::unique_ptr<IAnyValueListener>(new EPICSAnyValueListener(av_mgr));
+  return std::unique_ptr<IAnyValueIO>(new EPICSAnyValueListener(av_mgr));
 }
 
 EPICSAnyValueListenerImpl::EPICSAnyValueListenerImpl(IAnyValueManager& av_mgr)
@@ -92,7 +93,7 @@ EPICSAnyValueListenerImpl::EPICSAnyValueListenerImpl(IAnyValueManager& av_mgr)
 EPICSAnyValueListenerImpl::~EPICSAnyValueListenerImpl() = default;
 
 bool EPICSAnyValueListenerImpl::AddAnyValues(
-  const IAnyValueManager::NameAnyValueSet& monitor_set)
+  const IAnyValueIO::NameAnyValueSet& monitor_set)
 {
   if (!m_av_mgr.AddAnyValues(monitor_set))
   {
@@ -119,7 +120,7 @@ bool EPICSAnyValueListenerImpl::AddInputHandler(const std::string& input_server_
   };
   m_reply_delegator.reset(new ClientReplyDelegator(reply_func));
   auto input_request_pv_name = GetInputRequestPVName(input_server_name);
-  IAnyValueManager::NameAnyValueSet input_pv_set;
+  IAnyValueIO::NameAnyValueSet input_pv_set;
   input_pv_set.emplace_back(input_request_pv_name, kInputRequestAnyValue);
   auto cb = [this, input_server_name](const PvAccessClientPV::ExtendedValue& ext_val) {
     if (ext_val.connected)

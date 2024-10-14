@@ -24,7 +24,7 @@
 
 #include <sup/auto-server/client_job.h>
 #include <sup/auto-server/i_job_manager.h>
-#include <sup/auto-server/i_anyvalue_listener.h>
+#include <sup/auto-server/i_anyvalue_io.h>
 #include <sup/auto-server/i_job_info_io.h>
 
 #include <map>

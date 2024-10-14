@@ -22,7 +22,7 @@
 #ifndef SUP_AUTO_SERVER_EPICS_ANYVALUE_LISTENER_H_
 #define SUP_AUTO_SERVER_EPICS_ANYVALUE_LISTENER_H_
 
-#include <sup/auto-server/i_anyvalue_listener.h>
+#include <sup/auto-server/i_anyvalue_io.h>
 
 #include <memory>
 
@@ -32,15 +32,15 @@ namespace auto_server
 {
 class EPICSAnyValueListenerImpl;
 /**
- * @brief EPICSAnyValueListener implements IAnyValueListener using EPICS PvAccess.
+ * @brief EPICSAnyValueListener implements IAnyValueIO using EPICS PvAccess.
  */
-class EPICSAnyValueListener : public IAnyValueListener
+class EPICSAnyValueListener : public IAnyValueIO
 {
 public:
   EPICSAnyValueListener(IAnyValueManager& av_mgr);
   ~EPICSAnyValueListener();
 
-  bool AddAnyValues(const IAnyValueManager::NameAnyValueSet& monitor_set) override;
+  bool AddAnyValues(const IAnyValueIO::NameAnyValueSet& monitor_set) override;
 
   bool AddInputHandler(const std::string& input_server_name) override;
 
@@ -48,7 +48,7 @@ private:
   std::unique_ptr<EPICSAnyValueListenerImpl> m_impl;
 };
 
-std::unique_ptr<IAnyValueListener> EPICSListenerFactoryFunction(IAnyValueManager& av_mgr);
+std::unique_ptr<IAnyValueIO> EPICSListenerFactoryFunction(IAnyValueManager& av_mgr);
 
 }  // namespace auto_server
 

@@ -22,7 +22,7 @@
 #ifndef SUP_AUTO_SERVER_I_CLIENT_JOB_H_
 #define SUP_AUTO_SERVER_I_CLIENT_JOB_H_
 
-#include <sup/auto-server/i_anyvalue_listener.h>
+#include <sup/auto-server/i_anyvalue_io.h>
 #include <sup/auto-server/i_job_info_io.h>
 #include <sup/auto-server/job_info.h>
 

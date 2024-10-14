@@ -1,6 +1,7 @@
 target_sources(sup-auto-server
   PRIVATE
   anyvalue_input_request.cpp
+  anyvalue_io_initializer.cpp
   anyvalue_utils.cpp
   attribute_info.cpp
   automation_client.cpp
@@ -12,7 +13,7 @@ target_sources(sup-auto-server
   client_reply_delegator.cpp
   client_job.cpp
   exceptions.cpp
-  i_anyvalue_listener.cpp
+  i_anyvalue_io.cpp
   i_anyvalue_manager_registry.cpp
   i_anyvalue_manager.cpp
   i_job_info_io.cpp
@@ -29,7 +30,6 @@ target_sources(sup-auto-server
   job_info.cpp
   job_utils.cpp
   job_value_mapper.cpp
-  listener_initializer.cpp
   output_entry_helper.cpp
   output_entry_types.cpp
   server_job_info_io.cpp

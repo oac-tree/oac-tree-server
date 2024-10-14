@@ -34,6 +34,7 @@ install(TARGETS sup-auto-server EXPORT sup-auto-server-targets LIBRARY DESTINATI
 
 install(FILES
   anyvalue_input_request.h
+  anyvalue_io_initializer.h
   anyvalue_utils.h
   attribute_info.h
   automation_client.h
@@ -46,7 +47,7 @@ install(FILES
   client_reply_delegator.h
   epics_anyvalue_listener.h
   exceptions.h
-  i_anyvalue_listener.h
+  i_anyvalue_io.h
   i_anyvalue_manager_registry.h
   i_anyvalue_manager.h
   i_job_info_io.h
@@ -63,7 +64,7 @@ install(FILES
   job_info.h
   job_utils.h
   job_value_mapper.h
-  listener_initializer.h
+  anyvalue_io_initializer.h
   output_entry_helper.h
   output_entry_types.h
   server_job_info_io.h

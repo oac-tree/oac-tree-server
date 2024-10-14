@@ -22,14 +22,8 @@
 #ifndef SUP_AUTO_SERVER_I_ANYVALUE_MANAGER_H_
 #define SUP_AUTO_SERVER_I_ANYVALUE_MANAGER_H_
 
+#include <sup/auto-server/i_anyvalue_io.h>
 #include <sup/auto-server/anyvalue_input_request.h>
-
-#include <sup/dto/anyvalue.h>
-
-#include <set>
-#include <string>
-#include <vector>
-#include <utility>
 
 namespace sup
 {
@@ -44,41 +38,10 @@ namespace auto_server
  * instructions, variables, etc. On the client side, the implementation will be used to map such
  * updates to the appropriate JobInterface methods.
  */
-class IAnyValueManager
+class IAnyValueManager : public IAnyValueIO
 {
 public:
-  using NameAnyValuePair = std::pair<std::string, sup::dto::AnyValue>;
-  using NameAnyValueSet = std::vector<NameAnyValuePair>;
-
   virtual ~IAnyValueManager();
-
-  /**
-   * @brief Add a set of AnyValues with given unique names.
-   *
-   * @details Typical implementations should be able to support multiple calls to this member
-   * function, allowing to manage additional sets of AnyValues in different stages of setting up
-   * the client or server application. In the case of Sequencer procedures on the server side, this
-   * is required since the job and variable states need to be present before procedure setup, while
-   * the instruction states can only be created afterwards.
-   *
-   * @param name_value_set List of pairs of names and AnyValues.
-   * @return true when successful. In case of failure, none of the values is assumed to be added.
-   */
-  virtual bool AddAnyValues(const NameAnyValueSet& name_value_set) = 0;
-
-  /**
-   * @brief Add a server that will handle client calls to provide user input.
-   *
-   * @details Typical implementations should be able to support multiple calls to this member
-   * function, allowing to manage multiple input channels for one or more jobs.
-   *
-   * @note An implementation may use multiple channels to create a single server, e.g. an RPC
-   * server channel to receive replies and a simple PV channel to publish requests.
-   *
-   * @param input_server_name Name to use for the server.
-   * @return true when successful. In case of failure, no server is instantiated.
-   */
-  virtual bool AddInputHandler(const std::string& input_server_name) = 0;
 
   /**
    * @brief Update the value of the managed AnyValue with the given name.
@@ -99,35 +62,6 @@ public:
   virtual sup::dto::AnyValue GetUserInput(const std::string& input_server_name,
                                           const AnyValueInputRequest& request) = 0;
 };
-
-/**
- * @brief Get a list of all the names in the list of name/value pairs.
- *
- * @param name_value_set List of name/value pairs.
- * @return List of names.
- */
-std::set<std::string> GetNames(const IAnyValueManager::NameAnyValueSet& name_value_set);
-
-/**
- * @brief Get the set of initial AnyValues related to a job. These include the jobstate and
- * variable AnyValues.
- *
- * @param job_prefix Job specific prefix to use for the AnyValue names.
- * @param n_vars Number of variables in the job.
- * @return List of pairs of AnyValue names and initial values.
- */
-IAnyValueManager::NameAnyValueSet GetInitialValueSet(const std::string& job_prefix,
-                                                     sup::dto::uint32 n_vars);
-
-/**
- * @brief Get the set of AnyValues related to all instructions of a job.
- *
- * @param job_prefix Job specific prefix to use for the AnyValue names.
- * @param n_instr Number of instructions in the job.
- * @return List of pairs of AnyValue names and initial values for all instructions.
- */
-IAnyValueManager::NameAnyValueSet GetInstructionValueSet(const std::string& job_prefix,
-                                                         sup::dto::uint32 n_instr);
 
 }  // namespace auto_server
 

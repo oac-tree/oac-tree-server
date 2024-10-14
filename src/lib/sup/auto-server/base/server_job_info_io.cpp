@@ -22,6 +22,7 @@
 #include <sup/auto-server/server_job_info_io.h>
 
 #include <sup/auto-server/anyvalue_input_request.h>
+#include <sup/auto-server/anyvalue_io_initializer.h>
 #include <sup/auto-server/output_entry_helper.h>
 #include <sup/auto-server/output_entry_types.h>
 #include <sup/auto-server/sup_auto_protocol.h>
@@ -41,18 +42,14 @@ ServerJobInfoIO::ServerJobInfoIO(const std::string& job_prefix, sup::dto::uint32
   , m_msg_idx_gen{}
   , m_out_val_idx_gen{}
 {
-  auto value_set = GetInitialValueSet(m_job_prefix, m_n_vars);
-  m_av_manager.AddAnyValues(value_set);
-  auto input_server_name = GetInputServerName(m_job_prefix);
-  m_av_manager.AddInputHandler(input_server_name);
+  InitializeJobAndVariables(m_av_manager, m_job_prefix, m_n_vars);
 }
 
 ServerJobInfoIO::~ServerJobInfoIO() = default;
 
 void ServerJobInfoIO::InitNumberOfInstructions(sup::dto::uint32 n_instr)
 {
-  auto instr_value_set = GetInstructionValueSet(m_job_prefix, n_instr);
-  m_av_manager.AddAnyValues(instr_value_set);
+  InitializeInstructions(m_av_manager, m_job_prefix, n_instr);
 }
 
 void ServerJobInfoIO::InstructionStateUpdated(sup::dto::uint32 instr_idx, InstructionState state)

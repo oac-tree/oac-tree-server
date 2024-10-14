@@ -19,7 +19,7 @@
  * of the distribution package.
  ******************************************************************************/
 
-#include <sup/auto-server/i_anyvalue_listener.h>
+#include <sup/auto-server/anyvalue_io_initializer.h>
 
 #include <sup/auto-server/sup_auto_protocol.h>
 
@@ -28,7 +28,21 @@ namespace sup
 namespace auto_server
 {
 
-IAnyValueListener::~IAnyValueListener() = default;
+void InitializeJobAndVariables(IAnyValueIO& anyvalue_io, const std::string& job_prefix,
+                               sup::dto::uint32 n_vars)
+{
+  auto value_set = GetInitialValueSet(job_prefix, n_vars);
+  anyvalue_io.AddAnyValues(value_set);
+  auto input_server_name = GetInputServerName(job_prefix);
+  anyvalue_io.AddInputHandler(input_server_name);
+}
+
+void InitializeInstructions(IAnyValueIO& anyvalue_io, const std::string& job_prefix,
+                            sup::dto::uint32 n_instr)
+{
+  auto instr_value_set = GetInstructionValueSet(job_prefix, n_instr);
+  anyvalue_io.AddAnyValues(instr_value_set);
+}
 
 }  // namespace auto_server
 

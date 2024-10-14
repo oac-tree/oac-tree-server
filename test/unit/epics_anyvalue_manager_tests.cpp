@@ -38,17 +38,17 @@ const sup::dto::AnyValue scalar = {{
   { "value", {sup::dto::SignedInteger32Type, 0}}
 }};
 
-IAnyValueManager::NameAnyValueSet value_set_1 = {
+IAnyValueIO::NameAnyValueSet value_set_1 = {
   { "val0", scalar},
   { "val1", scalar}
 };
 
-IAnyValueManager::NameAnyValueSet value_set_2 = {
+IAnyValueIO::NameAnyValueSet value_set_2 = {
   { "val2", scalar},
   { "val3", scalar}
 };
 
-IAnyValueManager::NameAnyValueSet value_set_3 = {
+IAnyValueIO::NameAnyValueSet value_set_3 = {
   { "val1", scalar}
 };
 }  // unnamed namespace
