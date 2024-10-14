@@ -61,7 +61,7 @@ public:
    * @param input_server_name Name of the corresponding input server.
    * @return true when successful. In case of failure, no client is instantiated.
    */
-  virtual bool AddInputClient(const std::string& input_server_name) = 0;
+  virtual bool AddInputHandler(const std::string& input_server_name) = 0;
 };
 
 /**

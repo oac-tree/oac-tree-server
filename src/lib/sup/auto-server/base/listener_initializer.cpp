@@ -36,7 +36,7 @@ ListenerInitializer::ListenerInitializer(const std::string& job_prefix, sup::dto
   auto value_set = GetInitialValueSet(m_job_prefix, n_vars);
   m_av_listener->AddAnyValues(value_set);
   auto input_server_name = GetInputServerName(m_job_prefix);
-  m_av_listener->AddInputClient(input_server_name);
+  m_av_listener->AddInputHandler(input_server_name);
 }
 
 ListenerInitializer::~ListenerInitializer() = default;

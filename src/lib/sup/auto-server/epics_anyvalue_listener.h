@@ -42,7 +42,7 @@ public:
 
   bool AddAnyValues(const IAnyValueManager::NameAnyValueSet& monitor_set) override;
 
-  bool AddInputClient(const std::string& input_server_name) override;
+  bool AddInputHandler(const std::string& input_server_name) override;
 
 private:
   std::unique_ptr<EPICSAnyValueListenerImpl> m_impl;

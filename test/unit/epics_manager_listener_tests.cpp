@@ -100,7 +100,7 @@ TEST_F(EPICSManagerListenerTest, GetUserInput)
   // Add input servers
   const std::string input_server_name = "TestInputServer03";
   ASSERT_TRUE(m_epics_av_manager.AddInputHandler(input_server_name));
-  ASSERT_TRUE(m_epics_listener.AddInputClient(input_server_name));
+  ASSERT_TRUE(m_epics_listener.AddInputHandler(input_server_name));
   EXPECT_EQ(m_test_av_manager.GetNbrInputRequests(), 0);
 
   // Get user input over the network

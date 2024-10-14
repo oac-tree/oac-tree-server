@@ -47,7 +47,7 @@ public:
 
   bool AddAnyValues(const IAnyValueManager::NameAnyValueSet& monitor_set);
 
-  bool AddInputClient(const std::string& input_server_name);
+  bool AddInputHandler(const std::string& input_server_name);
 
 private:
   void AddMonitorPV(const std::string& channel);
@@ -72,9 +72,9 @@ bool EPICSAnyValueListener::AddAnyValues(
   return m_impl->AddAnyValues(monitor_set);
 }
 
-bool EPICSAnyValueListener::AddInputClient(const std::string& input_server_name)
+bool EPICSAnyValueListener::AddInputHandler(const std::string& input_server_name)
 {
-  return m_impl->AddInputClient(input_server_name);
+  return m_impl->AddInputHandler(input_server_name);
 }
 
 std::unique_ptr<IAnyValueListener> EPICSListenerFactoryFunction(IAnyValueManager& av_mgr)
@@ -106,7 +106,7 @@ bool EPICSAnyValueListenerImpl::AddAnyValues(
   return true;
 }
 
-bool EPICSAnyValueListenerImpl::AddInputClient(const std::string& input_server_name)
+bool EPICSAnyValueListenerImpl::AddInputHandler(const std::string& input_server_name)
 {
   using sup::epics::PvAccessClientPV;
   if (!m_av_mgr.AddInputHandler(input_server_name))
