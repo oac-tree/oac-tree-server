@@ -93,19 +93,20 @@ sup::dto::AnyValue EPICSAnyValueManager::GetUserInput(const std::string& input_s
 {
   std::lock_guard<std::mutex> lk{m_user_input_mtx};
   // The map mutex lock is only needed during the find operation:
+  auto input_request_name = GetInputRequestPVName(input_server_name);
   auto input_server = FindInputServer(input_server_name);
-  if (input_server == nullptr)
+  auto input_pv_server = FindServer(input_request_name);
+  if (input_server == nullptr || input_pv_server == nullptr)
   {
     return {};  // TODO: is this the right return value??
   }
   auto input_request_idx = input_server->InitNewRequest();
   auto input_request = EncodeInputRequest(input_request_idx, request);
-  auto input_request_name = GetInputRequestPVName(input_server_name);
-  UpdateAnyValue(input_request_name, input_request);
+  input_pv_server->UpdateAnyValue(input_request_name, input_request);
   // TODO: do this in a loop with a small timeout (to allow halting this):
   auto result = input_server->WaitForReply(input_request_idx, 1e9);
   // TODO: what on timeout??
-  UpdateAnyValue(input_request_name, kInputRequestAnyValue);
+  input_pv_server->UpdateAnyValue(input_request_name, kInputRequestAnyValue);
   return result.second;
 }
 
