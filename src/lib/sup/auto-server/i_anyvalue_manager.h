@@ -78,7 +78,7 @@ public:
    * @param input_server_name Name to use for the server.
    * @return true when successful. In case of failure, no server is instantiated.
    */
-  virtual bool AddInputServer(const std::string& input_server_name) = 0;
+  virtual bool AddInputHandler(const std::string& input_server_name) = 0;
 
   /**
    * @brief Update the value of the managed AnyValue with the given name.

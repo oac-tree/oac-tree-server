@@ -67,7 +67,7 @@ bool TestAnyValueManager::AddAnyValues(const NameAnyValueSet& name_value_set)
   return true;
 }
 
-bool TestAnyValueManager::AddInputServer(const std::string& input_server_name)
+bool TestAnyValueManager::AddInputHandler(const std::string& input_server_name)
 {
   (void)input_server_name;
   return true;

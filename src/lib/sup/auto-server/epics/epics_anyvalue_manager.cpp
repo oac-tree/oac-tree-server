@@ -50,7 +50,7 @@ bool EPICSAnyValueManager::AddAnyValues(const NameAnyValueSet &name_value_set)
   return AddAnyValuesImpl(name_value_set);
 }
 
-bool EPICSAnyValueManager::AddInputServer(const std::string& input_server_name)
+bool EPICSAnyValueManager::AddInputHandler(const std::string& input_server_name)
 {
   {
     std::lock_guard<std::mutex> lk{m_map_mtx};

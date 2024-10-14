@@ -85,7 +85,7 @@ TEST_F(EPICSManagerListenerTest, ProtocolInformation)
 {
   // Add input server
   const std::string input_server_name = "TestInputServer01";
-  ASSERT_TRUE(m_epics_av_manager.AddInputServer(input_server_name));
+  ASSERT_TRUE(m_epics_av_manager.AddInputHandler(input_server_name));
 
   // Query application protocol information
   auto client_protocol =
@@ -99,7 +99,7 @@ TEST_F(EPICSManagerListenerTest, GetUserInput)
 {
   // Add input servers
   const std::string input_server_name = "TestInputServer03";
-  ASSERT_TRUE(m_epics_av_manager.AddInputServer(input_server_name));
+  ASSERT_TRUE(m_epics_av_manager.AddInputHandler(input_server_name));
   ASSERT_TRUE(m_epics_listener.AddInputClient(input_server_name));
   EXPECT_EQ(m_test_av_manager.GetNbrInputRequests(), 0);
 

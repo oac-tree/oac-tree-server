@@ -48,7 +48,7 @@ public:
 
   bool AddAnyValues(const NameAnyValueSet& name_value_set) override;
 
-  bool AddInputServer(const std::string& input_server_name) override;
+  bool AddInputHandler(const std::string& input_server_name) override;
 
   bool UpdateAnyValue(const std::string& name, const sup::dto::AnyValue& value) override;
 

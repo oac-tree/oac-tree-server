@@ -109,7 +109,7 @@ bool EPICSAnyValueListenerImpl::AddAnyValues(
 bool EPICSAnyValueListenerImpl::AddInputClient(const std::string& input_server_name)
 {
   using sup::epics::PvAccessClientPV;
-  if (!m_av_mgr.AddInputServer(input_server_name))
+  if (!m_av_mgr.AddInputHandler(input_server_name))
   {
     return false;
   }

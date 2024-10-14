@@ -76,7 +76,7 @@ bool ClientAnyValueManager::AddAnyValues(const NameAnyValueSet& name_value_set)
   return true;
 }
 
-bool ClientAnyValueManager::AddInputServer(const std::string& input_server_name)
+bool ClientAnyValueManager::AddInputHandler(const std::string& input_server_name)
 {
   (void)input_server_name;
   return true;
