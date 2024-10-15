@@ -26,7 +26,7 @@
     <artifactId>sup-auto-server</artifactId>
     <packaging>codac</packaging>
     <!-- See ChangeLog file for details -->
-    <version>0.1.0</version>
+    <version>1.0.0</version>
     <name>SUP automation server module</name>
     <description>Library for the SUP automation server</description>
     <url>http://www.iter.org/</url>
