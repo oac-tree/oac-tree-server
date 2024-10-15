@@ -21,7 +21,7 @@
 
 #include <sup/auto-server/automation_protocol_client.h>
 #include <sup/auto-server/automation_client.h>
-#include <sup/auto-server/epics_anyvalue_listener.h>
+#include <sup/auto-server/epics_io_client.h>
 
 #include <sup/protocol/protocol_rpc_client.h>
 #include <sup/epics/pv_access_rpc_client.h>
@@ -44,8 +44,8 @@ int main(int argc, char* argv[])
 
   // automation client classes:
   AutomationProtocolClient auto_protocol_client{protocol_rpc_client};
-  ListenerFactoryFunction listener_func(EPICSListenerFactoryFunction);
-  AutomationClient auto_client{auto_protocol_client, listener_func};
+  AnyValueIOFactoryFunction io_client_func(EPICSIOCLientFactoryFunction);
+  AutomationClient auto_client{auto_protocol_client, io_client_func};
 
   // Use AutomationClient to connect a IJobInfoIO object to a specific job.
   // This will make that object handle all job updates and user I/O.

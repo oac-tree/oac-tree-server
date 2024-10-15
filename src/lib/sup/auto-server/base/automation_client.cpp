@@ -29,7 +29,7 @@ namespace auto_server
 {
 
 AutomationClient::AutomationClient(IJobManager& job_manager,
-                                   const ListenerFactoryFunction& factory_func)
+                                   const AnyValueIOFactoryFunction& factory_func)
   : m_job_manager{job_manager}
   , m_factory_func{factory_func}
   , m_jobs{}

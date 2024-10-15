@@ -94,11 +94,11 @@ IAnyValueIO::NameAnyValueSet GetInstructionValueSet(const std::string& job_prefi
                                                          sup::dto::uint32 n_instr);
 
 /**
- * @brief ListenerFactoryFunction defines the signature of a factory function that can be injected
+ * @brief AnyValueIOFactoryFunction defines the signature of a factory function that can be injected
  * into other classes and that will be used to create an IAnyValueIO that will forward all its
  * updates to an IAnyValueManager object.
  */
-using ListenerFactoryFunction =
+using AnyValueIOFactoryFunction =
   std::function<std::unique_ptr<IAnyValueIO>(IAnyValueManager&)>;
 
 }  // namespace auto_server

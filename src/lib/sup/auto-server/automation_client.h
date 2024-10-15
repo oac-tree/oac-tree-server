@@ -47,9 +47,9 @@ public:
    * jobs.
    *
    * @param job_manager IJobManager implementation that provides static information about multiple jobs.
-   * @param factory_func Factory function to use for the creation of listener objects.
+   * @param factory_func Factory function to use for the creation of IAnyValueIO objects.
    */
-  AutomationClient(IJobManager& job_manager, const ListenerFactoryFunction& factory_func);
+  AutomationClient(IJobManager& job_manager, const AnyValueIOFactoryFunction& factory_func);
 
   /**
    * @brief Destructor.
@@ -77,7 +77,7 @@ public:
 
 private:
   IJobManager& m_job_manager;
-  const ListenerFactoryFunction& m_factory_func;
+  const AnyValueIOFactoryFunction& m_factory_func;
   std::map<std::size_t, std::unique_ptr<ClientJob>> m_jobs;
 };
 

@@ -32,7 +32,7 @@ class ClientJobImpl
 {
 public:
   ClientJobImpl(const JobInfo& job_info, IJobInfoIO& job_info_io,
-                const ListenerFactoryFunction& factory_func);
+                const AnyValueIOFactoryFunction& factory_func);
   ~ClientJobImpl();
 
 private:
@@ -41,7 +41,7 @@ private:
 };
 
 ClientJob::ClientJob(const JobInfo& job_info, IJobInfoIO& job_info_io,
-                     const ListenerFactoryFunction& factory_func)
+                     const AnyValueIOFactoryFunction& factory_func)
   : m_impl{new ClientJobImpl{job_info, job_info_io, factory_func}}
 {}
 
@@ -52,7 +52,7 @@ ClientJob::ClientJob(ClientJob&&) = default;
 ClientJob& ClientJob::operator=(ClientJob&& other) = default;
 
 ClientJobImpl::ClientJobImpl(const JobInfo& job_info, IJobInfoIO& job_info_io,
-                             const ListenerFactoryFunction& factory_func)
+                             const AnyValueIOFactoryFunction& factory_func)
   : m_av_mgr{job_info_io}
   , m_anyvalue_io{factory_func(m_av_mgr)}
 {

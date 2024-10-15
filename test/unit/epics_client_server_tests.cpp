@@ -23,7 +23,7 @@
 
 #include <sup/auto-server/sup_auto_protocol.h>
 #include <sup/auto-server/epics/epics_anyvalue_manager.h>
-#include <sup/auto-server/epics_anyvalue_listener.h>
+#include <sup/auto-server/epics_io_client.h>
 #include <sup/auto-server/input_protocol_client.h>
 
 #include <sup/epics/epics_protocol_factory.h>
@@ -46,27 +46,27 @@ IAnyValueIO::NameAnyValueSet value_set_1 = {
 };
 }  // unnamed namespace
 
-class EPICSManagerListenerTest : public ::testing::Test
+class EPICSClientServerTest : public ::testing::Test
 {
 protected:
-  EPICSManagerListenerTest();
+  EPICSClientServerTest();
 
-  virtual ~EPICSManagerListenerTest() = default;
+  virtual ~EPICSClientServerTest() = default;
 
   UnitTestHelper::TestAnyValueManager m_test_av_manager;
-  EPICSAnyValueListener m_epics_listener;
+  EPICSIOClient m_epics_client;
   EPICSAnyValueManager m_epics_av_manager;
 };
 
-TEST_F(EPICSManagerListenerTest, AddValuesAndUpdate)
+TEST_F(EPICSClientServerTest, AddValuesAndUpdate)
 {
   // Add values and wait for first value (must be immediate)
   ASSERT_TRUE(m_epics_av_manager.AddAnyValues(value_set_1));
-  ASSERT_TRUE(m_epics_listener.AddAnyValues(value_set_1));
+  ASSERT_TRUE(m_epics_client.AddAnyValues(value_set_1));
   EXPECT_TRUE(m_test_av_manager.WaitForValue("val0", scalar, 0.0));
   EXPECT_TRUE(m_test_av_manager.WaitForValue("val1", scalar, 0.0));
 
-  // Update values on manager side and wait for the updates to arrive at the listener
+  // Update values on manager side and wait for the updates to arrive at the client side
   const sup::dto::AnyValue update = {{
     { "value", {sup::dto::SignedInteger32Type, 42}}
   }};
@@ -81,7 +81,7 @@ TEST_F(EPICSManagerListenerTest, AddValuesAndUpdate)
   EXPECT_FALSE(m_test_av_manager.WaitForValue("does_not_exist", update, 0.1));
 }
 
-TEST_F(EPICSManagerListenerTest, ProtocolInformation)
+TEST_F(EPICSClientServerTest, ProtocolInformation)
 {
   // Add input server
   const std::string input_server_name = "TestInputServer01";
@@ -95,12 +95,12 @@ TEST_F(EPICSManagerListenerTest, ProtocolInformation)
   EXPECT_EQ(protocol_info.m_application_version, kAutomationInputRequestServerVersion);
 }
 
-TEST_F(EPICSManagerListenerTest, GetUserInput)
+TEST_F(EPICSClientServerTest, GetUserInput)
 {
   // Add input servers
   const std::string input_server_name = "TestInputServer03";
   ASSERT_TRUE(m_epics_av_manager.AddInputHandler(input_server_name));
-  ASSERT_TRUE(m_epics_listener.AddInputHandler(input_server_name));
+  ASSERT_TRUE(m_epics_client.AddInputHandler(input_server_name));
   EXPECT_EQ(m_test_av_manager.GetNbrInputRequests(), 0);
 
   // Get user input over the network
@@ -113,8 +113,8 @@ TEST_F(EPICSManagerListenerTest, GetUserInput)
   EXPECT_EQ(m_test_av_manager.GetNbrInputRequests(), 1);
 }
 
-EPICSManagerListenerTest::EPICSManagerListenerTest()
+EPICSClientServerTest::EPICSClientServerTest()
   : m_test_av_manager{}
-  , m_epics_listener{m_test_av_manager}
+  , m_epics_client{m_test_av_manager}
   , m_epics_av_manager{}
 {}

@@ -19,7 +19,7 @@
  * of the distribution package.
  ******************************************************************************/
 
-#include <sup/auto-server/epics_anyvalue_listener.h>
+#include <sup/auto-server/epics_io_client.h>
 
 #include "epics_input_client.h"
 
@@ -40,11 +40,11 @@ namespace sup
 {
 namespace auto_server
 {
-class EPICSAnyValueListenerImpl
+class EPICSIOClientImpl
 {
 public:
-  EPICSAnyValueListenerImpl(IAnyValueManager& av_mgr);
-  ~EPICSAnyValueListenerImpl();
+  EPICSIOClientImpl(IAnyValueManager& av_mgr);
+  ~EPICSIOClientImpl();
 
   bool AddAnyValues(const IAnyValueIO::NameAnyValueSet& monitor_set);
 
@@ -61,38 +61,38 @@ private:
   std::unique_ptr<ClientReplyDelegator> m_reply_delegator;
 };
 
-EPICSAnyValueListener::EPICSAnyValueListener(IAnyValueManager& av_mgr)
-  : m_impl{new EPICSAnyValueListenerImpl(av_mgr)}
+EPICSIOClient::EPICSIOClient(IAnyValueManager& av_mgr)
+  : m_impl{new EPICSIOClientImpl(av_mgr)}
 {}
 
-EPICSAnyValueListener::~EPICSAnyValueListener() = default;
+EPICSIOClient::~EPICSIOClient() = default;
 
-bool EPICSAnyValueListener::AddAnyValues(
+bool EPICSIOClient::AddAnyValues(
   const IAnyValueIO::NameAnyValueSet& monitor_set)
 {
   return m_impl->AddAnyValues(monitor_set);
 }
 
-bool EPICSAnyValueListener::AddInputHandler(const std::string& input_server_name)
+bool EPICSIOClient::AddInputHandler(const std::string& input_server_name)
 {
   return m_impl->AddInputHandler(input_server_name);
 }
 
-std::unique_ptr<IAnyValueIO> EPICSListenerFactoryFunction(IAnyValueManager& av_mgr)
+std::unique_ptr<IAnyValueIO> EPICSIOCLientFactoryFunction(IAnyValueManager& av_mgr)
 {
-  return std::unique_ptr<IAnyValueIO>(new EPICSAnyValueListener(av_mgr));
+  return std::unique_ptr<IAnyValueIO>(new EPICSIOClient(av_mgr));
 }
 
-EPICSAnyValueListenerImpl::EPICSAnyValueListenerImpl(IAnyValueManager& av_mgr)
+EPICSIOClientImpl::EPICSIOClientImpl(IAnyValueManager& av_mgr)
   : m_av_mgr{av_mgr}
   , m_client_pvs{}
   , m_input_client{}
   , m_reply_delegator{}
 {}
 
-EPICSAnyValueListenerImpl::~EPICSAnyValueListenerImpl() = default;
+EPICSIOClientImpl::~EPICSIOClientImpl() = default;
 
-bool EPICSAnyValueListenerImpl::AddAnyValues(
+bool EPICSIOClientImpl::AddAnyValues(
   const IAnyValueIO::NameAnyValueSet& monitor_set)
 {
   if (!m_av_mgr.AddAnyValues(monitor_set))
@@ -107,7 +107,7 @@ bool EPICSAnyValueListenerImpl::AddAnyValues(
   return true;
 }
 
-bool EPICSAnyValueListenerImpl::AddInputHandler(const std::string& input_server_name)
+bool EPICSIOClientImpl::AddInputHandler(const std::string& input_server_name)
 {
   using sup::epics::PvAccessClientPV;
   if (!m_av_mgr.AddInputHandler(input_server_name))
@@ -132,7 +132,7 @@ bool EPICSAnyValueListenerImpl::AddInputHandler(const std::string& input_server_
   return true;
 }
 
-void EPICSAnyValueListenerImpl::AddMonitorPV(const std::string& channel)
+void EPICSIOClientImpl::AddMonitorPV(const std::string& channel)
 {
   using sup::epics::PvAccessClientPV;
   auto cb = [this, channel](const PvAccessClientPV::ExtendedValue& ext_val) {
@@ -144,7 +144,7 @@ void EPICSAnyValueListenerImpl::AddMonitorPV(const std::string& channel)
   m_client_pvs.emplace_back(channel, cb);
 }
 
-void EPICSAnyValueListenerImpl::HandleUserInput(const std::string& input_server_name,
+void EPICSIOClientImpl::HandleUserInput(const std::string& input_server_name,
                                                 const sup::dto::AnyValue& req_av)
 {
   auto req = DecodeInputRequest(req_av);

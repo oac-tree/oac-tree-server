@@ -42,7 +42,7 @@ class ClientJob
 {
 public:
   ClientJob(const JobInfo& job_info, IJobInfoIO& job_info_io,
-            const ListenerFactoryFunction& factory_func);
+            const AnyValueIOFactoryFunction& factory_func);
   ~ClientJob();
 
   ClientJob(ClientJob&& other);

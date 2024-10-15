@@ -19,8 +19,8 @@
  * of the distribution package.
  ******************************************************************************/
 
-#ifndef SUP_AUTO_SERVER_EPICS_ANYVALUE_LISTENER_H_
-#define SUP_AUTO_SERVER_EPICS_ANYVALUE_LISTENER_H_
+#ifndef SUP_AUTO_SERVER_EPICS_IO_CLIENT_H_
+#define SUP_AUTO_SERVER_EPICS_IO_CLIENT_H_
 
 #include <sup/auto-server/i_anyvalue_io.h>
 
@@ -30,28 +30,28 @@ namespace sup
 {
 namespace auto_server
 {
-class EPICSAnyValueListenerImpl;
+class EPICSIOClientImpl;
 /**
- * @brief EPICSAnyValueListener implements IAnyValueIO using EPICS PvAccess.
+ * @brief EPICSIOClient implements IAnyValueIO using EPICS PvAccess.
  */
-class EPICSAnyValueListener : public IAnyValueIO
+class EPICSIOClient : public IAnyValueIO
 {
 public:
-  EPICSAnyValueListener(IAnyValueManager& av_mgr);
-  ~EPICSAnyValueListener();
+  EPICSIOClient(IAnyValueManager& av_mgr);
+  ~EPICSIOClient();
 
   bool AddAnyValues(const IAnyValueIO::NameAnyValueSet& monitor_set) override;
 
   bool AddInputHandler(const std::string& input_server_name) override;
 
 private:
-  std::unique_ptr<EPICSAnyValueListenerImpl> m_impl;
+  std::unique_ptr<EPICSIOClientImpl> m_impl;
 };
 
-std::unique_ptr<IAnyValueIO> EPICSListenerFactoryFunction(IAnyValueManager& av_mgr);
+std::unique_ptr<IAnyValueIO> EPICSIOCLientFactoryFunction(IAnyValueManager& av_mgr);
 
 }  // namespace auto_server
 
 }  // namespace sup
 
-#endif  // SUP_AUTO_SERVER_EPICS_ANYVALUE_LISTENER_H_
+#endif  // SUP_AUTO_SERVER_EPICS_IO_CLIENT_H_
