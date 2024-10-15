@@ -22,7 +22,7 @@
 #include <sup/auto-server/client_job.h>
 
 #include <sup/auto-server/client_anyvalue_manager.h>
-#include <sup/auto-server/anyvalue_io_initializer.h>
+#include <sup/auto-server/anyvalue_io_helper.h>
 
 namespace sup
 {

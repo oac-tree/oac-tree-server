@@ -43,7 +43,7 @@ protected:
   JobInfoIOServerClientTest() = default;
   virtual ~JobInfoIOServerClientTest() = default;
 
-  UnitTestHelper::TestJobInfoIO m_test_job_info_io;
+  UnitTestHelper::MockJobInfoIO m_test_job_info_io;
 };
 
 TEST_F(JobInfoIOServerClientTest, Construction)

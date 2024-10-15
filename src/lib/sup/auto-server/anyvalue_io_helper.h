@@ -19,9 +19,12 @@
  * of the distribution package.
  ******************************************************************************/
 
-#include <sup/auto-server/anyvalue_io_initializer.h>
+#ifndef SUP_AUTO_SERVER_ANYVALUE_IO_HELPER_H_
+#define SUP_AUTO_SERVER_ANYVALUE_IO_HELPER_H_
 
-#include <sup/auto-server/sup_auto_protocol.h>
+#include <sup/auto-server/i_anyvalue_io.h>
+
+#include <memory>
 
 namespace sup
 {
@@ -29,21 +32,13 @@ namespace auto_server
 {
 
 void InitializeJobAndVariables(IAnyValueIO& anyvalue_io, const std::string& job_prefix,
-                               sup::dto::uint32 n_vars)
-{
-  auto value_set = GetInitialValueSet(job_prefix, n_vars);
-  anyvalue_io.AddAnyValues(value_set);
-  auto input_server_name = GetInputServerName(job_prefix);
-  anyvalue_io.AddInputHandler(input_server_name);
-}
+                               sup::dto::uint32 n_vars);
 
 void InitializeInstructions(IAnyValueIO& anyvalue_io, const std::string& job_prefix,
-                            sup::dto::uint32 n_instr)
-{
-  auto instr_value_set = GetInstructionValueSet(job_prefix, n_instr);
-  anyvalue_io.AddAnyValues(instr_value_set);
-}
+                            sup::dto::uint32 n_instr);
 
 }  // namespace auto_server
 
 }  // namespace sup
+
+#endif  // SUP_AUTO_SERVER_ANYVALUE_IO_HELPER_H_

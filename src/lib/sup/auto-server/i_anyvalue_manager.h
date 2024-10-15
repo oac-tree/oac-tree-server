@@ -31,8 +31,8 @@ namespace auto_server
 {
 
 /**
- * @brief IAnyValueManager defines the API for implementations that manage multiple sets of
- * (name, value) pairs, where value is encoded as an AnyValue.
+ * @brief IAnyValueManager defines an additional API for updates to managed AnyValues and to
+ * handle user input.
  *
  * @details Implementations of this interface will be used on the server side to publish updates of
  * instructions, variables, etc. On the client side, the implementation will be used to map such

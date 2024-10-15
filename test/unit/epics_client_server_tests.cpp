@@ -21,16 +21,20 @@
 
 #include "unit_test_helper.h"
 
+#include <sup/auto-server/anyvalue_io_helper.h>
+#include <sup/auto-server/input_protocol_client.h>
 #include <sup/auto-server/sup_auto_protocol.h>
+
 #include <sup/auto-server/epics/epics_anyvalue_manager.h>
 #include <sup/auto-server/epics_io_client.h>
-#include <sup/auto-server/input_protocol_client.h>
 
 #include <sup/epics/epics_protocol_factory.h>
 #include <sup/epics/pv_access_rpc_client.h>
 #include <sup/protocol/protocol_rpc.h>
 
 #include <gtest/gtest.h>
+
+using ::testing::Exactly;
 
 using namespace sup::auto_server;
 
@@ -57,6 +61,30 @@ protected:
   EPICSIOClient m_epics_client;
   EPICSAnyValueManager m_epics_av_manager;
 };
+
+TEST_F(EPICSClientServerTest, Initialization)
+{
+  UnitTestHelper::MockAnyValueManager av_manager;
+  EPICSIOClient epics_client{av_manager};
+  const std::string job_prefix{"test_prefix"};
+  const sup::dto::uint32 n_vars{5};
+  EXPECT_CALL(av_manager, AddAnyValues).Times(Exactly(1));
+  EXPECT_CALL(av_manager, AddInputHandler).Times(Exactly(1));
+  InitializeJobAndVariables(epics_client, job_prefix, n_vars);
+}
+
+TEST_F(EPICSClientServerTest, InitializeInstructions)
+{
+  UnitTestHelper::MockAnyValueManager av_manager;
+  EPICSIOClient epics_client{av_manager};
+  const std::string job_prefix{"test_prefix"};
+  const sup::dto::uint32 n_vars{5};
+  const sup::dto::uint32 n_instr{10};
+  EXPECT_CALL(av_manager, AddAnyValues).Times(Exactly(2));
+  EXPECT_CALL(av_manager, AddInputHandler).Times(Exactly(1));
+  InitializeJobAndVariables(epics_client, job_prefix, n_vars);
+  InitializeInstructions(epics_client, job_prefix, n_instr);
+}
 
 TEST_F(EPICSClientServerTest, AddValuesAndUpdate)
 {

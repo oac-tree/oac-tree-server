@@ -69,8 +69,8 @@ namespace auto_server
 {
 namespace UnitTestHelper
 {
-// TODO: use mock methods
-class TestJobInfoIO : public IJobInfoIO
+
+class MockJobInfoIO : public IJobInfoIO
 {
 public:
   MOCK_METHOD(void, InitNumberOfInstructions, (sup::dto::uint32), (override));
@@ -82,6 +82,15 @@ public:
   MOCK_METHOD(int, GetUserChoice, (const std::vector<std::string>&, const sup::dto::AnyValue&), (override));
   MOCK_METHOD(void, Message, (const std::string&), (override));
   MOCK_METHOD(void, Log, (int, const std::string&), (override));
+};
+
+class MockAnyValueManager : public IAnyValueManager
+{
+public:
+  MOCK_METHOD(bool, AddAnyValues, (const NameAnyValueSet&), (override));
+  MOCK_METHOD(bool, AddInputHandler, (const std::string&), (override));
+  MOCK_METHOD(bool, UpdateAnyValue, (const std::string&, const sup::dto::AnyValue&), (override));
+  MOCK_METHOD(sup::dto::AnyValue, GetUserInput, (const std::string&, const AnyValueInputRequest&), (override));
 };
 
 class TestAnyValueManager : public IAnyValueManager

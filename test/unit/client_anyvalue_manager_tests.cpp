@@ -37,7 +37,7 @@ protected:
   ClientAnyValueManagerTests() = default;
   virtual ~ClientAnyValueManagerTests() = default;
 
-  UnitTestHelper::TestJobInfoIO m_test_job_info_io;
+  UnitTestHelper::MockJobInfoIO m_test_job_info_io;
 };
 
 TEST_F(ClientAnyValueManagerTests, Construction)
