@@ -19,12 +19,10 @@
  * of the distribution package.
  ******************************************************************************/
 
-#include <sup/auto-server/automation_protocol_client.h>
 #include <sup/auto-server/client_job.h>
-#include <sup/auto-server/epics_io_client.h>
+#include <sup/auto-server/epics_client_utils.h>
 
 #include <sup/protocol/protocol_rpc_client.h>
-#include <sup/epics/pv_access_rpc_client.h>
 
 #include <chrono>
 #include <thread>
@@ -37,18 +35,13 @@ sup::sequencer::IJobInfoIO& GetMyJobInfoIO();
 
 int main(int argc, char* argv[])
 {
-  // typical RPC client stack:
-  auto rpc_client_config = sup::epics::GetDefaultRPCClientConfig(kAutoServerName);
-  sup::epics::PvAccessRPCClient pv_access_rpc_client{rpc_client_config};
-  sup::protocol::ProtocolRPCClient protocol_rpc_client{pv_access_rpc_client};
-
-  // Create client JobManager and query number of jobs served:
-  AutomationProtocolClient auto_protocol_client{protocol_rpc_client};
-  auto n_jobs = auto_protocol_client.GetNumberOfJobs();
+  // EPICS automation job manager:
+  auto automation_client = utils::CreateEPICSJobManager(kAutoServerName);
+  auto n_jobs = automation_client->GetNumberOfJobs();
 
   // Create a client job.
   auto& my_job_info_io = GetMyJobInfoIO();
-  auto job_0 = CreateClientJob(auto_protocol_client, 0, EPICSIOCLientFactoryFunction, my_job_info_io);
+  auto job_0 = CreateClientJob(*automation_client, 0, utils::CreateEPICSIOClient, my_job_info_io);
 
   // Get instruction and variable info and start job 0.
   const auto& job_info = job_0->GetInfo();

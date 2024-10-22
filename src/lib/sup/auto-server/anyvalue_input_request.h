@@ -38,14 +38,14 @@ namespace auto_server
  * @brief Enumeration for the different types of user input.
  *
  */
-enum class InputRequestType
+enum class InputRequestType : sup::dto::uint32
 {
   kUserValue = 0,
   kUserChoice
 };
 
 /**
- * @brief AnyValueInputRequest collects all the required information for all the supported user
+ * @brief AnyValueInputRequest collects all the required information for the supported user
  * input requests.
  */
 struct AnyValueInputRequest
@@ -80,8 +80,9 @@ std::pair<bool, sup::dto::AnyValue> ParseUserValueReply(const sup::dto::AnyValue
 std::pair<bool, int> ParseUserChoiceReply(const sup::dto::AnyValue& reply);
 
 /**
- * @brief Pack an AnyValueInputRequest into a base64 encoded AnyValue.
+ * @brief Pack an AnyValueInputRequest with the given request id into a base64 encoded AnyValue.
  *
+ * @param req_id Request id.
  * @param input_request AnyValueInputRequest object to encode.
  *
  * @return Encoded AnyValue.
@@ -94,7 +95,7 @@ sup::dto::AnyValue EncodeInputRequest(sup::dto::uint64 req_id,
  *
  * @param encoded Encoded AnyValue.
  *
- * @return Pair of AnyValueInputRequest and its connected state.
+ * @return Tuple of connected state - request id - AnyValueInputRequest.
  */
 std::tuple<bool, sup::dto::uint64, AnyValueInputRequest> DecodeInputRequest(const dto::AnyValue& encoded);
 

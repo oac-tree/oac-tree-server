@@ -19,7 +19,7 @@
  * of the distribution package.
  ******************************************************************************/
 
-#include <sup/auto-server/epics_io_client.h>
+#include "epics_io_client.h"
 
 #include "epics_input_client.h"
 
@@ -76,11 +76,6 @@ bool EPICSIOClient::AddAnyValues(
 bool EPICSIOClient::AddInputHandler(const std::string& input_server_name)
 {
   return m_impl->AddInputHandler(input_server_name);
-}
-
-std::unique_ptr<IAnyValueIO> EPICSIOCLientFactoryFunction(IAnyValueManager& av_mgr)
-{
-  return std::unique_ptr<IAnyValueIO>(new EPICSIOClient(av_mgr));
 }
 
 EPICSIOClientImpl::EPICSIOClientImpl(IAnyValueManager& av_mgr)

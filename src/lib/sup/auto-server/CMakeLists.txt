@@ -41,7 +41,7 @@ install(FILES
   client_anyvalue_manager.h
   client_job.h
   client_reply_delegator.h
-  epics_io_client.h
+  epics_client_utils.h
   exceptions.h
   i_anyvalue_io.h
   i_anyvalue_manager_registry.h

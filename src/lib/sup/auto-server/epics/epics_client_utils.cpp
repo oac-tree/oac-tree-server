@@ -19,39 +19,35 @@
  * of the distribution package.
  ******************************************************************************/
 
-#ifndef SUP_AUTO_SERVER_EPICS_IO_CLIENT_H_
-#define SUP_AUTO_SERVER_EPICS_IO_CLIENT_H_
+#include "epics_io_client.h"
 
-#include <sup/auto-server/i_anyvalue_io.h>
+#include <sup/auto-server/automation_client_stack.h>
 
-#include <memory>
+#include <sup/epics/pv_access_rpc_client.h>
+#include <sup/epics/epics_protocol_factory.h>
 
 namespace sup
 {
 namespace auto_server
 {
-class EPICSIOClientImpl;
-/**
- * @brief EPICSIOClient implements IAnyValueIO using EPICS PvAccess.
- */
-class EPICSIOClient : public IAnyValueIO
+namespace utils
 {
-public:
-  EPICSIOClient(IAnyValueManager& av_mgr);
-  ~EPICSIOClient();
 
-  bool AddAnyValues(const IAnyValueIO::NameAnyValueSet& monitor_set) override;
+std::unique_ptr<IAnyValueIO> CreateEPICSIOClient(IAnyValueManager& av_mgr)
+{
+  return std::unique_ptr<IAnyValueIO>(new EPICSIOClient(av_mgr));
+}
 
-  bool AddInputHandler(const std::string& input_server_name) override;
+std::unique_ptr<IJobManager> CreateEPICSJobManager(const std::string& server_name)
+{
+  auto rpc_client_config = sup::epics::GetDefaultRPCClientConfig(server_name);
+  auto rpc_client_protocol = sup::epics::CreateEPICSRPCClientStack(rpc_client_config);
+  std::unique_ptr<IJobManager> result{new AutomationClientStack{std::move(rpc_client_protocol)}};
+  return result;
+}
 
-private:
-  std::unique_ptr<EPICSIOClientImpl> m_impl;
-};
-
-std::unique_ptr<IAnyValueIO> EPICSIOCLientFactoryFunction(IAnyValueManager& av_mgr);
+}  // namespace utils
 
 }  // namespace auto_server
 
 }  // namespace sup
-
-#endif  // SUP_AUTO_SERVER_EPICS_IO_CLIENT_H_

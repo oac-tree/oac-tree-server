@@ -26,7 +26,7 @@
 #include <sup/auto-server/sup_auto_protocol.h>
 
 #include <sup/auto-server/epics/epics_anyvalue_manager.h>
-#include <sup/auto-server/epics_io_client.h>
+#include <sup/auto-server/epics/epics_io_client.h>
 
 #include <sup/epics/epics_protocol_factory.h>
 #include <sup/epics/pv_access_rpc_client.h>
