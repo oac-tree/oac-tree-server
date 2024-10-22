@@ -35,10 +35,7 @@ install(TARGETS sup-auto-server EXPORT sup-auto-server-targets LIBRARY DESTINATI
 install(FILES
   anyvalue_input_request.h
   anyvalue_io_helper.h
-  anyvalue_utils.h
-  attribute_info.h
   automation_client.h
-  automation_job_interface.h
   automation_protocol_client.h
   automation_protocol_server.h
   automation_server.h
@@ -50,28 +47,14 @@ install(FILES
   i_anyvalue_io.h
   i_anyvalue_manager_registry.h
   i_anyvalue_manager.h
-  i_job_info_io.h
   i_job_manager.h
   index_generator.h
   input_protocol_client.h
   input_protocol_server.h
   input_request_server.h
-  instruction_info.h
-  instruction_map.h
-  instruction_state.h
-  instruction_tree_utils.h
-  job_info_value_mapper.h
-  job_info.h
-  job_utils.h
-  job_value_mapper.h
-  anyvalue_io_helper.h
   output_entry_helper.h
   output_entry_types.h
   server_job_info_io.h
-  server_job.h
   sup_auto_protocol.h
-  variable_info.h
-  variable_utils.h
-  workspace_info.h
   DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/sup/auto-server
 )

@@ -21,14 +21,14 @@
 
 #include <sup/auto-server/automation_protocol_client.h>
 
-#include <sup/auto-server/anyvalue_utils.h>
 #include <sup/auto-server/exceptions.h>
-#include <sup/auto-server/job_utils.h>
 #include <sup/auto-server/sup_auto_protocol.h>
 
 #include <sup/protocol/function_protocol.h>
 #include <sup/protocol/function_protocol_extract.h>
 #include <sup/protocol/function_protocol_pack.h>
+#include <sup/sequencer/anyvalue_utils.h>
+#include <sup/sequencer/job_info_utils.h>
 
 namespace sup
 {
@@ -83,7 +83,7 @@ std::size_t AutomationProtocolClient::GetNumberOfJobs() const
   return result.As<sup::dto::uint64>();
 }
 
-JobInfo AutomationProtocolClient::GetJobInfo(std::size_t job_idx) const
+sup::sequencer::JobInfo AutomationProtocolClient::GetJobInfo(std::size_t job_idx) const
 {
   auto input = sup::protocol::FunctionProtocolInput(kGetJobInfoFunctionName);
   sup::dto::AnyValue job_idx_av{sup::dto::UnsignedInteger64Type, job_idx};
@@ -105,7 +105,7 @@ JobInfo AutomationProtocolClient::GetJobInfo(std::size_t job_idx) const
   }
   try
   {
-    auto job_info = utils::ToJobInfo(job_info_av);
+    auto job_info = sup::sequencer::utils::ToJobInfo(job_info_av);
     return job_info;
   }
   catch(const InvalidOperationException&)

@@ -21,13 +21,16 @@
 
 #include <sup/auto-server/client_anyvalue_manager.h>
 
-#include <sup/auto-server/anyvalue_utils.h>
 #include <sup/auto-server/output_entry_helper.h>
 #include <sup/auto-server/output_entry_types.h>
+
+#include <sup/sequencer/anyvalue_utils.h>
 
 namespace
 {
 using namespace sup::auto_server;
+using sup::sequencer::IJobInfoIO;
+
 void UpdateJobState(IJobInfoIO& job_info_io, const sup::dto::AnyValue& anyvalue);
 void UpdateInstructionState(IJobInfoIO& job_info_io, sup::dto::uint32 instr_idx,
                             const sup::dto::AnyValue& anyvalue);
@@ -175,7 +178,8 @@ namespace
 {
 void UpdateJobState(IJobInfoIO& job_info_io, const sup::dto::AnyValue& anyvalue)
 {
-  if (!utils::ValidateMemberType(anyvalue, kJobStateField, sup::dto::UnsignedInteger32Type))
+  if (!sup::sequencer::utils::ValidateMemberType(anyvalue, kJobStateField,
+                                                 sup::dto::UnsignedInteger32Type))
   {
     return;
   }
@@ -189,7 +193,7 @@ void UpdateInstructionState(IJobInfoIO& job_info_io, sup::dto::uint32 instr_idx,
 {
   try
   {
-    auto instr_state = ToInstructionState(anyvalue);
+    auto instr_state = sup::sequencer::ToInstructionState(anyvalue);
     job_info_io.InstructionStateUpdated(instr_idx, instr_state);
   }
   catch(const std::exception&)

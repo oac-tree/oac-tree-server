@@ -33,6 +33,8 @@ namespace sup
 {
 namespace auto_server
 {
+using sup::sequencer::InstructionState;
+
 ServerJobInfoIO::ServerJobInfoIO(const std::string& job_prefix, sup::dto::uint32 n_vars,
                                  IAnyValueManager& av_manager)
   : m_job_prefix{job_prefix}

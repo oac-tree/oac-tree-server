@@ -25,7 +25,8 @@
 #include <sup/auto-server/client_job.h>
 #include <sup/auto-server/i_job_manager.h>
 #include <sup/auto-server/i_anyvalue_io.h>
-#include <sup/auto-server/i_job_info_io.h>
+
+#include <sup/sequencer/i_job_info_io.h>
 
 #include <map>
 #include <memory>
@@ -65,7 +66,7 @@ public:
    * @return True when successful. Failure typically indicates that the job was already connected or
    * the client could not retrieve the required information from the IJobManager.
    */
-  bool Connect(std::size_t job_idx, IJobInfoIO& job_info_io);
+  bool Connect(std::size_t job_idx, sup::sequencer::IJobInfoIO& job_info_io);
 
   /**
    * @brief Disconnect a previously connected IJobInfoIO implementation.

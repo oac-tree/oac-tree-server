@@ -2,41 +2,24 @@ target_sources(sup-auto-server
   PRIVATE
   anyvalue_input_request.cpp
   anyvalue_io_helper.cpp
-  anyvalue_utils.cpp
-  attribute_info.cpp
   automation_client.cpp
-  automation_job_interface.cpp
   automation_protocol_client.cpp
   automation_protocol_server.cpp
   automation_server.cpp
   client_anyvalue_manager.cpp
-  client_reply_delegator.cpp
   client_job.cpp
+  client_reply_delegator.cpp
   exceptions.cpp
   i_anyvalue_io.cpp
   i_anyvalue_manager_registry.cpp
   i_anyvalue_manager.cpp
-  i_job_info_io.cpp
   i_job_manager.cpp
   index_generator.cpp
   input_protocol_client.cpp
   input_protocol_server.cpp
   input_request_server.cpp
-  instruction_info.cpp
-  instruction_map.cpp
-  instruction_state.cpp
-  instruction_tree_utils.cpp
-  job_info_value_mapper.cpp
-  job_info.cpp
-  job_utils.cpp
-  job_value_mapper.cpp
   output_entry_helper.cpp
   output_entry_types.cpp
   server_job_info_io.cpp
-  server_job.cpp
   sup_auto_protocol.cpp
-  variable_map.cpp
-  variable_info.cpp
-  variable_utils.cpp
-  workspace_info.cpp
 )

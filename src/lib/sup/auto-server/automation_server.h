@@ -24,7 +24,8 @@
 
 #include <sup/auto-server/i_anyvalue_manager_registry.h>
 #include <sup/auto-server/i_job_manager.h>
-#include <sup/auto-server/server_job.h>
+
+#include <sup/sequencer/local_job.h>
 
 #include <memory>
 #include <mutex>
@@ -54,25 +55,23 @@ public:
   std::string GetServerPrefix() const override;
   std::size_t GetNumberOfJobs() const override;
 
-  JobInfo GetJobInfo(std::size_t job_idx) const override;
+  sup::sequencer::JobInfo GetJobInfo(std::size_t job_idx) const override;
 
   void EditBreakpoint(std::size_t job_idx, std::size_t instr_idx, bool breakpoint_active) override;
 
   void SendJobCommand(std::size_t job_idx, sup::sequencer::JobCommand command) override;
 
 private:
-  ServerJob& GetJob(std::size_t job_idx);
-  const ServerJob& GetJob(std::size_t job_idx) const;
+  sup::sequencer::LocalJob& GetJob(std::size_t job_idx);
+  const sup::sequencer::LocalJob& GetJob(std::size_t job_idx) const;
   const std::string m_server_prefix;
   IAnyValueManagerRegistry& m_av_mgr_registry;
-  std::vector<std::unique_ptr<IJobInfoIO>> m_job_info_ios;
-  std::vector<ServerJob> m_jobs;
+  std::vector<std::unique_ptr<sup::sequencer::IJobInfoIO>> m_job_info_ios;
+  std::vector<sup::sequencer::LocalJob> m_jobs;
   mutable std::mutex m_mtx;
 };
 
 sup::dto::uint32 GetNumberOfVariables(const sup::sequencer::Procedure& proc);
-
-std::string CreateJobPrefix(const std::string& server_prefix, std::size_t idx);
 
 }  // namespace auto_server
 

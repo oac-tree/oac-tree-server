@@ -21,7 +21,6 @@
 
 #include <sup/auto-server/anyvalue_input_request.h>
 
-#include <sup/auto-server/anyvalue_utils.h>
 #include <sup/auto-server/exceptions.h>
 #include <sup/auto-server/sup_auto_protocol.h>
 
@@ -29,6 +28,7 @@
 #include <sup/dto/anyvalue_helper.h>
 #include <sup/dto/json_type_parser.h>
 #include <sup/protocol/base64_variable_codec.h>
+#include <sup/sequencer/anyvalue_utils.h>
 
 namespace
 {
@@ -39,6 +39,7 @@ namespace sup
 {
 namespace auto_server
 {
+using sup::sequencer::utils::ValidateMemberType;
 
 bool operator==(const AnyValueInputRequest& left, const AnyValueInputRequest& right)
 {
@@ -153,7 +154,7 @@ sup::dto::AnyValue CreateUserChoiceReply(bool result, int choice)
 std::pair<bool, sup::dto::AnyValue> ParseUserValueReply(const sup::dto::AnyValue& reply)
 {
   std::pair<bool, sup::dto::AnyValue> failure{ false, {} };
-  if (!utils::ValidateMemberType(reply, kInputReplyResultFieldName, sup::dto::BooleanType))
+  if (!ValidateMemberType(reply, kInputReplyResultFieldName, sup::dto::BooleanType))
   {
     return failure;
   }
@@ -171,7 +172,7 @@ std::pair<bool, sup::dto::AnyValue> ParseUserValueReply(const sup::dto::AnyValue
 std::pair<bool, int> ParseUserChoiceReply(const sup::dto::AnyValue& reply)
 {
   std::pair<bool, int> failure{ false, -1 };
-  if (!utils::ValidateMemberType(reply, kInputReplyResultFieldName, sup::dto::BooleanType))
+  if (!ValidateMemberType(reply, kInputReplyResultFieldName, sup::dto::BooleanType))
   {
     return failure;
   }
@@ -179,7 +180,7 @@ std::pair<bool, int> ParseUserChoiceReply(const sup::dto::AnyValue& reply)
   {
     return failure;
   }
-  if (!utils::ValidateMemberType(reply, kInputReplyValueFieldName, sup::dto::SignedInteger32Type))
+  if (!ValidateMemberType(reply, kInputReplyValueFieldName, sup::dto::SignedInteger32Type))
   {
     return failure;
   }
@@ -241,11 +242,11 @@ namespace
 using namespace sup::auto_server;
 bool ValidateInputRequestPayload(const sup::dto::AnyValue& payload)
 {
-  if (!utils::ValidateMemberType(payload, kInputRequestIndexField, sup::dto::UnsignedInteger64Type))
+  if (!ValidateMemberType(payload, kInputRequestIndexField, sup::dto::UnsignedInteger64Type))
   {
     return false;
   }
-  if (!utils::ValidateMemberType(payload, kInputRequestTypeField, sup::dto::UnsignedInteger32Type))
+  if (!ValidateMemberType(payload, kInputRequestTypeField, sup::dto::UnsignedInteger32Type))
   {
     return false;
   }
@@ -253,7 +254,7 @@ bool ValidateInputRequestPayload(const sup::dto::AnyValue& payload)
   {
     return false;
   }
-  if (!utils::ValidateMemberType(payload, kInputRequestInputTypeField, sup::dto::StringType))
+  if (!ValidateMemberType(payload, kInputRequestInputTypeField, sup::dto::StringType))
   {
     return false;
   }

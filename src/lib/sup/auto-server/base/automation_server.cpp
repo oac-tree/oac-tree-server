@@ -22,6 +22,7 @@
 #include <sup/auto-server/automation_server.h>
 #include <sup/auto-server/exceptions.h>
 #include <sup/auto-server/server_job_info_io.h>
+#include <sup/auto-server/sup_auto_protocol.h>
 
 #include <sup/sequencer/procedure.h>
 #include <sup/sequencer/workspace.h>
@@ -30,6 +31,7 @@ namespace sup
 {
 namespace auto_server
 {
+using sup::sequencer::LocalJob;
 
 AutomationServer::AutomationServer(const std::string& server_prefix,
                                    IAnyValueManagerRegistry& av_mgr_registry)
@@ -48,10 +50,10 @@ void AutomationServer::AddJob(std::unique_ptr<sup::sequencer::Procedure> proc)
   auto idx = m_jobs.size();
   auto job_prefix = CreateJobPrefix(m_server_prefix, idx);
   auto n_vars = GetNumberOfVariables(*proc);
-  std::unique_ptr<IJobInfoIO> job_info_io{
+  std::unique_ptr<sup::sequencer::IJobInfoIO> job_info_io{
     new ServerJobInfoIO{job_prefix, n_vars, m_av_mgr_registry.GetAnyValueManager(idx)}};
   m_job_info_ios.emplace_back(std::move(job_info_io));
-  m_jobs.emplace_back(job_prefix, std::move(proc), *m_job_info_ios.back());
+  m_jobs.emplace_back(std::move(proc), *m_job_info_ios.back());
 }
 
 std::string AutomationServer::GetServerPrefix() const
@@ -65,7 +67,7 @@ std::size_t AutomationServer::GetNumberOfJobs() const
   return m_jobs.size();
 }
 
-JobInfo AutomationServer::GetJobInfo(std::size_t job_idx) const
+sup::sequencer::JobInfo AutomationServer::GetJobInfo(std::size_t job_idx) const
 {
   auto& job = GetJob(job_idx);
   return job.GetInfo();
@@ -116,12 +118,12 @@ void AutomationServer::SendJobCommand(std::size_t job_idx, sup::sequencer::JobCo
   }
 }
 
-ServerJob& AutomationServer::GetJob(std::size_t job_idx)
+LocalJob& AutomationServer::GetJob(std::size_t job_idx)
 {
-  return const_cast<ServerJob&>(const_cast<const AutomationServer*>(this)->GetJob(job_idx));
+  return const_cast<LocalJob&>(const_cast<const AutomationServer*>(this)->GetJob(job_idx));
 }
 
-const ServerJob& AutomationServer::GetJob(std::size_t job_idx) const
+const LocalJob& AutomationServer::GetJob(std::size_t job_idx) const
 {
   std::lock_guard<std::mutex> lk{m_mtx};
   if (job_idx >= m_jobs.size())
@@ -131,11 +133,6 @@ const ServerJob& AutomationServer::GetJob(std::size_t job_idx) const
     throw InvalidOperationException(error);
   }
   return m_jobs[job_idx];
-}
-
-std::string CreateJobPrefix(const std::string& server_prefix, std::size_t idx)
-{
-  return server_prefix + ":PROC-" + std::to_string(idx) + ":";
 }
 
 sup::dto::uint32 GetNumberOfVariables(const sup::sequencer::Procedure& proc)

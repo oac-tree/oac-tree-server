@@ -227,6 +227,8 @@ extern const sup::protocol::ProtocolResult ClientReplyRefused;
  */
 std::string AutomationServerResultToString(const sup::protocol::ProtocolResult& result);
 
+std::string CreateJobPrefix(const std::string& server_prefix, std::size_t idx);
+
 /**
  * @brief Create a PV channel name for an instruction with the given index and prefix.
  *

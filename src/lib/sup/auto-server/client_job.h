@@ -23,8 +23,9 @@
 #define SUP_AUTO_SERVER_I_CLIENT_JOB_H_
 
 #include <sup/auto-server/i_anyvalue_io.h>
-#include <sup/auto-server/i_job_info_io.h>
-#include <sup/auto-server/job_info.h>
+
+#include <sup/sequencer/i_job_info_io.h>
+#include <sup/sequencer/job_info.h>
 
 #include <memory>
 
@@ -41,7 +42,8 @@ class ClientJobImpl;
 class ClientJob
 {
 public:
-  ClientJob(const JobInfo& job_info, IJobInfoIO& job_info_io,
+  ClientJob(const sup::sequencer::JobInfo& job_info, const std::string& job_prefix,
+            sup::sequencer::IJobInfoIO& job_info_io,
             const AnyValueIOFactoryFunction& factory_func);
   ~ClientJob();
 

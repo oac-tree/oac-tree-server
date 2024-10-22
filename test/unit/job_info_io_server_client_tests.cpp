@@ -37,6 +37,8 @@ using ::testing::SetArgReferee;
 
 using namespace sup::auto_server;
 
+using sup::sequencer::InstructionState;
+
 class JobInfoIOServerClientTest : public ::testing::Test
 {
 protected:

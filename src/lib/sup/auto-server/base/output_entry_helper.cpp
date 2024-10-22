@@ -21,25 +21,26 @@
 
 #include <sup/auto-server/output_entry_helper.h>
 
-#include <sup/auto-server/anyvalue_utils.h>
+#include <sup/sequencer/anyvalue_utils.h>
 #include <sup/auto-server/sup_auto_protocol.h>
 
 namespace sup
 {
 namespace auto_server
 {
+using sup::sequencer::utils::ValidateMemberType;
 
 bool ValidateLogEntryAnyValue(const sup::dto::AnyValue& anyvalue)
 {
-  if (!utils::ValidateMemberType(anyvalue, kIndexField, sup::dto::UnsignedInteger64Type))
+  if (!ValidateMemberType(anyvalue, kIndexField, sup::dto::UnsignedInteger64Type))
   {
     return false;
   }
-  if (!utils::ValidateMemberType(anyvalue, kSeverityField, sup::dto::SignedInteger32Type))
+  if (!ValidateMemberType(anyvalue, kSeverityField, sup::dto::SignedInteger32Type))
   {
     return false;
   }
-  if (!utils::ValidateMemberType(anyvalue, kMessageField, sup::dto::StringType))
+  if (!ValidateMemberType(anyvalue, kMessageField, sup::dto::StringType))
   {
     return false;
   }
@@ -69,11 +70,11 @@ LogEntry DecodeLogEntry(const sup::dto::AnyValue& anyvalue)
 
 bool ValidateMessageEntryAnyValue(const sup::dto::AnyValue& anyvalue)
 {
-  if (!utils::ValidateMemberType(anyvalue, kIndexField, sup::dto::UnsignedInteger64Type))
+  if (!ValidateMemberType(anyvalue, kIndexField, sup::dto::UnsignedInteger64Type))
   {
     return false;
   }
-  if (!utils::ValidateMemberType(anyvalue, kMessageField, sup::dto::StringType))
+  if (!ValidateMemberType(anyvalue, kMessageField, sup::dto::StringType))
   {
     return false;
   }
@@ -102,11 +103,11 @@ MessageEntry DecodeMessageEntry(const sup::dto::AnyValue& anyvalue)
 
 bool ValidateOutputValueEntryAnyValue(const sup::dto::AnyValue& anyvalue)
 {
-  if (!utils::ValidateMemberType(anyvalue, kIndexField, sup::dto::UnsignedInteger64Type))
+  if (!ValidateMemberType(anyvalue, kIndexField, sup::dto::UnsignedInteger64Type))
   {
     return false;
   }
-  if (!utils::ValidateMemberType(anyvalue, kDescriptionField, sup::dto::StringType))
+  if (!ValidateMemberType(anyvalue, kDescriptionField, sup::dto::StringType))
   {
     return false;
   }

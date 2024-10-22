@@ -23,7 +23,7 @@
 #define SUP_AUTO_SERVER_UNIT_TEST_HELPER_H_
 
 #include <sup/auto-server/i_anyvalue_manager_registry.h>
-#include <sup/auto-server/i_job_info_io.h>
+#include <sup/sequencer/i_job_info_io.h>
 
 #include <sup/dto/anyvalue.h>
 
@@ -70,11 +70,11 @@ namespace auto_server
 namespace UnitTestHelper
 {
 
-class MockJobInfoIO : public IJobInfoIO
+class MockJobInfoIO : public sup::sequencer::IJobInfoIO
 {
 public:
   MOCK_METHOD(void, InitNumberOfInstructions, (sup::dto::uint32), (override));
-  MOCK_METHOD(void, InstructionStateUpdated, (sup::dto::uint32, InstructionState), (override));
+  MOCK_METHOD(void, InstructionStateUpdated, (sup::dto::uint32, sup::sequencer::InstructionState), (override));
   MOCK_METHOD(void, VariableUpdated, (sup::dto::uint32, const sup::dto::AnyValue&, bool), (override));
   MOCK_METHOD(void, JobStateUpdated, (sup::sequencer::JobState), (override));
   MOCK_METHOD(void, PutValue, (const sup::dto::AnyValue&, const std::string&), (override));

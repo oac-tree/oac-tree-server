@@ -22,6 +22,7 @@
 #include <sup/auto-server/automation_client.h>
 
 #include <sup/auto-server/exceptions.h>
+#include <sup/auto-server/sup_auto_protocol.h>
 
 namespace sup
 {
@@ -37,7 +38,7 @@ AutomationClient::AutomationClient(IJobManager& job_manager,
 
 AutomationClient::~AutomationClient() = default;
 
-bool AutomationClient::Connect(std::size_t job_idx, IJobInfoIO& job_info_io)
+bool AutomationClient::Connect(std::size_t job_idx, sup::sequencer::IJobInfoIO& job_info_io)
 {
   if (m_jobs.find(job_idx) != m_jobs.end())
   {
@@ -45,9 +46,11 @@ bool AutomationClient::Connect(std::size_t job_idx, IJobInfoIO& job_info_io)
   }
   try
   {
+    auto server_prefix = m_job_manager.GetServerPrefix();
+    auto job_prefix = CreateJobPrefix(server_prefix, job_idx);
     const auto& job_info = m_job_manager.GetJobInfo(job_idx);
     m_jobs[job_idx] =
-      std::unique_ptr<ClientJob>(new ClientJob{job_info, job_info_io, m_factory_func});
+      std::unique_ptr<ClientJob>(new ClientJob{job_info, job_prefix, job_info_io, m_factory_func});
   }
   catch(const InvalidOperationException&)
   {

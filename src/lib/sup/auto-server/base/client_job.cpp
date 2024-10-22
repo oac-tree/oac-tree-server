@@ -31,7 +31,8 @@ namespace auto_server
 class ClientJobImpl
 {
 public:
-  ClientJobImpl(const JobInfo& job_info, IJobInfoIO& job_info_io,
+  ClientJobImpl(const sup::sequencer::JobInfo& job_info, const std::string& job_prefix,
+                sup::sequencer::IJobInfoIO& job_info_io,
                 const AnyValueIOFactoryFunction& factory_func);
   ~ClientJobImpl();
 
@@ -40,9 +41,10 @@ private:
   std::unique_ptr<IAnyValueIO> m_anyvalue_io;
 };
 
-ClientJob::ClientJob(const JobInfo& job_info, IJobInfoIO& job_info_io,
+ClientJob::ClientJob(const sup::sequencer::JobInfo& job_info, const std::string& job_prefix,
+                     sup::sequencer::IJobInfoIO& job_info_io,
                      const AnyValueIOFactoryFunction& factory_func)
-  : m_impl{new ClientJobImpl{job_info, job_info_io, factory_func}}
+  : m_impl{new ClientJobImpl{job_info, job_prefix, job_info_io, factory_func}}
 {}
 
 ClientJob::~ClientJob() = default;
@@ -51,13 +53,14 @@ ClientJob::ClientJob(ClientJob&&) = default;
 
 ClientJob& ClientJob::operator=(ClientJob&& other) = default;
 
-ClientJobImpl::ClientJobImpl(const JobInfo& job_info, IJobInfoIO& job_info_io,
+ClientJobImpl::ClientJobImpl(const sup::sequencer::JobInfo& job_info, const std::string& job_prefix,
+                             sup::sequencer::IJobInfoIO& job_info_io,
                              const AnyValueIOFactoryFunction& factory_func)
   : m_av_mgr{job_info_io}
   , m_anyvalue_io{factory_func(m_av_mgr)}
 {
-  InitializeJobAndVariables(*m_anyvalue_io, job_info.GetPrefix(), job_info.GetNumberOfVariables());
-  InitializeInstructions(*m_anyvalue_io, job_info.GetPrefix(), job_info.GetNumberOfInstructions());
+  InitializeJobAndVariables(*m_anyvalue_io, job_prefix, job_info.GetNumberOfVariables());
+  InitializeInstructions(*m_anyvalue_io, job_prefix, job_info.GetNumberOfInstructions());
 }
 
 ClientJobImpl::~ClientJobImpl() = default;

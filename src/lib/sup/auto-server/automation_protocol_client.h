@@ -43,7 +43,7 @@ public:
 
   std::size_t GetNumberOfJobs() const override;
 
-  JobInfo GetJobInfo(std::size_t job_idx) const override;
+  sup::sequencer::JobInfo GetJobInfo(std::size_t job_idx) const override;
 
   void EditBreakpoint(std::size_t job_idx, std::size_t instr_idx, bool breakpoint_active) override;
 

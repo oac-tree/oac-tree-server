@@ -22,9 +22,8 @@
 #ifndef SUP_AUTO_SERVER_I_JOB_MANAGER_H_
 #define SUP_AUTO_SERVER_I_JOB_MANAGER_H_
 
-#include <sup/auto-server/job_info.h>
-
 #include <sup/sequencer/job_commands.h>
+#include <sup/sequencer/job_info.h>
 
 #include <string>
 #include <utility>
@@ -66,7 +65,7 @@ public:
    * @param job_idx Index that identifies a single job.
    * @return JobInfo object for the requested job.
    */
-  virtual JobInfo GetJobInfo(std::size_t job_idx) const = 0;
+  virtual sup::sequencer::JobInfo GetJobInfo(std::size_t job_idx) const = 0;
 
   /**
    * @brief (De)activate a breakpoint for the given instruction of the specified job.

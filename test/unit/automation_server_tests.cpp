@@ -65,7 +65,6 @@ TEST_F(AutomationServerTests, ServerWithOneProcedure)
   EXPECT_EQ(auto_server.GetServerPrefix(), prefix);
   EXPECT_EQ(auto_server.GetNumberOfJobs(), 1);
   const auto& job_info = auto_server.GetJobInfo(0);
-  EXPECT_EQ(job_info.GetPrefix(), CreateJobPrefix(prefix, 0));
   EXPECT_EQ(job_info.GetProcedureName(), "Common header");
   EXPECT_EQ(job_info.GetNumberOfVariables(), 0);
   EXPECT_THROW(auto_server.GetJobInfo(1), InvalidOperationException);
@@ -88,11 +87,9 @@ TEST_F(AutomationServerTests, ServerWithTwoProcedures)
   EXPECT_EQ(auto_server.GetServerPrefix(), prefix);
   EXPECT_EQ(auto_server.GetNumberOfJobs(), 2);
   const auto& job_info_1 = auto_server.GetJobInfo(0);
-  EXPECT_EQ(job_info_1.GetPrefix(), CreateJobPrefix(prefix, 0));
   EXPECT_EQ(job_info_1.GetProcedureName(), "Common header");
   EXPECT_EQ(job_info_1.GetNumberOfVariables(), 0);
   const auto& job_info_2 = auto_server.GetJobInfo(1);
-  EXPECT_EQ(job_info_2.GetPrefix(), CreateJobPrefix(prefix, 1));
   EXPECT_EQ(job_info_2.GetProcedureName(), "Common header");
   EXPECT_EQ(job_info_2.GetNumberOfVariables(), 0);
   EXPECT_THROW(auto_server.GetJobInfo(2), InvalidOperationException);

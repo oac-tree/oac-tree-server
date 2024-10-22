@@ -21,10 +21,10 @@
 
 #include <sup/auto-server/sup_auto_protocol.h>
 
-#include <sup/auto-server/anyvalue_utils.h>
 #include <sup/auto-server/exceptions.h>
 
 #include <sup/protocol/base64_variable_codec.h>
+#include <sup/sequencer/anyvalue_utils.h>
 #include <sup/sequencer/execution_status.h>
 #include <sup/sequencer/job_states.h>
 
@@ -137,6 +137,11 @@ std::string AutomationServerResultToString(const sup::protocol::ProtocolResult& 
   }
   return "Unknown ProtocolResult for SUP automation interface: " +
          std::to_string(result.GetValue());
+}
+
+std::string CreateJobPrefix(const std::string& server_prefix, std::size_t idx)
+{
+  return server_prefix + ":PROC-" + std::to_string(idx) + ":";
 }
 
 std::string GetInstructionPVName(const std::string& prefix, dto::uint32 index)
@@ -273,7 +278,8 @@ bool ValidateVariablePayload(const sup::dto::AnyValue& payload)
   {
     return false;
   }
-  if (!utils::ValidateMemberType(payload, kVariableConnectedField, sup::dto::BooleanType))
+  if (!sup::sequencer::utils::ValidateMemberType(payload, kVariableConnectedField,
+                                                 sup::dto::BooleanType))
   {
     return false;
   }
