@@ -2,7 +2,6 @@ target_sources(sup-auto-server
   PRIVATE
   anyvalue_input_request.cpp
   anyvalue_io_helper.cpp
-  automation_client.cpp
   automation_protocol_client.cpp
   automation_protocol_server.cpp
   automation_server.cpp

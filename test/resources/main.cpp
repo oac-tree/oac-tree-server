@@ -20,7 +20,7 @@
  ******************************************************************************/
 
 #include <sup/auto-server/automation_protocol_client.h>
-#include <sup/auto-server/automation_client.h>
+#include <sup/auto-server/client_job.h>
 #include <sup/auto-server/epics_io_client.h>
 
 #include <sup/protocol/protocol_rpc_client.h>
@@ -33,7 +33,7 @@ using namespace sup::auto_server;
 
 const std::string kAutoServerName = "CTRL-SUP-AUTO:TEST-SERVER";
 
-IJobInfoIO& GetMyJobInfoIO();
+sup::sequencer::IJobInfoIO& GetMyJobInfoIO();
 
 int main(int argc, char* argv[])
 {
@@ -42,27 +42,21 @@ int main(int argc, char* argv[])
   sup::epics::PvAccessRPCClient pv_access_rpc_client{rpc_client_config};
   sup::protocol::ProtocolRPCClient protocol_rpc_client{pv_access_rpc_client};
 
-  // automation client classes:
+  // Create client JobManager and query number of jobs served:
   AutomationProtocolClient auto_protocol_client{protocol_rpc_client};
-  AnyValueIOFactoryFunction io_client_func(EPICSIOCLientFactoryFunction);
-  AutomationClient auto_client{auto_protocol_client, io_client_func};
-
-  // Use AutomationClient to connect a IJobInfoIO object to a specific job.
-  // This will make that object handle all job updates and user I/O.
-  auto& my_job_info_io = GetMyJobInfoIO();
-  auto_client.Connect(0, my_job_info_io);
-
-  // AutomationProtocolClient implements IJobManager, so use that to query static info:
-  // Get number of jobs:
   auto n_jobs = auto_protocol_client.GetNumberOfJobs();
-  // Get instruction and variable information for job 0 (always a ref)
-  const auto& job_0_info = auto_protocol_client.GetJobInfo(0);
-  // Start job 0
-  auto_protocol_client.SendJobCommand(0, sup::sequencer::JobCommand::kStart);
+
+  // Create a client job.
+  auto& my_job_info_io = GetMyJobInfoIO();
+  auto job_0 = CreateClientJob(auto_protocol_client, 0, EPICSIOCLientFactoryFunction, my_job_info_io);
+
+  // Get instruction and variable info and start job 0.
+  const auto& job_info = job_0->GetInfo();
+  job_0->Start();
 
   // wait 10s
   std::this_thread::sleep_for(std::chrono::seconds(10));
 
   // Halt job 0
-  auto_protocol_client.SendJobCommand(0, sup::sequencer::JobCommand::kHalt);
+  job_0->Halt();
 }
