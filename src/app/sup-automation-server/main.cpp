@@ -46,11 +46,14 @@ int main(int argc, char* argv[])
       .SetValueName("service_name")
       .SetRequired(true);
 
+  parser.AddPositionalOption("FILE...", "File(s) to be parsed and run as procedures");
+
   if (!parser.Parse(argc, argv))
   {
     std::cout << parser.GetUsageString();
     return 0;
   }
+
   auto proc_list = utils::GetProcedureList(parser);
   auto service_name = parser.GetValue<std::string>("--service");
   auto anyvalue_manager_registry = utils::CreateAnyValueManagerRegistry(proc_list.size());

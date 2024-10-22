@@ -32,32 +32,14 @@ namespace auto_server
 namespace utils
 {
 
-const std::string kSimpleCounterProcedureString{
-R"RAW(<?xml version="1.0" encoding="UTF-8"?>
-<Procedure>
-  <Plugin>libsequencer-pvxs.so</Plugin>
-  <Repeat maxCount="-1">
-    <Sequence>
-      <Wait timeout="1"/>
-      <Increment varName="counter"/>
-      <Copy inputVar="counter" outputVar="server.value"/>
-    </Sequence>
-  </Repeat>
-  <Workspace>
-    <PvAccessServer name="server"
-                    channel="TEST:SERVER-COUNTER"
-                    type='{"type":"","attributes":[{"value":{"type":"uint64"}}]}'
-                    value='{"value":0}'/>
-    <Local name="counter" type='{"type":"uint64"}' value='0' />
-  </Workspace>
-</Procedure>
-)RAW"};
-
 ProcedureList GetProcedureList(sup::cli::CommandLineParser& parser)
 {
-  (void)parser;
   ProcedureList result;
-  result.emplace_back(sup::sequencer::ParseProcedureString(kSimpleCounterProcedureString));
+  auto positional_args = parser.GetPositionalValues();
+  for (size_t idx = 0; idx < positional_args.size(); ++idx)
+  {
+    result.emplace_back(sup::sequencer::ParseProcedureFile(positional_args[idx]));
+  }
   return result;
 }
 
