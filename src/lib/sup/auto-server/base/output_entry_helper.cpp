@@ -20,15 +20,17 @@
  ******************************************************************************/
 
 #include <sup/auto-server/output_entry_helper.h>
+#include <sup/auto-server/sup_auto_protocol.h>
 
 #include <sup/sequencer/anyvalue_utils.h>
-#include <sup/auto-server/sup_auto_protocol.h>
+#include <sup/sequencer/constants.h>
 
 namespace sup
 {
 namespace auto_server
 {
 using sup::sequencer::utils::ValidateMemberType;
+using sup::sequencer::Constants::kIndexField;
 
 bool ValidateLogEntryAnyValue(const sup::dto::AnyValue& anyvalue)
 {

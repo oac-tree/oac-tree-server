@@ -25,6 +25,7 @@
 
 #include <sup/protocol/base64_variable_codec.h>
 #include <sup/sequencer/anyvalue_utils.h>
+#include <sup/sequencer/constants.h>
 #include <sup/sequencer/execution_status.h>
 #include <sup/sequencer/job_states.h>
 
@@ -45,27 +46,10 @@ namespace sup
 namespace auto_server
 {
 
-const dto::AnyValue kInstructionAnyValue = {{
-  { kExecStatusField, static_cast<dto::uint16>(sequencer::ExecutionStatus::NOT_STARTED)},
-  { kBreakpointField, false }
-}, kInstructionType };
-
-const dto::AnyValue kInstructionInfoNodeAnyValue = {{
-  { kInstructionInfoNodeTypeField, "" },
-  { kIndexField, { sup::dto::UnsignedInteger32Type, 0 }},
-  { kAttributesField, sup::dto::EmptyStruct() }
-}, kInstructionInfoNodeType };
-
 const dto::AnyValue kVariableAnyValue = {{
   { protocol::kEncodingField, protocol::kBase64Encoding},
   { protocol::kValueField, "" }
 }, kVariableType };
-
-const dto::AnyValue kVariableInfoAnyValue = {{
-  { kVariableInfoTypeField, "" },
-  { kIndexField, { sup::dto::UnsignedInteger32Type, 0 }},
-  { kAttributesField, sup::dto::EmptyStruct() }
-}, kVariableInfoType };
 
 const dto::AnyValue kInputRequestAnyValue = {{
   { protocol::kEncodingField, protocol::kBase64Encoding},
@@ -73,18 +57,18 @@ const dto::AnyValue kInputRequestAnyValue = {{
 }, kInputRequestType };
 
 const dto::AnyValue kLogEntryAnyValue = {{
-  { kIndexField, { sup::dto::UnsignedInteger64Type, 0 } },
+  { sup::sequencer::Constants::kIndexField, { sup::dto::UnsignedInteger64Type, 0 } },
   { kSeverityField, { sup::dto::SignedInteger32Type, 0 } },
   { kMessageField, "" }
 }, kLogEntryType };
 
 const dto::AnyValue kMessageEntryAnyValue = {{
-  { kIndexField, { sup::dto::UnsignedInteger64Type, 0 } },
+  { sup::sequencer::Constants::kIndexField, { sup::dto::UnsignedInteger64Type, 0 } },
   { kMessageField, "" }
 }, kMessageEntryType };
 
 const dto::AnyValue kOutputValueEntryAnyValue = {{
-  { kIndexField, { sup::dto::UnsignedInteger64Type, 0 } },
+  { sup::sequencer::Constants::kIndexField, { sup::dto::UnsignedInteger64Type, 0 } },
   { kDescriptionField, "" },
   { kValueField, {} }
 }, kOutputValueEntryType };
@@ -92,13 +76,6 @@ const dto::AnyValue kOutputValueEntryAnyValue = {{
 const dto::AnyValue kJobStateAnyValue = {{
   { kJobStateField, static_cast<dto::uint32>(sequencer::JobState::kInitial)}
 }, kJobStateType };
-
-const dto::AnyValue kJobInfoAnyValue = {{
-  { kJobPrefixFieldName, "" },
-  { kFullNameFieldName, "" },
-  { kWorkspaceInfoFieldName, sup::dto::AnyValue{} },
-  { kInstructionTreeInfoFieldName, sup::dto::AnyValue{} }
-}, kJobInfoType };
 
 namespace status
 {

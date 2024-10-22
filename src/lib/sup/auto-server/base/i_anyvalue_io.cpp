@@ -22,6 +22,8 @@
 #include <sup/auto-server/i_anyvalue_io.h>
 #include <sup/auto-server/sup_auto_protocol.h>
 
+#include <sup/sequencer/constants.h>
+
 #include <algorithm>
 
 namespace sup
@@ -70,7 +72,7 @@ IAnyValueIO::NameAnyValueSet GetInstructionValueSet(const std::string& job_prefi
   for (sup::dto::uint32 instr_idx = 0; instr_idx < n_instr; ++instr_idx)
   {
     const auto name = GetInstructionPVName(job_prefix, instr_idx);
-    result.emplace_back(name, kInstructionAnyValue);
+    result.emplace_back(name, sup::sequencer::Constants::kInstructionStateAnyValue);
   }
   return result;
 }

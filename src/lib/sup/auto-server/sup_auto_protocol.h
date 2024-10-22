@@ -40,24 +40,6 @@ namespace auto_server
 
 // Instruction pv identifier
 const std::string kInstructionId = "INSTR-";
-// Instruction fields:
-const std::string kInstructionType = "sup::instructionType/v1.0";
-const std::string kExecStatusField = "exec_status";
-const std::string kBreakpointField = "breakpoint";
-
-// Basic instruction AnyValue
-extern const sup::dto::AnyValue kInstructionAnyValue;
-
-// Instruction info node fields
-const std::string kInstructionInfoNodeType = "sup::instructionNodeInfoType/v1.0";
-const std::string kInstructionInfoNodeTypeField = "type";
-const std::string kIndexField = "index";
-const std::string kAttributesField = "attributes";
-const std::string kChildInstructionsField = "children";
-const std::string kChildMemberFieldPrefix = "child_";
-
-// Basic instruction info node AnyValue
-extern const sup::dto::AnyValue kInstructionInfoNodeAnyValue;
 
 // Variable pv identifier
 const std::string kVariableId = "VAR-";
@@ -68,13 +50,6 @@ const std::string kVariableConnectedField = "var_connected";
 
 // Basic Variable AnyValue
 extern const sup::dto::AnyValue kVariableAnyValue;
-
-// Variable info node fields
-const std::string kVariableInfoType = "sup::variableInfoType/v1.0";
-const std::string kVariableInfoTypeField = "type";
-
-// Basic variable info node AnyValue
-extern const sup::dto::AnyValue kVariableInfoAnyValue;
 
 // Basic input request AnyValue
 extern const sup::dto::AnyValue kInputRequestAnyValue;
@@ -129,15 +104,6 @@ const std::string kJobStateField = "state";
 
 // Basic job state AnyValue
 extern const sup::dto::AnyValue kJobStateAnyValue;
-
-// Field names used for the JobInfo AnyValue:
-const std::string kJobInfoType = "sup::jobInfoType/v1.0";
-const std::string kJobPrefixFieldName = "job_prefix";
-const std::string kFullNameFieldName = "full_name";
-const std::string kWorkspaceInfoFieldName = "ws_info";
-const std::string kInstructionTreeInfoFieldName = "instr_tree_info";
-
-extern const sup::dto::AnyValue kJobInfoAnyValue;
 
 // Automation servers will report the following type and version:
 const std::string kAutomationServerProtocolServerType = "SUP::AutomationServerProtocol";
