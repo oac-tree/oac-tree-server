@@ -22,6 +22,8 @@
 #include <sup/auto-server/anyvalue_input_request.h>
 #include <sup/auto-server/sup_auto_protocol.h>
 
+#include <sup/protocol/base64_variable_codec.h>
+
 #include <gtest/gtest.h>
 
 using namespace sup::auto_server;
@@ -340,3 +342,342 @@ TEST_F(AnyValueInputRequestTest, CreateUserChoiceReply)
   }
 }
 
+TEST_F(AnyValueInputRequestTest, ParseUserValueReply)
+{
+  {
+    // Successful parsing
+    const std::string text = "some user provided value";
+    sup::dto::AnyValue payload{ sup::dto::StringType, text };
+    sup::dto::AnyValue reply_av{{
+      { kInputReplyResultFieldName, true },
+      { kInputReplyValueFieldName, payload }
+    }};
+    auto parsed = ParseUserValueReply(reply_av);
+    EXPECT_EQ(parsed.first, true);
+    EXPECT_EQ(parsed.second, payload);
+  }
+  {
+    // Parsing of user reply that failed
+    const std::string text = "some user provided value";
+    sup::dto::AnyValue payload{ sup::dto::StringType, text };
+    sup::dto::AnyValue reply_av{{
+      { kInputReplyResultFieldName, false },
+      { kInputReplyValueFieldName, payload }
+    }};
+    auto parsed = ParseUserValueReply(reply_av);
+    EXPECT_EQ(parsed.first, false);
+    EXPECT_TRUE(sup::dto::IsEmptyValue(parsed.second));
+  }
+  {
+    // Missing result field
+    const std::string text = "some user provided value";
+    sup::dto::AnyValue payload{ sup::dto::StringType, text };
+    sup::dto::AnyValue reply_av{{
+      { kInputReplyValueFieldName, payload }
+    }};
+    auto parsed = ParseUserValueReply(reply_av);
+    EXPECT_EQ(parsed.first, false);
+    EXPECT_TRUE(sup::dto::IsEmptyValue(parsed.second));
+  }
+  {
+    // Wrong type of result field
+    const std::string text = "some user provided value";
+    sup::dto::AnyValue payload{ sup::dto::StringType, text };
+    sup::dto::AnyValue reply_av{{
+      { kInputReplyResultFieldName, { sup::dto::StringType, "wrong_type" } },
+      { kInputReplyValueFieldName, payload }
+    }};
+    auto parsed = ParseUserValueReply(reply_av);
+    EXPECT_EQ(parsed.first, false);
+    EXPECT_TRUE(sup::dto::IsEmptyValue(parsed.second));
+  }
+  {
+    // Missing reply value field
+    sup::dto::AnyValue reply_av{{
+      { kInputReplyResultFieldName, true }
+    }};
+    auto parsed = ParseUserValueReply(reply_av);
+    EXPECT_EQ(parsed.first, false);
+    EXPECT_TRUE(sup::dto::IsEmptyValue(parsed.second));
+  }
+}
+
+TEST_F(AnyValueInputRequestTest, ParseUserChoiceReply)
+{
+  {
+    // Successful parsing
+    sup::dto::AnyValue payload{ sup::dto::SignedInteger32Type, 7 };
+    sup::dto::AnyValue reply_av{{
+      { kInputReplyResultFieldName, true },
+      { kInputReplyValueFieldName, payload }
+    }};
+    auto parsed = ParseUserChoiceReply(reply_av);
+    EXPECT_EQ(parsed.first, true);
+    EXPECT_EQ(parsed.second, 7);
+  }
+  {
+    // Parsing of user reply that failed
+    sup::dto::AnyValue payload{ sup::dto::SignedInteger32Type, 7 };
+    sup::dto::AnyValue reply_av{{
+      { kInputReplyResultFieldName, false },
+      { kInputReplyValueFieldName, payload }
+    }};
+    auto parsed = ParseUserChoiceReply(reply_av);
+    EXPECT_EQ(parsed.first, false);
+    EXPECT_EQ(parsed.second, -1);
+  }
+  {
+    // Missing result field
+    sup::dto::AnyValue payload{ sup::dto::SignedInteger32Type, 7 };
+    sup::dto::AnyValue reply_av{{
+      { kInputReplyValueFieldName, payload }
+    }};
+    auto parsed = ParseUserChoiceReply(reply_av);
+    EXPECT_EQ(parsed.first, false);
+    EXPECT_EQ(parsed.second, -1);
+  }
+  {
+    // Wrong type of result field
+    sup::dto::AnyValue payload{ sup::dto::SignedInteger32Type, 7 };
+    sup::dto::AnyValue reply_av{{
+      { kInputReplyResultFieldName, { sup::dto::StringType, "wrong_type" } },
+      { kInputReplyValueFieldName, payload }
+    }};
+    auto parsed = ParseUserChoiceReply(reply_av);
+    EXPECT_EQ(parsed.first, false);
+    EXPECT_EQ(parsed.second, -1);
+  }
+  {
+    // Missing user value field
+    sup::dto::AnyValue payload{ sup::dto::SignedInteger32Type, 7 };
+    sup::dto::AnyValue reply_av{{
+      { kInputReplyResultFieldName, true }
+    }};
+    auto parsed = ParseUserChoiceReply(reply_av);
+    EXPECT_EQ(parsed.first, false);
+    EXPECT_EQ(parsed.second, -1);
+  }
+  {
+    // Wrong type of user value field
+    sup::dto::AnyValue payload{ sup::dto::UnsignedInteger16Type, 7u };
+    sup::dto::AnyValue reply_av{{
+      { kInputReplyResultFieldName, true },
+      { kInputReplyValueFieldName, payload }
+    }};
+    auto parsed = ParseUserChoiceReply(reply_av);
+    EXPECT_EQ(parsed.first, false);
+    EXPECT_EQ(parsed.second, -1);
+  }
+}
+
+TEST_F(AnyValueInputRequestTest, EncodeInputRequest)
+{
+  // Create AnyValueInputRequest
+  sup::dto::AnyType input_type = {{
+    { "a", sup::dto::Float64Type },
+    { "indices", sup::dto::AnyType{5, sup::dto::UnsignedInteger16Type }}
+  }};
+  sup::dto::AnyValue input{input_type};
+  std::string description = "Set configuration";
+  auto request = CreateUserValueRequest(input, description);
+  // Request id
+  sup::dto::uint64 req_id = 1729u;
+
+  auto encoded = EncodeInputRequest(req_id, request);
+  ASSERT_TRUE(encoded.HasField(sup::protocol::kEncodingField));
+  EXPECT_EQ(encoded[sup::protocol::kEncodingField], sup::protocol::kBase64Encoding);
+  ASSERT_TRUE(encoded.HasField(sup::protocol::kValueField));
+  EXPECT_EQ(encoded[sup::protocol::kValueField].GetType(), sup::dto::StringType);
+  auto decoded = DecodeInputRequest(encoded);
+  EXPECT_EQ(std::get<0>(decoded), true);
+  EXPECT_EQ(std::get<1>(decoded), req_id);
+  EXPECT_EQ(std::get<2>(decoded), request);
+}
+
+TEST_F(AnyValueInputRequestTest, DecodeInputRequest)
+{
+  {
+    // Successful decoding
+    sup::dto::uint64 req_id = 42u;
+    sup::dto::AnyValue metadata{ sup::dto::StringType, "meta" };
+    const std::string json_type = R"RAW({"type":"uint16"})RAW";
+    sup::dto::AnyValue payload_av{{
+      { kInputRequestIndexField, req_id },
+      { kInputRequestTypeField, { sup::dto::UnsignedInteger32Type, 1u }},
+      { kInputRequestMetadataField, metadata },
+      { kInputRequestInputTypeField, { sup::dto::StringType, json_type }}
+    }};
+    // Encode explicitly
+    auto encoded = sup::protocol::Base64VariableCodec::Encode(payload_av);
+    EXPECT_TRUE(encoded.first);
+    // Decode
+    auto decoded = DecodeInputRequest(encoded.second);
+    EXPECT_EQ(std::get<0>(decoded), true);
+    EXPECT_EQ(std::get<1>(decoded), req_id);
+    auto av_input_req = std::get<2>(decoded);
+    EXPECT_EQ(av_input_req.m_request_type, InputRequestType::kUserChoice);
+    EXPECT_EQ(av_input_req.m_meta_data, metadata);
+    EXPECT_EQ(av_input_req.m_input_type, sup::dto::UnsignedInteger16Type);
+  }
+  {
+    // Unable to decode
+    sup::dto::AnyValue payload_av{ sup::dto::UnsignedInteger32Type, 1u };
+    // Decode
+    auto decoded = DecodeInputRequest(payload_av);
+    EXPECT_EQ(std::get<0>(decoded), false);
+    EXPECT_EQ(std::get<1>(decoded), 0);
+    EXPECT_EQ(std::get<2>(decoded), AnyValueInputRequest{});
+  }
+  {
+    // Missing request index field
+    sup::dto::AnyValue metadata{ sup::dto::StringType, "meta" };
+    const std::string json_type = R"RAW({"type":"uint16"})RAW";
+    sup::dto::AnyValue payload_av{{
+      { kInputRequestTypeField, { sup::dto::UnsignedInteger32Type, 1u }},
+      { kInputRequestMetadataField, metadata },
+      { kInputRequestInputTypeField, { sup::dto::StringType, json_type }}
+    }};
+    // Encode explicitly
+    auto encoded = sup::protocol::Base64VariableCodec::Encode(payload_av);
+    EXPECT_TRUE(encoded.first);
+    // Decode
+    auto decoded = DecodeInputRequest(encoded.second);
+    EXPECT_EQ(std::get<0>(decoded), false);
+    EXPECT_EQ(std::get<1>(decoded), 0);
+    EXPECT_EQ(std::get<2>(decoded), AnyValueInputRequest{});
+  }
+  {
+    // Wrong type of request index field
+    sup::dto::uint64 req_id = 42u;
+    sup::dto::AnyValue metadata{ sup::dto::StringType, "meta" };
+    const std::string json_type = R"RAW({"type":"uint16"})RAW";
+    sup::dto::AnyValue payload_av{{
+      { kInputRequestIndexField, { sup::dto::SignedInteger16Type, req_id }},
+      { kInputRequestTypeField, { sup::dto::UnsignedInteger32Type, 1u }},
+      { kInputRequestMetadataField, metadata },
+      { kInputRequestInputTypeField, { sup::dto::StringType, json_type }}
+    }};
+    // Encode explicitly
+    auto encoded = sup::protocol::Base64VariableCodec::Encode(payload_av);
+    EXPECT_TRUE(encoded.first);
+    // Decode
+    auto decoded = DecodeInputRequest(encoded.second);
+    EXPECT_EQ(std::get<0>(decoded), false);
+    EXPECT_EQ(std::get<1>(decoded), 0);
+    EXPECT_EQ(std::get<2>(decoded), AnyValueInputRequest{});
+  }
+  {
+    // Missing input request type field
+    sup::dto::uint64 req_id = 42u;
+    sup::dto::AnyValue metadata{ sup::dto::StringType, "meta" };
+    const std::string json_type = R"RAW({"type":"uint16"})RAW";
+    sup::dto::AnyValue payload_av{{
+      { kInputRequestIndexField, req_id },
+      { kInputRequestMetadataField, metadata },
+      { kInputRequestInputTypeField, { sup::dto::StringType, json_type }}
+    }};
+    // Encode explicitly
+    auto encoded = sup::protocol::Base64VariableCodec::Encode(payload_av);
+    EXPECT_TRUE(encoded.first);
+    // Decode
+    auto decoded = DecodeInputRequest(encoded.second);
+    EXPECT_EQ(std::get<0>(decoded), false);
+    EXPECT_EQ(std::get<1>(decoded), 0);
+    EXPECT_EQ(std::get<2>(decoded), AnyValueInputRequest{});
+  }
+  {
+    // Wrong type of input request type field
+    sup::dto::uint64 req_id = 42u;
+    sup::dto::AnyValue metadata{ sup::dto::StringType, "meta" };
+    const std::string json_type = R"RAW({"type":"uint16"})RAW";
+    sup::dto::AnyValue payload_av{{
+      { kInputRequestIndexField, req_id },
+      { kInputRequestTypeField, { sup::dto::Float32Type, 1.0f }},
+      { kInputRequestMetadataField, metadata },
+      { kInputRequestInputTypeField, { sup::dto::StringType, json_type }}
+    }};
+    // Encode explicitly
+    auto encoded = sup::protocol::Base64VariableCodec::Encode(payload_av);
+    EXPECT_TRUE(encoded.first);
+    // Decode
+    auto decoded = DecodeInputRequest(encoded.second);
+    EXPECT_EQ(std::get<0>(decoded), false);
+    EXPECT_EQ(std::get<1>(decoded), 0);
+    EXPECT_EQ(std::get<2>(decoded), AnyValueInputRequest{});
+  }
+  {
+    // Missing metadata field
+    sup::dto::uint64 req_id = 42u;
+    const std::string json_type = R"RAW({"type":"uint16"})RAW";
+    sup::dto::AnyValue payload_av{{
+      { kInputRequestIndexField, req_id },
+      { kInputRequestTypeField, { sup::dto::UnsignedInteger32Type, 1u }},
+      { kInputRequestInputTypeField, { sup::dto::StringType, json_type }}
+    }};
+    // Encode explicitly
+    auto encoded = sup::protocol::Base64VariableCodec::Encode(payload_av);
+    EXPECT_TRUE(encoded.first);
+    // Decode
+    auto decoded = DecodeInputRequest(encoded.second);
+    EXPECT_EQ(std::get<0>(decoded), false);
+    EXPECT_EQ(std::get<1>(decoded), 0);
+    EXPECT_EQ(std::get<2>(decoded), AnyValueInputRequest{});
+  }
+  {
+    // Missing input type field
+    sup::dto::uint64 req_id = 42u;
+    sup::dto::AnyValue metadata{ sup::dto::StringType, "meta" };
+    sup::dto::AnyValue payload_av{{
+      { kInputRequestIndexField, req_id },
+      { kInputRequestTypeField, { sup::dto::UnsignedInteger32Type, 1u }},
+      { kInputRequestMetadataField, metadata }
+    }};
+    // Encode explicitly
+    auto encoded = sup::protocol::Base64VariableCodec::Encode(payload_av);
+    EXPECT_TRUE(encoded.first);
+    // Decode
+    auto decoded = DecodeInputRequest(encoded.second);
+    EXPECT_EQ(std::get<0>(decoded), false);
+    EXPECT_EQ(std::get<1>(decoded), 0);
+    EXPECT_EQ(std::get<2>(decoded), AnyValueInputRequest{});
+  }
+  {
+    // Wrong type of input type field
+    sup::dto::uint64 req_id = 42u;
+    sup::dto::AnyValue metadata{ sup::dto::StringType, "meta" };
+    sup::dto::AnyValue payload_av{{
+      { kInputRequestIndexField, req_id },
+      { kInputRequestTypeField, { sup::dto::UnsignedInteger32Type, 1u }},
+      { kInputRequestMetadataField, metadata },
+      { kInputRequestInputTypeField, { sup::dto::BooleanType, true }}
+    }};
+    // Encode explicitly
+    auto encoded = sup::protocol::Base64VariableCodec::Encode(payload_av);
+    EXPECT_TRUE(encoded.first);
+    // Decode
+    auto decoded = DecodeInputRequest(encoded.second);
+    EXPECT_EQ(std::get<0>(decoded), false);
+    EXPECT_EQ(std::get<1>(decoded), 0);
+    EXPECT_EQ(std::get<2>(decoded), AnyValueInputRequest{});
+  }
+  {
+    // Input type field cannot be parsed to AnyType
+    sup::dto::uint64 req_id = 42u;
+    sup::dto::AnyValue metadata{ sup::dto::StringType, "meta" };
+    const std::string json_type = R"RAW({"type":"does_not_exist"})RAW";
+    sup::dto::AnyValue payload_av{{
+      { kInputRequestIndexField, req_id },
+      { kInputRequestTypeField, { sup::dto::UnsignedInteger32Type, 1u }},
+      { kInputRequestMetadataField, metadata },
+      { kInputRequestInputTypeField, { sup::dto::StringType, json_type }}
+    }};
+    // Encode explicitly
+    auto encoded = sup::protocol::Base64VariableCodec::Encode(payload_av);
+    EXPECT_TRUE(encoded.first);
+    // Decode
+    auto decoded = DecodeInputRequest(encoded.second);
+    EXPECT_EQ(std::get<0>(decoded), false);
+    EXPECT_EQ(std::get<1>(decoded), 0);
+    EXPECT_EQ(std::get<2>(decoded), AnyValueInputRequest{});
+  }
+}
