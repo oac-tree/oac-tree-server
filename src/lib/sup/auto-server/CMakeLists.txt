@@ -36,7 +36,7 @@ install(FILES
   anyvalue_input_request.h
   anyvalue_io_helper.h
   automation_protocol_client.h
-  automation_protocol_server.h
+  info_protocol_server.h
   automation_server.h
   client_anyvalue_manager.h
   client_job.h

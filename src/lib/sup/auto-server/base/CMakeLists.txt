@@ -4,7 +4,7 @@ target_sources(sup-auto-server
   anyvalue_io_helper.cpp
   automation_client_stack.cpp
   automation_protocol_client.cpp
-  automation_protocol_server.cpp
+  info_protocol_server.cpp
   automation_server.cpp
   client_anyvalue_manager.cpp
   client_job.cpp

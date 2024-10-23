@@ -19,8 +19,8 @@
  * of the distribution package.
  ******************************************************************************/
 
-#ifndef SUP_AUTO_SERVER_AUTOMATION_PROTOCOL_SERVER_H_
-#define SUP_AUTO_SERVER_AUTOMATION_PROTOCOL_SERVER_H_
+#ifndef SUP_AUTO_SERVER_INFO_PROTOCOL_SERVER_H_
+#define SUP_AUTO_SERVER_INFO_PROTOCOL_SERVER_H_
 
 #include <sup/auto-server/i_job_manager.h>
 
@@ -32,13 +32,15 @@ namespace sup
 namespace auto_server
 {
 /**
- * @brief AutomationProtocolServer.
+ * @brief InfoProtocolServer provides the server side protocol for requests to get information about
+ * a job. It is separated from the server that handles controlling a job for reasons of access
+ * control.
  */
-class AutomationProtocolServer : public sup::protocol::Protocol
+class InfoProtocolServer : public sup::protocol::Protocol
 {
 public:
-  explicit AutomationProtocolServer(IJobManager& job_manager);
-  ~AutomationProtocolServer();
+  explicit InfoProtocolServer(IJobManager& job_manager);
+  ~InfoProtocolServer();
 
   sup::protocol::ProtocolResult Invoke(const sup::dto::AnyValue& input,
                                        sup::dto::AnyValue& output) override;
@@ -46,7 +48,7 @@ public:
                                         sup::dto::AnyValue& output) override;
 
 private:
-  static const sup::protocol::ProtocolMemberFunctionMap<AutomationProtocolServer>& FunctionMap();
+  static const sup::protocol::ProtocolMemberFunctionMap<InfoProtocolServer>& FunctionMap();
   IJobManager& m_job_manager;
   sup::protocol::ProtocolResult GetServerPrefix(const sup::dto::AnyValue& input,
                                                 sup::dto::AnyValue& output);
@@ -69,4 +71,4 @@ private:
 
 }  // namespace sup
 
-#endif  // SUP_AUTO_SERVER_AUTOMATION_PROTOCOL_SERVER_H_
+#endif  // SUP_AUTO_SERVER_INFO_PROTOCOL_SERVER_H_

@@ -19,7 +19,7 @@
  * of the distribution package.
  ******************************************************************************/
 
-#include <sup/auto-server/automation_protocol_server.h>
+#include <sup/auto-server/info_protocol_server.h>
 
 #include <sup/auto-server/sup_auto_protocol.h>
 
@@ -40,19 +40,19 @@ namespace sup
 namespace auto_server
 {
 
-AutomationProtocolServer::AutomationProtocolServer(IJobManager& job_manager)
+InfoProtocolServer::InfoProtocolServer(IJobManager& job_manager)
   : m_job_manager{job_manager}
 {}
 
-AutomationProtocolServer::~AutomationProtocolServer() = default;
+InfoProtocolServer::~InfoProtocolServer() = default;
 
-sup::protocol::ProtocolResult AutomationProtocolServer::Invoke(const sup::dto::AnyValue& input,
+sup::protocol::ProtocolResult InfoProtocolServer::Invoke(const sup::dto::AnyValue& input,
                                                                sup::dto::AnyValue& output)
 {
   return sup::protocol::CallFunctionProtocol(*this, FunctionMap(), input, output, NotSupported);
 }
 
-sup::protocol::ProtocolResult AutomationProtocolServer::Service(const sup::dto::AnyValue& input,
+sup::protocol::ProtocolResult InfoProtocolServer::Service(const sup::dto::AnyValue& input,
                                                                 sup::dto::AnyValue& output)
 {
   if (sup::protocol::utils::IsApplicationProtocolRequestPayload(input))
@@ -63,20 +63,20 @@ sup::protocol::ProtocolResult AutomationProtocolServer::Service(const sup::dto::
   return NotSupported;
 }
 
-const sup::protocol::ProtocolMemberFunctionMap<AutomationProtocolServer>&
-AutomationProtocolServer::FunctionMap()
+const sup::protocol::ProtocolMemberFunctionMap<InfoProtocolServer>&
+InfoProtocolServer::FunctionMap()
 {
-  static sup::protocol::ProtocolMemberFunctionMap<AutomationProtocolServer> f_map = {
-    { kGetServerPrefixFunctionName, &AutomationProtocolServer::GetServerPrefix },
-    { kGetNumberOfJobsFunctionName, &AutomationProtocolServer::GetNumberOfJobs },
-    { kGetJobInfoFunctionName, &AutomationProtocolServer::GetJobInfo },
-    { kEditBreakpointCommandFunctionName, &AutomationProtocolServer::EditBreakpoint },
-    { kSendJobCommandFunctionName, &AutomationProtocolServer::SendJobCommand }
+  static sup::protocol::ProtocolMemberFunctionMap<InfoProtocolServer> f_map = {
+    { kGetServerPrefixFunctionName, &InfoProtocolServer::GetServerPrefix },
+    { kGetNumberOfJobsFunctionName, &InfoProtocolServer::GetNumberOfJobs },
+    { kGetJobInfoFunctionName, &InfoProtocolServer::GetJobInfo },
+    { kEditBreakpointCommandFunctionName, &InfoProtocolServer::EditBreakpoint },
+    { kSendJobCommandFunctionName, &InfoProtocolServer::SendJobCommand }
   };
   return f_map;
 }
 
-sup::protocol::ProtocolResult AutomationProtocolServer::GetServerPrefix(
+sup::protocol::ProtocolResult InfoProtocolServer::GetServerPrefix(
   const sup::dto::AnyValue& input, sup::dto::AnyValue& output)
 {
   (void)input;
@@ -90,7 +90,7 @@ sup::protocol::ProtocolResult AutomationProtocolServer::GetServerPrefix(
   return sup::protocol::Success;
 }
 
-sup::protocol::ProtocolResult AutomationProtocolServer::GetNumberOfJobs(
+sup::protocol::ProtocolResult InfoProtocolServer::GetNumberOfJobs(
   const sup::dto::AnyValue& input, sup::dto::AnyValue& output)
 {
   (void)input;
@@ -104,7 +104,7 @@ sup::protocol::ProtocolResult AutomationProtocolServer::GetNumberOfJobs(
   return sup::protocol::Success;
 }
 
-sup::protocol::ProtocolResult AutomationProtocolServer::GetJobInfo(
+sup::protocol::ProtocolResult InfoProtocolServer::GetJobInfo(
   const sup::dto::AnyValue& input, sup::dto::AnyValue& output)
 {
   sup::dto::uint64 idx{};
@@ -124,7 +124,7 @@ sup::protocol::ProtocolResult AutomationProtocolServer::GetJobInfo(
   return sup::protocol::Success;
 }
 
-sup::protocol::ProtocolResult AutomationProtocolServer::EditBreakpoint(
+sup::protocol::ProtocolResult InfoProtocolServer::EditBreakpoint(
   const sup::dto::AnyValue& input, sup::dto::AnyValue& output)
 {
   (void)output;
@@ -150,7 +150,7 @@ sup::protocol::ProtocolResult AutomationProtocolServer::EditBreakpoint(
   return sup::protocol::Success;
 }
 
-sup::protocol::ProtocolResult AutomationProtocolServer::SendJobCommand(
+sup::protocol::ProtocolResult InfoProtocolServer::SendJobCommand(
   const sup::dto::AnyValue& input, sup::dto::AnyValue& output)
 {
   (void)output;
@@ -170,7 +170,7 @@ sup::protocol::ProtocolResult AutomationProtocolServer::SendJobCommand(
   return sup::protocol::Success;
 }
 
-sup::protocol::ProtocolResult AutomationProtocolServer::ExtractJobIndex(
+sup::protocol::ProtocolResult InfoProtocolServer::ExtractJobIndex(
   const sup::dto::AnyValue& input, sup::dto::uint64& idx)
 {
   sup::dto::AnyValue idx_av{};
@@ -189,7 +189,7 @@ sup::protocol::ProtocolResult AutomationProtocolServer::ExtractJobIndex(
   return sup::protocol::Success;
 }
 
-sup::protocol::ProtocolResult AutomationProtocolServer::ExtractInstructionIndex(
+sup::protocol::ProtocolResult InfoProtocolServer::ExtractInstructionIndex(
   const sup::dto::AnyValue& input, std::size_t number_of_instructions, sup::dto::uint64& idx)
 {
   sup::dto::AnyValue idx_av{};
