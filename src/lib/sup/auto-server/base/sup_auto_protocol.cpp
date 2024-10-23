@@ -95,6 +95,11 @@ const sup::protocol::ProtocolResult UnknownInstruction{status::kUnknownInstructi
 const sup::protocol::ProtocolResult UnknownJobCommand{status::kUnknownJobCommand};
 const sup::protocol::ProtocolResult ClientReplyRefused{status::kClientReplyRefused};
 
+std::string GetControlServerName(const std::string& server_name)
+{
+  return server_name + kControlServerId;
+}
+
 std::string AutomationServerResultToString(const sup::protocol::ProtocolResult& result)
 {
   static std::map<int, std::string> result_map = {

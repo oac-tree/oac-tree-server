@@ -33,10 +33,12 @@ namespace sup
 {
 namespace auto_server
 {
+
 // Prefix suggestion: e.g. for CC2D loop:
 // "CSW-S2D-AUTO:"
-// Prefix for a specific procedure:
-// "CSW-S2D-AUTO-STARTUP:
+
+// Control server identifier
+const std::string kControlServerId = "CONTROL:";
 
 // Instruction pv identifier
 const std::string kInstructionId = "INSTR-";
@@ -183,6 +185,14 @@ extern const sup::protocol::ProtocolResult ClientReplyRefused;
 
 
 /**
+ * @brief Create a name for the server that handles job control.
+ *
+ * @param server_name Main server name that is used for handling information requests about jobs.
+ * @return Name for the control server.
+ */
+std::string GetControlServerName(const std::string& server_name);
+
+/**
  * @brief Convert the protocol result to a human-readable string.
  *
  * @param result a protocol result object.
@@ -193,6 +203,13 @@ extern const sup::protocol::ProtocolResult ClientReplyRefused;
  */
 std::string AutomationServerResultToString(const sup::protocol::ProtocolResult& result);
 
+/**
+ * @brief Create a job specific prefix from the server prefix and the job index.
+ *
+ * @param server_prefix Main server prefix.
+ * @param idx Job index.
+ * @return Job specific prefix.
+ */
 std::string CreateJobPrefix(const std::string& server_prefix, std::size_t idx);
 
 /**
