@@ -36,8 +36,12 @@ target_link_libraries(unit-tests
     sup-auto-server
     sup-epics::sup-epics
     sup-utils::sup-cli
-    stdc++fs
 )
+
+if (CMAKE_CXX_COMPILER_ID STREQUAL "Clang" OR (CMAKE_CXX_COMPILER_ID STREQUAL "GNU" AND CMAKE_CXX_COMPILER_VERSION VERSION_LESS 9.1))
+message(VERBOSE "Linking stdc++fs")
+target_link_libraries(unit-tests PRIVATE stdc++fs)
+endif ()
 
 set_target_properties(unit-tests PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${TEST_OUTPUT_DIRECTORY})
 
