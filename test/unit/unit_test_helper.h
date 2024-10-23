@@ -84,6 +84,13 @@ public:
   MOCK_METHOD(void, Log, (int, const std::string&), (override));
 };
 
+class MockAnyValueIO : public IAnyValueIO
+{
+public:
+  MOCK_METHOD(bool, AddAnyValues, (const NameAnyValueSet&), (override));
+  MOCK_METHOD(bool, AddInputHandler, (const std::string&), (override));
+};
+
 class MockAnyValueManager : public IAnyValueManager
 {
 public:
