@@ -87,3 +87,256 @@ TEST_F(AnyValueInputRequestTest, CreateUserChoiceRequest)
   EXPECT_EQ(options_parsed, options);
   EXPECT_EQ(meta_parsed, metadata);
 }
+
+TEST_F(AnyValueInputRequestTest, ParseUserValueRequest)
+{
+  {
+    // Successful parsing
+    const std::string description = "description";
+    InputRequestType request_type = InputRequestType::kUserValue;
+    sup::dto::AnyValue metadata{ sup::dto::StringType, description };
+    sup::dto::AnyType input_type = sup::dto::StringType;
+    AnyValueInputRequest request{ request_type, metadata, input_type };
+    sup::dto::AnyValue parsed_value{};
+    std::string parsed_description{};
+    EXPECT_TRUE(ParseUserValueRequest(request, parsed_value, parsed_description));
+    sup::dto::AnyValue expected_value{ sup::dto::StringType };
+    EXPECT_EQ(parsed_value, expected_value);
+    EXPECT_EQ(parsed_description, description);
+  }
+  {
+    // Wrong request type
+    const std::string description = "description";
+    InputRequestType request_type = InputRequestType::kUserChoice;
+    sup::dto::AnyValue metadata{ sup::dto::StringType, description };
+    sup::dto::AnyType input_type = sup::dto::StringType;
+    AnyValueInputRequest request{ request_type, metadata, input_type };
+    sup::dto::AnyValue parsed_value{};
+    std::string parsed_description{};
+    EXPECT_FALSE(ParseUserValueRequest(request, parsed_value, parsed_description));
+    EXPECT_TRUE(sup::dto::IsEmptyValue(parsed_value));
+    EXPECT_TRUE(parsed_description.empty());
+  }
+  {
+    // Wrong metadata type (must be StringType)
+    InputRequestType request_type = InputRequestType::kUserValue;
+    sup::dto::AnyValue metadata{ sup::dto::Float64Type, 3.14 };
+    sup::dto::AnyType input_type = sup::dto::StringType;
+    AnyValueInputRequest request{ request_type, metadata, input_type };
+    sup::dto::AnyValue parsed_value{};
+    std::string parsed_description{};
+    EXPECT_FALSE(ParseUserValueRequest(request, parsed_value, parsed_description));
+    EXPECT_TRUE(sup::dto::IsEmptyValue(parsed_value));
+    EXPECT_TRUE(parsed_description.empty());
+  }
+  {
+    // Pass AnyValue that can't be assigned to (array elements have a locked type)
+    const std::string description = "description";
+    InputRequestType request_type = InputRequestType::kUserValue;
+    sup::dto::AnyValue metadata{ sup::dto::StringType, description };
+    sup::dto::AnyType input_type = sup::dto::StringType;
+    AnyValueInputRequest request{ request_type, metadata, input_type };
+    // Array of 4 uint64 values; one of them will be used to simulate failed assignment
+    sup::dto::AnyValue parsed_value{4, sup::dto::UnsignedInteger64Type};
+    std::string parsed_description{};
+    EXPECT_FALSE(ParseUserValueRequest(request, parsed_value[0], parsed_description));
+    EXPECT_EQ(parsed_value.NumberOfElements(), 4);
+    EXPECT_EQ(parsed_value.GetType().ElementType(), sup::dto::UnsignedInteger64Type);
+    EXPECT_TRUE(parsed_description.empty());
+  }
+}
+
+TEST_F(AnyValueInputRequestTest, ParseUserChoiceRequest)
+{
+  {
+    // Successful parsing
+    InputRequestType request_type = InputRequestType::kUserChoice;
+    std::vector<std::string> options{ "one", "two", "three" };
+    sup::dto::AnyValue options_av{options.size(), sup::dto::StringType};
+    for (size_t idx = 0; idx < options.size(); ++idx)
+    {
+      options_av[idx] = options[idx];
+    }
+    const std::string metatext = "meta";
+    sup::dto::AnyValue metadata{{
+      { kInputRequestOptionsFieldName, options_av },
+      { kInputRequestMetadataFieldName, { sup::dto::StringType, metatext }}
+    }};
+    sup::dto::AnyType input_type = sup::dto::StringType;
+    AnyValueInputRequest request{ request_type, metadata, input_type };
+    std::vector<std::string> parsed_options{};
+    sup::dto::AnyValue parsed_metadata{};
+    EXPECT_TRUE(ParseUserChoiceRequest(request, parsed_options, parsed_metadata));
+    sup::dto::AnyValue expected_metadata{ sup::dto::StringType, metatext };
+    EXPECT_EQ(parsed_metadata, expected_metadata);
+    EXPECT_EQ(parsed_options, options);
+  }
+  {
+    // Wrong request type
+    InputRequestType request_type = InputRequestType::kUserValue;
+    std::vector<std::string> options{ "one", "two", "three" };
+    sup::dto::AnyValue options_av{options.size(), sup::dto::StringType};
+    for (size_t idx = 0; idx < options.size(); ++idx)
+    {
+      options_av[idx] = options[idx];
+    }
+    const std::string metatext = "meta";
+    sup::dto::AnyValue metadata{{
+      { kInputRequestOptionsFieldName, options_av },
+      { kInputRequestMetadataFieldName, { sup::dto::StringType, metatext }}
+    }};
+    sup::dto::AnyType input_type = sup::dto::StringType;
+    AnyValueInputRequest request{ request_type, metadata, input_type };
+    std::vector<std::string> parsed_options{};
+    sup::dto::AnyValue parsed_metadata{};
+    EXPECT_FALSE(ParseUserChoiceRequest(request, parsed_options, parsed_metadata));
+    EXPECT_TRUE(parsed_options.empty());
+    EXPECT_TRUE(sup::dto::IsEmptyValue(parsed_metadata));
+  }
+  {
+    // Missing options field
+    InputRequestType request_type = InputRequestType::kUserChoice;
+    const std::string metatext = "meta";
+    sup::dto::AnyValue metadata{{
+      { kInputRequestMetadataFieldName, { sup::dto::StringType, metatext }}
+    }};
+    sup::dto::AnyType input_type = sup::dto::StringType;
+    AnyValueInputRequest request{ request_type, metadata, input_type };
+    std::vector<std::string> parsed_options{};
+    sup::dto::AnyValue parsed_metadata{};
+    EXPECT_FALSE(ParseUserChoiceRequest(request, parsed_options, parsed_metadata));
+    EXPECT_TRUE(parsed_options.empty());
+    EXPECT_TRUE(sup::dto::IsEmptyValue(parsed_metadata));
+  }
+  {
+    // Options field not an array type
+    InputRequestType request_type = InputRequestType::kUserChoice;
+    sup::dto::AnyValue options_av{sup::dto::StringType};
+    const std::string metatext = "meta";
+    sup::dto::AnyValue metadata{{
+      { kInputRequestOptionsFieldName, options_av },
+      { kInputRequestMetadataFieldName, { sup::dto::StringType, metatext }}
+    }};
+    sup::dto::AnyType input_type = sup::dto::StringType;
+    AnyValueInputRequest request{ request_type, metadata, input_type };
+    std::vector<std::string> parsed_options{};
+    sup::dto::AnyValue parsed_metadata{};
+    EXPECT_FALSE(ParseUserChoiceRequest(request, parsed_options, parsed_metadata));
+    EXPECT_TRUE(parsed_options.empty());
+    EXPECT_TRUE(sup::dto::IsEmptyValue(parsed_metadata));
+  }
+  {
+    // Options field array of wrong type
+    InputRequestType request_type = InputRequestType::kUserChoice;
+    sup::dto::AnyValue options_av{3, sup::dto::Float32Type};
+    const std::string metatext = "meta";
+    sup::dto::AnyValue metadata{{
+      { kInputRequestOptionsFieldName, options_av },
+      { kInputRequestMetadataFieldName, { sup::dto::StringType, metatext }}
+    }};
+    sup::dto::AnyType input_type = sup::dto::StringType;
+    AnyValueInputRequest request{ request_type, metadata, input_type };
+    std::vector<std::string> parsed_options{};
+    sup::dto::AnyValue parsed_metadata{};
+    EXPECT_FALSE(ParseUserChoiceRequest(request, parsed_options, parsed_metadata));
+    EXPECT_TRUE(parsed_options.empty());
+    EXPECT_TRUE(sup::dto::IsEmptyValue(parsed_metadata));
+  }
+  {
+    // Pass AnyValue that can't be assigned to (array elements have a locked type)
+    InputRequestType request_type = InputRequestType::kUserChoice;
+    std::vector<std::string> options{ "one", "two", "three" };
+    sup::dto::AnyValue options_av{options.size(), sup::dto::StringType};
+    for (size_t idx = 0; idx < options.size(); ++idx)
+    {
+      options_av[idx] = options[idx];
+    }
+    const std::string metatext = "meta";
+    sup::dto::AnyValue metadata{{
+      { kInputRequestOptionsFieldName, options_av },
+      { kInputRequestMetadataFieldName, { sup::dto::StringType, metatext }}
+    }};
+    sup::dto::AnyType input_type = sup::dto::StringType;
+    AnyValueInputRequest request{ request_type, metadata, input_type };
+    std::vector<std::string> parsed_options{};
+    sup::dto::AnyValue parsed_metadata{4, sup::dto::UnsignedInteger64Type};
+    EXPECT_FALSE(ParseUserChoiceRequest(request, parsed_options, parsed_metadata[0]));
+    EXPECT_TRUE(parsed_options.empty());
+    EXPECT_EQ(parsed_metadata.NumberOfElements(), 4);
+    EXPECT_EQ(parsed_metadata.GetType().ElementType(), sup::dto::UnsignedInteger64Type);
+  }
+}
+
+TEST_F(AnyValueInputRequestTest, CreateUserValueReply)
+{
+  {
+    // User value reply that indicates success
+    sup::dto::AnyValue user_value{ sup::dto::Character8Type, 'a' };
+    auto reply_av = CreateUserValueReply(true, user_value);
+    ASSERT_TRUE(reply_av.HasField(kInputReplyResultFieldName));
+    ASSERT_TRUE(reply_av.HasField(kInputReplyValueFieldName));
+    ASSERT_EQ(reply_av[kInputReplyResultFieldName].GetType(), sup::dto::BooleanType);
+    EXPECT_EQ(reply_av[kInputReplyResultFieldName].As<sup::dto::boolean>(), true);
+    ASSERT_EQ(reply_av[kInputReplyValueFieldName].GetType(), sup::dto::Character8Type);
+    EXPECT_EQ(reply_av[kInputReplyValueFieldName].As<sup::dto::char8>(), 'a');
+
+    // Parse the AnyValue back
+    auto result = ParseUserValueReply(reply_av);
+    EXPECT_EQ(result.first, true);
+    ASSERT_EQ(result.second.GetType(), sup::dto::Character8Type);
+    EXPECT_EQ(result.second.As<sup::dto::char8>(), 'a');
+  }
+  {
+    // User value reply that indicates failure
+    sup::dto::AnyValue user_value{ sup::dto::Character8Type, 'a' };
+    auto reply_av = CreateUserValueReply(false, user_value);
+    ASSERT_TRUE(reply_av.HasField(kInputReplyResultFieldName));
+    ASSERT_TRUE(reply_av.HasField(kInputReplyValueFieldName));
+    ASSERT_EQ(reply_av[kInputReplyResultFieldName].GetType(), sup::dto::BooleanType);
+    EXPECT_EQ(reply_av[kInputReplyResultFieldName].As<sup::dto::boolean>(), false);
+    ASSERT_EQ(reply_av[kInputReplyValueFieldName].GetType(), sup::dto::Character8Type);
+    EXPECT_EQ(reply_av[kInputReplyValueFieldName].As<sup::dto::char8>(), 'a');
+
+    // Parse the AnyValue back
+    auto result = ParseUserValueReply(reply_av);
+    EXPECT_EQ(result.first, false);
+    EXPECT_TRUE(sup::dto::IsEmptyValue(result.second));
+  }
+}
+
+TEST_F(AnyValueInputRequestTest, CreateUserChoiceReply)
+{
+  {
+    // User choice reply that indicates success
+    int choice = 5;
+    auto reply_av = CreateUserChoiceReply(true, choice);
+    ASSERT_TRUE(reply_av.HasField(kInputReplyResultFieldName));
+    ASSERT_TRUE(reply_av.HasField(kInputReplyValueFieldName));
+    ASSERT_EQ(reply_av[kInputReplyResultFieldName].GetType(), sup::dto::BooleanType);
+    EXPECT_EQ(reply_av[kInputReplyResultFieldName].As<sup::dto::boolean>(), true);
+    ASSERT_EQ(reply_av[kInputReplyValueFieldName].GetType(), sup::dto::SignedInteger32Type);
+    EXPECT_EQ(reply_av[kInputReplyValueFieldName].As<sup::dto::int32>(), 5);
+
+    // Parse the AnyValue back
+    auto result = ParseUserChoiceReply(reply_av);
+    EXPECT_EQ(result.first, true);
+    EXPECT_EQ(result.second, 5);
+  }
+  {
+    // User choice reply that indicates failure
+    int choice = 5;
+    auto reply_av = CreateUserChoiceReply(false, choice);
+    ASSERT_TRUE(reply_av.HasField(kInputReplyResultFieldName));
+    ASSERT_TRUE(reply_av.HasField(kInputReplyValueFieldName));
+    ASSERT_EQ(reply_av[kInputReplyResultFieldName].GetType(), sup::dto::BooleanType);
+    EXPECT_EQ(reply_av[kInputReplyResultFieldName].As<sup::dto::boolean>(), false);
+    ASSERT_EQ(reply_av[kInputReplyValueFieldName].GetType(), sup::dto::SignedInteger32Type);
+    EXPECT_EQ(reply_av[kInputReplyValueFieldName].As<sup::dto::int32>(), 5);
+
+    // Parse the AnyValue back
+    auto result = ParseUserChoiceReply(reply_av);
+    EXPECT_EQ(result.first, false);
+    EXPECT_EQ(result.second, -1);
+  }
+}
+

@@ -95,8 +95,12 @@ bool ParseUserValueRequest(const AnyValueInputRequest& request, sup::dto::AnyVal
   {
     return false;
   }
+  if (!sup::dto::TryAssign(value, sup::dto::AnyValue{request.m_input_type}))
+  {
+    return false;
+  }
   description = request.m_meta_data.As<std::string>();
-  return sup::dto::TryAssign(value, sup::dto::AnyValue{request.m_input_type});
+  return true;
 }
 
 bool ParseUserChoiceRequest(const AnyValueInputRequest& request, std::vector<std::string>& options,
