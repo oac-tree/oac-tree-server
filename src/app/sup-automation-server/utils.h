@@ -37,6 +37,8 @@ namespace utils
 {
 using ProcedureList = std::vector<std::unique_ptr<sup::sequencer::Procedure>>;
 
+std::vector<std::string> GetProcedureFilenames(sup::cli::CommandLineParser& parser);
+
 ProcedureList GetProcedureList(sup::cli::CommandLineParser& parser);
 
 std::unique_ptr<IAnyValueManagerRegistry> CreateAnyValueManagerRegistry(std::size_t n_managers);

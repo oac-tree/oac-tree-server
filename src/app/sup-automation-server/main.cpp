@@ -46,6 +46,10 @@ int main(int argc, char* argv[])
       .SetValueName("service_name")
       .SetRequired(true);
 
+  parser.AddOption({"-d", "--dir"}, "Directory containing files with xml extension to be parsed and run")
+      .SetParameter(true)
+      .SetValueName("directory_name");
+
   parser.AddPositionalOption("FILE...", "File(s) to be parsed and run as procedures");
 
   if (!parser.Parse(argc, argv))

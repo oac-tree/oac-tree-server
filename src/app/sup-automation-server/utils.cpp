@@ -25,6 +25,22 @@
 
 #include <sup/sequencer/sequence_parser.h>
 
+#include <filesystem>
+
+const std::string kProcedureExtension = ".xml";
+
+namespace
+{
+bool EndsWith(const std::string& str, const std::string& end)
+{
+  if (str.size() >= end.size())
+  {
+    return (str.compare(str.size() - end.size(), end.size(), end) == 0);
+  }
+  return false;
+}
+}
+
 namespace sup
 {
 namespace auto_server
@@ -32,13 +48,30 @@ namespace auto_server
 namespace utils
 {
 
+std::vector<std::string> GetProcedureFilenames(sup::cli::CommandLineParser& parser)
+{
+  std::vector<std::string> result{};
+  if (parser.IsSet("--dir")) {
+    auto dir = parser.GetValue<std::string>("--dir");
+    for (const auto& entry : std::filesystem::directory_iterator(dir))
+    {
+      if (entry.is_regular_file() && EndsWith(entry.path().string(), kProcedureExtension))
+      {
+        result.push_back(entry.path());
+      }
+    }
+  }
+  auto positional_args = parser.GetPositionalValues();
+  result.insert(result.end(), positional_args.begin(), positional_args.end());
+  return result;
+}
 ProcedureList GetProcedureList(sup::cli::CommandLineParser& parser)
 {
   ProcedureList result;
-  auto positional_args = parser.GetPositionalValues();
-  for (size_t idx = 0; idx < positional_args.size(); ++idx)
+  auto filenames = GetProcedureFilenames(parser);
+  for (const auto& filename : filenames)
   {
-    result.emplace_back(sup::sequencer::ParseProcedureFile(positional_args[idx]));
+    result.emplace_back(sup::sequencer::ParseProcedureFile(filename));
   }
   return result;
 }

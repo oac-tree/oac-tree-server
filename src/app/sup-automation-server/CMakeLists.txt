@@ -8,6 +8,7 @@ target_link_libraries(sup-automation-server
   sup-auto-server
   sup-epics::sup-epics
   sup-utils::sup-cli
+  stdc++fs
 )
 
 target_sources(sup-automation-server
