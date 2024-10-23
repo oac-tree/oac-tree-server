@@ -1,0 +1,187 @@
+/******************************************************************************
+ * $HeadURL: $
+ * $Id: $
+ *
+ * Project       : SUP - AUTOMATION-SERVER
+ *
+ * Description   : SUP automation server
+ *
+ * Author        : Walter Van Herck (IO)
+ *
+ * Copyright (c) : 2010-2024 ITER Organization,
+ *                 CS 90 046
+ *                 13067 St. Paul-lez-Durance Cedex
+ *                 France
+ *
+ * This file is part of ITER CODAC software.
+ * For the terms and conditions of redistribution or use of this software
+ * refer to the file ITER-LICENSE.TXT located in the top level directory
+ * of the distribution package.
+ ******************************************************************************/
+
+#include <sup/auto-server/control_protocol_server.h>
+
+#include <sup/auto-server/sup_auto_protocol.h>
+
+#include <sup/protocol/function_protocol_extract.h>
+#include <sup/protocol/protocol_rpc.h>
+
+namespace
+{
+sup::protocol::ProtocolResult ExtractJobCommand(const sup::dto::AnyValue& input,
+                                                sup::sequencer::JobCommand& command);
+}  // unnamed namespace
+
+namespace sup
+{
+namespace auto_server
+{
+
+ControlProtocolServer::ControlProtocolServer(IJobManager& job_manager)
+  : m_job_manager{job_manager}
+{}
+
+ControlProtocolServer::~ControlProtocolServer() = default;
+
+sup::protocol::ProtocolResult ControlProtocolServer::Invoke(const sup::dto::AnyValue& input,
+                                                            sup::dto::AnyValue& output)
+{
+  return sup::protocol::CallFunctionProtocol(*this, FunctionMap(), input, output, NotSupported);
+}
+
+sup::protocol::ProtocolResult ControlProtocolServer::Service(const sup::dto::AnyValue& input,
+                                                             sup::dto::AnyValue& output)
+{
+  if (sup::protocol::utils::IsApplicationProtocolRequestPayload(input))
+  {
+    // TODO: distinguish here too!
+    return sup::protocol::utils::HandleApplicationProtocolInfo(
+      output, kAutomationServerProtocolServerType, kAutomationServerProtocolServerVersion);
+  }
+  return NotSupported;
+}
+
+const sup::protocol::ProtocolMemberFunctionMap<ControlProtocolServer>&
+ControlProtocolServer::FunctionMap()
+{
+  static sup::protocol::ProtocolMemberFunctionMap<ControlProtocolServer> f_map = {
+    { kEditBreakpointCommandFunctionName, &ControlProtocolServer::EditBreakpoint },
+    { kSendJobCommandFunctionName, &ControlProtocolServer::SendJobCommand }
+  };
+  return f_map;
+}
+
+sup::protocol::ProtocolResult ControlProtocolServer::EditBreakpoint(
+  const sup::dto::AnyValue& input, sup::dto::AnyValue& output)
+{
+  (void)output;
+  sup::dto::uint64 job_idx{};
+  auto result = ExtractJobIndex(input, job_idx);
+  if (result != sup::protocol::Success)
+  {
+    return result;
+  }
+  sup::dto::uint64 instr_idx{};
+  auto number_of_instructions = m_job_manager.GetJobInfo(job_idx).GetNumberOfInstructions();
+  result = ExtractInstructionIndex(input, number_of_instructions, instr_idx);
+  if (result != sup::protocol::Success)
+  {
+    return result;
+  }
+  bool breakpoint_active;
+  if (!sup::protocol::FunctionProtocolExtract(breakpoint_active, input, kBreakpointActiveFieldName))
+  {
+    return sup::protocol::ServerProtocolDecodingError;
+  }
+  m_job_manager.EditBreakpoint(job_idx, instr_idx, breakpoint_active);
+  return sup::protocol::Success;
+}
+
+sup::protocol::ProtocolResult ControlProtocolServer::SendJobCommand(
+  const sup::dto::AnyValue& input, sup::dto::AnyValue& output)
+{
+  (void)output;
+  sup::dto::uint64 idx{};
+  auto result = ExtractJobIndex(input, idx);
+  if (result != sup::protocol::Success)
+  {
+    return result;
+  }
+  sup::sequencer::JobCommand command{sup::sequencer::JobCommand::kStart};
+  result = ExtractJobCommand(input, command);
+  if (result != sup::protocol::Success)
+  {
+    return result;
+  }
+  m_job_manager.SendJobCommand(idx, command);
+  return sup::protocol::Success;
+}
+
+sup::protocol::ProtocolResult ControlProtocolServer::ExtractJobIndex(
+  const sup::dto::AnyValue& input, sup::dto::uint64& idx)
+{
+  sup::dto::AnyValue idx_av{};
+  if (!sup::protocol::FunctionProtocolExtract(idx_av, input, kJobIndexFieldName))
+  {
+    return sup::protocol::ServerProtocolDecodingError;
+  }
+  if (!idx_av.As(idx))
+  {
+    return sup::protocol::ServerProtocolDecodingError;
+  }
+  if (idx >= m_job_manager.GetNumberOfJobs())
+  {
+    return UnknownJob;
+  }
+  return sup::protocol::Success;
+}
+
+sup::protocol::ProtocolResult ControlProtocolServer::ExtractInstructionIndex(
+  const sup::dto::AnyValue& input, std::size_t number_of_instructions, sup::dto::uint64& idx)
+{
+  sup::dto::AnyValue idx_av{};
+  if (!sup::protocol::FunctionProtocolExtract(idx_av, input, kInstructionIndexFieldName))
+  {
+    return sup::protocol::ServerProtocolDecodingError;
+  }
+  if (!idx_av.As(idx))
+  {
+    return sup::protocol::ServerProtocolDecodingError;
+  }
+  if (idx >= number_of_instructions)
+  {
+    return UnknownInstruction;
+  }
+  return sup::protocol::Success;
+}
+
+}  // namespace auto_server
+
+}  // namespace sup
+
+namespace
+{
+using namespace sup::auto_server;
+sup::protocol::ProtocolResult ExtractJobCommand(const sup::dto::AnyValue& input,
+                                                sup::sequencer::JobCommand& command)
+{
+  sup::dto::AnyValue command_av;
+  if (!sup::protocol::FunctionProtocolExtract(command_av, input, kJobCommandFieldName))
+  {
+    return sup::protocol::ServerProtocolDecodingError;
+  }
+  sup::dto::uint32 command_int;
+  if (!command_av.As(command_int))
+  {
+    return sup::protocol::ServerProtocolDecodingError;
+  }
+  if (command_int >= static_cast<sup::dto::uint32>(sup::sequencer::JobCommand::kTerminate))
+  {
+    return UnknownJobCommand;
+  }
+  command = static_cast<sup::sequencer::JobCommand>(command_int);
+  return sup::protocol::Success;
+}
+
+}  // unnamed namespace
+

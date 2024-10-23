@@ -50,6 +50,7 @@ TEST_F(AnyValueIOHelperTest, InitializeJobAndVariables)
   EXPECT_CALL(m_anyvalue_io, AddAnyValues(initial_value_set)).Times(Exactly(1));
   auto input_server_name = GetInputServerName(job_prefix);
   EXPECT_CALL(m_anyvalue_io, AddInputHandler(input_server_name)).Times(Exactly(1));
+
   InitializeJobAndVariables(m_anyvalue_io, job_prefix, n_vars);
 }
 
@@ -57,8 +58,9 @@ TEST_F(AnyValueIOHelperTest, InitializeInstructions)
 {
   const std::string job_prefix = "test_job_2";
   sup::dto::uint32 n_instr = 8;
-  // Set expectations on calling InitializeJobAndVariables:
+  // Set expectations on calling InitializeInstructions:
   auto instruction_value_set = GetInstructionValueSet(job_prefix, n_instr);
   EXPECT_CALL(m_anyvalue_io, AddAnyValues(instruction_value_set)).Times(Exactly(1));
+
   InitializeInstructions(m_anyvalue_io, job_prefix, n_instr);
 }
