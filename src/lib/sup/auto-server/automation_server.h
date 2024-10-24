@@ -53,17 +53,17 @@ public:
   void AddJob(std::unique_ptr<sup::sequencer::Procedure> proc);
 
   std::string GetServerPrefix() const override;
-  std::size_t GetNumberOfJobs() const override;
+  sup::dto::uint32 GetNumberOfJobs() const override;
 
-  sup::sequencer::JobInfo GetJobInfo(std::size_t job_idx) const override;
+  sup::sequencer::JobInfo GetJobInfo(sup::dto::uint32 job_idx) const override;
 
-  void EditBreakpoint(std::size_t job_idx, std::size_t instr_idx, bool breakpoint_active) override;
+  void EditBreakpoint(sup::dto::uint32 job_idx, sup::dto::uint32 instr_idx, bool breakpoint_active) override;
 
-  void SendJobCommand(std::size_t job_idx, sup::sequencer::JobCommand command) override;
+  void SendJobCommand(sup::dto::uint32 job_idx, sup::sequencer::JobCommand command) override;
 
 private:
-  sup::sequencer::LocalJob& GetJob(std::size_t job_idx);
-  const sup::sequencer::LocalJob& GetJob(std::size_t job_idx) const;
+  sup::sequencer::LocalJob& GetJob(sup::dto::uint32 job_idx);
+  const sup::sequencer::LocalJob& GetJob(sup::dto::uint32 job_idx) const;
   const std::string m_server_prefix;
   IAnyValueManagerRegistry& m_av_mgr_registry;
   std::vector<std::unique_ptr<sup::sequencer::IJobInfoIO>> m_job_info_ios;

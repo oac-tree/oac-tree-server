@@ -210,7 +210,7 @@ std::string AutomationServerResultToString(const sup::protocol::ProtocolResult& 
  * @param idx Job index.
  * @return Job specific prefix.
  */
-std::string CreateJobPrefix(const std::string& server_prefix, std::size_t idx);
+std::string CreateJobPrefix(const std::string& server_prefix, sup::dto::uint32 idx);
 
 /**
  * @brief Create a PV channel name for an instruction with the given index and prefix.
@@ -314,6 +314,29 @@ std::pair<sup::dto::AnyValue, bool> DecodeVariableState(const dto::AnyValue& enc
  * @return Parsed information. Type kUnknown is returned if the name could not be correctly parsed.
  */
 ValueNameInfo ParseValueName(const std::string& val_name);
+
+/**
+ * @brief Extract the job index from the given input AnyValue. This is used in RPC server protocols.
+ *
+ * @param input AnyValue passed as input to a protocol server.
+ * @param n_jobs Total number of jobs (to provide bounds for the answer).
+ * @param idx Output parameter that will hold the parsed job index.
+ * @return ProtocolResult indicating success or failure conditions.
+ */
+sup::protocol::ProtocolResult ExtractJobIndex(
+  const sup::dto::AnyValue& input, sup::dto::uint32 n_jobs, sup::dto::uint32& idx);
+
+/**
+ * @brief Extract the instruction index from the given input AnyValue. This is used in RPC server
+ * protocols.
+ *
+ * @param input AnyValue passed as input to a protocol server.
+ * @param n_instr Total number of instructions (to provide bounds for the answer).
+ * @param idx Output parameter that will hold the parsed instruction index.
+ * @return ProtocolResult indicating success or failure conditions.
+ */
+sup::protocol::ProtocolResult ExtractInstructionIndex(
+  const sup::dto::AnyValue& input, sup::dto::uint32 n_instr, sup::dto::uint32& idx);
 
 }  // namespace auto_server
 

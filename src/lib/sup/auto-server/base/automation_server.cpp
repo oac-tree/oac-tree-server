@@ -61,19 +61,19 @@ std::string AutomationServer::GetServerPrefix() const
   return m_server_prefix;
 }
 
-std::size_t AutomationServer::GetNumberOfJobs() const
+sup::dto::uint32 AutomationServer::GetNumberOfJobs() const
 {
   std::lock_guard<std::mutex> lk{m_mtx};
   return m_jobs.size();
 }
 
-sup::sequencer::JobInfo AutomationServer::GetJobInfo(std::size_t job_idx) const
+sup::sequencer::JobInfo AutomationServer::GetJobInfo(sup::dto::uint32 job_idx) const
 {
   auto& job = GetJob(job_idx);
   return job.GetInfo();
 }
 
-void AutomationServer::EditBreakpoint(std::size_t job_idx, std::size_t instr_idx,
+void AutomationServer::EditBreakpoint(sup::dto::uint32 job_idx, sup::dto::uint32 instr_idx,
                                       bool breakpoint_active)
 {
   auto& job = GetJob(job_idx);
@@ -88,7 +88,7 @@ void AutomationServer::EditBreakpoint(std::size_t job_idx, std::size_t instr_idx
   return;
 }
 
-void AutomationServer::SendJobCommand(std::size_t job_idx, sup::sequencer::JobCommand command)
+void AutomationServer::SendJobCommand(sup::dto::uint32 job_idx, sup::sequencer::JobCommand command)
 {
   using sup::sequencer::JobCommand;
   auto& job = GetJob(job_idx);
@@ -118,12 +118,12 @@ void AutomationServer::SendJobCommand(std::size_t job_idx, sup::sequencer::JobCo
   }
 }
 
-LocalJob& AutomationServer::GetJob(std::size_t job_idx)
+LocalJob& AutomationServer::GetJob(sup::dto::uint32 job_idx)
 {
   return const_cast<LocalJob&>(const_cast<const AutomationServer*>(this)->GetJob(job_idx));
 }
 
-const LocalJob& AutomationServer::GetJob(std::size_t job_idx) const
+const LocalJob& AutomationServer::GetJob(sup::dto::uint32 job_idx) const
 {
   std::lock_guard<std::mutex> lk{m_mtx};
   if (job_idx >= m_jobs.size())

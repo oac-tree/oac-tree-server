@@ -110,7 +110,7 @@ sup::dto::AnyValue TestAnyValueManager::GetAnyValue(const std::string& name) con
   return GetAnyValueImpl(name);
 }
 
-std::size_t TestAnyValueManager::GetSize() const
+sup::dto::uint32 TestAnyValueManager::GetSize() const
 {
   std::lock_guard<std::mutex> lk{m_mtx};
   return m_value_map.size();
@@ -148,7 +148,7 @@ bool TestAnyValueManager::WaitForInputRequest(const AnyValueInputRequest& reques
   return m_cv.wait_for(lk, duration, pred);
 }
 
-std::size_t TestAnyValueManager::GetNbrInputRequests() const
+sup::dto::uint32 TestAnyValueManager::GetNbrInputRequests() const
 {
   std::unique_lock<std::mutex> lk{m_mtx};
   return m_n_input_requests;
@@ -187,7 +187,7 @@ TestAnyValueManagerRegistry::TestAnyValueManagerRegistry()
 
 TestAnyValueManagerRegistry::~TestAnyValueManagerRegistry() = default;
 
-IAnyValueManager& TestAnyValueManagerRegistry::GetAnyValueManager(std::size_t idx)
+IAnyValueManager& TestAnyValueManagerRegistry::GetAnyValueManager(sup::dto::uint32 idx)
 {
   (void)idx;
   return m_av_mgr;

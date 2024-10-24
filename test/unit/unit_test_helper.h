@@ -116,7 +116,7 @@ public:
 
   sup::dto::AnyValue GetAnyValue(const std::string& name) const;
 
-  std::size_t GetSize() const;
+  sup::dto::uint32 GetSize() const;
 
   bool WaitForValue(const std::string& name, const sup::dto::AnyValue& value, double seconds) const;
 
@@ -124,7 +124,7 @@ public:
 
   bool WaitForInputRequest(const AnyValueInputRequest& request, double seconds) const;
 
-  std::size_t GetNbrInputRequests() const;
+  sup::dto::uint32 GetNbrInputRequests() const;
 
   friend std::ostream& operator<<(std::ostream& stream, const TestAnyValueManager& server_if);
 private:
@@ -133,7 +133,7 @@ private:
   std::map<std::string, sup::dto::AnyValue> m_value_map;
   sup::dto::AnyValue m_user_input;
   std::vector<std::pair<std::string, AnyValueInputRequest>> m_input_requests;
-  std::size_t m_n_input_requests;
+  sup::dto::uint32 m_n_input_requests;
   mutable std::mutex m_mtx;
   mutable std::condition_variable m_cv;
 };
@@ -144,7 +144,7 @@ public:
   TestAnyValueManagerRegistry();
   ~TestAnyValueManagerRegistry();
 
-  IAnyValueManager& GetAnyValueManager(std::size_t idx) override;
+  IAnyValueManager& GetAnyValueManager(sup::dto::uint32 idx) override;
 private:
   TestAnyValueManager m_av_mgr;
 };

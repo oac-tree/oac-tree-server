@@ -37,10 +37,10 @@ namespace auto_server
 class EPICSAnyValueManagerRegistry : public IAnyValueManagerRegistry
 {
 public:
-  EPICSAnyValueManagerRegistry(std::size_t n_managers);
+  EPICSAnyValueManagerRegistry(sup::dto::uint32 n_managers);
   virtual ~EPICSAnyValueManagerRegistry();
 
-  IAnyValueManager& GetAnyValueManager(std::size_t idx) override;
+  IAnyValueManager& GetAnyValueManager(sup::dto::uint32 idx) override;
 
 private:
   std::vector<std::unique_ptr<IAnyValueManager>> m_anyvalue_managers;

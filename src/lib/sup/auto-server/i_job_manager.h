@@ -57,7 +57,7 @@ public:
    *
    * @return Number of jobs.
    */
-  virtual std::size_t GetNumberOfJobs() const = 0;
+  virtual sup::dto::uint32 GetNumberOfJobs() const = 0;
 
   /**
    * @brief Get the JobInfo for the specified job.
@@ -65,7 +65,7 @@ public:
    * @param job_idx Index that identifies a single job.
    * @return JobInfo object for the requested job.
    */
-  virtual sup::sequencer::JobInfo GetJobInfo(std::size_t job_idx) const = 0;
+  virtual sup::sequencer::JobInfo GetJobInfo(sup::dto::uint32 job_idx) const = 0;
 
   /**
    * @brief (De)activate a breakpoint for the given instruction of the specified job.
@@ -74,7 +74,7 @@ public:
    * @param instr_idx Index that identifies a single instruction in the job.
    * @param breakpoint_active True of breakpoint needs to be set, false in the opposite case.
    */
-  virtual void EditBreakpoint(std::size_t job_idx, std::size_t instr_idx,
+  virtual void EditBreakpoint(sup::dto::uint32 job_idx, sup::dto::uint32 instr_idx,
                               bool breakpoint_active) = 0;
 
   /**
@@ -83,7 +83,7 @@ public:
    * @param job_idx Index that identifies a single job.
    * @param command JobCommand to send.
    */
-  virtual void SendJobCommand(std::size_t job_idx, sup::sequencer::JobCommand command) = 0;
+  virtual void SendJobCommand(sup::dto::uint32 job_idx, sup::sequencer::JobCommand command) = 0;
 };
 
 }  // namespace auto_server

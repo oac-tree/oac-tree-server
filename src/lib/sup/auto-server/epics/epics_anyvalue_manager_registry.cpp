@@ -28,11 +28,11 @@ namespace sup
 namespace auto_server
 {
 
-EPICSAnyValueManagerRegistry::EPICSAnyValueManagerRegistry(std::size_t n_managers)
+EPICSAnyValueManagerRegistry::EPICSAnyValueManagerRegistry(sup::dto::uint32 n_managers)
   : m_anyvalue_managers{}
 {
   m_anyvalue_managers.reserve(n_managers);
-  for (std::size_t idx = 0; idx < n_managers; ++idx)
+  for (sup::dto::uint32 idx = 0; idx < n_managers; ++idx)
   {
     m_anyvalue_managers.emplace_back(new EPICSAnyValueManager{});
   }
@@ -40,7 +40,7 @@ EPICSAnyValueManagerRegistry::EPICSAnyValueManagerRegistry(std::size_t n_manager
 
 EPICSAnyValueManagerRegistry::~EPICSAnyValueManagerRegistry() = default;
 
-IAnyValueManager& EPICSAnyValueManagerRegistry::GetAnyValueManager(std::size_t idx)
+IAnyValueManager& EPICSAnyValueManagerRegistry::GetAnyValueManager(sup::dto::uint32 idx)
 {
   auto valid_idx = idx % m_anyvalue_managers.size();
   return *m_anyvalue_managers[valid_idx];

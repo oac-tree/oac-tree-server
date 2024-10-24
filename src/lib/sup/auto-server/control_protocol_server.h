@@ -53,11 +53,6 @@ private:
                                                sup::dto::AnyValue& output);
   sup::protocol::ProtocolResult SendJobCommand(const sup::dto::AnyValue& input,
                                                sup::dto::AnyValue& output);
-  sup::protocol::ProtocolResult ExtractJobIndex(const sup::dto::AnyValue& input,
-                                                sup::dto::uint64& idx);
-  sup::protocol::ProtocolResult ExtractInstructionIndex(const sup::dto::AnyValue& input,
-                                                        std::size_t number_of_instructions,
-                                                        sup::dto::uint64& idx);
 };
 
 }  // namespace auto_server

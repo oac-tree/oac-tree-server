@@ -41,7 +41,7 @@ std::vector<std::string> GetProcedureFilenames(sup::cli::CommandLineParser& pars
 
 ProcedureList GetProcedureList(sup::cli::CommandLineParser& parser);
 
-std::unique_ptr<IAnyValueManagerRegistry> CreateAnyValueManagerRegistry(std::size_t n_managers);
+std::unique_ptr<IAnyValueManagerRegistry> CreateAnyValueManagerRegistry(sup::dto::uint32 n_managers);
 
 }  // namespace utils
 

@@ -49,7 +49,7 @@ public:
    * @param idx Index that identifies which object to return.
    * @return Reference to an AnyValueManagerInterface implementation.
    */
-  virtual IAnyValueManager& GetAnyValueManager(std::size_t idx) = 0;
+  virtual IAnyValueManager& GetAnyValueManager(sup::dto::uint32 idx) = 0;
 };
 
 }  // namespace auto_server

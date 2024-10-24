@@ -41,13 +41,13 @@ public:
 
   std::string GetServerPrefix() const override;
 
-  std::size_t GetNumberOfJobs() const override;
+  sup::dto::uint32 GetNumberOfJobs() const override;
 
-  sup::sequencer::JobInfo GetJobInfo(std::size_t job_idx) const override;
+  sup::sequencer::JobInfo GetJobInfo(sup::dto::uint32 job_idx) const override;
 
-  void EditBreakpoint(std::size_t job_idx, std::size_t instr_idx, bool breakpoint_active) override;
+  void EditBreakpoint(sup::dto::uint32 job_idx, sup::dto::uint32 instr_idx, bool breakpoint_active) override;
 
-  void SendJobCommand(std::size_t job_idx, sup::sequencer::JobCommand command) override;
+  void SendJobCommand(sup::dto::uint32 job_idx, sup::sequencer::JobCommand command) override;
 
 private:
   sup::protocol::Protocol& m_protocol;

@@ -61,7 +61,7 @@ std::string AutomationProtocolClient::GetServerPrefix() const
   return result;
 }
 
-std::size_t AutomationProtocolClient::GetNumberOfJobs() const
+sup::dto::uint32 AutomationProtocolClient::GetNumberOfJobs() const
 {
   auto input = sup::protocol::FunctionProtocolInput(kGetNumberOfJobsFunctionName);
   sup::dto::AnyValue output;
@@ -83,7 +83,7 @@ std::size_t AutomationProtocolClient::GetNumberOfJobs() const
   return result.As<sup::dto::uint64>();
 }
 
-sup::sequencer::JobInfo AutomationProtocolClient::GetJobInfo(std::size_t job_idx) const
+sup::sequencer::JobInfo AutomationProtocolClient::GetJobInfo(sup::dto::uint32 job_idx) const
 {
   auto input = sup::protocol::FunctionProtocolInput(kGetJobInfoFunctionName);
   sup::dto::AnyValue job_idx_av{sup::dto::UnsignedInteger64Type, job_idx};
@@ -116,7 +116,7 @@ sup::sequencer::JobInfo AutomationProtocolClient::GetJobInfo(std::size_t job_idx
   }
 }
 
-void AutomationProtocolClient::EditBreakpoint(std::size_t job_idx, std::size_t instr_idx,
+void AutomationProtocolClient::EditBreakpoint(sup::dto::uint32 job_idx, sup::dto::uint32 instr_idx,
                                               bool breakpoint_active)
 {
   auto input = sup::protocol::FunctionProtocolInput(kEditBreakpointCommandFunctionName);
@@ -135,7 +135,7 @@ void AutomationProtocolClient::EditBreakpoint(std::size_t job_idx, std::size_t i
   }
 }
 
-void AutomationProtocolClient::SendJobCommand(std::size_t job_idx, sup::sequencer::JobCommand command)
+void AutomationProtocolClient::SendJobCommand(sup::dto::uint32 job_idx, sup::sequencer::JobCommand command)
 {
   auto input = sup::protocol::FunctionProtocolInput(kSendJobCommandFunctionName);
   sup::dto::AnyValue job_idx_av{sup::dto::UnsignedInteger64Type, job_idx};

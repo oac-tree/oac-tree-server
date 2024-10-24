@@ -64,22 +64,22 @@ std::string AutomationClientStack::GetServerPrefix() const
   return m_impl->GetJobManager().GetServerPrefix();
 }
 
-std::size_t AutomationClientStack::GetNumberOfJobs() const
+sup::dto::uint32 AutomationClientStack::GetNumberOfJobs() const
 {
   return m_impl->GetJobManager().GetNumberOfJobs();
 }
 
-sup::sequencer::JobInfo AutomationClientStack::GetJobInfo(std::size_t job_idx) const
+sup::sequencer::JobInfo AutomationClientStack::GetJobInfo(sup::dto::uint32 job_idx) const
 {
   return m_impl->GetJobManager().GetJobInfo(job_idx);
 }
 
-void AutomationClientStack::EditBreakpoint(std::size_t job_idx, std::size_t instr_idx, bool breakpoint_active)
+void AutomationClientStack::EditBreakpoint(sup::dto::uint32 job_idx, sup::dto::uint32 instr_idx, bool breakpoint_active)
 {
   return m_impl->GetJobManager().EditBreakpoint(job_idx, instr_idx, breakpoint_active);
 }
 
-void AutomationClientStack::SendJobCommand(std::size_t job_idx, sup::sequencer::JobCommand command)
+void AutomationClientStack::SendJobCommand(sup::dto::uint32 job_idx, sup::sequencer::JobCommand command)
 {
   return m_impl->GetJobManager().SendJobCommand(job_idx, command);
 }

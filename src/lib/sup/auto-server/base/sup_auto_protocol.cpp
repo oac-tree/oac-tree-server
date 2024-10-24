@@ -24,6 +24,7 @@
 #include <sup/auto-server/exceptions.h>
 
 #include <sup/protocol/base64_variable_codec.h>
+#include <sup/protocol/function_protocol_extract.h>
 #include <sup/sequencer/anyvalue_utils.h>
 #include <sup/sequencer/constants.h>
 #include <sup/sequencer/execution_status.h>
@@ -121,7 +122,7 @@ std::string AutomationServerResultToString(const sup::protocol::ProtocolResult& 
          std::to_string(result.GetValue());
 }
 
-std::string CreateJobPrefix(const std::string& server_prefix, std::size_t idx)
+std::string CreateJobPrefix(const std::string& server_prefix, sup::dto::uint32 idx)
 {
   return server_prefix + ":PROC-" + std::to_string(idx) + ":";
 }
@@ -245,6 +246,44 @@ ValueNameInfo ParseValueName(const std::string& val_name)
     return { ValueNameType::kVariable, idx };
   }
   return unknown;
+}
+
+sup::protocol::ProtocolResult ExtractJobIndex(
+  const sup::dto::AnyValue& input, sup::dto::uint32 n_jobs, sup::dto::uint32& idx)
+{
+  sup::dto::AnyValue idx_av{};
+  if (!sup::protocol::FunctionProtocolExtract(idx_av, input, kJobIndexFieldName))
+  {
+    return sup::protocol::ServerProtocolDecodingError;
+  }
+  if (!idx_av.As(idx))
+  {
+    return sup::protocol::ServerProtocolDecodingError;
+  }
+  if (idx >= n_jobs)
+  {
+    return UnknownJob;
+  }
+  return sup::protocol::Success;
+}
+
+sup::protocol::ProtocolResult ExtractInstructionIndex(
+  const sup::dto::AnyValue& input, sup::dto::uint32 n_instr, sup::dto::uint32& idx)
+{
+  sup::dto::AnyValue idx_av{};
+  if (!sup::protocol::FunctionProtocolExtract(idx_av, input, kInstructionIndexFieldName))
+  {
+    return sup::protocol::ServerProtocolDecodingError;
+  }
+  if (!idx_av.As(idx))
+  {
+    return sup::protocol::ServerProtocolDecodingError;
+  }
+  if (idx >= n_instr)
+  {
+    return UnknownInstruction;
+  }
+  return sup::protocol::Success;
 }
 
 }  // namespace auto_server
