@@ -69,6 +69,13 @@ void ServerJobInfoIO::VariableUpdated(sup::dto::uint32 var_idx, const sup::dto::
   m_av_manager.UpdateAnyValue(var_val_name, var_info);
 }
 
+void ServerJobInfoIO::JobStateUpdated(sup::sequencer::JobState state)
+{
+  auto job_state_name = GetJobStatePVName(m_job_prefix);
+  auto job_state_value = GetJobStateValue(state);
+  m_av_manager.UpdateAnyValue(job_state_name, job_state_value);
+}
+
 void ServerJobInfoIO::PutValue(const sup::dto::AnyValue& value, const std::string& description)
 {
   auto idx = m_out_val_idx_gen.NewIndex();
@@ -125,11 +132,10 @@ void ServerJobInfoIO::Log(int severity, const std::string& message)
   m_av_manager.UpdateAnyValue(log_val_name, EncodeLogEntry(log_val));
 }
 
-void ServerJobInfoIO::JobStateUpdated(sup::sequencer::JobState state)
+void ServerJobInfoIO::NextInstructionsUpdated(const std::vector<sup::dto::uint32>& instr_indices)
 {
-  auto job_state_name = GetJobStatePVName(m_job_prefix);
-  auto job_state_value = GetJobStateValue(state);
-  m_av_manager.UpdateAnyValue(job_state_name, job_state_value);
+  // TODO implement
+  (void)instr_indices;
 }
 
 }  // namespace auto_server
