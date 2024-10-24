@@ -299,3 +299,10 @@ TEST_F(SupAutoProtocolTest, ParseValueName)
     EXPECT_EQ(info.idx, 0);
   }
 }
+
+TEST_F(SupAutoProtocolTest, DecodeNextInstructions)
+{
+  auto next_instr_av = kNextInstructionsAnyValue;
+  auto decoded = DecodeNextInstructionIndices(next_instr_av);
+  EXPECT_FALSE(decoded.first);
+}

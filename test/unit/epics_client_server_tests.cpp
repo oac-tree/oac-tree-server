@@ -64,7 +64,8 @@ protected:
 
 TEST_F(EPICSClientServerTest, Initialization)
 {
-  UnitTestHelper::MockAnyValueManager av_manager;
+  using StrictMockAnyValueManager = ::testing::StrictMock<UnitTestHelper::MockAnyValueManager>;
+  StrictMockAnyValueManager av_manager;
   EPICSIOClient epics_client{av_manager};
   const std::string job_prefix{"test_prefix"};
   const sup::dto::uint32 n_vars{5};
@@ -75,7 +76,8 @@ TEST_F(EPICSClientServerTest, Initialization)
 
 TEST_F(EPICSClientServerTest, InitializeInstructions)
 {
-  UnitTestHelper::MockAnyValueManager av_manager;
+  using StrictMockAnyValueManager = ::testing::StrictMock<UnitTestHelper::MockAnyValueManager>;
+  StrictMockAnyValueManager av_manager;
   EPICSIOClient epics_client{av_manager};
   const std::string job_prefix{"test_prefix"};
   const sup::dto::uint32 n_vars{5};

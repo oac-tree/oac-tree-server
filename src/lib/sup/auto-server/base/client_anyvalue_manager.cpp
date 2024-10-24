@@ -250,7 +250,7 @@ void UpdateOutputValueEntry(IJobInfoIO& job_info_io, const sup::dto::AnyValue& a
 void UpdateNextInstructions(IJobInfoIO& job_info_io, const sup::dto::AnyValue& anyvalue)
 {
   auto decoded = DecodeNextInstructionIndices(anyvalue);
-  if (decoded.first)
+  if (!decoded.first)
   {
     return;
   }

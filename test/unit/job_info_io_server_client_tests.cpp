@@ -45,7 +45,8 @@ protected:
   JobInfoIOServerClientTest() = default;
   virtual ~JobInfoIOServerClientTest() = default;
 
-  UnitTestHelper::MockJobInfoIO m_test_job_info_io;
+  using StrictMockJobInfoIO = ::testing::StrictMock<UnitTestHelper::MockJobInfoIO>;
+  StrictMockJobInfoIO m_test_job_info_io;
 };
 
 TEST_F(JobInfoIOServerClientTest, Construction)
@@ -53,15 +54,10 @@ TEST_F(JobInfoIOServerClientTest, Construction)
   // On construction, only static PVs that are always used will trigger a first update.
   // These include JobState, OutputValue, Message and Log updates.
   // Not that no variable state is updated, as they contain no meaningful value
-  EXPECT_CALL(m_test_job_info_io, InitNumberOfInstructions(_)).Times(Exactly(0));
-  EXPECT_CALL(m_test_job_info_io, InstructionStateUpdated(_, _)).Times(Exactly(0));
-  EXPECT_CALL(m_test_job_info_io, VariableUpdated(_, _, _)).Times(Exactly(0));
   EXPECT_CALL(m_test_job_info_io, JobStateUpdated(sup::sequencer::JobState::kInitial))
                                     .Times(Exactly(1));
   sup::dto::AnyValue empty_av{};
   EXPECT_CALL(m_test_job_info_io, PutValue(empty_av, "")).Times(Exactly(1));
-  EXPECT_CALL(m_test_job_info_io, GetUserValue(_, _)).Times(Exactly(0));
-  EXPECT_CALL(m_test_job_info_io, GetUserChoice(_, _)).Times(Exactly(0));
   EXPECT_CALL(m_test_job_info_io, Message("")).Times(Exactly(1));
   EXPECT_CALL(m_test_job_info_io, Log(0, "")).Times(Exactly(1));
 
@@ -78,11 +74,8 @@ TEST_F(JobInfoIOServerClientTest, InitNrInstructions)
   EXPECT_CALL(m_test_job_info_io, InitNumberOfInstructions(10)).Times(Exactly(1));
   InstructionState initial_instr_state{ false, sup::sequencer::ExecutionStatus::NOT_STARTED };
   EXPECT_CALL(m_test_job_info_io, InstructionStateUpdated(_, initial_instr_state)).Times(Exactly(nr_instr));
-  EXPECT_CALL(m_test_job_info_io, VariableUpdated(_, _, _)).Times(Exactly(0));
   EXPECT_CALL(m_test_job_info_io, JobStateUpdated(_)).Times(Exactly(1));
   EXPECT_CALL(m_test_job_info_io, PutValue(_, _)).Times(Exactly(1));
-  EXPECT_CALL(m_test_job_info_io, GetUserValue(_, _)).Times(Exactly(0));
-  EXPECT_CALL(m_test_job_info_io, GetUserChoice(_, _)).Times(Exactly(0));
   EXPECT_CALL(m_test_job_info_io, Message(_)).Times(Exactly(1));
   EXPECT_CALL(m_test_job_info_io, Log(_, _)).Times(Exactly(1));
 
@@ -100,11 +93,8 @@ TEST_F(JobInfoIOServerClientTest, InstructionStateUpdated)
   InstructionState initial_instr_state{ false, sup::sequencer::ExecutionStatus::NOT_STARTED };
   InstructionState instr_state{ true, sup::sequencer::ExecutionStatus::NOT_FINISHED };
   EXPECT_CALL(m_test_job_info_io, InitNumberOfInstructions(10)).Times(Exactly(1));
-  EXPECT_CALL(m_test_job_info_io, VariableUpdated(_, _, _)).Times(Exactly(0));
   EXPECT_CALL(m_test_job_info_io, JobStateUpdated(_)).Times(Exactly(1));
   EXPECT_CALL(m_test_job_info_io, PutValue(_, _)).Times(Exactly(1));
-  EXPECT_CALL(m_test_job_info_io, GetUserValue(_, _)).Times(Exactly(0));
-  EXPECT_CALL(m_test_job_info_io, GetUserChoice(_, _)).Times(Exactly(0));
   EXPECT_CALL(m_test_job_info_io, Message(_)).Times(Exactly(1));
   EXPECT_CALL(m_test_job_info_io, Log(_, _)).Times(Exactly(1));
   {
@@ -131,8 +121,6 @@ TEST_F(JobInfoIOServerClientTest, VariableUpdated)
   EXPECT_CALL(m_test_job_info_io, VariableUpdated(2, var_value, true)).Times(Exactly(1));
   EXPECT_CALL(m_test_job_info_io, JobStateUpdated(_)).Times(Exactly(1));
   EXPECT_CALL(m_test_job_info_io, PutValue(_, _)).Times(Exactly(1));
-  EXPECT_CALL(m_test_job_info_io, GetUserValue(_, _)).Times(Exactly(0));
-  EXPECT_CALL(m_test_job_info_io, GetUserChoice(_, _)).Times(Exactly(0));
   EXPECT_CALL(m_test_job_info_io, Message(_)).Times(Exactly(1));
   EXPECT_CALL(m_test_job_info_io, Log(_, _)).Times(Exactly(1));
 
@@ -153,10 +141,7 @@ TEST_F(JobInfoIOServerClientTest, JobStateUpdated)
   EXPECT_CALL(m_test_job_info_io, InitNumberOfInstructions(10)).Times(Exactly(1));
   InstructionState initial_instr_state{ false, sup::sequencer::ExecutionStatus::NOT_STARTED };
   EXPECT_CALL(m_test_job_info_io, InstructionStateUpdated(_, initial_instr_state)).Times(Exactly(nr_instr));
-  EXPECT_CALL(m_test_job_info_io, VariableUpdated(_, _, _)).Times(Exactly(0));
   EXPECT_CALL(m_test_job_info_io, PutValue(_, _)).Times(Exactly(1));
-  EXPECT_CALL(m_test_job_info_io, GetUserValue(_, _)).Times(Exactly(0));
-  EXPECT_CALL(m_test_job_info_io, GetUserChoice(_, _)).Times(Exactly(0));
   EXPECT_CALL(m_test_job_info_io, Message(_)).Times(Exactly(1));
   EXPECT_CALL(m_test_job_info_io, Log(_, _)).Times(Exactly(1));
   {
@@ -182,10 +167,7 @@ TEST_F(JobInfoIOServerClientTest, PutValue)
   EXPECT_CALL(m_test_job_info_io, InitNumberOfInstructions(10)).Times(Exactly(1));
   InstructionState initial_instr_state{ false, sup::sequencer::ExecutionStatus::NOT_STARTED };
   EXPECT_CALL(m_test_job_info_io, InstructionStateUpdated(_, initial_instr_state)).Times(Exactly(nr_instr));
-  EXPECT_CALL(m_test_job_info_io, VariableUpdated(_, _, _)).Times(Exactly(0));
   EXPECT_CALL(m_test_job_info_io, JobStateUpdated(_)).Times(Exactly(1));
-  EXPECT_CALL(m_test_job_info_io, GetUserValue(_, _)).Times(Exactly(0));
-  EXPECT_CALL(m_test_job_info_io, GetUserChoice(_, _)).Times(Exactly(0));
   EXPECT_CALL(m_test_job_info_io, Message(_)).Times(Exactly(1));
   EXPECT_CALL(m_test_job_info_io, Log(_, _)).Times(Exactly(1));
   {
@@ -210,11 +192,8 @@ TEST_F(JobInfoIOServerClientTest, Message)
   EXPECT_CALL(m_test_job_info_io, InitNumberOfInstructions(10)).Times(Exactly(1));
   InstructionState initial_instr_state{ false, sup::sequencer::ExecutionStatus::NOT_STARTED };
   EXPECT_CALL(m_test_job_info_io, InstructionStateUpdated(_, initial_instr_state)).Times(Exactly(nr_instr));
-  EXPECT_CALL(m_test_job_info_io, VariableUpdated(_, _, _)).Times(Exactly(0));
   EXPECT_CALL(m_test_job_info_io, JobStateUpdated(_)).Times(Exactly(1));
   EXPECT_CALL(m_test_job_info_io, PutValue(_, _)).Times(Exactly(1));
-  EXPECT_CALL(m_test_job_info_io, GetUserValue(_, _)).Times(Exactly(0));
-  EXPECT_CALL(m_test_job_info_io, GetUserChoice(_, _)).Times(Exactly(0));
   EXPECT_CALL(m_test_job_info_io, Log(_, _)).Times(Exactly(1));
   {
     InSequence seq;
@@ -239,11 +218,8 @@ TEST_F(JobInfoIOServerClientTest, Log)
   EXPECT_CALL(m_test_job_info_io, InitNumberOfInstructions(10)).Times(Exactly(1));
   InstructionState initial_instr_state{ false, sup::sequencer::ExecutionStatus::NOT_STARTED };
   EXPECT_CALL(m_test_job_info_io, InstructionStateUpdated(_, initial_instr_state)).Times(Exactly(nr_instr));
-  EXPECT_CALL(m_test_job_info_io, VariableUpdated(_, _, _)).Times(Exactly(0));
   EXPECT_CALL(m_test_job_info_io, JobStateUpdated(_)).Times(Exactly(1));
   EXPECT_CALL(m_test_job_info_io, PutValue(_, _)).Times(Exactly(1));
-  EXPECT_CALL(m_test_job_info_io, GetUserValue(_, _)).Times(Exactly(0));
-  EXPECT_CALL(m_test_job_info_io, GetUserChoice(_, _)).Times(Exactly(0));
   EXPECT_CALL(m_test_job_info_io, Message(_)).Times(Exactly(1));
   {
     InSequence seq;
@@ -268,12 +244,10 @@ TEST_F(JobInfoIOServerClientTest, GetUserValue)
   EXPECT_CALL(m_test_job_info_io, InitNumberOfInstructions(10)).Times(Exactly(1));
   InstructionState initial_instr_state{ false, sup::sequencer::ExecutionStatus::NOT_STARTED };
   EXPECT_CALL(m_test_job_info_io, InstructionStateUpdated(_, initial_instr_state)).Times(Exactly(nr_instr));
-  EXPECT_CALL(m_test_job_info_io, VariableUpdated(_, _, _)).Times(Exactly(0));
   EXPECT_CALL(m_test_job_info_io, JobStateUpdated(_)).Times(Exactly(1));
   EXPECT_CALL(m_test_job_info_io, PutValue(_, _)).Times(Exactly(1));
   EXPECT_CALL(m_test_job_info_io, GetUserValue(_, description)).Times(Exactly(1)).WillOnce(
     DoAll(SetArgReferee<0>(user_val), Return(true)));
-  EXPECT_CALL(m_test_job_info_io, GetUserChoice(_, _)).Times(Exactly(0));
   EXPECT_CALL(m_test_job_info_io, Message(_)).Times(Exactly(1));
   EXPECT_CALL(m_test_job_info_io, Log(_, _)).Times(Exactly(1));
 
@@ -297,10 +271,8 @@ TEST_F(JobInfoIOServerClientTest, GetUserChoice)
   EXPECT_CALL(m_test_job_info_io, InitNumberOfInstructions(10)).Times(Exactly(1));
   InstructionState initial_instr_state{ false, sup::sequencer::ExecutionStatus::NOT_STARTED };
   EXPECT_CALL(m_test_job_info_io, InstructionStateUpdated(_, initial_instr_state)).Times(Exactly(nr_instr));
-  EXPECT_CALL(m_test_job_info_io, VariableUpdated(_, _, _)).Times(Exactly(0));
   EXPECT_CALL(m_test_job_info_io, JobStateUpdated(_)).Times(Exactly(1));
   EXPECT_CALL(m_test_job_info_io, PutValue(_, _)).Times(Exactly(1));
-  EXPECT_CALL(m_test_job_info_io, GetUserValue(_, _)).Times(Exactly(0));
   EXPECT_CALL(m_test_job_info_io, GetUserChoice(choices, metadata)).Times(Exactly(1))
     .WillOnce(Return(choice));
   EXPECT_CALL(m_test_job_info_io, Message(_)).Times(Exactly(1));

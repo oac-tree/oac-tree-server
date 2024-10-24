@@ -37,7 +37,8 @@ protected:
   ClientAnyValueManagerTests() = default;
   virtual ~ClientAnyValueManagerTests() = default;
 
-  UnitTestHelper::MockJobInfoIO m_test_job_info_io;
+  using StrictMockJobInfoIO = ::testing::StrictMock<UnitTestHelper::MockJobInfoIO>;
+  StrictMockJobInfoIO m_test_job_info_io;
 };
 
 TEST_F(ClientAnyValueManagerTests, Construction)
