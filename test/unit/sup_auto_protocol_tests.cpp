@@ -98,6 +98,86 @@ TEST_F(SupAutoProtocolTest, ParseValueName)
     EXPECT_EQ(info.idx, 0);
   }
   {
+    // Log entry field with prefix is correctly parsed as such
+    std::string val_name = "prefix:" + kLogEntryId;
+    auto info = ParseValueName(val_name);
+    EXPECT_EQ(info.val_type, ValueNameType::kLogEntry);
+    EXPECT_EQ(info.idx, 0);
+  }
+  {
+    // Log entry field with single character prefix is correctly parsed as such
+    std::string val_name = "p" + kLogEntryId;
+    auto info = ParseValueName(val_name);
+    EXPECT_EQ(info.val_type, ValueNameType::kLogEntry);
+    EXPECT_EQ(info.idx, 0);
+  }
+  {
+    // Log entry field without prefix is parsed as unknown
+    auto info = ParseValueName(kLogEntryId);
+    EXPECT_EQ(info.val_type, ValueNameType::kUnknown);
+    EXPECT_EQ(info.idx, 0);
+  }
+  {
+    // Message entry field with prefix is correctly parsed as such
+    std::string val_name = "prefix:" + kMessageEntryId;
+    auto info = ParseValueName(val_name);
+    EXPECT_EQ(info.val_type, ValueNameType::kMessageEntry);
+    EXPECT_EQ(info.idx, 0);
+  }
+  {
+    // Message entry field with single character prefix is correctly parsed as such
+    std::string val_name = "p" + kMessageEntryId;
+    auto info = ParseValueName(val_name);
+    EXPECT_EQ(info.val_type, ValueNameType::kMessageEntry);
+    EXPECT_EQ(info.idx, 0);
+  }
+  {
+    // Message entry field without prefix is parsed as unknown
+    auto info = ParseValueName(kMessageEntryId);
+    EXPECT_EQ(info.val_type, ValueNameType::kUnknown);
+    EXPECT_EQ(info.idx, 0);
+  }
+  {
+    // Output value entry field with prefix is correctly parsed as such
+    std::string val_name = "prefix:" + kOutputValueEntryId;
+    auto info = ParseValueName(val_name);
+    EXPECT_EQ(info.val_type, ValueNameType::kOutputValueEntry);
+    EXPECT_EQ(info.idx, 0);
+  }
+  {
+    // Output value entry field with single character prefix is correctly parsed as such
+    std::string val_name = "p" + kOutputValueEntryId;
+    auto info = ParseValueName(val_name);
+    EXPECT_EQ(info.val_type, ValueNameType::kOutputValueEntry);
+    EXPECT_EQ(info.idx, 0);
+  }
+  {
+    // Output value entry field without prefix is parsed as unknown
+    auto info = ParseValueName(kOutputValueEntryId);
+    EXPECT_EQ(info.val_type, ValueNameType::kUnknown);
+    EXPECT_EQ(info.idx, 0);
+  }
+  {
+    // Next instructions field with prefix is correctly parsed as such
+    std::string val_name = "prefix:" + kNextInstructionsId;
+    auto info = ParseValueName(val_name);
+    EXPECT_EQ(info.val_type, ValueNameType::kNextInstructions);
+    EXPECT_EQ(info.idx, 0);
+  }
+  {
+    // Next instructions field with single character prefix is correctly parsed as such
+    std::string val_name = "p" + kNextInstructionsId;
+    auto info = ParseValueName(val_name);
+    EXPECT_EQ(info.val_type, ValueNameType::kNextInstructions);
+    EXPECT_EQ(info.idx, 0);
+  }
+  {
+    // Next instructions field without prefix is parsed as unknown
+    auto info = ParseValueName(kNextInstructionsId);
+    EXPECT_EQ(info.val_type, ValueNameType::kUnknown);
+    EXPECT_EQ(info.idx, 0);
+  }
+  {
     // Instruction state field correctly parsed
     std::string val_name = "prefix:" + kInstructionId + "42";
     auto info = ParseValueName(val_name);

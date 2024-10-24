@@ -39,6 +39,7 @@ void UpdateVariableState(IJobInfoIO& job_info_io, sup::dto::uint32 var_idx,
 void UpdateLogEntry(IJobInfoIO& job_info_io, const sup::dto::AnyValue& anyvalue);
 void UpdateMessageEntry(IJobInfoIO& job_info_io, const sup::dto::AnyValue& anyvalue);
 void UpdateOutputValueEntry(IJobInfoIO& job_info_io, const sup::dto::AnyValue& anyvalue);
+void UpdateNextInstructions(IJobInfoIO& job_info_io, const sup::dto::AnyValue& anyvalue);
 }  // unnamed namespace
 
 namespace sup
@@ -157,6 +158,8 @@ ClientAnyValueManager::AnyValueCallback CreateCallback(const ValueNameInfo& valu
     return UpdateMessageEntry;
   case ValueNameType::kOutputValueEntry:
     return UpdateOutputValueEntry;
+  case ValueNameType::kNextInstructions:
+    return UpdateNextInstructions;
   case ValueNameType::kUnknown:
     break;
   default:
@@ -244,5 +247,14 @@ void UpdateOutputValueEntry(IJobInfoIO& job_info_io, const sup::dto::AnyValue& a
   job_info_io.PutValue(out_val_entry.m_value, out_val_entry.m_description);
 }
 
+void UpdateNextInstructions(IJobInfoIO& job_info_io, const sup::dto::AnyValue& anyvalue)
+{
+  auto decoded = DecodeNextInstructionIndices(anyvalue);
+  if (decoded.first)
+  {
+    return;
+  }
+  job_info_io.NextInstructionsUpdated(decoded.second);
+}
 
 }  // unnamed namespace

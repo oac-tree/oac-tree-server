@@ -45,7 +45,7 @@ std::set<std::string> GetNames(const IAnyValueIO::NameAnyValueSet& name_value_se
 }
 
 IAnyValueIO::NameAnyValueSet GetInitialValueSet(const std::string& job_prefix,
-                                                     sup::dto::uint32 n_vars)
+                                                sup::dto::uint32 n_vars)
 {
   IAnyValueIO::NameAnyValueSet result;
   auto job_value_name = GetJobStatePVName(job_prefix);
@@ -57,6 +57,8 @@ IAnyValueIO::NameAnyValueSet GetInitialValueSet(const std::string& job_prefix,
   result.emplace_back(msg_entry_name, kMessageEntryAnyValue);
   auto out_val_entry_name = GetOutputValueEntryName(job_prefix);
   result.emplace_back(out_val_entry_name, kOutputValueEntryAnyValue);
+  auto next_instr_name = GetNextInstructionsName(job_prefix);
+  result.emplace_back(next_instr_name, kNextInstructionsAnyValue);
   for (sup::dto::uint32 var_idx = 0; var_idx < n_vars; ++var_idx)
   {
     const auto name = GetVariablePVName(job_prefix, var_idx);
@@ -66,7 +68,7 @@ IAnyValueIO::NameAnyValueSet GetInitialValueSet(const std::string& job_prefix,
 }
 
 IAnyValueIO::NameAnyValueSet GetInstructionValueSet(const std::string& job_prefix,
-                                                         sup::dto::uint32 n_instr)
+                                                    sup::dto::uint32 n_instr)
 {
   IAnyValueIO::NameAnyValueSet result;
   for (sup::dto::uint32 instr_idx = 0; instr_idx < n_instr; ++instr_idx)

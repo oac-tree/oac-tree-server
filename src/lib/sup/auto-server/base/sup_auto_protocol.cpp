@@ -37,6 +37,15 @@ namespace
 {
 bool ValidateVariablePayload(const sup::dto::AnyValue& payload);
 
+/**
+ * @brief Validate if the provided AnyValue encodes a list of instruction indices.
+ *
+ * @param payload AnyValue to validate.
+ *
+ * @return True if the AnyValue encodes a list of instruction indices.
+ */
+bool ValidateNextInstructionsPayload(const sup::dto::AnyValue& payload);
+
 bool EndsWith(const std::string& str, const std::string& sub_str);
 
 bool ParseIndex(const std::string& idx_str, sup::dto::uint32& idx);
@@ -73,6 +82,11 @@ const dto::AnyValue kOutputValueEntryAnyValue = {{
   { kDescriptionField, "" },
   { kValueField, {} }
 }, kOutputValueEntryType };
+
+const dto::AnyValue kNextInstructionsAnyValue = {{
+  { protocol::kEncodingField, protocol::kBase64Encoding},
+  { protocol::kValueField, "" }
+}, kNextInstructionsType };
 
 const dto::AnyValue kJobStateAnyValue = {{
   { kJobStateField, static_cast<dto::uint32>(sequencer::JobState::kInitial)}
@@ -162,6 +176,11 @@ std::string GetOutputValueEntryName(const std::string& prefix)
   return prefix + kOutputValueEntryId;
 }
 
+std::string GetNextInstructionsName(const std::string& prefix)
+{
+  return prefix + kNextInstructionsId;
+}
+
 std::string GetJobStatePVName(const std::string& prefix)
 {
   return prefix + kJobStateId;
@@ -205,13 +224,52 @@ std::pair<sup::dto::AnyValue, bool> DecodeVariableState(const dto::AnyValue& enc
   return { payload[kVariableValueField], payload[kVariableConnectedField].As<sup::dto::boolean>() };
 }
 
+sup::dto::AnyValue EncodeNextInstructionIndices(const std::vector<sup::dto::uint32>& next_indices)
+{
+  sup::dto::AnyValue payload{next_indices.size(), sup::dto::UnsignedInteger32Type};
+  for (std::size_t i=0; i<next_indices.size(); ++i)
+  {
+    payload[i] = next_indices[i];
+  }
+  auto encoded = protocol::Base64VariableCodec::Encode(payload);
+  if (!encoded.first)
+  {
+    const std::string error = "EncodeNextInstructionIndices(): could not encode index list";
+    throw InvalidOperationException(error);
+  }
+  return encoded.second;
+}
+
+std::pair<bool, std::vector<sup::dto::uint32>> DecodeNextInstructionIndices(
+  const dto::AnyValue& encoded)
+{
+  const std::pair<bool, std::vector<sup::dto::uint32>> failure{ false, {} };
+  auto decoded = protocol::Base64VariableCodec::Decode(encoded);
+  if (!decoded.first)
+  {
+    return failure;
+  }
+  auto& payload = decoded.second;
+  if (!ValidateNextInstructionsPayload(payload))
+  {
+    return failure;
+  }
+  std::vector<sup::dto::uint32> indices;
+  for (size_t i = 0; i < payload.NumberOfElements(); ++i)
+  {
+    indices.push_back(payload[i].As<sup::dto::uint32>());
+  }
+  return { true, indices };
+}
+
 ValueNameInfo ParseValueName(const std::string& val_name)
 {
   static const std::vector<std::pair<std::string, ValueNameType>> postfixes = {
     { kJobStateId, ValueNameType::kJobStatus },
     { kLogEntryId, ValueNameType::kLogEntry },
     { kMessageEntryId, ValueNameType::kMessageEntry },
-    { kOutputValueEntryId, ValueNameType::kOutputValueEntry }
+    { kOutputValueEntryId, ValueNameType::kOutputValueEntry },
+    { kNextInstructionsId, ValueNameType::kNextInstructions }
   };
   ValueNameInfo unknown{ ValueNameType::kUnknown, 0 };
   for (const auto& postfix_type : postfixes)
@@ -301,6 +359,19 @@ bool ValidateVariablePayload(const sup::dto::AnyValue& payload)
   }
   if (!sup::sequencer::utils::ValidateMemberType(payload, kVariableConnectedField,
                                                  sup::dto::BooleanType))
+  {
+    return false;
+  }
+  return true;
+}
+
+bool ValidateNextInstructionsPayload(const sup::dto::AnyValue& payload)
+{
+  if (!sup::dto::IsArrayValue(payload))
+  {
+    return false;
+  }
+  if (payload.GetType().ElementType() != sup::dto::UnsignedInteger32Type)
   {
     return false;
   }

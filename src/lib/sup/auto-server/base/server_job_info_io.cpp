@@ -134,8 +134,9 @@ void ServerJobInfoIO::Log(int severity, const std::string& message)
 
 void ServerJobInfoIO::NextInstructionsUpdated(const std::vector<sup::dto::uint32>& instr_indices)
 {
-  // TODO implement
-  (void)instr_indices;
+  auto next_instr_name = GetNextInstructionsName(m_job_prefix);
+  auto next_instr_value = EncodeNextInstructionIndices(instr_indices);
+  m_av_manager.UpdateAnyValue(next_instr_name, next_instr_value);
 }
 
 }  // namespace auto_server
