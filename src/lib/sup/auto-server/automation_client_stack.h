@@ -39,7 +39,8 @@ namespace auto_server
 class AutomationClientStack : public IJobManager
 {
 public:
-  AutomationClientStack(std::unique_ptr<sup::protocol::Protocol> rpc_client_protocol);
+  AutomationClientStack(std::unique_ptr<sup::protocol::Protocol> info_protocol,
+                        std::unique_ptr<sup::protocol::Protocol> control_protocol);
   virtual ~AutomationClientStack();
 
   std::string GetServerPrefix() const override;

@@ -22,6 +22,7 @@
 #include "epics_io_client.h"
 
 #include <sup/auto-server/automation_client_stack.h>
+#include <sup/auto-server/sup_auto_protocol.h>
 
 #include <sup/epics/pv_access_rpc_client.h>
 #include <sup/epics/epics_protocol_factory.h>
@@ -40,9 +41,13 @@ std::unique_ptr<IAnyValueIO> CreateEPICSIOClient(IAnyValueManager& av_mgr)
 
 std::unique_ptr<IJobManager> CreateEPICSJobManager(const std::string& server_name)
 {
-  auto rpc_client_config = sup::epics::GetDefaultRPCClientConfig(server_name);
-  auto rpc_client_protocol = sup::epics::CreateEPICSRPCClientStack(rpc_client_config);
-  std::unique_ptr<IJobManager> result{new AutomationClientStack{std::move(rpc_client_protocol)}};
+  auto info_config = sup::epics::GetDefaultRPCClientConfig(server_name);
+  auto info_protocol = sup::epics::CreateEPICSRPCClientStack(info_config);
+  auto control_server_name = GetControlServerName(server_name);
+  auto control_config = sup::epics::GetDefaultRPCClientConfig(control_server_name);
+  auto control_protocol = sup::epics::CreateEPICSRPCClientStack(control_config);
+  std::unique_ptr<IJobManager> result{
+    new AutomationClientStack{std::move(info_protocol), std::move(control_protocol)}};
   return result;
 }
 

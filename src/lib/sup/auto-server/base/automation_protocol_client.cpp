@@ -34,8 +34,10 @@ namespace sup
 {
 namespace auto_server
 {
-AutomationProtocolClient::AutomationProtocolClient(sup::protocol::Protocol& protocol)
-  : m_protocol{protocol}
+AutomationProtocolClient::AutomationProtocolClient(sup::protocol::Protocol& info_protocol,
+                                                   sup::protocol::Protocol& control_protocol)
+  : m_info_protocol{info_protocol}
+  , m_control_protocol{control_protocol}
 {}
 
 AutomationProtocolClient::~AutomationProtocolClient() = default;
@@ -44,7 +46,7 @@ std::string AutomationProtocolClient::GetServerPrefix() const
 {
   auto input = sup::protocol::FunctionProtocolInput(kGetServerPrefixFunctionName);
   sup::dto::AnyValue output;
-  auto protocol_result = m_protocol.Invoke(input, output);
+  auto protocol_result = m_info_protocol.Invoke(input, output);
   if (protocol_result != sup::protocol::Success)
   {
     const std::string error = "AutomationProtocolClient::GetServerPrefix(): protocol did not return"
@@ -65,7 +67,7 @@ sup::dto::uint32 AutomationProtocolClient::GetNumberOfJobs() const
 {
   auto input = sup::protocol::FunctionProtocolInput(kGetNumberOfJobsFunctionName);
   sup::dto::AnyValue output;
-  auto protocol_result = m_protocol.Invoke(input, output);
+  auto protocol_result = m_info_protocol.Invoke(input, output);
   if (protocol_result != sup::protocol::Success)
   {
     const std::string error = "AutomationProtocolClient::GetNumberOfJobs(): protocol did not return"
@@ -89,7 +91,7 @@ sup::sequencer::JobInfo AutomationProtocolClient::GetJobInfo(sup::dto::uint32 jo
   sup::dto::AnyValue job_idx_av{sup::dto::UnsignedInteger64Type, job_idx};
   sup::protocol::FunctionProtocolPack(input, kJobIndexFieldName, job_idx_av);
   sup::dto::AnyValue output;
-  auto protocol_result = m_protocol.Invoke(input, output);
+  auto protocol_result = m_info_protocol.Invoke(input, output);
   if (protocol_result != sup::protocol::Success)
   {
     const std::string error = "AutomationProtocolClient::GetJobInfo(): protocol did not return"
@@ -126,7 +128,7 @@ void AutomationProtocolClient::EditBreakpoint(sup::dto::uint32 job_idx, sup::dto
   sup::protocol::FunctionProtocolPack(input, kInstructionIndexFieldName, instr_idx_av);
   sup::protocol::FunctionProtocolPack(input, kBreakpointActiveFieldName, breakpoint_active);
   sup::dto::AnyValue output;
-  auto protocol_result = m_protocol.Invoke(input, output);
+  auto protocol_result = m_control_protocol.Invoke(input, output);
   if (protocol_result != sup::protocol::Success)
   {
     const std::string error = "AutomationProtocolClient::EditBreakpoint(): protocol did not return"
@@ -144,7 +146,7 @@ void AutomationProtocolClient::SendJobCommand(sup::dto::uint32 job_idx, sup::seq
   sup::dto::AnyValue command_av{sup::dto::UnsignedInteger32Type, command_int};
   sup::protocol::FunctionProtocolPack(input, kJobCommandFieldName, command_av);
   sup::dto::AnyValue output;
-  auto protocol_result = m_protocol.Invoke(input, output);
+  auto protocol_result = m_control_protocol.Invoke(input, output);
   if (protocol_result != sup::protocol::Success)
   {
     const std::string error = "AutomationProtocolClient::SendJobCommand(): protocol did not return"

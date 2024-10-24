@@ -34,27 +34,31 @@ namespace auto_server
 class AutomationClientStack::AutomationClientStackImpl
 {
 public:
-  explicit AutomationClientStackImpl(std::unique_ptr<sup::protocol::Protocol> rpc_client_protocol);
+  explicit AutomationClientStackImpl(std::unique_ptr<sup::protocol::Protocol> info_protocol,
+                                     std::unique_ptr<sup::protocol::Protocol> control_protocol);
   ~AutomationClientStackImpl() = default;
 
   IJobManager& GetJobManager();
 
 private:
-  std::unique_ptr<sup::protocol::Protocol> m_client_protocol;
+  std::unique_ptr<sup::protocol::Protocol> m_info_protocol;
+  std::unique_ptr<sup::protocol::Protocol> m_control_protocol;
   AutomationProtocolClient m_auto_protocol_client;
 };
 
 AutomationClientStack::AutomationClientStack(
-  std::unique_ptr<sup::protocol::Protocol> rpc_client_protocol)
+  std::unique_ptr<sup::protocol::Protocol> info_protocol,
+  std::unique_ptr<sup::protocol::Protocol> control_protocol)
   : m_impl{}
 {
-  if (!rpc_client_protocol)
+  if (!info_protocol || !control_protocol)
   {
     const std::string error =
-      "AutomationClientStack ctor: trying to construct a client stack with an empty rpc client protocol";
+      "AutomationClientStack ctor: trying to construct a client stack with an empty protocol";
     throw InvalidOperationException(error);
   }
-  m_impl.reset(new AutomationClientStackImpl{std::move(rpc_client_protocol)});
+  m_impl.reset(new AutomationClientStackImpl{std::move(info_protocol),
+                                             std::move(control_protocol)});
 }
 
 AutomationClientStack::~AutomationClientStack() = default;
@@ -74,20 +78,24 @@ sup::sequencer::JobInfo AutomationClientStack::GetJobInfo(sup::dto::uint32 job_i
   return m_impl->GetJobManager().GetJobInfo(job_idx);
 }
 
-void AutomationClientStack::EditBreakpoint(sup::dto::uint32 job_idx, sup::dto::uint32 instr_idx, bool breakpoint_active)
+void AutomationClientStack::EditBreakpoint(sup::dto::uint32 job_idx, sup::dto::uint32 instr_idx,
+                                           bool breakpoint_active)
 {
   return m_impl->GetJobManager().EditBreakpoint(job_idx, instr_idx, breakpoint_active);
 }
 
-void AutomationClientStack::SendJobCommand(sup::dto::uint32 job_idx, sup::sequencer::JobCommand command)
+void AutomationClientStack::SendJobCommand(sup::dto::uint32 job_idx,
+                                           sup::sequencer::JobCommand command)
 {
   return m_impl->GetJobManager().SendJobCommand(job_idx, command);
 }
 
 AutomationClientStack::AutomationClientStackImpl::AutomationClientStackImpl(
-  std::unique_ptr<sup::protocol::Protocol> rpc_client_protocol)
-  : m_client_protocol{std::move(rpc_client_protocol)}
-  , m_auto_protocol_client{*m_client_protocol}
+  std::unique_ptr<sup::protocol::Protocol> info_protocol,
+  std::unique_ptr<sup::protocol::Protocol> control_protocol)
+  : m_info_protocol{std::move(info_protocol)}
+  , m_control_protocol{std::move(control_protocol)}
+  , m_auto_protocol_client{*m_info_protocol, *m_control_protocol}
 {}
 
 IJobManager& AutomationClientStack::AutomationClientStackImpl::GetJobManager()

@@ -36,7 +36,8 @@ namespace auto_server
 class AutomationProtocolClient : public IJobManager
 {
 public:
-  explicit AutomationProtocolClient(sup::protocol::Protocol& protocol);
+  explicit AutomationProtocolClient(sup::protocol::Protocol& info_protocol,
+                                    sup::protocol::Protocol& control_protocol);
   virtual ~AutomationProtocolClient();
 
   std::string GetServerPrefix() const override;
@@ -50,7 +51,8 @@ public:
   void SendJobCommand(sup::dto::uint32 job_idx, sup::sequencer::JobCommand command) override;
 
 private:
-  sup::protocol::Protocol& m_protocol;
+  sup::protocol::Protocol& m_info_protocol;
+  sup::protocol::Protocol& m_control_protocol;
 };
 
 }  // namespace auto_server
