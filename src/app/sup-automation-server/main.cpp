@@ -21,8 +21,10 @@
 
 #include "utils.h"
 
+#include <sup/auto-server/control_protocol_server.h>
 #include <sup/auto-server/info_protocol_server.h>
 #include <sup/auto-server/automation_server.h>
+#include <sup/auto-server/sup_auto_protocol.h>
 
 #include <sup/cli/command_line_parser.h>
 #include <sup/epics/epics_protocol_factory.h>
@@ -67,9 +69,17 @@ int main(int argc, char* argv[])
   {
     auto_server.AddJob(std::move(proc));
   }
-  InfoProtocolServer server_protocol{auto_server};
-  sup::epics::PvAccessRPCServerConfig server_config{service_name};
-  auto server_stack = sup::epics::CreateEPICSRPCServerStack(server_protocol, server_config);
+  // Instantiate RPC server for obtaining job information
+  InfoProtocolServer info_server_protocol{auto_server};
+  sup::epics::PvAccessRPCServerConfig info_server_config{service_name};
+  auto info_server_stack = sup::epics::CreateEPICSRPCServerStack(info_server_protocol,
+                                                                 info_server_config);
+  // Instantiate RPC server for controlling jobs
+  ControlProtocolServer control_server_protocol{auto_server};
+  auto control_service_name = GetControlServerName(service_name);
+  sup::epics::PvAccessRPCServerConfig control_server_config{control_service_name};
+  auto control_server_stack = sup::epics::CreateEPICSRPCServerStack(control_server_protocol,
+                                                                    control_server_config);
 
   while(true)
   {
