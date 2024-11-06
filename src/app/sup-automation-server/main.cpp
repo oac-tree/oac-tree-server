@@ -25,7 +25,7 @@
 #include <sup/auto-server/info_protocol_server.h>
 #include <sup/auto-server/automation_server.h>
 #include <sup/auto-server/sup_auto_protocol.h>
-#include <sup/auto-server/epics_client_utils.h>
+#include <sup/auto-server/epics_config_utils.h>
 
 #include <sup/cli/command_line_parser.h>
 #include <sup/epics/epics_protocol_factory.h>

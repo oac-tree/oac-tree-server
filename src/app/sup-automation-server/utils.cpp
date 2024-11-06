@@ -21,8 +21,6 @@
 
 #include "utils.h"
 
-#include <sup/auto-server/epics/epics_anyvalue_manager_registry.h>
-
 #include <sup/sequencer/sequence_parser.h>
 
 #include <filesystem>

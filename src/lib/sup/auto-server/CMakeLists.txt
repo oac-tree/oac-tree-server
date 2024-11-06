@@ -36,19 +36,19 @@ install(FILES
   anyvalue_input_request.h
   anyvalue_io_helper.h
   automation_protocol_client.h
-  info_protocol_server.h
   automation_server.h
   client_anyvalue_manager.h
   client_job.h
   client_reply_delegator.h
   control_protocol_server.h
-  epics_client_utils.h
+  epics_config_utils.h
   exceptions.h
   i_anyvalue_io.h
-  i_anyvalue_manager_registry.h
   i_anyvalue_manager.h
+  i_anyvalue_manager_registry.h
   i_job_manager.h
   index_generator.h
+  info_protocol_server.h
   input_protocol_client.h
   input_protocol_server.h
   input_request_server.h
