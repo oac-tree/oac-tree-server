@@ -22,10 +22,10 @@
 #include "epics_io_client.h"
 
 #include <sup/auto-server/automation_client_stack.h>
+#include <sup/auto-server/epics/epics_anyvalue_manager_registry.h>
 #include <sup/auto-server/sup_auto_protocol.h>
-
-#include <sup/epics/pv_access_rpc_client.h>
 #include <sup/epics/epics_protocol_factory.h>
+#include <sup/epics/pv_access_rpc_client.h>
 
 namespace sup
 {
@@ -47,7 +47,14 @@ std::unique_ptr<IJobManager> CreateEPICSJobManager(const std::string& server_nam
   auto control_config = sup::epics::GetDefaultRPCClientConfig(control_server_name);
   auto control_protocol = sup::epics::CreateEPICSRPCClientStack(control_config);
   std::unique_ptr<IJobManager> result{
-    new AutomationClientStack{std::move(info_protocol), std::move(control_protocol)}};
+      new AutomationClientStack{std::move(info_protocol), std::move(control_protocol)}};
+  return result;
+}
+
+std::unique_ptr<IAnyValueManagerRegistry> CreateEPICSAnyValueManagerRegistry(
+    sup::dto::uint32 n_managers)
+{
+  std::unique_ptr<IAnyValueManagerRegistry> result{new EPICSAnyValueManagerRegistry{n_managers}};
   return result;
 }
 

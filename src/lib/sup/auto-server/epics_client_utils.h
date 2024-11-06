@@ -23,6 +23,7 @@
 #define SUP_AUTO_SERVER_EPICS_CLIENT_UTILS_H_
 
 #include <sup/auto-server/i_anyvalue_io.h>
+#include <sup/auto-server/i_anyvalue_manager_registry.h>
 #include <sup/auto-server/i_job_manager.h>
 
 #include <memory>
@@ -38,6 +39,9 @@ namespace utils
 std::unique_ptr<IAnyValueIO> CreateEPICSIOClient(IAnyValueManager& av_mgr);
 
 std::unique_ptr<IJobManager> CreateEPICSJobManager(const std::string& server_name);
+
+std::unique_ptr<IAnyValueManagerRegistry> CreateEPICSAnyValueManagerRegistry(
+    sup::dto::uint32 n_managers);
 
 }  // namespace utils
 

@@ -25,6 +25,7 @@
 #include <sup/auto-server/info_protocol_server.h>
 #include <sup/auto-server/automation_server.h>
 #include <sup/auto-server/sup_auto_protocol.h>
+#include <sup/auto-server/epics_client_utils.h>
 
 #include <sup/cli/command_line_parser.h>
 #include <sup/epics/epics_protocol_factory.h>
@@ -62,7 +63,7 @@ int main(int argc, char* argv[])
 
   auto proc_list = utils::GetProcedureList(parser);
   auto service_name = parser.GetValue<std::string>("--service");
-  auto anyvalue_manager_registry = utils::CreateAnyValueManagerRegistry(proc_list.size());
+  auto anyvalue_manager_registry = utils::CreateEPICSAnyValueManagerRegistry(proc_list.size());
 
   AutomationServer auto_server{service_name, *anyvalue_manager_registry};
   for (auto& proc : proc_list)

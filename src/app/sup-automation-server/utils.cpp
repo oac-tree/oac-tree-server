@@ -76,12 +76,6 @@ ProcedureList GetProcedureList(sup::cli::CommandLineParser& parser)
   return result;
 }
 
-std::unique_ptr<IAnyValueManagerRegistry> CreateAnyValueManagerRegistry(sup::dto::uint32 n_managers)
-{
-  std::unique_ptr<IAnyValueManagerRegistry> result{new EPICSAnyValueManagerRegistry{n_managers}};
-  return result;
-}
-
 }  // namespace utils
 
 }  // namespace auto_server
