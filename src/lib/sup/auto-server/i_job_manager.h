@@ -26,7 +26,6 @@
 #include <sup/sequencer/job_info.h>
 
 #include <string>
-#include <utility>
 
 namespace sup
 {

@@ -24,8 +24,6 @@
 
 #include <sup/auto-server/i_anyvalue_io.h>
 
-#include <memory>
-
 namespace sup
 {
 namespace auto_server

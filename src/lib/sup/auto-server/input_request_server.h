@@ -25,9 +25,7 @@
 #include <sup/dto/anyvalue.h>
 
 #include <condition_variable>
-#include <memory>
 #include <mutex>
-#include <string>
 #include <utility>
 
 namespace sup
