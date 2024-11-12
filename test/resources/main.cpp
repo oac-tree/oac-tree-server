@@ -20,7 +20,7 @@
  ******************************************************************************/
 
 #include <sup/auto-server/client_job.h>
-#include <sup/auto-server/epics_client_utils.h>
+#include <sup/auto-server/epics_config_utils.h>
 
 #include <sup/protocol/protocol_rpc_client.h>
 
