@@ -28,6 +28,10 @@
 
 using namespace sup::auto_server;
 
+using sup::sequencer::kInvalidUserInputReply;
+using sup::sequencer::InputRequestType;
+using sup::sequencer::UserInputReply;
+
 class InputRequestServerTest : public ::testing::Test
 {
 protected:
@@ -39,48 +43,42 @@ TEST_F(InputRequestServerTest, Construction)
 {
   InputRequestServer server{};
 
-  // There is no reply available just after construction:
-  auto result = server.WaitForReply(0, 0.0);
+  // Id zero will immediately return an invalid reply:
+  auto result = server.WaitForReply(0);
   EXPECT_FALSE(result.first);
-  EXPECT_TRUE(sup::dto::IsEmptyValue(result.second));
+  EXPECT_EQ(result.second, kInvalidUserInputReply);
 
-  // Setting the client reply fails for zero index, index that is not correct and for empty values:
-  sup::dto::AnyValue reply{ sup::dto::UnsignedInteger32Type, 42u };
+  // Setting the client reply fails for zero index, index that is not correct and invalid replies:
+  UserInputReply reply{ InputRequestType::kUserChoice, true, { sup::dto::SignedInteger32Type, 0 }};
   EXPECT_FALSE(server.SetClientReply(0, reply));
   EXPECT_FALSE(server.SetClientReply(1, reply));
-  EXPECT_FALSE(server.SetClientReply(1, {}));
-
-  // First request gets index 1
-  EXPECT_EQ(server.InitNewRequest(), 1u);
+  EXPECT_FALSE(server.SetClientReply(1, kInvalidUserInputReply));
 }
 
 TEST_F(InputRequestServerTest, SingleThreaded)
 {
   InputRequestServer server{};
-  sup::dto::AnyValue reply{ sup::dto::UnsignedInteger32Type, 42u };
+  UserInputReply reply{ InputRequestType::kUserValue, true,
+                        { sup::dto::UnsignedInteger32Type, 42u }};
 
   // Test first request
-  EXPECT_EQ(server.InitNewRequest(), 1u);
-  auto result = server.WaitForReply(1u, 0.0);
-  EXPECT_FALSE(result.first);
+  server.InitNewRequest(1u);
   EXPECT_TRUE(server.SetClientReply(1u, reply));
   // second set reply fails:
   EXPECT_FALSE(server.SetClientReply(1u, reply));
   // now there is a reply available
-  result = server.WaitForReply(1u, 0.0);
+  auto result = server.WaitForReply(1u);
   EXPECT_TRUE(result.first);
   EXPECT_EQ(result.second, reply);
 
   // Test 'forgotten' request
-  EXPECT_EQ(server.InitNewRequest(), 2u);
-  EXPECT_EQ(server.InitNewRequest(), 3u);
+  server.InitNewRequest(2u);
+  server.InitNewRequest(3u);
   EXPECT_FALSE(server.SetClientReply(1u, reply));
   EXPECT_FALSE(server.SetClientReply(2u, reply));
-  result = server.WaitForReply(3u, 0.0);
-  EXPECT_FALSE(result.first);
   // Only this will succeed
   EXPECT_TRUE(server.SetClientReply(3u, reply));
-  result = server.WaitForReply(3u, 0.0);
+  result = server.WaitForReply(3u);
   EXPECT_TRUE(result.first);
   EXPECT_EQ(result.second, reply);
 }
@@ -88,7 +86,8 @@ TEST_F(InputRequestServerTest, SingleThreaded)
 TEST_F(InputRequestServerTest, MultiThreaded)
 {
   InputRequestServer server{};
-  sup::dto::AnyValue reply{ sup::dto::UnsignedInteger32Type, 42u };
+  UserInputReply reply{ InputRequestType::kUserValue, true,
+                        { sup::dto::UnsignedInteger32Type, 42u }};
   std::promise<void> ready;
   auto ready_future = ready.get_future();
   auto reply_setter = [&server, &ready, reply] {
@@ -97,11 +96,11 @@ TEST_F(InputRequestServerTest, MultiThreaded)
     server.SetClientReply(1u, reply);
   };
 
-  // Verify WaitForReply within 500ms
-  EXPECT_EQ(server.InitNewRequest(), 1u);
+  // Verify WaitForReply
+  server.InitNewRequest(1u);
   auto client_thread = std::async(std::launch::async, reply_setter);
   ready_future.get();
-  auto result = server.WaitForReply(1u, 0.5);
+  auto result = server.WaitForReply(1u);
   EXPECT_TRUE(result.first);
   EXPECT_EQ(result.second, reply);
 }

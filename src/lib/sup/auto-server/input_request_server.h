@@ -22,7 +22,7 @@
 #ifndef SUP_AUTO_SERVER_INPUT_REQUEST_SERVER_H_
 #define SUP_AUTO_SERVER_INPUT_REQUEST_SERVER_H_
 
-#include <sup/dto/anyvalue.h>
+#include <sup/sequencer/user_input_reply.h>
 
 #include <condition_variable>
 #include <mutex>
@@ -32,6 +32,8 @@ namespace sup
 {
 namespace auto_server
 {
+
+using sup::sequencer::UserInputReply;
 
 /**
  * @brief InputRequestServer is a helper class that manages a single request for user input at
@@ -55,40 +57,41 @@ public:
   InputRequestServer& operator=(InputRequestServer&& other) = delete;
 
   /**
+   * @brief Clear the internal reply field. This also disables any SetClientReply() calls from being
+   * taken into account.
+   *
+   * @param id Identification of the user input request.
+   */
+   void InitNewRequest(sup::dto::uint64 id);
+
+  /**
    * @brief Set a client reply. If the index does not match the current index, this reply will be
    * ignored.
    *
-   * @param req_idx Unique index that identifies a specific request for user input.
-   * @param reply AnyValue reply from the client.
+   * @param id Unique index that identifies a specific request for user input.
+   * @param reply Reply from the client.
    *
    * @return true when successful. Failures can be due to mismatch in the index or the failure to
    * parse the reply object correctly.
    */
-  bool SetClientReply(sup::dto::uint64 req_idx, const sup::dto::AnyValue& reply);
-
-  /**
-   * @brief Clear the internal reply field. This also disables any client requests from being
-   * taken into account.
-   *
-   * @return Unique index that identifies the current request. Client replies that do not
-   * provide a matching index will be ignored.
-   */
-  sup::dto::uint64 InitNewRequest();
+  bool SetClientReply(sup::dto::uint64 id, const UserInputReply& reply);
 
   /**
    * @brief Wait for a client to provide user input or timeout.
    *
-   * @param req_idx Unique index that identifies a specific request for user input.
-   * @param timeout_sec Timeout in seconds.
+   * @param id Unique index that identifies a specific request for user input.
    *
-   * @return Boolean indicating success of retrieving a value (true) or timeout (false) and the
+   * @return Boolean indicating success of retrieving a value (true) or interrupt (false) and the
    * provided AnyValue (if true).
    */
-  std::pair<bool, sup::dto::AnyValue> WaitForReply(sup::dto::uint64 req_idx, double timeout_sec);
+  std::pair<bool, UserInputReply> WaitForReply(sup::dto::uint64 id);
+
+  void Interrupt(sup::dto::uint64 id);
 
 private:
-  sup::dto::uint64 m_request_idx;
-  sup::dto::AnyValue m_reply;
+  sup::dto::uint64 m_request_id;
+  UserInputReply m_reply;
+  bool m_interrupt;
   std::mutex m_mtx;
   std::condition_variable m_cv;
 };

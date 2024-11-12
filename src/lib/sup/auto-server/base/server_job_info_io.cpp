@@ -21,13 +21,14 @@
 
 #include <sup/auto-server/server_job_info_io.h>
 
-#include <sup/auto-server/anyvalue_input_request.h>
 #include <sup/auto-server/anyvalue_io_helper.h>
+#include <sup/auto-server/input_request_helper.h>
 #include <sup/auto-server/output_entry_helper.h>
 #include <sup/auto-server/output_entry_types.h>
 #include <sup/auto-server/sup_auto_protocol.h>
 
 #include <sup/dto/anyvalue_helper.h>
+#include <sup/sequencer/user_input_reply.h>
 
 namespace sup
 {
@@ -84,12 +85,13 @@ void ServerJobInfoIO::PutValue(const sup::dto::AnyValue& value, const std::strin
   m_av_manager.UpdateAnyValue(out_val_name, EncodeOutputValueEntry(out_val));
 }
 
-bool ServerJobInfoIO::GetUserValue(sup::dto::AnyValue& value, const std::string& description)
+bool ServerJobInfoIO::GetUserValue(sup::dto::uint64 id, sup::dto::AnyValue& value,
+                                   const std::string& description)
 {
-  auto input_request = CreateUserValueRequest(value, description);
+  auto input_request = sup::sequencer::CreateUserValueRequest(value, description);
   auto input_server_name = GetInputServerName(m_job_prefix);
-  auto response = m_av_manager.GetUserInput(input_server_name, input_request);
-  auto parsed_reply = ParseUserValueReply(response);
+  auto response = m_av_manager.GetUserInput(input_server_name, id, input_request);
+  auto parsed_reply = sup::sequencer::ParseUserValueReply(response);
   if (!parsed_reply.first)
   {
     return false;
@@ -102,18 +104,24 @@ bool ServerJobInfoIO::GetUserValue(sup::dto::AnyValue& value, const std::string&
   return true;
 }
 
-int ServerJobInfoIO::GetUserChoice(const std::vector<std::string>& options,
+int ServerJobInfoIO::GetUserChoice(sup::dto::uint64 id, const std::vector<std::string>& options,
                                    const sup::dto::AnyValue& metadata)
 {
-  auto input_request = CreateUserChoiceRequest(options, metadata);
+  auto input_request = sup::sequencer::CreateUserChoiceRequest(options, metadata);
   auto input_server_name = GetInputServerName(m_job_prefix);
-  auto response = m_av_manager.GetUserInput(input_server_name, input_request);
+  auto response = m_av_manager.GetUserInput(input_server_name, id, input_request);
   auto parsed_reply = ParseUserChoiceReply(response);
   if (!parsed_reply.first)
   {
     return -1;
   }
   return parsed_reply.second;
+}
+
+void ServerJobInfoIO::Interrupt(sup::dto::uint64 id)
+{
+  auto input_server_name = GetInputServerName(m_job_prefix);
+  m_av_manager.Interrupt(input_server_name, id);
 }
 
 void ServerJobInfoIO::Message(const std::string& message)

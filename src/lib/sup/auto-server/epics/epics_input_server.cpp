@@ -36,15 +36,15 @@ EPICSInputServer::EPICSInputServer(const std::string& server_name)
 
 EPICSInputServer::~EPICSInputServer() = default;
 
-sup::dto::uint64 EPICSInputServer::InitNewRequest()
+bool EPICSInputServer::InitNewRequest(sup::dto::uint64 id)
 {
-  return m_protocol_server.InitNewRequest();
+  return m_protocol_server.InitNewRequest(id);
 }
 
-std::pair<bool, sup::dto::AnyValue> EPICSInputServer::WaitForReply(sup::dto::uint64 req_idx,
+std::pair<bool, UserInputReply> EPICSInputServer::WaitForReply(sup::dto::uint64 req_id,
                                                                    double timeout_sec)
 {
-  return m_protocol_server.WaitForReply(req_idx, timeout_sec);
+  return m_protocol_server.WaitForReply(req_id, timeout_sec);
 }
 
 }  // namespace auto_server

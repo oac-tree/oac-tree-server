@@ -25,6 +25,7 @@
 #include <sup/auto-server/output_entry_types.h>
 
 #include <sup/sequencer/anyvalue_utils.h>
+#include <sup/sequencer/user_input_reply.h>
 
 namespace
 {
@@ -46,6 +47,8 @@ namespace sup
 {
 namespace auto_server
 {
+
+using namespace sup::sequencer;
 
 ClientAnyValueManager::ClientAnyValueManager(IJobInfoIO& job_info_io)
   : m_job_info_io{job_info_io}
@@ -97,8 +100,8 @@ bool ClientAnyValueManager::UpdateAnyValue(const std::string& name, const sup::d
   return true;
 }
 
-sup::dto::AnyValue ClientAnyValueManager::GetUserInput(const std::string& input_server_name,
-                                                       const AnyValueInputRequest& request)
+sup::dto::AnyValue ClientAnyValueManager::GetUserInput(
+  const std::string& input_server_name, const sup::sequencer::UserInputRequest& request)
 {
   (void)input_server_name;
   switch (request.m_request_type)

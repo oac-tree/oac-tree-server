@@ -33,7 +33,6 @@ target_link_libraries(sup-auto-server
 install(TARGETS sup-auto-server EXPORT sup-auto-server-targets LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR})
 
 install(FILES
-  anyvalue_input_request.h
   anyvalue_io_helper.h
   automation_protocol_client.h
   automation_server.h
@@ -51,6 +50,7 @@ install(FILES
   info_protocol_server.h
   input_protocol_client.h
   input_protocol_server.h
+  input_request_helper.h
   input_request_server.h
   output_entry_helper.h
   output_entry_types.h

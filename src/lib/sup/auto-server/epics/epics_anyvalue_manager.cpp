@@ -24,7 +24,7 @@
 #include "epics_input_server.h"
 #include "epics_server.h"
 
-#include <sup/auto-server/anyvalue_input_request.h>
+#include <sup/auto-server/input_request_helper.h>
 #include <sup/auto-server/sup_auto_protocol.h>
 
 namespace sup
@@ -88,8 +88,9 @@ bool EPICSAnyValueManager::UpdateAnyValue(const std::string& name, const sup::dt
   return true;
 }
 
-sup::dto::AnyValue EPICSAnyValueManager::GetUserInput(const std::string& input_server_name,
-                                                      const AnyValueInputRequest& request)
+UserInputReply EPICSAnyValueManager::GetUserInput(const std::string& input_server_name,
+                                                  sup::dto::uint64 id,
+                                                  const UserInputRequest& request)
 {
   std::lock_guard<std::mutex> lk{m_user_input_mtx};
   // The map mutex lock is only needed during the find operation:
@@ -100,7 +101,7 @@ sup::dto::AnyValue EPICSAnyValueManager::GetUserInput(const std::string& input_s
   {
     return {};  // TODO: is this the right return value??
   }
-  auto input_request_idx = input_server->InitNewRequest();
+  input_server->InitNewRequest(id);
   auto input_request = EncodeInputRequest(input_request_idx, request);
   input_pv_server->UpdateAnyValue(input_request_name, input_request);
   // TODO: do this in a loop with a small timeout (to allow halting this):
@@ -108,6 +109,12 @@ sup::dto::AnyValue EPICSAnyValueManager::GetUserInput(const std::string& input_s
   // TODO: what on timeout??
   input_pv_server->UpdateAnyValue(input_request_name, kInputRequestAnyValue);
   return result.second;
+}
+
+void EPICSAnyValueManager::Interrupt(const std::string& input_server_name, sup::dto::uint64 id)
+{
+  auto input_server = FindInputServer(input_server_name);
+  input_server->Interrupt(id);
 }
 
 bool EPICSAnyValueManager::AddAnyValuesImpl(const NameAnyValueSet &name_value_set)

@@ -25,6 +25,7 @@
 #include <sup/auto-server/input_protocol_server.h>
 
 #include <sup/protocol/protocol_factory.h>
+#include <sup/sequencer/user_input_reply.h>
 
 #include <memory>
 
@@ -32,6 +33,8 @@ namespace sup
 {
 namespace auto_server
 {
+
+using sup::sequencer::UserInputReply;
 
 /**
  * @brief EPICSInputServer is the EPICS implementation of an RPC server that handles user input.
@@ -51,21 +54,30 @@ public:
   /**
    * @brief Initiate a new request for user input.
    *
+   * @param id Identifier of the user input request.
+   *
    * @return Unique index that identifies the current request. Client replies that do not
    * provide a matching index will be ignored.
    */
-  sup::dto::uint64 InitNewRequest();
+  bool InitNewRequest(sup::dto::uint64 id);
 
   /**
    * @brief Wait for a client to provide user input or timeout.
    *
-   * @param req_idx Unique index that identifies a specific request for user input.
+   * @param id Unique index that identifies a specific request for user input.
    * @param timeout_sec Timeout in seconds.
    *
    * @return Boolean indicating success of retrieving a value (true) or timeout (false) and the
    * provided AnyValue (if true).
    */
-  std::pair<bool, sup::dto::AnyValue> WaitForReply(sup::dto::uint64 req_idx, double timeout_sec);
+  std::pair<bool, UserInputReply> WaitForReply(sup::dto::uint64 id, double timeout_sec);
+
+  /**
+   * @brief Interrupt an ongoing user input request.
+   *
+   * @param id Identifier of the user input request.
+   */
+  void Interrupt(sup::dto::uint64 id);
 
 private:
   InputProtocolServer m_protocol_server;

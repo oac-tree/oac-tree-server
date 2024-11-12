@@ -23,12 +23,18 @@
 #define SUP_AUTO_SERVER_I_ANYVALUE_MANAGER_H_
 
 #include <sup/auto-server/i_anyvalue_io.h>
-#include <sup/auto-server/anyvalue_input_request.h>
+#include <sup/auto-server/input_request_helper.h>
+
+#include <sup/sequencer/user_input_reply.h>
+#include <sup/sequencer/user_input_request.h>
 
 namespace sup
 {
 namespace auto_server
 {
+
+using sup::sequencer::UserInputReply;
+using sup::sequencer::UserInputRequest;
 
 /**
  * @brief IAnyValueManager defines an additional API for updates to managed AnyValues and to
@@ -41,6 +47,7 @@ namespace auto_server
 class IAnyValueManager : public IAnyValueIO
 {
 public:
+
   virtual ~IAnyValueManager();
 
   /**
@@ -56,11 +63,23 @@ public:
    * @brief Get user input using the given input server and request information.
    *
    * @param input_server_name Name of the input server.
+   * @param id Identification of the user input request.
    * @param request Description of the input requested.
    * @return AnyValue response from the user.
    */
-  virtual sup::dto::AnyValue GetUserInput(const std::string& input_server_name,
-                                          const AnyValueInputRequest& request) = 0;
+  virtual UserInputReply GetUserInput(const std::string& input_server_name, sup::dto::uint64 id,
+                                      const UserInputRequest& request) = 0;
+
+  /**
+   * @brief Interrupt a user input request.
+   *
+   * @note Due to multithreading, an interrupt request with a specific id may be triggered before
+   * the corresponding input method was called. Implementations need to take care of this case.
+   *
+   * @param input_server_name Name of the input server.
+   * @param id Identification of the user input request to interrupt.
+   */
+  virtual void Interrupt(const std::string& input_server_name, sup::dto::uint64 id) = 0;
 };
 
 }  // namespace auto_server
