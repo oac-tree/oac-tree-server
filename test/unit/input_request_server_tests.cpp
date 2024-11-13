@@ -66,7 +66,7 @@ TEST_F(InputRequestServerTest, SingleThreaded)
   EXPECT_TRUE(server.SetClientReply(1u, reply));
   // second set reply fails:
   EXPECT_FALSE(server.SetClientReply(1u, reply));
-  // now there is a reply available
+  // now there is a reply available:
   auto result = server.WaitForReply(1u);
   EXPECT_TRUE(result.first);
   EXPECT_EQ(result.second, reply);
@@ -76,31 +76,63 @@ TEST_F(InputRequestServerTest, SingleThreaded)
   server.InitNewRequest(3u);
   EXPECT_FALSE(server.SetClientReply(1u, reply));
   EXPECT_FALSE(server.SetClientReply(2u, reply));
-  // Only this will succeed
+  // Only this will succeed:
   EXPECT_TRUE(server.SetClientReply(3u, reply));
   result = server.WaitForReply(3u);
   EXPECT_TRUE(result.first);
   EXPECT_EQ(result.second, reply);
+
+  // Test interrupted
+  server.InitNewRequest(4u);
+  // Interrupting a non-existent request is ignored:
+  server.Interrupt(3u);
+  // Interrupting the current request makes an invalid reply available:
+  server.Interrupt(4u);
+  result = server.WaitForReply(4u);
+  EXPECT_FALSE(result.first);
+  EXPECT_EQ(result.second, kInvalidUserInputReply);
 }
 
 TEST_F(InputRequestServerTest, MultiThreaded)
 {
   InputRequestServer server{};
-  UserInputReply reply{ InputRequestType::kUserValue, true,
-                        { sup::dto::UnsignedInteger32Type, 42u }};
-  std::promise<void> ready;
-  auto ready_future = ready.get_future();
-  auto reply_setter = [&server, &ready, reply] {
-    ready.set_value();
-    std::this_thread::sleep_for(std::chrono::milliseconds(100));
-    server.SetClientReply(1u, reply);
-  };
+  {
+    // Setting the reply from a different thread makes it available in the main thread
+    UserInputReply reply{ InputRequestType::kUserValue, true,
+                          { sup::dto::UnsignedInteger32Type, 42u }};
+    std::promise<void> ready;
+    auto ready_future = ready.get_future();
+    auto reply_setter = [&server, &ready, reply] {
+      ready.set_value();
+      std::this_thread::sleep_for(std::chrono::milliseconds(100));
+      server.SetClientReply(1u, reply);
+    };
 
-  // Verify WaitForReply
-  server.InitNewRequest(1u);
-  auto client_thread = std::async(std::launch::async, reply_setter);
-  ready_future.get();
-  auto result = server.WaitForReply(1u);
-  EXPECT_TRUE(result.first);
-  EXPECT_EQ(result.second, reply);
+    // Verify WaitForReply
+    server.InitNewRequest(1u);
+    auto client_thread = std::async(std::launch::async, reply_setter);
+    ready_future.get();
+    auto result = server.WaitForReply(1u);
+    EXPECT_TRUE(result.first);
+    EXPECT_EQ(result.second, reply);
+  }
+  {
+    // Interrupting the request from a different thread makes an invalid reply available
+    // in the main thread
+    std::promise<void> ready;
+    auto ready_future = ready.get_future();
+    auto interrupt_setter = [&server, &ready] {
+      ready.set_value();
+      std::this_thread::sleep_for(std::chrono::milliseconds(100));
+      server.Interrupt(2u);
+    };
+
+    // Verify WaitForReply
+    server.InitNewRequest(2u);
+    auto client_thread = std::async(std::launch::async, interrupt_setter);
+    ready_future.get();
+    auto result = server.WaitForReply(2u);
+    EXPECT_FALSE(result.first);
+    EXPECT_EQ(result.second, kInvalidUserInputReply);
+  }
 }
