@@ -17,6 +17,7 @@ target_sources(sup-auto-server
   index_generator.cpp
   # input_protocol_client.cpp
   # input_protocol_server.cpp
+  input_reply_helper.cpp
   input_request_helper.cpp
   input_request_server.cpp
   output_entry_helper.cpp

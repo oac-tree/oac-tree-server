@@ -38,15 +38,19 @@ InputProtocolServer::InputProtocolServer()
 
 InputProtocolServer::~InputProtocolServer() = default;
 
-sup::dto::uint64 InputProtocolServer::InitNewRequest()
+void InputProtocolServer::InitNewRequest(sup::dto::uint64 id)
 {
-  return m_request_server.InitNewRequest();
+  return m_request_server.InitNewRequest(id);
 }
 
-std::pair<bool, sup::dto::AnyValue> InputProtocolServer::WaitForReply(sup::dto::uint64 req_idx,
-                                                                      double timeout_sec)
+std::pair<bool, UserInputReply> InputProtocolServer::WaitForReply(sup::dto::uint64 id)
 {
-  return m_request_server.WaitForReply(req_idx, timeout_sec);
+  return m_request_server.WaitForReply(id);
+}
+
+void InputProtocolServer::Interrupt(sup::dto::uint64 id)
+{
+  m_request_server.Interrupt(id);
 }
 
 sup::protocol::ProtocolResult InputProtocolServer::Invoke(const sup::dto::AnyValue& input,
@@ -79,22 +83,22 @@ sup::protocol::ProtocolResult InputProtocolServer::SetClientReply(
   const sup::dto::AnyValue& input, sup::dto::AnyValue& output)
 {
   (void)output;
-  sup::dto::AnyValue request_idx_av;
-  if (!sup::protocol::FunctionProtocolExtract(request_idx_av, input, kUserRequestIndexFieldName))
+  sup::dto::AnyValue request_id_av;
+  if (!sup::protocol::FunctionProtocolExtract(request_id_av, input, kUserRequestIndexFieldName))
   {
     return sup::protocol::ServerProtocolDecodingError;
   };
-  if (request_idx_av.GetType() != sup::dto::UnsignedInteger64Type)
+  if (request_id_av.GetType() != sup::dto::UnsignedInteger64Type)
   {
     return sup::protocol::ServerProtocolDecodingError;
   };
-  auto request_idx = request_idx_av.As<sup::dto::uint64>();
-  sup::dto::AnyValue user_reply;
-  if (!sup::protocol::FunctionProtocolExtract(user_reply, input, kUserReplyValueFieldName))
+  auto request_id = request_id_av.As<sup::dto::uint64>();
+  sup::dto::AnyValue user_reply_av;
+  if (!sup::protocol::FunctionProtocolExtract(user_reply_av, input, kUserReplyValueFieldName))
   {
     return sup::protocol::ServerProtocolDecodingError;
   };
-  auto result = m_request_server.SetClientReply(request_idx, user_reply);
+  auto result = m_request_server.SetClientReply(request_id, user_reply);
   if (!result)
   {
     return ClientReplyRefused;

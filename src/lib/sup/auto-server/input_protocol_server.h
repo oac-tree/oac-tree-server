@@ -47,8 +47,9 @@ public:
   InputProtocolServer& operator=(const InputProtocolServer& other) = delete;
   InputProtocolServer& operator=(InputProtocolServer&& other) = delete;
 
-  sup::dto::uint64 InitNewRequest();
-  std::pair<bool, sup::dto::AnyValue> WaitForReply(sup::dto::uint64 req_idx, double timeout_sec);
+  void InitNewRequest(sup::dto::uint64 id);
+  std::pair<bool, UserInputReply> WaitForReply(sup::dto::uint64 id);
+  void Interrupt(sup::dto::uint64 id);
 
   sup::protocol::ProtocolResult Invoke(const sup::dto::AnyValue& input,
                                   sup::dto::AnyValue& output) override;

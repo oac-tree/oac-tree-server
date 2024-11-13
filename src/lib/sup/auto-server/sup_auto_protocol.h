@@ -65,6 +65,11 @@ const std::string kInputRequestIndexField = "idx";
 const std::string kInputRequestTypeField = "request_type";
 const std::string kInputRequestMetadataField = "metadata";
 const std::string kInputRequestInputTypeField = "input_type";
+// Input reply fields:
+const std::string kInputReplyIndexField = "idx";
+const std::string kInputReplyTypeField = "Reply_type";
+const std::string kInputReplyResultField = "result";
+const std::string kInputReplyPayloadField = "payload";
 
 // Log entry pv identifier
 const std::string kLogEntryId = "LOG";

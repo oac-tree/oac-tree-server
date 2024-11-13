@@ -25,7 +25,6 @@
 #include <sup/auto-server/sup_auto_protocol.h>
 
 #include <sup/dto/anytype_helper.h>
-#include <sup/dto/anyvalue_helper.h>
 #include <sup/dto/json_type_parser.h>
 #include <sup/protocol/base64_variable_codec.h>
 #include <sup/sequencer/anyvalue_utils.h>
@@ -42,13 +41,12 @@ namespace auto_server
 using sup::sequencer::utils::ValidateMemberType;
 using namespace sup::sequencer;
 
-sup::dto::AnyValue EncodeInputRequest(sup::dto::uint64 req_id,
-                                      const UserInputRequest& input_request)
+sup::dto::AnyValue EncodeInputRequest(sup::dto::uint64 id, const UserInputRequest& input_request)
 {
   sup::dto::AnyValue request_type_av{ sup::dto::UnsignedInteger32Type,
                                       static_cast<sup::dto::uint32>(input_request.m_request_type)};
   dto::AnyValue payload = {{
-    { kInputRequestIndexField, { sup::dto::UnsignedInteger64Type, req_id }},
+    { kInputRequestIndexField, { sup::dto::UnsignedInteger64Type, id }},
     { kInputRequestTypeField, request_type_av },
     { kInputRequestMetadataField, input_request.m_meta_data },
     { kInputRequestInputTypeField, sup::dto::AnyTypeToJSONString(input_request.m_input_type) }
@@ -62,8 +60,8 @@ sup::dto::AnyValue EncodeInputRequest(sup::dto::uint64 req_id,
   return encoded.second;
 }
 
-std::tuple<bool, sup::dto::uint64, UserInputRequest>
-DecodeInputRequest(const dto::AnyValue& encoded)
+std::tuple<bool, sup::dto::uint64, UserInputRequest> DecodeInputRequest(
+  const dto::AnyValue& encoded)
 {
   const std::tuple<bool, sup::dto::uint64, UserInputRequest> failure{ false, 0, {} };
   auto decoded = protocol::Base64VariableCodec::Decode(encoded);

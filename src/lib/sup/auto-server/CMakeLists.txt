@@ -50,6 +50,7 @@ install(FILES
   info_protocol_server.h
   input_protocol_client.h
   input_protocol_server.h
+  input_reply_helper.h
   input_request_helper.h
   input_request_server.h
   output_entry_helper.h
