@@ -147,10 +147,7 @@ const std::string kAutomationInputRequestServerVersion = "1.0";
 const std::string KSetReplyFunctionName = "SetReply";
 
 // Field names used for the supported functions of input request servers:
-const std::string kUserRequestIndexFieldName = "index";
 const std::string kUserReplyValueFieldName = "value";
-const std::string kInputReplyResultFieldName = "result";
-const std::string kInputReplyValueFieldName = "reply";
 
 // Field names used in the input request pv
 const std::string kInputRequestOptionsFieldName = "options";

@@ -33,7 +33,9 @@ namespace auto_server
 {
 
 /**
- * @brief InputProtocolServer .
+ * @brief InputProtocolServer exposes the sup protocol for clients providing user input. It handles
+ * only one input request at a time, so clients of this code should make sure only one request is
+ * active at a time.
  */
 class InputProtocolServer : public sup::protocol::Protocol
 {

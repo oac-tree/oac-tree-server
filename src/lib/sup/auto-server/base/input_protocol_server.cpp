@@ -21,6 +21,7 @@
 
 #include <sup/auto-server/input_protocol_server.h>
 
+#include <sup/auto-server/input_reply_helper.h>
 #include <sup/auto-server/sup_auto_protocol.h>
 
 #include <sup/dto/anyvalue_helper.h>
@@ -83,22 +84,19 @@ sup::protocol::ProtocolResult InputProtocolServer::SetClientReply(
   const sup::dto::AnyValue& input, sup::dto::AnyValue& output)
 {
   (void)output;
-  sup::dto::AnyValue request_id_av;
-  if (!sup::protocol::FunctionProtocolExtract(request_id_av, input, kUserRequestIndexFieldName))
-  {
-    return sup::protocol::ServerProtocolDecodingError;
-  };
-  if (request_id_av.GetType() != sup::dto::UnsignedInteger64Type)
-  {
-    return sup::protocol::ServerProtocolDecodingError;
-  };
-  auto request_id = request_id_av.As<sup::dto::uint64>();
   sup::dto::AnyValue user_reply_av;
   if (!sup::protocol::FunctionProtocolExtract(user_reply_av, input, kUserReplyValueFieldName))
   {
     return sup::protocol::ServerProtocolDecodingError;
   };
-  auto result = m_request_server.SetClientReply(request_id, user_reply);
+  auto decoded = DecodeInputReply(user_reply_av);
+  if (!std::get<0>(decoded))
+  {
+    return sup::protocol::ServerProtocolDecodingError;
+  }
+  auto id = std::get<1>(decoded);
+  auto user_reply = std::get<2>(decoded);
+  auto result = m_request_server.SetClientReply(id, user_reply);
   if (!result)
   {
     return ClientReplyRefused;
