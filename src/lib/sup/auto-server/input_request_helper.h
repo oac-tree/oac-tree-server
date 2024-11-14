@@ -43,7 +43,7 @@ using sup::sequencer::UserInputRequest;
  *
  * @return Encoded AnyValue.
  */
-sup::dto::AnyValue EncodeInputRequest(sup::dto::uint64 id, UserInputRequest& input_request);
+sup::dto::AnyValue EncodeInputRequest(sup::dto::uint64 id, const UserInputRequest& input_request);
 
 /**
  * @brief Decode the packed and encoded AnyValue into an UserInputRequest.
@@ -53,7 +53,7 @@ sup::dto::AnyValue EncodeInputRequest(sup::dto::uint64 id, UserInputRequest& inp
  * @return Tuple of connected state - request id - UserInputRequest.
  */
 std::tuple<bool, sup::dto::uint64, UserInputRequest> DecodeInputRequest(
-  const dto::AnyValue& encoded);
+  const sup::dto::AnyValue& encoded);
 
 }  // namespace auto_server
 

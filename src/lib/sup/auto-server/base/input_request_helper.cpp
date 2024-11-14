@@ -61,9 +61,10 @@ sup::dto::AnyValue EncodeInputRequest(sup::dto::uint64 id, const UserInputReques
 }
 
 std::tuple<bool, sup::dto::uint64, UserInputRequest> DecodeInputRequest(
-  const dto::AnyValue& encoded)
+  const sup::dto::AnyValue& encoded)
 {
-  const std::tuple<bool, sup::dto::uint64, UserInputRequest> failure{ false, 0, {} };
+  const std::tuple<bool, sup::dto::uint64, UserInputRequest> failure{ false, 0,
+                                                                      kInvalidUserInputRequest };
   auto decoded = protocol::Base64VariableCodec::Decode(encoded);
   if (!decoded.first)
   {

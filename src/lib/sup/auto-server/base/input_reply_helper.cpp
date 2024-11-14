@@ -61,7 +61,8 @@ sup::dto::AnyValue EncodeInputReply(sup::dto::uint64 id, UserInputReply& input_r
   return encoded.second;
 }
 
-std::tuple<bool, sup::dto::uint64, UserInputReply> DecodeInputReply(const dto::AnyValue& encoded)
+std::tuple<bool, sup::dto::uint64, UserInputReply> DecodeInputReply(
+  const sup::dto::AnyValue& encoded)
 {
   const std::tuple<bool, sup::dto::uint64, UserInputReply> failure{ false, 0,
                                                                     kInvalidUserInputReply };

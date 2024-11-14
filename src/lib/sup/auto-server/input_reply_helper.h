@@ -43,7 +43,7 @@ using sup::sequencer::UserInputReply;
  *
  * @return Encoded AnyValue.
  */
-sup::dto::AnyValue EncodeInputReply(sup::dto::uint64 id, UserInputReply& input_reply);
+sup::dto::AnyValue EncodeInputReply(sup::dto::uint64 id, const UserInputReply& input_reply);
 
 /**
  * @brief Decode the packed and encoded AnyValue into an UserInputReply.
