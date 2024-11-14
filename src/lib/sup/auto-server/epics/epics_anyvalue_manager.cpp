@@ -99,15 +99,18 @@ UserInputReply EPICSAnyValueManager::GetUserInput(const std::string& input_serve
   auto input_pv_server = FindServer(input_request_name);
   if (input_server == nullptr || input_pv_server == nullptr)
   {
-    return {};  // TODO: is this the right return value??
+    return sup::sequencer::kInvalidUserInputReply;
   }
   input_server->InitNewRequest(id);
-  auto input_request = EncodeInputRequest(input_request_idx, request);
+  auto input_request = EncodeInputRequest(id, request);
   input_pv_server->UpdateAnyValue(input_request_name, input_request);
-  // TODO: do this in a loop with a small timeout (to allow halting this):
-  auto result = input_server->WaitForReply(input_request_idx, 1e9);
-  // TODO: what on timeout??
+  // This will block until a reply is received or the request is interrupted:
+  auto result = input_server->WaitForReply(id);
   input_pv_server->UpdateAnyValue(input_request_name, kInputRequestAnyValue);
+  if (!result.first)
+  {
+    return sup::sequencer::kInvalidUserInputReply;
+  }
   return result.second;
 }
 
