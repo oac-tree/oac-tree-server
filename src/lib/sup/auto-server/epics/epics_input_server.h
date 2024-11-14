@@ -38,6 +38,9 @@ using sup::sequencer::UserInputReply;
 
 /**
  * @brief EPICSInputServer is the EPICS implementation of an RPC server that handles user input.
+ *
+ * @note Clients using this server should ensure that only one input request is active at a time.
+ * This means that WaitForReply should return before a new request can be made.
  */
 class EPICSInputServer
 {
@@ -54,23 +57,19 @@ public:
   /**
    * @brief Initiate a new request for user input.
    *
-   * @param id Identifier of the user input request.
-   *
-   * @return Unique index that identifies the current request. Client replies that do not
-   * provide a matching index will be ignored.
+   * @param id Identifier of the new user input request.
    */
-  bool InitNewRequest(sup::dto::uint64 id);
+  void InitNewRequest(sup::dto::uint64 id);
 
   /**
-   * @brief Wait for a client to provide user input or timeout.
+   * @brief Wait for a client to provide user input or for interrupt.
    *
    * @param id Unique index that identifies a specific request for user input.
-   * @param timeout_sec Timeout in seconds.
    *
-   * @return Boolean indicating success of retrieving a value (true) or timeout (false) and the
+   * @return Boolean indicating success of retrieving a value (true) or interrupted (false) and the
    * provided AnyValue (if true).
    */
-  std::pair<bool, UserInputReply> WaitForReply(sup::dto::uint64 id, double timeout_sec);
+  std::pair<bool, UserInputReply> WaitForReply(sup::dto::uint64 id);
 
   /**
    * @brief Interrupt an ongoing user input request.
