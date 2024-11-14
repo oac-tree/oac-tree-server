@@ -38,7 +38,7 @@ namespace UnitTestHelper
 
 TestAnyValueManager::TestAnyValueManager()
     : m_value_map{}
-    , m_user_input{}
+    , m_user_input_reply{sup::sequencer::kInvalidUserInputReply}
     , m_input_requests{}
     , m_mtx{}
     , m_cv{}
@@ -88,14 +88,22 @@ bool TestAnyValueManager::UpdateAnyValue(const std::string& name, const sup::dto
   return true;
 }
 
-sup::dto::AnyValue TestAnyValueManager::GetUserInput(const std::string& input_server_name,
-                                                     const AnyValueInputRequest& request)
+UserInputReply TestAnyValueManager::GetUserInput(const std::string& input_server_name,
+                                                 sup::dto::uint64 id,
+                                                 const UserInputRequest& request)
 {
   std::lock_guard<std::mutex> lk{m_mtx};
   m_input_requests.emplace_back(input_server_name, request);
   ++m_n_input_requests;
   m_cv.notify_one();
-  return m_user_input;
+  return m_user_input_reply;
+}
+
+void TestAnyValueManager::Interrupt(const std::string& input_server_name, sup::dto::uint64 id)
+{
+  (void)input_server_name;
+  (void)id;
+  return;
 }
 
 bool TestAnyValueManager::HasAnyValue(const std::string& name) const
@@ -127,13 +135,13 @@ bool TestAnyValueManager::WaitForValue(const std::string& name, const sup::dto::
   return m_cv.wait_for(lk, duration, pred);
 }
 
-void TestAnyValueManager::SetUserInput(const sup::dto::AnyValue& val)
+void TestAnyValueManager::SetUserInputReply(const UserInputReply& reply)
 {
   std::unique_lock<std::mutex> lk{m_mtx};
-  m_user_input = val;
+  m_user_input_reply = reply;
 }
 
-bool TestAnyValueManager::WaitForInputRequest(const AnyValueInputRequest& request,
+bool TestAnyValueManager::WaitForInputRequest(const UserInputRequest& request,
                                               double seconds) const
 {
   auto duration = std::chrono::nanoseconds(std::lround(seconds * 1e9));

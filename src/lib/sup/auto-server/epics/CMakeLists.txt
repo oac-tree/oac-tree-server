@@ -2,7 +2,7 @@ target_sources(sup-auto-server
   PRIVATE
   anyvalue_update_command.cpp
   anyvalue_update_queue.cpp
-  # epics_config_utils.cpp
+  epics_config_utils.cpp
   # epics_io_client.cpp
   epics_anyvalue_manager_registry.cpp
   epics_anyvalue_manager.cpp

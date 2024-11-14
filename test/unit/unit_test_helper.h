@@ -78,8 +78,8 @@ public:
   MOCK_METHOD(void, VariableUpdated, (sup::dto::uint32, const sup::dto::AnyValue&, bool), (override));
   MOCK_METHOD(void, JobStateUpdated, (sup::sequencer::JobState), (override));
   MOCK_METHOD(void, PutValue, (const sup::dto::AnyValue&, const std::string&), (override));
-  MOCK_METHOD(bool, GetUserValue, (sup::dto::AnyValue&, const std::string&), (override));
-  MOCK_METHOD(int, GetUserChoice, (const std::vector<std::string>&, const sup::dto::AnyValue&), (override));
+  MOCK_METHOD(bool, GetUserValue, (sup::dto::uint64, sup::dto::AnyValue&, const std::string&), (override));
+  MOCK_METHOD(int, GetUserChoice, (sup::dto::uint64, const std::vector<std::string>&, const sup::dto::AnyValue&), (override));
   MOCK_METHOD(void, Message, (const std::string&), (override));
   MOCK_METHOD(void, Log, (int, const std::string&), (override));
   MOCK_METHOD(void, NextInstructionsUpdated, (const std::vector<sup::dto::uint32>&), (override));
@@ -98,7 +98,8 @@ public:
   MOCK_METHOD(bool, AddAnyValues, (const NameAnyValueSet&), (override));
   MOCK_METHOD(bool, AddInputHandler, (const std::string&), (override));
   MOCK_METHOD(bool, UpdateAnyValue, (const std::string&, const sup::dto::AnyValue&), (override));
-  MOCK_METHOD(sup::dto::AnyValue, GetUserInput, (const std::string&, const AnyValueInputRequest&), (override));
+  MOCK_METHOD(UserInputReply, GetUserInput, (const std::string&, sup::dto::uint64, const UserInputRequest&), (override));
+  MOCK_METHOD(void, Interrupt, (const std::string&, sup::dto::uint64), (override));
 };
 
 class TestAnyValueManager : public IAnyValueManager
@@ -110,8 +111,9 @@ public:
   bool AddAnyValues(const NameAnyValueSet& name_value_set) override;
   bool AddInputHandler(const std::string& input_server_name) override;
   bool UpdateAnyValue(const std::string& name, const sup::dto::AnyValue& value) override;
-  sup::dto::AnyValue GetUserInput(const std::string& input_server_name,
-                                  const AnyValueInputRequest& request) override;
+  UserInputReply GetUserInput(const std::string& input_server_name, sup::dto::uint64 id,
+                              const UserInputRequest& request) override;
+  void Interrupt(const std::string& input_server_name, sup::dto::uint64 id) override;
 
   bool HasAnyValue(const std::string& name) const;
 
@@ -121,9 +123,9 @@ public:
 
   bool WaitForValue(const std::string& name, const sup::dto::AnyValue& value, double seconds) const;
 
-  void SetUserInput(const sup::dto::AnyValue& val);
+  void SetUserInputReply(const UserInputReply& reply);
 
-  bool WaitForInputRequest(const AnyValueInputRequest& request, double seconds) const;
+  bool WaitForInputRequest(const UserInputRequest& request, double seconds) const;
 
   sup::dto::uint32 GetNbrInputRequests() const;
 
@@ -132,8 +134,8 @@ private:
   bool HasAnyValueImpl(const std::string& name) const;
   sup::dto::AnyValue GetAnyValueImpl(const std::string& name) const;
   std::map<std::string, sup::dto::AnyValue> m_value_map;
-  sup::dto::AnyValue m_user_input;
-  std::vector<std::pair<std::string, AnyValueInputRequest>> m_input_requests;
+  UserInputReply m_user_input_reply;
+  std::vector<std::pair<std::string, UserInputRequest>> m_input_requests;
   sup::dto::uint32 m_n_input_requests;
   mutable std::mutex m_mtx;
   mutable std::condition_variable m_cv;

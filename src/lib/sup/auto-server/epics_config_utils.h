@@ -36,7 +36,7 @@ namespace auto_server
 namespace utils
 {
 
-std::unique_ptr<IAnyValueIO> CreateEPICSIOClient(IAnyValueManager& av_mgr);
+// std::unique_ptr<IAnyValueIO> CreateEPICSIOClient(IAnyValueManager& av_mgr);
 
 std::unique_ptr<IJobManager> CreateEPICSJobManager(const std::string& server_name);
 

@@ -19,8 +19,6 @@
  * of the distribution package.
  ******************************************************************************/
 
-#include "unit_test_helper.h"
-
 #include <sup/auto-server/sup_auto_protocol.h>
 
 #include <sup/protocol/base64_variable_codec.h>
