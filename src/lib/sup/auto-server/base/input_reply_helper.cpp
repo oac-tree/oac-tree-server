@@ -42,7 +42,7 @@ namespace auto_server
 using sup::sequencer::utils::ValidateMemberType;
 using namespace sup::sequencer;
 
-sup::dto::AnyValue EncodeInputReply(sup::dto::uint64 id, UserInputReply& input_reply)
+sup::dto::AnyValue EncodeInputReply(sup::dto::uint64 id, const UserInputReply& input_reply)
 {
   sup::dto::AnyValue reply_type_av{ sup::dto::UnsignedInteger32Type,
                                     static_cast<sup::dto::uint32>(input_reply.m_request_type)};

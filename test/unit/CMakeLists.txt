@@ -9,6 +9,7 @@ target_sources(unit-tests
     # epics_anyvalue_manager_tests.cpp
     # epics_client_server_tests.cpp
     # index_generator_tests.cpp
+    input_reply_helper_tests.cpp
     input_request_helper_tests.cpp
     input_request_server_tests.cpp
     # job_info_io_server_client_tests.cpp
