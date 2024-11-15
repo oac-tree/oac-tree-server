@@ -34,6 +34,7 @@ install(TARGETS sup-auto-server EXPORT sup-auto-server-targets LIBRARY DESTINATI
 
 install(FILES
   anyvalue_io_helper.h
+  automation_client_stack.h
   automation_protocol_client.h
   automation_server.h
   client_anyvalue_manager.h
@@ -43,8 +44,8 @@ install(FILES
   epics_config_utils.h
   exceptions.h
   i_anyvalue_io.h
-  i_anyvalue_manager.h
   i_anyvalue_manager_registry.h
+  i_anyvalue_manager.h
   i_job_manager.h
   index_generator.h
   info_protocol_server.h

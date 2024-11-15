@@ -246,8 +246,8 @@ TEST_F(JobInfoIOServerClientTest, GetUserValue)
   EXPECT_CALL(m_test_job_info_io, InstructionStateUpdated(_, initial_instr_state)).Times(Exactly(nr_instr));
   EXPECT_CALL(m_test_job_info_io, JobStateUpdated(_)).Times(Exactly(1));
   EXPECT_CALL(m_test_job_info_io, PutValue(_, _)).Times(Exactly(1));
-  EXPECT_CALL(m_test_job_info_io, GetUserValue(_, description)).Times(Exactly(1)).WillOnce(
-    DoAll(SetArgReferee<0>(user_val), Return(true)));
+  EXPECT_CALL(m_test_job_info_io, GetUserValue(1u, _, description)).Times(Exactly(1)).WillOnce(
+    DoAll(SetArgReferee<1>(user_val), Return(true)));
   EXPECT_CALL(m_test_job_info_io, Message(_)).Times(Exactly(1));
   EXPECT_CALL(m_test_job_info_io, Log(_, _)).Times(Exactly(1));
 
@@ -256,7 +256,7 @@ TEST_F(JobInfoIOServerClientTest, GetUserValue)
   ServerJobInfoIO server_job_info_io{job_prefix, 5, client_av_mgr};
   server_job_info_io.InitNumberOfInstructions(nr_instr);
   sup::dto::AnyValue response;
-  EXPECT_TRUE(server_job_info_io.GetUserValue(response, description));
+  EXPECT_TRUE(server_job_info_io.GetUserValue(1u, response, description));
   EXPECT_EQ(response, user_val);
 }
 
@@ -273,7 +273,7 @@ TEST_F(JobInfoIOServerClientTest, GetUserChoice)
   EXPECT_CALL(m_test_job_info_io, InstructionStateUpdated(_, initial_instr_state)).Times(Exactly(nr_instr));
   EXPECT_CALL(m_test_job_info_io, JobStateUpdated(_)).Times(Exactly(1));
   EXPECT_CALL(m_test_job_info_io, PutValue(_, _)).Times(Exactly(1));
-  EXPECT_CALL(m_test_job_info_io, GetUserChoice(choices, metadata)).Times(Exactly(1))
+  EXPECT_CALL(m_test_job_info_io, GetUserChoice(1u, choices, metadata)).Times(Exactly(1))
     .WillOnce(Return(choice));
   EXPECT_CALL(m_test_job_info_io, Message(_)).Times(Exactly(1));
   EXPECT_CALL(m_test_job_info_io, Log(_, _)).Times(Exactly(1));
@@ -282,7 +282,7 @@ TEST_F(JobInfoIOServerClientTest, GetUserChoice)
   ClientAnyValueManager client_av_mgr{m_test_job_info_io};
   ServerJobInfoIO server_job_info_io{job_prefix, 5, client_av_mgr};
   server_job_info_io.InitNumberOfInstructions(nr_instr);
-  EXPECT_EQ(server_job_info_io.GetUserChoice(choices, metadata), choice);
+  EXPECT_EQ(server_job_info_io.GetUserChoice(1u, choices, metadata), choice);
 }
 
 TEST_F(JobInfoIOServerClientTest, NextInstructionsUpdated)
