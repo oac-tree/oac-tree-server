@@ -5,7 +5,7 @@ target_sources(sup-auto-server
   automation_protocol_client.cpp
   info_protocol_server.cpp
   automation_server.cpp
-  # client_anyvalue_manager.cpp
+  client_anyvalue_manager.cpp
   # client_job.cpp
   client_reply_delegator.cpp
   control_protocol_server.cpp

@@ -53,8 +53,8 @@ public:
 
   bool UpdateAnyValue(const std::string& name, const sup::dto::AnyValue& value) override;
 
-  sup::dto::AnyValue GetUserInput(const std::string& input_server_name,
-                                  const sup::sequencer::UserInputRequest& request) override;
+  UserInputReply GetUserInput(const std::string& input_server_name, sup::dto::uint64 id,
+                              const UserInputRequest& request) override;
 
 private:
   sup::sequencer::IJobInfoIO& m_job_info_io;

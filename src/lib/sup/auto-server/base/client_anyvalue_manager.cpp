@@ -100,8 +100,8 @@ bool ClientAnyValueManager::UpdateAnyValue(const std::string& name, const sup::d
   return true;
 }
 
-sup::dto::AnyValue ClientAnyValueManager::GetUserInput(
-  const std::string& input_server_name, const sup::sequencer::UserInputRequest& request)
+UserInputReply ClientAnyValueManager::GetUserInput(
+  const std::string& input_server_name, sup::dto::uint64 id, const UserInputRequest& request)
 {
   (void)input_server_name;
   switch (request.m_request_type)
@@ -112,9 +112,9 @@ sup::dto::AnyValue ClientAnyValueManager::GetUserInput(
       sup::dto::AnyValue value;
       if (!ParseUserValueRequest(request, value, description))
       {
-        return {};
+        break;
       }
-      auto result = m_job_info_io.GetUserValue(value, description);
+      auto result = m_job_info_io.GetUserValue(id, value, description);
       return CreateUserValueReply(result, value);
     }
   case InputRequestType::kUserChoice:
@@ -123,15 +123,15 @@ sup::dto::AnyValue ClientAnyValueManager::GetUserInput(
       sup::dto::AnyValue metadata{};
       if (!ParseUserChoiceRequest(request, options, metadata))
       {
-        return false;
+        break;;
       }
-      auto choice = m_job_info_io.GetUserChoice(options, metadata);
+      auto choice = m_job_info_io.GetUserChoice(id, options, metadata);
       return CreateUserChoiceReply(true, choice);
     }
   default:
     break;
   }
-  return {};
+  return kInvalidUserInputReply;
 }
 
 ClientAnyValueManager::AnyValueCallback CreateCallback(const ValueNameInfo& value_name_info)

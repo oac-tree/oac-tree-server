@@ -19,7 +19,7 @@
  * of the distribution package.
  ******************************************************************************/
 
-// #include "epics_io_client.h"
+#include "epics_io_client.h"
 
 #include <sup/auto-server/automation_client_stack.h>
 #include <sup/auto-server/epics/epics_anyvalue_manager_registry.h>
@@ -34,10 +34,10 @@ namespace auto_server
 namespace utils
 {
 
-// std::unique_ptr<IAnyValueIO> CreateEPICSIOClient(IAnyValueManager& av_mgr)
-// {
-//   return std::unique_ptr<IAnyValueIO>(new EPICSIOClient(av_mgr));
-// }
+std::unique_ptr<IAnyValueIO> CreateEPICSIOClient(IAnyValueManager& av_mgr)
+{
+  return std::unique_ptr<IAnyValueIO>(new EPICSIOClient(av_mgr));
+}
 
 std::unique_ptr<IJobManager> CreateEPICSJobManager(const std::string& server_name)
 {
