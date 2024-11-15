@@ -5,9 +5,9 @@ target_sources(unit-tests
     anyvalue_io_helper_tests.cpp
     app_utils_tests.cpp
     automation_server_tests.cpp
-    # client_anyvalue_manager_tests.cpp
+    client_anyvalue_manager_tests.cpp
     epics_anyvalue_manager_tests.cpp
-    # epics_client_server_tests.cpp
+    epics_client_server_tests.cpp
     index_generator_tests.cpp
     input_reply_helper_tests.cpp
     input_request_helper_tests.cpp
