@@ -41,11 +41,11 @@ ClientReplyDelegator::~ClientReplyDelegator()
   m_delegatee.join();
 }
 
-void ClientReplyDelegator::QueueReply(sup::dto::uint64 req_idx, const sup::dto::AnyValue& reply)
+void ClientReplyDelegator::QueueReply(sup::dto::uint64 id, const UserInputReply& reply)
 {
   {
     std::lock_guard<std::mutex> lk{m_mtx};
-    m_reply_queue.push_back({req_idx, reply});
+    m_reply_queue.push_back({id, reply});
   }
   m_cv.notify_one();
 }
@@ -64,7 +64,7 @@ void ClientReplyDelegator::HandleClientReply()
       auto reply_info = m_reply_queue.front();
       m_reply_queue.pop_front();
       lk.unlock();
-      m_reply_func(reply_info.req_idx, reply_info.reply);
+      m_reply_func(reply_info.id, reply_info.reply);
     }
   }
 }

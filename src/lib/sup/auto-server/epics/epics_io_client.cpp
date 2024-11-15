@@ -28,18 +28,16 @@
 #include <sup/auto-server/sup_auto_protocol.h>
 
 #include <sup/epics/pv_access_client_pv.h>
+#include <sup/sequencer/user_input_request.h>
 
 #include <vector>
-
-namespace
-{
-
-}  // unnamed namespace
 
 namespace sup
 {
 namespace auto_server
 {
+using sup::sequencer::UserInputRequest;
+
 class EPICSIOClientImpl
 {
 public:
@@ -110,8 +108,8 @@ bool EPICSIOClientImpl::AddInputHandler(const std::string& input_server_name)
     return false;
   }
   m_input_client.reset(new EPICSInputClient{input_server_name});
-  auto reply_func = [this](sup::dto::uint64 req_idx, const sup::dto::AnyValue& reply) {
-    (void)m_input_client->SetClientReply(req_idx, reply);
+  auto reply_func = [this](sup::dto::uint64 id, const UserInputReply& reply) {
+    (void)m_input_client->SetClientReply(id, reply);
   };
   m_reply_delegator.reset(new ClientReplyDelegator(reply_func));
   auto input_request_pv_name = GetInputRequestPVName(input_server_name);
@@ -140,17 +138,17 @@ void EPICSIOClientImpl::AddMonitorPV(const std::string& channel)
 }
 
 void EPICSIOClientImpl::HandleUserInput(const std::string& input_server_name,
-                                                const sup::dto::AnyValue& req_av)
+                                        const sup::dto::AnyValue& req_av)
 {
   auto req = DecodeInputRequest(req_av);
+  auto id = std::get<1>(req);
   auto success = std::get<0>(req);
-  auto req_idx = std::get<1>(req);
   if (!success)
   {
     return;  // only react to active input requests
   }
-  auto reply = m_av_mgr.GetUserInput(input_server_name, std::get<2>(req));
-  m_reply_delegator->QueueReply(req_idx, reply);
+  auto reply = m_av_mgr.GetUserInput(input_server_name, id, std::get<2>(req));
+  m_reply_delegator->QueueReply(id, reply);
 }
 
 }  // namespace auto_server

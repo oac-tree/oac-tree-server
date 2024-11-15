@@ -22,7 +22,7 @@
 #ifndef SUP_AUTO_SERVER_CLIENT_REPLY_DELEGATOR_H_
 #define SUP_AUTO_SERVER_CLIENT_REPLY_DELEGATOR_H_
 
-#include <sup/dto/anyvalue.h>
+#include <sup/sequencer/user_input_reply.h>
 
 #include <atomic>
 #include <condition_variable>
@@ -35,6 +35,7 @@ namespace sup
 {
 namespace auto_server
 {
+using sup::sequencer::UserInputReply;
 
 /**
  * @brief ClientReplyDelegator delegates a call to reply to user input to a separate thread. This
@@ -44,7 +45,7 @@ namespace auto_server
 class ClientReplyDelegator
 {
 public:
-  using ReplyFunction = std::function<void(sup::dto::uint64, const sup::dto::AnyValue&)>;
+  using ReplyFunction = std::function<void(sup::dto::uint64, const UserInputReply&)>;
   explicit ClientReplyDelegator(ReplyFunction reply_func);
   ~ClientReplyDelegator();
 
@@ -54,15 +55,15 @@ public:
   ClientReplyDelegator& operator=(const ClientReplyDelegator& other) = delete;
   ClientReplyDelegator& operator=(ClientReplyDelegator&& other) = delete;
 
-  void QueueReply(sup::dto::uint64 req_idx, const sup::dto::AnyValue& reply);
+  void QueueReply(sup::dto::uint64 id, const UserInputReply& reply);
 
 private:
   void HandleClientReply();
   void Halt();
   struct ReplyInfo
   {
-    sup::dto::uint64 req_idx;
-    sup::dto::AnyValue reply;
+    sup::dto::uint64 id;
+    UserInputReply reply;
   };
   ReplyFunction m_reply_func;
   std::condition_variable m_cv;
