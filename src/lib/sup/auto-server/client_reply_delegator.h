@@ -46,7 +46,8 @@ class ClientReplyDelegator
 {
 public:
   using ReplyFunction = std::function<void(sup::dto::uint64, const UserInputReply&)>;
-  explicit ClientReplyDelegator(ReplyFunction reply_func);
+  using InterruptFunction = std::function<void(sup::dto::uint64)>;
+  explicit ClientReplyDelegator(ReplyFunction reply_func, InterruptFunction interrupt_func);
   ~ClientReplyDelegator();
 
   // No copy or move
@@ -57,6 +58,8 @@ public:
 
   void QueueReply(sup::dto::uint64 id, const UserInputReply& reply);
 
+  void InterruptAll();
+
 private:
   void HandleClientReply();
   void Halt();
@@ -66,6 +69,8 @@ private:
     UserInputReply reply;
   };
   ReplyFunction m_reply_func;
+  InterruptFunction m_interrupt_func;
+  sup::dto::uint64 m_active_id;
   std::condition_variable m_cv;
   std::mutex m_mtx;
   std::atomic_bool m_halt;

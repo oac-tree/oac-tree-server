@@ -48,8 +48,6 @@ private:
   std::unique_ptr<EPICSIOClientImpl> m_impl;
 };
 
-std::unique_ptr<IAnyValueIO> CreateEPICSIOClient(IAnyValueManager& av_mgr);
-
 }  // namespace auto_server
 
 }  // namespace sup

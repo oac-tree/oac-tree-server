@@ -21,13 +21,17 @@
 
 #include <sup/auto-server/client_reply_delegator.h>
 
+#include <algorithm>
+
 namespace sup
 {
 namespace auto_server
 {
 
-ClientReplyDelegator::ClientReplyDelegator(ReplyFunction reply_func)
+ClientReplyDelegator::ClientReplyDelegator(ReplyFunction reply_func, InterruptFunction interrupt_func)
   : m_reply_func{reply_func}
+  , m_interrupt_func{interrupt_func}
+  , m_active_id{0}
   , m_cv{}
   , m_mtx{}
   , m_halt{false}
@@ -50,6 +54,20 @@ void ClientReplyDelegator::QueueReply(sup::dto::uint64 id, const UserInputReply&
   m_cv.notify_one();
 }
 
+void ClientReplyDelegator::InterruptAll()
+{
+  // Empty whole queue (there can be no input request valid anymore) and call interrupt for
+  // possibly active id.
+  {
+    std::lock_guard<std::mutex> lk{m_mtx};
+    m_reply_queue.clear();
+    if (m_active_id != 0)
+    {
+      m_interrupt_func(m_active_id);
+    }
+  }
+}
+
 void ClientReplyDelegator::HandleClientReply()
 {
   auto pred = [this]() {
@@ -63,8 +81,11 @@ void ClientReplyDelegator::HandleClientReply()
     {
       auto reply_info = m_reply_queue.front();
       m_reply_queue.pop_front();
+      m_active_id = reply_info.id;
       lk.unlock();
       m_reply_func(reply_info.id, reply_info.reply);
+      lk.lock();
+      m_active_id = 0;
     }
   }
 }

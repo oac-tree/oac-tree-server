@@ -37,6 +37,7 @@ namespace sup
 namespace auto_server
 {
 using sup::sequencer::UserInputRequest;
+using namespace std::placeholders;
 
 class EPICSIOClientImpl
 {
@@ -108,10 +109,10 @@ bool EPICSIOClientImpl::AddInputHandler(const std::string& input_server_name)
     return false;
   }
   m_input_client.reset(new EPICSInputClient{input_server_name});
-  auto reply_func = [this](sup::dto::uint64 id, const UserInputReply& reply) {
-    (void)m_input_client->SetClientReply(id, reply);
-  };
-  m_reply_delegator.reset(new ClientReplyDelegator(reply_func));
+  auto reply_func = std::bind(&EPICSInputClient::SetClientReply, m_input_client.get(), _1, _2);
+  auto interrupt_func = std::bind(&IAnyValueManager::Interrupt, std::addressof(m_av_mgr),
+                                  input_server_name, _1);
+  m_reply_delegator.reset(new ClientReplyDelegator(reply_func, interrupt_func));
   auto input_request_pv_name = GetInputRequestPVName(input_server_name);
   IAnyValueIO::NameAnyValueSet input_pv_set;
   input_pv_set.emplace_back(input_request_pv_name, kInputRequestAnyValue);
@@ -145,7 +146,8 @@ void EPICSIOClientImpl::HandleUserInput(const std::string& input_server_name,
   auto success = std::get<0>(req);
   if (!success)
   {
-    return;  // TODO: interrupt user input
+    m_reply_delegator->InterruptAll();
+    return;
   }
   auto reply = m_av_mgr.GetUserInput(input_server_name, id, std::get<2>(req));
   m_reply_delegator->QueueReply(id, reply);

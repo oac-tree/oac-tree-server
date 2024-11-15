@@ -48,6 +48,7 @@ public:
   InputProtocolClient& operator=(InputProtocolClient&& other) = delete;
 
   bool SetClientReply(sup::dto::uint64 id, const UserInputReply& reply);
+
 private:
   sup::protocol::Protocol& m_protocol;
 };

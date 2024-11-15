@@ -50,6 +50,7 @@ public:
   EPICSInputClient& operator=(EPICSInputClient&& other) = delete;
 
   bool SetClientReply(sup::dto::uint64 id, const UserInputReply& reply);
+
 private:
   std::unique_ptr<sup::protocol::Protocol> m_client_stack;
   InputProtocolClient m_protocol_client;
