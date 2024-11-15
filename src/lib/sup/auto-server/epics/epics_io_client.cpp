@@ -145,7 +145,7 @@ void EPICSIOClientImpl::HandleUserInput(const std::string& input_server_name,
   auto success = std::get<0>(req);
   if (!success)
   {
-    return;  // only react to active input requests
+    return;  // TODO: interrupt user input
   }
   auto reply = m_av_mgr.GetUserInput(input_server_name, id, std::get<2>(req));
   m_reply_delegator->QueueReply(id, reply);

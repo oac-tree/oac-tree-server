@@ -56,6 +56,8 @@ public:
   UserInputReply GetUserInput(const std::string& input_server_name, sup::dto::uint64 id,
                               const UserInputRequest& request) override;
 
+  void Interrupt(const std::string& input_server_name, sup::dto::uint64 id) override;
+
 private:
   sup::sequencer::IJobInfoIO& m_job_info_io;
   std::map<std::string, AnyValueCallback> m_cb_map;

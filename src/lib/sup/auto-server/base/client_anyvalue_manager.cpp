@@ -134,6 +134,12 @@ UserInputReply ClientAnyValueManager::GetUserInput(
   return kInvalidUserInputReply;
 }
 
+void ClientAnyValueManager::Interrupt(const std::string& input_server_name, sup::dto::uint64 id)
+{
+  (void)input_server_name;
+  m_job_info_io.Interrupt(id);
+}
+
 ClientAnyValueManager::AnyValueCallback CreateCallback(const ValueNameInfo& value_name_info)
 {
   auto idx = value_name_info.idx;

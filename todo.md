@@ -1,6 +1,7 @@
 # Todo
 
 * Cleanup constants in sup-auto-protocol
+* Handle interrupts in EPICSIOClient
 * Handle interrupts for EPICSAnyValueManager: new user input requests should not even start if an interrupt was requested.
 * Provide client feedback on refused user input (e.g. because other client already responded)
 * EPICSAnyValueManager calls AddAnyValues with a single PV when AddInputServer is called; this may lead to some duplication on the client side. See if this can be handled in a more clean way
