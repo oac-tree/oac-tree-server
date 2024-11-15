@@ -24,11 +24,13 @@
 
 #include <sup/dto/anyvalue.h>
 #include <sup/protocol/protocol.h>
+#include <sup/sequencer/user_input_reply.h>
 
 namespace sup
 {
 namespace auto_server
 {
+using sup::sequencer::UserInputReply;
 
 /**
  * @brief InputProtocolClient .
@@ -45,7 +47,7 @@ public:
   InputProtocolClient& operator=(const InputProtocolClient& other) = delete;
   InputProtocolClient& operator=(InputProtocolClient&& other) = delete;
 
-  bool SetClientReply(sup::dto::uint64 req_idx, const sup::dto::AnyValue& reply);
+  bool SetClientReply(sup::dto::uint64 id, const UserInputReply& reply);
 private:
   sup::protocol::Protocol& m_protocol;
 };

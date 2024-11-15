@@ -37,9 +37,9 @@ EPICSInputClient::EPICSInputClient(const std::string& server_name)
 
 EPICSInputClient::~EPICSInputClient() = default;
 
-bool EPICSInputClient::SetClientReply(sup::dto::uint64 req_idx, const sup::dto::AnyValue& reply)
+bool EPICSInputClient::SetClientReply(sup::dto::uint64 id, const UserInputReply& reply)
 {
-  return m_protocol_client.SetClientReply(req_idx, reply);
+  return m_protocol_client.SetClientReply(id, reply);
 }
 
 }  // namespace auto_server

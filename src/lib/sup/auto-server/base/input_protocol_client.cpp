@@ -21,6 +21,7 @@
 
 #include <sup/auto-server/input_protocol_client.h>
 
+#include <sup/auto-server/input_reply_helper.h>
 #include <sup/auto-server/sup_auto_protocol.h>
 
 #include <sup/protocol/function_protocol.h>
@@ -37,11 +38,11 @@ InputProtocolClient::InputProtocolClient(sup::protocol::Protocol& protocol)
 
 InputProtocolClient::~InputProtocolClient() = default;
 
-bool InputProtocolClient::SetClientReply(sup::dto::uint64 req_idx, const sup::dto::AnyValue& reply)
+bool InputProtocolClient::SetClientReply(sup::dto::uint64 id, const UserInputReply& reply)
 {
   auto input = sup::protocol::FunctionProtocolInput(KSetReplyFunctionName);
-  input.AddMember(kUserRequestIndexFieldName, sup::dto::AnyValue{req_idx});
-  sup::protocol::FunctionProtocolPack(input, kUserReplyValueFieldName, reply);
+  auto encoded = EncodeInputReply(id, reply);
+  sup::protocol::FunctionProtocolPack(input, kUserReplyValueFieldName, encoded);
   sup::dto::AnyValue output;
   auto result = m_protocol.Invoke(input, output);
   if (result != sup::protocol::Success)
