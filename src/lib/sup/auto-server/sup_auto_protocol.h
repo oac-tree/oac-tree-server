@@ -120,8 +120,10 @@ const std::string kJobStateField = "state";
 extern const sup::dto::AnyValue kJobStateAnyValue;
 
 // Automation servers will report the following type and version:
-const std::string kAutomationServerProtocolServerType = "SUP::AutomationServerProtocol";
-const std::string kAutomationServerProtocolServerVersion = "1.0";
+const std::string kAutomationInfoServerProtocolServerType = "SUP::AutomationInfoServerProtocol";
+const std::string kAutomationInfoServerProtocolServerVersion = "1.0";
+const std::string kAutomationControlServerProtocolServerType = "SUP::AutomationControlServerProtocol";
+const std::string kAutomationControlServerProtocolServerVersion = "1.0";
 
 // Supported function names for automation servers:
 const std::string kGetServerPrefixFunctionName = "GetServerPrefix";

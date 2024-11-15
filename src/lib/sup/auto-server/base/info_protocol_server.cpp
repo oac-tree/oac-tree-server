@@ -52,7 +52,7 @@ sup::protocol::ProtocolResult InfoProtocolServer::Service(const sup::dto::AnyVal
   if (sup::protocol::utils::IsApplicationProtocolRequestPayload(input))
   {
     return sup::protocol::utils::HandleApplicationProtocolInfo(
-      output, kAutomationServerProtocolServerType, kAutomationServerProtocolServerVersion);
+      output, kAutomationInfoServerProtocolServerType, kAutomationInfoServerProtocolServerVersion);
   }
   return NotSupported;
 }

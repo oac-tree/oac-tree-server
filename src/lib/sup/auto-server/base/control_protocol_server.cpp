@@ -54,9 +54,9 @@ sup::protocol::ProtocolResult ControlProtocolServer::Service(const sup::dto::Any
 {
   if (sup::protocol::utils::IsApplicationProtocolRequestPayload(input))
   {
-    // TODO: distinguish here too!
     return sup::protocol::utils::HandleApplicationProtocolInfo(
-      output, kAutomationServerProtocolServerType, kAutomationServerProtocolServerVersion);
+      output, kAutomationControlServerProtocolServerType,
+      kAutomationControlServerProtocolServerVersion);
   }
   return NotSupported;
 }
