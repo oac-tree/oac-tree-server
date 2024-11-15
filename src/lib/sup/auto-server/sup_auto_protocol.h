@@ -149,10 +149,6 @@ const std::string KSetReplyFunctionName = "SetReply";
 // Field names used for the supported functions of input request servers:
 const std::string kUserReplyValueFieldName = "value";
 
-// Field names used in the input request pv
-const std::string kInputRequestOptionsFieldName = "options";
-const std::string kInputRequestMetadataFieldName = "metadata";
-
 enum class ValueNameType
 {
   kUnknown = 0,
