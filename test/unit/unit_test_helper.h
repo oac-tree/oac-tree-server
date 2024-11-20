@@ -114,6 +114,43 @@ public:
   MOCK_METHOD(void, SendJobCommand, (sup::dto::uint32, sup::sequencer::JobCommand), (override));
 };
 
+class TestJobInfoIO : public sup::sequencer::IJobInfoIO
+{
+public:
+  TestJobInfoIO();
+  ~TestJobInfoIO() = default;
+  void InitNumberOfInstructions(sup::dto::uint32 n_instr) override;
+  void InstructionStateUpdated(sup::dto::uint32 instr_idx,
+                               sup::sequencer::InstructionState state) override;
+  void VariableUpdated(sup::dto::uint32 var_idx, const sup::dto::AnyValue& value,
+                               bool connected) override;
+  void JobStateUpdated(sup::sequencer::JobState state) override;
+  void PutValue(const sup::dto::AnyValue& value, const std::string& description) override;
+  bool GetUserValue(sup::dto::uint64 id, sup::dto::AnyValue& value,
+                            const std::string& description) override;
+  int GetUserChoice(sup::dto::uint64 id, const std::vector<std::string>& options,
+                            const sup::dto::AnyValue& metadata) override;
+  void Interrupt(sup::dto::uint64 id) override;
+  void Message(const std::string& message) override;
+  void Log(int severity, const std::string& message) override;
+  void NextInstructionsUpdated(const std::vector<sup::dto::uint32>& instr_indices) override;
+
+  bool WaitForInstructionState(sup::dto::uint32 instr_idx,
+                               sup::sequencer::InstructionState state, double seconds);
+  bool WaitForVariableValue(sup::dto::uint32 var_idx,
+                               const sup::dto::AnyValue& value, double seconds);
+  bool WaitForJobState(sup::sequencer::JobState state, double seconds);
+
+  // Public data members for testing:
+  sup::dto::uint32 m_n_instr;
+  std::map<sup::dto::uint32, sup::sequencer::InstructionState> m_instr_states;
+  std::map<sup::dto::uint32, sup::dto::AnyValue> m_var_values;
+  std::map<sup::dto::uint32, sup::dto::AnyValue> m_var_connected;
+  sup::sequencer::JobState m_job_state;
+  std::mutex m_mtx;
+  std::condition_variable m_cv;
+};
+
 class TestAnyValueManager : public IAnyValueManager
 {
 public:

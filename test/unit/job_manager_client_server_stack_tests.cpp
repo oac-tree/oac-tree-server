@@ -39,7 +39,7 @@ using ::testing::Return;
 
 using namespace sup::auto_server;
 
-const std::string kTestAutomationServiceName = "Test::ClientServerStack";
+const std::string kTestAutomationServiceName = "Test::JobManagerClientServerStack";
 
 
 /**
@@ -87,11 +87,11 @@ private:
 };
 
 
-class ClientServerStackTest : public ::testing::Test
+class JobManagerClientServerStackTest : public ::testing::Test
 {
 protected:
-  ClientServerStackTest();
-  virtual ~ClientServerStackTest();
+  JobManagerClientServerStackTest();
+  virtual ~JobManagerClientServerStackTest();
 
   using StrictMockJobManager = ::testing::StrictMock<UnitTestHelper::MockJobManager>;
   StrictMockJobManager m_job_manager;
@@ -107,7 +107,7 @@ protected:
   static std::unique_ptr<sup::protocol::RPCServerInterface> m_control_stack;
 };
 
-TEST_F(ClientServerStackTest, GetServerPrefix)
+TEST_F(JobManagerClientServerStackTest, GetServerPrefix)
 {
   // Test GetServerPrefix over the whole EPICS stack
   const std::string server_prefix = "StackTestServerPrefix";
@@ -116,7 +116,7 @@ TEST_F(ClientServerStackTest, GetServerPrefix)
   EXPECT_EQ(prefix_reply, server_prefix);
 }
 
-TEST_F(ClientServerStackTest, GetNumberOfJobs)
+TEST_F(JobManagerClientServerStackTest, GetNumberOfJobs)
 {
   // Test GetNumberOfJobs over the whole EPICS stack
   const sup::dto::uint32 n_jobs = 42u;
@@ -125,7 +125,7 @@ TEST_F(ClientServerStackTest, GetNumberOfJobs)
   EXPECT_EQ(n_jobs_reply, n_jobs);
 }
 
-TEST_F(ClientServerStackTest, GetJobInfo)
+TEST_F(JobManagerClientServerStackTest, GetJobInfo)
 {
   // Test GetJobInfo over the whole EPICS stack
 
@@ -146,7 +146,7 @@ TEST_F(ClientServerStackTest, GetJobInfo)
   EXPECT_EQ(job_info_reply, job_info);
 }
 
-TEST_F(ClientServerStackTest, EditBreakpoint)
+TEST_F(JobManagerClientServerStackTest, EditBreakpoint)
 {
   // Build JobInfo
   const auto procedure_string = UnitTestHelper::CreateProcedureString(kWorkspaceSequenceBody);
@@ -166,7 +166,7 @@ TEST_F(ClientServerStackTest, EditBreakpoint)
   m_client_job_manager->EditBreakpoint(job_id, instr_id, true);
 }
 
-TEST_F(ClientServerStackTest, SendJobCommand)
+TEST_F(JobManagerClientServerStackTest, SendJobCommand)
 {
   // Test SendJobCommand over the whole EPICS stack
   const sup::dto::uint32 n_jobs = 42u;
@@ -177,25 +177,25 @@ TEST_F(ClientServerStackTest, SendJobCommand)
   m_client_job_manager->SendJobCommand(job_id, command);
 }
 
-ClientServerStackTest::ClientServerStackTest()
+JobManagerClientServerStackTest::JobManagerClientServerStackTest()
   : m_job_manager{}
   , m_client_job_manager{utils::CreateEPICSJobManager(kTestAutomationServiceName)}
 {
   m_forwarding_job_manager.SetJobManager(std::addressof(m_job_manager));
 }
 
-ClientServerStackTest::~ClientServerStackTest()
+JobManagerClientServerStackTest::~JobManagerClientServerStackTest()
 {
   m_forwarding_job_manager.SetJobManager(nullptr);
 }
 
-ForwardingJobManager ClientServerStackTest::m_forwarding_job_manager{};
-InfoProtocolServer ClientServerStackTest::m_info_server{m_forwarding_job_manager};
-ControlProtocolServer ClientServerStackTest::m_control_server{m_forwarding_job_manager};
-std::unique_ptr<sup::protocol::RPCServerInterface> ClientServerStackTest::m_info_stack{};
-std::unique_ptr<sup::protocol::RPCServerInterface> ClientServerStackTest::m_control_stack{};
+ForwardingJobManager JobManagerClientServerStackTest::m_forwarding_job_manager{};
+InfoProtocolServer JobManagerClientServerStackTest::m_info_server{m_forwarding_job_manager};
+ControlProtocolServer JobManagerClientServerStackTest::m_control_server{m_forwarding_job_manager};
+std::unique_ptr<sup::protocol::RPCServerInterface> JobManagerClientServerStackTest::m_info_stack{};
+std::unique_ptr<sup::protocol::RPCServerInterface> JobManagerClientServerStackTest::m_control_stack{};
 
-void ClientServerStackTest::SetUpTestSuite()
+void JobManagerClientServerStackTest::SetUpTestSuite()
 {
   sup::epics::PvAccessRPCServerConfig info_server_config{kTestAutomationServiceName};
   m_info_stack = sup::epics::CreateEPICSRPCServerStack(m_info_server, info_server_config);
@@ -204,7 +204,7 @@ void ClientServerStackTest::SetUpTestSuite()
   m_control_stack = sup::epics::CreateEPICSRPCServerStack(m_control_server, control_server_config);
 }
 
-void ClientServerStackTest::TearDownTestSuite()
+void JobManagerClientServerStackTest::TearDownTestSuite()
 {
   m_info_stack.reset();
   m_control_stack.reset();

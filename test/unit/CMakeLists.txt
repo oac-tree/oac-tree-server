@@ -6,14 +6,15 @@ target_sources(unit-tests
     app_utils_tests.cpp
     automation_server_tests.cpp
     client_anyvalue_manager_tests.cpp
-    client_server_stack_tests.cpp
     epics_anyvalue_manager_tests.cpp
     epics_client_server_tests.cpp
+    full_client_server_stack_tests.cpp
     index_generator_tests.cpp
     input_reply_helper_tests.cpp
     input_request_helper_tests.cpp
     input_request_server_tests.cpp
     job_info_io_server_client_tests.cpp
+    job_manager_client_server_stack_tests.cpp
     output_entry_tests.cpp
     protocol_client_server_tests.cpp
     sup_auto_protocol_tests.cpp

@@ -36,6 +36,127 @@ namespace auto_server
 namespace UnitTestHelper
 {
 
+TestJobInfoIO::TestJobInfoIO()
+  : m_n_instr{0}
+  , m_instr_states{}
+  , m_var_values{}
+  , m_var_connected{}
+  , m_job_state{sup::sequencer::JobState::kInitial}
+  , m_mtx{}
+  , m_cv{}
+{}
+
+void TestJobInfoIO::InitNumberOfInstructions(sup::dto::uint32 n_instr)
+{
+  {
+    std::lock_guard<std::mutex> lk{m_mtx};
+    m_n_instr = n_instr;
+  }
+  m_cv.notify_one();
+}
+
+void TestJobInfoIO::InstructionStateUpdated(sup::dto::uint32 instr_idx,
+                                            sup::sequencer::InstructionState state)
+{
+  {
+    std::lock_guard<std::mutex> lk{m_mtx};
+    m_instr_states[instr_idx] = state;
+  }
+  m_cv.notify_one();
+}
+
+void TestJobInfoIO::VariableUpdated(sup::dto::uint32 var_idx, const sup::dto::AnyValue& value,
+                                    bool connected)
+{
+  {
+    std::lock_guard<std::mutex> lk{m_mtx};
+    m_var_connected[var_idx] = connected;
+    if (connected)
+    {
+      m_var_values[var_idx] = value;
+    }
+  }
+  m_cv.notify_one();
+}
+
+void TestJobInfoIO::JobStateUpdated(sup::sequencer::JobState state)
+{
+  {
+    std::lock_guard<std::mutex> lk{m_mtx};
+    m_job_state = state;
+  }
+  m_cv.notify_one();
+}
+
+void TestJobInfoIO::PutValue(const sup::dto::AnyValue& value, const std::string& description)
+{}
+
+bool TestJobInfoIO::GetUserValue(sup::dto::uint64 id, sup::dto::AnyValue& value,
+                                 const std::string& description)
+{
+  return false;
+}
+
+int TestJobInfoIO::GetUserChoice(sup::dto::uint64 id, const std::vector<std::string>& options,
+                                 const sup::dto::AnyValue& metadata)
+{
+  return -1;
+}
+
+void TestJobInfoIO::Interrupt(sup::dto::uint64 id)
+{}
+
+void TestJobInfoIO::Message(const std::string& message)
+{}
+
+void TestJobInfoIO::Log(int severity, const std::string& message)
+{}
+
+void TestJobInfoIO::NextInstructionsUpdated(const std::vector<sup::dto::uint32>& instr_indices)
+{}
+
+bool TestJobInfoIO::WaitForInstructionState(sup::dto::uint32 instr_idx,
+                                            sup::sequencer::InstructionState state, double seconds)
+{
+  auto duration = std::chrono::nanoseconds(std::lround(seconds * 1e9));
+  std::unique_lock<std::mutex> lk{m_mtx};
+  auto pred = [this, instr_idx, state](){
+    auto instr_state_it = m_instr_states.find(instr_idx);
+    if (instr_state_it == m_instr_states.end())
+    {
+      return false;
+    }
+    return instr_state_it->second == state;
+  };
+  return m_cv.wait_for(lk, duration, pred);
+}
+
+bool TestJobInfoIO::WaitForVariableValue(sup::dto::uint32 var_idx,
+                                         const sup::dto::AnyValue& value, double seconds)
+{
+  auto duration = std::chrono::nanoseconds(std::lround(seconds * 1e9));
+  std::unique_lock<std::mutex> lk{m_mtx};
+  auto pred = [this, var_idx, value](){
+    auto var_val_it = m_var_values.find(var_idx);
+    if (var_val_it == m_var_values.end())
+    {
+      return false;
+    }
+    return var_val_it->second == value;
+  };
+  return m_cv.wait_for(lk, duration, pred);
+}
+
+bool TestJobInfoIO::WaitForJobState(sup::sequencer::JobState state, double seconds)
+{
+  auto duration = std::chrono::nanoseconds(std::lround(seconds * 1e9));
+  std::unique_lock<std::mutex> lk{m_mtx};
+  auto pred = [this, state](){
+    return m_job_state == state;
+  };
+  return m_cv.wait_for(lk, duration, pred);
+}
+
 TestAnyValueManager::TestAnyValueManager()
     : m_value_map{}
     , m_user_input_reply{sup::sequencer::kInvalidUserInputReply}
