@@ -6,6 +6,7 @@ target_sources(unit-tests
     app_utils_tests.cpp
     automation_server_tests.cpp
     client_anyvalue_manager_tests.cpp
+    client_server_stack_tests.cpp
     epics_anyvalue_manager_tests.cpp
     epics_client_server_tests.cpp
     index_generator_tests.cpp

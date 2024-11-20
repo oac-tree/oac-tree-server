@@ -23,8 +23,9 @@
 #define SUP_AUTO_SERVER_UNIT_TEST_HELPER_H_
 
 #include <sup/auto-server/i_anyvalue_manager_registry.h>
-#include <sup/sequencer/i_job_info_io.h>
+#include <sup/auto-server/i_job_manager.h>
 
+#include <sup/sequencer/i_job_info_io.h>
 #include <sup/dto/anyvalue.h>
 
 #include <gmock/gmock.h>
@@ -101,6 +102,16 @@ public:
   MOCK_METHOD(bool, UpdateAnyValue, (const std::string&, const sup::dto::AnyValue&), (override));
   MOCK_METHOD(UserInputReply, GetUserInput, (const std::string&, sup::dto::uint64, const UserInputRequest&), (override));
   MOCK_METHOD(void, Interrupt, (const std::string&, sup::dto::uint64), (override));
+};
+
+class MockJobManager : public IJobManager
+{
+public:
+  MOCK_METHOD(std::string, GetServerPrefix, (), (const override));
+  MOCK_METHOD(sup::dto::uint32, GetNumberOfJobs, (), (const override));
+  MOCK_METHOD(sup::sequencer::JobInfo, GetJobInfo, (sup::dto::uint32), (const override));
+  MOCK_METHOD(void, EditBreakpoint, (sup::dto::uint32, sup::dto::uint32, bool), (override));
+  MOCK_METHOD(void, SendJobCommand, (sup::dto::uint32, sup::sequencer::JobCommand), (override));
 };
 
 class TestAnyValueManager : public IAnyValueManager
