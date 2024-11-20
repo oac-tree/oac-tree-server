@@ -91,6 +91,29 @@ TEST_F(FullClientServerStackTest, ServerInformation)
   EXPECT_TRUE(m_job_info_io.WaitForVariableValue(2, zero_av, 1.0));
 }
 
+TEST_F(FullClientServerStackTest, JobCommands)
+{
+  // Query information about the server and its job
+  ASSERT_EQ(m_client_job_manager->GetNumberOfJobs(), 1u);
+  sup::dto::uint32 job_id{0};
+  auto job_0 = CreateClientJob(*m_client_job_manager, job_id, utils::CreateEPICSIOClient,
+                               m_job_info_io);
+
+  EXPECT_TRUE(m_job_info_io.WaitForJobState(JobState::kInitial, 1.0));
+  m_client_job_manager->SendJobCommand(job_id, JobCommand::kStart);
+  EXPECT_TRUE(m_job_info_io.WaitForJobState(JobState::kSucceeded, 1.0));
+
+  InstructionState success{ false, ExecutionStatus::SUCCESS };
+  EXPECT_TRUE(m_job_info_io.WaitForInstructionState(0, success, 1.0));
+  EXPECT_TRUE(m_job_info_io.WaitForInstructionState(1, success, 1.0));
+  EXPECT_TRUE(m_job_info_io.WaitForInstructionState(2, success, 1.0));
+  sup::dto::AnyValue zero_av{ sup::dto::UnsignedInteger32Type, 0 };
+  sup::dto::AnyValue one_av{ sup::dto::UnsignedInteger32Type, 1 };
+  EXPECT_TRUE(m_job_info_io.WaitForVariableValue(0, one_av, 1.0));
+  EXPECT_TRUE(m_job_info_io.WaitForVariableValue(1, one_av, 1.0));
+  EXPECT_TRUE(m_job_info_io.WaitForVariableValue(2, one_av, 1.0));
+}
+
 FullClientServerStackTest::FullClientServerStackTest()
   : m_job_info_io{}
   , m_client_job_manager{utils::CreateEPICSJobManager(kTestAutomationServiceName)}

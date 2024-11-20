@@ -115,11 +115,16 @@ void TestJobInfoIO::Log(int severity, const std::string& message)
 void TestJobInfoIO::NextInstructionsUpdated(const std::vector<sup::dto::uint32>& instr_indices)
 {}
 
-bool TestJobInfoIO::WaitForInstructionState(sup::dto::uint32 instr_idx,
-                                            sup::sequencer::InstructionState state, double seconds)
+bool TestJobInfoIO::WaitFor(std::function<bool()> pred, double seconds)
 {
   auto duration = std::chrono::nanoseconds(std::lround(seconds * 1e9));
   std::unique_lock<std::mutex> lk{m_mtx};
+  return m_cv.wait_for(lk, duration, pred);
+}
+
+bool TestJobInfoIO::WaitForInstructionState(sup::dto::uint32 instr_idx,
+                                            sup::sequencer::InstructionState state, double seconds)
+{
   auto pred = [this, instr_idx, state](){
     auto instr_state_it = m_instr_states.find(instr_idx);
     if (instr_state_it == m_instr_states.end())
@@ -128,14 +133,12 @@ bool TestJobInfoIO::WaitForInstructionState(sup::dto::uint32 instr_idx,
     }
     return instr_state_it->second == state;
   };
-  return m_cv.wait_for(lk, duration, pred);
+  return WaitFor(pred, seconds);
 }
 
 bool TestJobInfoIO::WaitForVariableValue(sup::dto::uint32 var_idx,
                                          const sup::dto::AnyValue& value, double seconds)
 {
-  auto duration = std::chrono::nanoseconds(std::lround(seconds * 1e9));
-  std::unique_lock<std::mutex> lk{m_mtx};
   auto pred = [this, var_idx, value](){
     auto var_val_it = m_var_values.find(var_idx);
     if (var_val_it == m_var_values.end())
@@ -144,17 +147,15 @@ bool TestJobInfoIO::WaitForVariableValue(sup::dto::uint32 var_idx,
     }
     return var_val_it->second == value;
   };
-  return m_cv.wait_for(lk, duration, pred);
+  return WaitFor(pred, seconds);
 }
 
 bool TestJobInfoIO::WaitForJobState(sup::sequencer::JobState state, double seconds)
 {
-  auto duration = std::chrono::nanoseconds(std::lround(seconds * 1e9));
-  std::unique_lock<std::mutex> lk{m_mtx};
   auto pred = [this, state](){
     return m_job_state == state;
   };
-  return m_cv.wait_for(lk, duration, pred);
+  return WaitFor(pred, seconds);
 }
 
 TestAnyValueManager::TestAnyValueManager()

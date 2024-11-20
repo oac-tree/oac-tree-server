@@ -135,6 +135,7 @@ public:
   void Log(int severity, const std::string& message) override;
   void NextInstructionsUpdated(const std::vector<sup::dto::uint32>& instr_indices) override;
 
+  bool WaitFor(std::function<bool()> pred, double seconds);
   bool WaitForInstructionState(sup::dto::uint32 instr_idx,
                                sup::sequencer::InstructionState state, double seconds);
   bool WaitForVariableValue(sup::dto::uint32 var_idx,
