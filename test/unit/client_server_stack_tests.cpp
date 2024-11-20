@@ -42,7 +42,10 @@ using namespace sup::auto_server;
 const std::string kTestAutomationServiceName = "Test::ClientServerStack";
 
 
-
+/**
+ * @brief This IJobManager just forwards everything to a member IJobManager. It is required to
+ * be able to combine global servers with local mock job managers.
+ */
 class ForwardingJobManager : public IJobManager
 {
 public:
@@ -153,7 +156,7 @@ TEST_F(ClientServerStackTest, EditBreakpoint)
   sup::sequencer::InstructionMap instr_map{root};
   auto job_info = sup::sequencer::utils::CreateJobInfo(*proc, instr_map);
 
-  // Test GetNumberOfJobs over the whole EPICS stack
+  // Test EditBreakpoint over the whole EPICS stack
   const sup::dto::uint32 n_jobs = 42u;
   const sup::dto::uint32 job_id = 32u;
   const sup::dto::uint32 instr_id = 1u;
@@ -165,7 +168,7 @@ TEST_F(ClientServerStackTest, EditBreakpoint)
 
 TEST_F(ClientServerStackTest, SendJobCommand)
 {
-  // Test GetNumberOfJobs over the whole EPICS stack
+  // Test SendJobCommand over the whole EPICS stack
   const sup::dto::uint32 n_jobs = 42u;
   const sup::dto::uint32 job_id = 32u;
   auto command = sup::sequencer::JobCommand::kStart;

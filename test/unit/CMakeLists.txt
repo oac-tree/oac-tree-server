@@ -15,6 +15,7 @@ target_sources(unit-tests
     input_request_server_tests.cpp
     job_info_io_server_client_tests.cpp
     output_entry_tests.cpp
+    protocol_client_server_tests.cpp
     sup_auto_protocol_tests.cpp
     unit_test_helper.cpp
     ../../src/app/sup-automation-server/utils.cpp
