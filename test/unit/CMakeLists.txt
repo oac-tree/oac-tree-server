@@ -11,6 +11,7 @@ target_sources(unit-tests
     epics_client_server_tests.cpp
     full_client_server_stack_tests.cpp
     index_generator_tests.cpp
+    input_protocol_client_server_tests.cpp
     input_reply_helper_tests.cpp
     input_request_helper_tests.cpp
     input_request_server_tests.cpp
