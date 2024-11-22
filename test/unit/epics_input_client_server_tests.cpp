@@ -19,10 +19,8 @@
  * of the distribution package.
  ******************************************************************************/
 
-#include "unit_test_helper.h"
-
-#include <sup/auto-server/input_protocol_client.h>
-#include <sup/auto-server/input_protocol_server.h>
+#include <sup/auto-server/epics/epics_input_client.h>
+#include <sup/auto-server/epics/epics_input_server.h>
 
 #include <gtest/gtest.h>
 
@@ -31,46 +29,52 @@
 
 using namespace sup::auto_server;
 
-class InputProtocolClientServerTest : public ::testing::Test
+class EPICSInputClientServerTest : public ::testing::Test
 {
 protected:
-  InputProtocolClientServerTest();
-  virtual ~InputProtocolClientServerTest() = default;
-
-  InputProtocolServer m_server;
-  InputProtocolClient m_client;
+  EPICSInputClientServerTest() = default;
+  virtual ~EPICSInputClientServerTest() = default;
 };
 
-TEST_F(InputProtocolClientServerTest, SingleThreaded)
+TEST_F(EPICSInputClientServerTest, SingleThreaded)
 {
+  const std::string server_name = "EPICSInputClientServer_Tests::SingleThreaded";
+  auto server = EPICSInputServer{server_name};
+  auto client = EPICSInputClient{server_name};
   auto reply = sup::sequencer::CreateUserChoiceReply(true, 42);
   sup::dto::uint64 id{77};
-  m_server.InitNewRequest(id);
-  m_client.SetClientReply(id, reply);
-  auto reply_at_server = m_server.WaitForReply(id);
+  server.InitNewRequest(id);
+  client.SetClientReply(id, reply);
+  auto reply_at_server = server.WaitForReply(id);
   EXPECT_TRUE(reply_at_server.first);
   EXPECT_EQ(reply_at_server.second, reply);
 }
 
-TEST_F(InputProtocolClientServerTest, MultiThreaded)
+TEST_F(EPICSInputClientServerTest, MultiThreaded)
 {
+  const std::string server_name = "EPICSInputClientServer_Tests::MultiThreaded";
+  auto server = EPICSInputServer{server_name};
+  auto client = EPICSInputClient{server_name};
   auto reply = sup::sequencer::CreateUserChoiceReply(true, 42);
   sup::dto::uint64 id{77};
-  m_server.InitNewRequest(id);
-  auto client_func = [this, id, reply]() {
-    m_client.SetClientReply(id, reply);
+  server.InitNewRequest(id);
+  auto client_func = [&client, id, reply]() {
+    client.SetClientReply(id, reply);
   };
   auto client_future = std::async(std::launch::async, client_func);
-  auto reply_at_server = m_server.WaitForReply(id);
+  auto reply_at_server = server.WaitForReply(id);
   EXPECT_TRUE(reply_at_server.first);
   EXPECT_EQ(reply_at_server.second, reply);
 }
 
-TEST_F(InputProtocolClientServerTest, MultiThreadedInterrupted)
+TEST_F(EPICSInputClientServerTest, MultiThreadedInterrupted)
 {
+  const std::string server_name = "EPICSInputClientServer_Tests::MultiThreadedInterrupted";
+  auto server = EPICSInputServer{server_name};
+  auto client = EPICSInputClient{server_name};
   auto reply = sup::sequencer::CreateUserChoiceReply(true, 42);
   sup::dto::uint64 id{77};
-  m_server.InitNewRequest(id);
+  server.InitNewRequest(id);
   std::atomic_bool halt{false};
   auto client_func = [&halt]() {
     while (!halt)
@@ -79,14 +83,9 @@ TEST_F(InputProtocolClientServerTest, MultiThreadedInterrupted)
     }
   };
   auto client_future = std::async(std::launch::async, client_func);
-  m_server.Interrupt(id);
-  auto reply_at_server = m_server.WaitForReply(id);
+  server.Interrupt(id);
+  auto reply_at_server = server.WaitForReply(id);
   EXPECT_FALSE(reply_at_server.first);
   EXPECT_EQ(reply_at_server.second, sup::sequencer::kInvalidUserInputReply);
   halt.store(true);
 }
-
-InputProtocolClientServerTest::InputProtocolClientServerTest()
-  : m_server{}
-  , m_client{m_server}
-{}
