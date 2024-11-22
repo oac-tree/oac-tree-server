@@ -26,6 +26,7 @@
 
 #include <atomic>
 #include <future>
+#include <thread>
 
 using namespace sup::auto_server;
 
