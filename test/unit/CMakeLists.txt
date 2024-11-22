@@ -3,6 +3,7 @@ add_executable(unit-tests)
 target_sources(unit-tests
   PRIVATE
     anyvalue_io_helper_tests.cpp
+    anyvalue_update_command_tests.cpp
     app_utils_tests.cpp
     automation_server_tests.cpp
     client_anyvalue_manager_tests.cpp
