@@ -35,13 +35,13 @@ bool ValidateLogEntryAnyValue(const sup::dto::AnyValue& anyvalue);
 
 sup::dto::AnyValue EncodeLogEntry(const LogEntry& log_entry);
 
-LogEntry DecodeLogEntry(const sup::dto::AnyValue& anyvalue);
+std::pair<bool, LogEntry> DecodeLogEntry(const sup::dto::AnyValue& anyvalue);
 
 bool ValidateMessageEntryAnyValue(const sup::dto::AnyValue& anyvalue);
 
 sup::dto::AnyValue EncodeMessageEntry(const MessageEntry& msg_entry);
 
-MessageEntry DecodeMessageEntry(const sup::dto::AnyValue& anyvalue);
+std::pair<bool, MessageEntry> DecodeMessageEntry(const sup::dto::AnyValue& anyvalue);
 
 bool ValidateOutputValueEntryAnyValue(const sup::dto::AnyValue& anyvalue);
 

@@ -232,8 +232,12 @@ void UpdateLogEntry(IJobInfoIO& job_info_io, const sup::dto::AnyValue& anyvalue)
   {
     return;
   }
-  auto log_entry = DecodeLogEntry(anyvalue);
-  job_info_io.Log(log_entry.m_severity, log_entry.m_message);
+  auto decoded = DecodeLogEntry(anyvalue);
+  if (decoded.first)
+  {
+    const auto& log_entry = decoded.second;
+    job_info_io.Log(log_entry.m_severity, log_entry.m_message);
+  }
 }
 
 void UpdateMessageEntry(IJobInfoIO& job_info_io, const sup::dto::AnyValue& anyvalue)
@@ -242,8 +246,12 @@ void UpdateMessageEntry(IJobInfoIO& job_info_io, const sup::dto::AnyValue& anyva
   {
     return;
   }
-  auto msg_entry = DecodeMessageEntry(anyvalue);
-  job_info_io.Message(msg_entry.m_message);
+  auto decoded = DecodeMessageEntry(anyvalue);
+  if (decoded.first)
+  {
+    const auto& msg_entry = decoded.second;
+    job_info_io.Message(msg_entry.m_message);
+  }
 }
 
 void UpdateOutputValueEntry(IJobInfoIO& job_info_io, const sup::dto::AnyValue& anyvalue)
@@ -255,18 +263,19 @@ void UpdateOutputValueEntry(IJobInfoIO& job_info_io, const sup::dto::AnyValue& a
   auto decoded = DecodeOutputValueEntry(anyvalue);
   if (decoded.first)
   {
-    job_info_io.PutValue(decoded.second.m_value, decoded.second.m_description);
+    const auto& output_entry = decoded.second;
+    job_info_io.PutValue(output_entry.m_value, output_entry.m_description);
   }
 }
 
 void UpdateNextInstructions(IJobInfoIO& job_info_io, const sup::dto::AnyValue& anyvalue)
 {
   auto decoded = DecodeNextInstructionIndices(anyvalue);
-  if (!decoded.first)
+  if (decoded.first)
   {
-    return;
+    const auto& next_instr = decoded.second;
+    job_info_io.NextInstructionsUpdated(next_instr);
   }
-  job_info_io.NextInstructionsUpdated(decoded.second);
 }
 
 }  // unnamed namespace

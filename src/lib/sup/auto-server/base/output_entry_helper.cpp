@@ -59,16 +59,17 @@ sup::dto::AnyValue EncodeLogEntry(const LogEntry& log_entry)
   return result;
 }
 
-LogEntry DecodeLogEntry(const sup::dto::AnyValue& anyvalue)
+std::pair<bool, LogEntry> DecodeLogEntry(const sup::dto::AnyValue& anyvalue)
 {
-  LogEntry result = { 0, 0, "" };
-  if (ValidateLogEntryAnyValue(anyvalue))
+  if (!ValidateLogEntryAnyValue(anyvalue))
   {
-    result.m_index = anyvalue[kIndexField].As<sup::dto::uint64>();
-    result.m_severity = anyvalue[kSeverityField].As<sup::dto::int32>();
-    result.m_message = anyvalue[kMessageField].As<std::string>();
+    return { false, {} };
   }
-  return result;
+  LogEntry result{};
+  result.m_index = anyvalue[kIndexField].As<sup::dto::uint64>();
+  result.m_severity = anyvalue[kSeverityField].As<sup::dto::int32>();
+  result.m_message = anyvalue[kMessageField].As<std::string>();
+  return { true, result };
 }
 
 bool ValidateMessageEntryAnyValue(const sup::dto::AnyValue& anyvalue)
@@ -93,15 +94,16 @@ sup::dto::AnyValue EncodeMessageEntry(const MessageEntry& msg_entry)
 }
 
 
-MessageEntry DecodeMessageEntry(const sup::dto::AnyValue& anyvalue)
+std::pair<bool, MessageEntry> DecodeMessageEntry(const sup::dto::AnyValue& anyvalue)
 {
-  MessageEntry result = { 0, "" };
-  if (ValidateMessageEntryAnyValue(anyvalue))
+  if (!ValidateMessageEntryAnyValue(anyvalue))
   {
-    result.m_index = anyvalue[kIndexField].As<sup::dto::uint64>();
-    result.m_message = anyvalue[kMessageField].As<std::string>();
+    return { false, {} };
   }
-  return result;
+  MessageEntry result{};
+  result.m_index = anyvalue[kIndexField].As<sup::dto::uint64>();
+  result.m_message = anyvalue[kMessageField].As<std::string>();
+  return { true, result };
 }
 
 bool ValidateOutputValueEntryAnyValue(const sup::dto::AnyValue& anyvalue)

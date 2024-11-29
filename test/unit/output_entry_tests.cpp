@@ -39,8 +39,9 @@ TEST_F(OutputEntriesTest, LogEntrySerialization)
   LogEntry original{ 42u, 1729, "hello"};
   auto av = EncodeLogEntry(original);
   EXPECT_TRUE(ValidateLogEntryAnyValue(av));
-  auto copy = DecodeLogEntry(av);
-  EXPECT_EQ(copy, original);
+  auto decoded = DecodeLogEntry(av);
+  ASSERT_TRUE(decoded.first);
+  EXPECT_EQ(decoded.second, original);
 }
 
 TEST_F(OutputEntriesTest, MessageEntrySerialization)
@@ -48,8 +49,9 @@ TEST_F(OutputEntriesTest, MessageEntrySerialization)
   MessageEntry original{ 42u, "hello"};
   auto av = EncodeMessageEntry(original);
   EXPECT_TRUE(ValidateMessageEntryAnyValue(av));
-  auto copy = DecodeMessageEntry(av);
-  EXPECT_EQ(copy, original);
+  auto decoded = DecodeMessageEntry(av);
+  ASSERT_TRUE(decoded.first);
+  EXPECT_EQ(decoded.second, original);
 }
 
 TEST_F(OutputEntriesTest, OutputValueEntrySerialization)
