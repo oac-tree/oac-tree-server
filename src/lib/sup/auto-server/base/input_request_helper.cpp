@@ -26,7 +26,6 @@
 
 #include <sup/dto/anytype_helper.h>
 #include <sup/dto/json_type_parser.h>
-#include <sup/protocol/base64_variable_codec.h>
 #include <sup/sequencer/anyvalue_utils.h>
 
 namespace
@@ -45,19 +44,13 @@ sup::dto::AnyValue EncodeInputRequest(sup::dto::uint64 id, const UserInputReques
 {
   sup::dto::AnyValue request_type_av{ sup::dto::UnsignedInteger32Type,
                                       static_cast<sup::dto::uint32>(input_request.m_request_type)};
-  dto::AnyValue payload = {{
+  dto::AnyValue encoded = {{
     { kInputRequestIndexField, { sup::dto::UnsignedInteger64Type, id }},
     { kInputRequestTypeField, request_type_av },
     { kInputRequestMetadataField, input_request.m_meta_data },
     { kInputRequestInputTypeField, sup::dto::AnyTypeToJSONString(input_request.m_input_type) }
   }};
-  auto encoded = protocol::Base64VariableCodec::Encode(payload);
-  if (!encoded.first)
-  {
-    const std::string error = "EncodeInputRequest(): could not encode the input request";
-    throw InvalidOperationException(error);
-  }
-  return encoded.second;
+  return encoded;
 }
 
 std::tuple<bool, sup::dto::uint64, UserInputRequest> DecodeInputRequest(
@@ -65,25 +58,19 @@ std::tuple<bool, sup::dto::uint64, UserInputRequest> DecodeInputRequest(
 {
   const std::tuple<bool, sup::dto::uint64, UserInputRequest> failure{ false, 0,
                                                                       kInvalidUserInputRequest };
-  auto decoded = protocol::Base64VariableCodec::Decode(encoded);
-  if (!decoded.first)
+  if (!ValidateInputRequestPayload(encoded))
   {
     return failure;
   }
-  auto& payload = decoded.second;
-  if (!ValidateInputRequestPayload(payload))
-  {
-    return failure;
-  }
-  auto req_idx = payload[kInputRequestIndexField].As<sup::dto::uint64>();
+  auto req_idx = encoded[kInputRequestIndexField].As<sup::dto::uint64>();
   InputRequestType request_type =
-    static_cast<InputRequestType>(payload[kInputRequestTypeField].As<sup::dto::uint32>());
+    static_cast<InputRequestType>(encoded[kInputRequestTypeField].As<sup::dto::uint32>());
   sup::dto::JSONAnyTypeParser type_parser;
-  if (!type_parser.ParseString(payload[kInputRequestInputTypeField].As<std::string>()))
+  if (!type_parser.ParseString(encoded[kInputRequestInputTypeField].As<std::string>()))
   {
     return failure;
   }
-  UserInputRequest input_request{ request_type, payload[kInputRequestMetadataField],
+  UserInputRequest input_request{ request_type, encoded[kInputRequestMetadataField],
                                   type_parser.MoveAnyType() };
   return { true, req_idx, input_request };
 }

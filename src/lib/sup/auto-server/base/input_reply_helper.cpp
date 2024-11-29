@@ -27,7 +27,6 @@
 #include <sup/dto/anytype_helper.h>
 #include <sup/dto/anyvalue_helper.h>
 #include <sup/dto/json_type_parser.h>
-#include <sup/protocol/base64_variable_codec.h>
 #include <sup/sequencer/anyvalue_utils.h>
 
 namespace
@@ -52,13 +51,7 @@ sup::dto::AnyValue EncodeInputReply(sup::dto::uint64 id, const UserInputReply& i
     { kInputReplyResultField, { sup::dto::BooleanType, input_reply.m_result }},
     { kInputReplyPayloadField, input_reply.m_payload }
   }};
-  auto encoded = protocol::Base64VariableCodec::Encode(payload);
-  if (!encoded.first)
-  {
-    const std::string error = "EncodeInputReply(): could not encode the input reply";
-    throw InvalidOperationException(error);
-  }
-  return encoded.second;
+  return Base64EncodeAnyValue(payload);
 }
 
 std::tuple<bool, sup::dto::uint64, UserInputReply> DecodeInputReply(
@@ -66,7 +59,7 @@ std::tuple<bool, sup::dto::uint64, UserInputReply> DecodeInputReply(
 {
   const std::tuple<bool, sup::dto::uint64, UserInputReply> failure{ false, 0,
                                                                     kInvalidUserInputReply };
-  auto decoded = protocol::Base64VariableCodec::Decode(encoded);
+  auto decoded = Base64DecodeAnyValue(encoded);
   if (!decoded.first)
   {
     return failure;

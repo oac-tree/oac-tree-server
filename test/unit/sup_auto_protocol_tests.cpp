@@ -21,8 +21,6 @@
 
 #include <sup/auto-server/sup_auto_protocol.h>
 
-#include <sup/protocol/base64_variable_codec.h>
-
 #include <gtest/gtest.h>
 
 using namespace sup::auto_server;
@@ -64,13 +62,10 @@ TEST_F(SupAutoProtocolTest, EncodeVariableState)
     { "setpoint", 42.0 }
   }};
   auto encoded = EncodeVariableState(var_value, true);
-  auto decoded = sup::protocol::Base64VariableCodec::Decode(encoded);
-  ASSERT_TRUE(decoded.first);
-  auto payload = decoded.second;
-  ASSERT_TRUE(payload.HasField(kVariableValueField));
-  ASSERT_TRUE(payload.HasField(kVariableConnectedField));
-  EXPECT_EQ(payload[kVariableValueField], var_value);
-  EXPECT_EQ(payload[kVariableConnectedField], true);
+  ASSERT_TRUE(encoded.HasField(kVariableValueField));
+  ASSERT_TRUE(encoded.HasField(kVariableConnectedField));
+  EXPECT_EQ(encoded[kVariableValueField], var_value);
+  EXPECT_EQ(encoded[kVariableConnectedField], true);
 }
 
 TEST_F(SupAutoProtocolTest, ParseValueName)
@@ -302,5 +297,6 @@ TEST_F(SupAutoProtocolTest, DecodeNextInstructions)
 {
   auto next_instr_av = kNextInstructionsAnyValue;
   auto decoded = DecodeNextInstructionIndices(next_instr_av);
-  EXPECT_FALSE(decoded.first);
+  EXPECT_TRUE(decoded.first);
+  EXPECT_EQ(decoded.second.size(), 0);
 }

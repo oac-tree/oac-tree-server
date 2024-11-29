@@ -60,6 +60,7 @@ TEST_F(JobInfoIOServerClientTest, Construction)
   EXPECT_CALL(m_test_job_info_io, PutValue(empty_av, "")).Times(Exactly(1));
   EXPECT_CALL(m_test_job_info_io, Message("")).Times(Exactly(1));
   EXPECT_CALL(m_test_job_info_io, Log(0, "")).Times(Exactly(1));
+  EXPECT_CALL(m_test_job_info_io, NextInstructionsUpdated(_)).Times(Exactly(1));
 
   const std::string job_prefix = "JobInfoIOClientServerTest";
   ClientAnyValueManager client_av_mgr{m_test_job_info_io};
@@ -78,6 +79,7 @@ TEST_F(JobInfoIOServerClientTest, InitNrInstructions)
   EXPECT_CALL(m_test_job_info_io, PutValue(_, _)).Times(Exactly(1));
   EXPECT_CALL(m_test_job_info_io, Message(_)).Times(Exactly(1));
   EXPECT_CALL(m_test_job_info_io, Log(_, _)).Times(Exactly(1));
+  EXPECT_CALL(m_test_job_info_io, NextInstructionsUpdated(_)).Times(Exactly(1));
 
   const std::string job_prefix = "JobInfoIOClientServerTest";
   ClientAnyValueManager client_av_mgr{m_test_job_info_io};
@@ -97,6 +99,7 @@ TEST_F(JobInfoIOServerClientTest, InstructionStateUpdated)
   EXPECT_CALL(m_test_job_info_io, PutValue(_, _)).Times(Exactly(1));
   EXPECT_CALL(m_test_job_info_io, Message(_)).Times(Exactly(1));
   EXPECT_CALL(m_test_job_info_io, Log(_, _)).Times(Exactly(1));
+  EXPECT_CALL(m_test_job_info_io, NextInstructionsUpdated(_)).Times(Exactly(1));
   {
     InSequence seq;
     EXPECT_CALL(m_test_job_info_io, InstructionStateUpdated(_, initial_instr_state)).Times(Exactly(nr_instr));
@@ -123,6 +126,7 @@ TEST_F(JobInfoIOServerClientTest, VariableUpdated)
   EXPECT_CALL(m_test_job_info_io, PutValue(_, _)).Times(Exactly(1));
   EXPECT_CALL(m_test_job_info_io, Message(_)).Times(Exactly(1));
   EXPECT_CALL(m_test_job_info_io, Log(_, _)).Times(Exactly(1));
+  EXPECT_CALL(m_test_job_info_io, NextInstructionsUpdated(_)).Times(Exactly(1));
 
   const std::string job_prefix = "JobInfoIOClientServerTest";
   ClientAnyValueManager client_av_mgr{m_test_job_info_io};
@@ -144,6 +148,7 @@ TEST_F(JobInfoIOServerClientTest, JobStateUpdated)
   EXPECT_CALL(m_test_job_info_io, PutValue(_, _)).Times(Exactly(1));
   EXPECT_CALL(m_test_job_info_io, Message(_)).Times(Exactly(1));
   EXPECT_CALL(m_test_job_info_io, Log(_, _)).Times(Exactly(1));
+  EXPECT_CALL(m_test_job_info_io, NextInstructionsUpdated(_)).Times(Exactly(1));
   {
     InSequence seq;
     EXPECT_CALL(m_test_job_info_io, JobStateUpdated(initial_job_state)).Times(Exactly(1));
@@ -170,6 +175,7 @@ TEST_F(JobInfoIOServerClientTest, PutValue)
   EXPECT_CALL(m_test_job_info_io, JobStateUpdated(_)).Times(Exactly(1));
   EXPECT_CALL(m_test_job_info_io, Message(_)).Times(Exactly(1));
   EXPECT_CALL(m_test_job_info_io, Log(_, _)).Times(Exactly(1));
+  EXPECT_CALL(m_test_job_info_io, NextInstructionsUpdated(_)).Times(Exactly(1));
   {
     InSequence seq;
     EXPECT_CALL(m_test_job_info_io, PutValue(_, _)).Times(Exactly(1));
@@ -195,6 +201,7 @@ TEST_F(JobInfoIOServerClientTest, Message)
   EXPECT_CALL(m_test_job_info_io, JobStateUpdated(_)).Times(Exactly(1));
   EXPECT_CALL(m_test_job_info_io, PutValue(_, _)).Times(Exactly(1));
   EXPECT_CALL(m_test_job_info_io, Log(_, _)).Times(Exactly(1));
+  EXPECT_CALL(m_test_job_info_io, NextInstructionsUpdated(_)).Times(Exactly(1));
   {
     InSequence seq;
     EXPECT_CALL(m_test_job_info_io, Message(_)).Times(Exactly(1));
@@ -221,6 +228,7 @@ TEST_F(JobInfoIOServerClientTest, Log)
   EXPECT_CALL(m_test_job_info_io, JobStateUpdated(_)).Times(Exactly(1));
   EXPECT_CALL(m_test_job_info_io, PutValue(_, _)).Times(Exactly(1));
   EXPECT_CALL(m_test_job_info_io, Message(_)).Times(Exactly(1));
+  EXPECT_CALL(m_test_job_info_io, NextInstructionsUpdated(_)).Times(Exactly(1));
   {
     InSequence seq;
     EXPECT_CALL(m_test_job_info_io, Log(_, _)).Times(Exactly(1));
@@ -250,6 +258,7 @@ TEST_F(JobInfoIOServerClientTest, GetUserValue)
     DoAll(SetArgReferee<1>(user_val), Return(true)));
   EXPECT_CALL(m_test_job_info_io, Message(_)).Times(Exactly(1));
   EXPECT_CALL(m_test_job_info_io, Log(_, _)).Times(Exactly(1));
+  EXPECT_CALL(m_test_job_info_io, NextInstructionsUpdated(_)).Times(Exactly(1));
 
   const std::string job_prefix = "JobInfoIOClientServerTest";
   ClientAnyValueManager client_av_mgr{m_test_job_info_io};
@@ -277,6 +286,7 @@ TEST_F(JobInfoIOServerClientTest, GetUserChoice)
     .WillOnce(Return(choice));
   EXPECT_CALL(m_test_job_info_io, Message(_)).Times(Exactly(1));
   EXPECT_CALL(m_test_job_info_io, Log(_, _)).Times(Exactly(1));
+  EXPECT_CALL(m_test_job_info_io, NextInstructionsUpdated(_)).Times(Exactly(1));
 
   const std::string job_prefix = "JobInfoIOClientServerTest";
   ClientAnyValueManager client_av_mgr{m_test_job_info_io};
@@ -294,7 +304,11 @@ TEST_F(JobInfoIOServerClientTest, NextInstructionsUpdated)
   EXPECT_CALL(m_test_job_info_io, PutValue(_, _)).Times(Exactly(1));
   EXPECT_CALL(m_test_job_info_io, Message(_)).Times(Exactly(1));
   EXPECT_CALL(m_test_job_info_io, Log(_, _)).Times(Exactly(1));
-  EXPECT_CALL(m_test_job_info_io, NextInstructionsUpdated(next_instr_indices)).Times(Exactly(1));
+  {
+    InSequence seq;
+    EXPECT_CALL(m_test_job_info_io, NextInstructionsUpdated(_)).Times(Exactly(1));
+    EXPECT_CALL(m_test_job_info_io, NextInstructionsUpdated(next_instr_indices)).Times(Exactly(1));
+  }
 
   const std::string job_prefix = "JobInfoIOClientServerTest";
   ClientAnyValueManager client_av_mgr{m_test_job_info_io};

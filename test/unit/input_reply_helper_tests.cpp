@@ -70,10 +70,9 @@ TEST_F(InputReplyHelperTest, DecodeInputReply)
       { kInputReplyPayloadField, payload }
     }};
     // Encode explicitly
-    auto encoded = sup::protocol::Base64VariableCodec::Encode(payload_av);
-    EXPECT_TRUE(encoded.first);
+    auto encoded = Base64EncodeAnyValue(payload_av);
     // Decode
-    auto decoded = DecodeInputReply(encoded.second);
+    auto decoded = DecodeInputReply(encoded);
     EXPECT_EQ(std::get<0>(decoded), true);
     EXPECT_EQ(std::get<1>(decoded), req_id);
     auto input_reply = std::get<2>(decoded);
@@ -98,10 +97,9 @@ TEST_F(InputReplyHelperTest, DecodeInputReply)
       { kInputReplyPayloadField, payload }
     }};
     // Encode explicitly
-    auto encoded = sup::protocol::Base64VariableCodec::Encode(payload_av);
-    EXPECT_TRUE(encoded.first);
+    auto encoded = Base64EncodeAnyValue(payload_av);
     // Decode
-    auto decoded = DecodeInputReply(encoded.second);
+    auto decoded = DecodeInputReply(encoded);
     EXPECT_EQ(std::get<0>(decoded), false);
     EXPECT_EQ(std::get<1>(decoded), 0);
     EXPECT_EQ(std::get<2>(decoded), kInvalidUserInputReply);
@@ -115,10 +113,9 @@ TEST_F(InputReplyHelperTest, DecodeInputReply)
       { kInputReplyPayloadField, payload }
     }};
     // Encode explicitly
-    auto encoded = sup::protocol::Base64VariableCodec::Encode(payload_av);
-    EXPECT_TRUE(encoded.first);
+    auto encoded = Base64EncodeAnyValue(payload_av);
     // Decode
-    auto decoded = DecodeInputReply(encoded.second);
+    auto decoded = DecodeInputReply(encoded);
     EXPECT_EQ(std::get<0>(decoded), false);
     EXPECT_EQ(std::get<1>(decoded), 0);
     EXPECT_EQ(std::get<2>(decoded), kInvalidUserInputReply);
@@ -131,10 +128,9 @@ TEST_F(InputReplyHelperTest, DecodeInputReply)
       { kInputReplyPayloadField, payload }
     }};
     // Encode explicitly
-    auto encoded = sup::protocol::Base64VariableCodec::Encode(payload_av);
-    EXPECT_TRUE(encoded.first);
+    auto encoded = Base64EncodeAnyValue(payload_av);
     // Decode
-    auto decoded = DecodeInputReply(encoded.second);
+    auto decoded = DecodeInputReply(encoded);
     EXPECT_EQ(std::get<0>(decoded), false);
     EXPECT_EQ(std::get<1>(decoded), 0);
     EXPECT_EQ(std::get<2>(decoded), kInvalidUserInputReply);
@@ -148,10 +144,9 @@ TEST_F(InputReplyHelperTest, DecodeInputReply)
       { kInputReplyPayloadField, payload }
     }};
     // Encode explicitly
-    auto encoded = sup::protocol::Base64VariableCodec::Encode(payload_av);
-    EXPECT_TRUE(encoded.first);
+    auto encoded = Base64EncodeAnyValue(payload_av);
     // Decode
-    auto decoded = DecodeInputReply(encoded.second);
+    auto decoded = DecodeInputReply(encoded);
     EXPECT_EQ(std::get<0>(decoded), false);
     EXPECT_EQ(std::get<1>(decoded), 0);
     EXPECT_EQ(std::get<2>(decoded), kInvalidUserInputReply);
@@ -164,10 +159,9 @@ TEST_F(InputReplyHelperTest, DecodeInputReply)
       { kInputReplyPayloadField, payload }
     }};
     // Encode explicitly
-    auto encoded = sup::protocol::Base64VariableCodec::Encode(payload_av);
-    EXPECT_TRUE(encoded.first);
+    auto encoded = Base64EncodeAnyValue(payload_av);
     // Decode
-    auto decoded = DecodeInputReply(encoded.second);
+    auto decoded = DecodeInputReply(encoded);
     EXPECT_EQ(std::get<0>(decoded), false);
     EXPECT_EQ(std::get<1>(decoded), 0);
     EXPECT_EQ(std::get<2>(decoded), kInvalidUserInputReply);
@@ -181,10 +175,9 @@ TEST_F(InputReplyHelperTest, DecodeInputReply)
       { kInputReplyPayloadField, payload }
     }};
     // Encode explicitly
-    auto encoded = sup::protocol::Base64VariableCodec::Encode(payload_av);
-    EXPECT_TRUE(encoded.first);
+    auto encoded = Base64EncodeAnyValue(payload_av);
     // Decode
-    auto decoded = DecodeInputReply(encoded.second);
+    auto decoded = DecodeInputReply(encoded);
     EXPECT_EQ(std::get<0>(decoded), false);
     EXPECT_EQ(std::get<1>(decoded), 0);
     EXPECT_EQ(std::get<2>(decoded), kInvalidUserInputReply);
@@ -197,10 +190,9 @@ TEST_F(InputReplyHelperTest, DecodeInputReply)
       { kInputReplyResultField, true }
     }};
     // Encode explicitly
-    auto encoded = sup::protocol::Base64VariableCodec::Encode(payload_av);
-    EXPECT_TRUE(encoded.first);
+    auto encoded = Base64EncodeAnyValue(payload_av);
     // Decode
-    auto decoded = DecodeInputReply(encoded.second);
+    auto decoded = DecodeInputReply(encoded);
     EXPECT_EQ(std::get<0>(decoded), false);
     EXPECT_EQ(std::get<1>(decoded), 0);
     EXPECT_EQ(std::get<2>(decoded), kInvalidUserInputReply);

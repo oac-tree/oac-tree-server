@@ -22,8 +22,6 @@
 #include <sup/auto-server/input_request_helper.h>
 #include <sup/auto-server/sup_auto_protocol.h>
 
-#include <sup/protocol/base64_variable_codec.h>
-
 #include <gtest/gtest.h>
 
 using namespace sup::auto_server;
@@ -48,10 +46,12 @@ TEST_F(InputRequestHelperTest, EncodeInputRequest)
   sup::dto::uint64 id = 32u;
   auto encoded = EncodeInputRequest(id, request);
 
-  ASSERT_TRUE(encoded.HasField(sup::protocol::kEncodingField));
-  EXPECT_EQ(encoded[sup::protocol::kEncodingField], sup::protocol::kBase64Encoding);
-  ASSERT_TRUE(encoded.HasField(sup::protocol::kValueField));
-  EXPECT_EQ(encoded[sup::protocol::kValueField].GetType(), sup::dto::StringType);
+  ASSERT_TRUE(encoded.HasField(kInputRequestIndexField));
+  EXPECT_EQ(encoded[kInputRequestIndexField], id);
+  ASSERT_TRUE(encoded.HasField(kInputRequestTypeField));
+  ASSERT_TRUE(encoded.HasField(kInputRequestMetadataField));
+  ASSERT_TRUE(encoded.HasField(kInputRequestInputTypeField));
+
   auto decoded = DecodeInputRequest(encoded);
   EXPECT_EQ(std::get<0>(decoded), true);
   EXPECT_EQ(std::get<1>(decoded), id);
@@ -71,11 +71,8 @@ TEST_F(InputRequestHelperTest, DecodeInputRequest)
       { kInputRequestMetadataField, metadata },
       { kInputRequestInputTypeField, { sup::dto::StringType, json_type }}
     }};
-    // Encode explicitly
-    auto encoded = sup::protocol::Base64VariableCodec::Encode(payload_av);
-    EXPECT_TRUE(encoded.first);
     // Decode
-    auto decoded = DecodeInputRequest(encoded.second);
+    auto decoded = DecodeInputRequest(payload_av);
     EXPECT_EQ(std::get<0>(decoded), true);
     EXPECT_EQ(std::get<1>(decoded), req_id);
     auto input_req = std::get<2>(decoded);
@@ -101,11 +98,8 @@ TEST_F(InputRequestHelperTest, DecodeInputRequest)
       { kInputRequestMetadataField, metadata },
       { kInputRequestInputTypeField, { sup::dto::StringType, json_type }}
     }};
-    // Encode explicitly
-    auto encoded = sup::protocol::Base64VariableCodec::Encode(payload_av);
-    EXPECT_TRUE(encoded.first);
     // Decode
-    auto decoded = DecodeInputRequest(encoded.second);
+    auto decoded = DecodeInputRequest(payload_av);
     EXPECT_EQ(std::get<0>(decoded), false);
     EXPECT_EQ(std::get<1>(decoded), 0);
     EXPECT_EQ(std::get<2>(decoded), kInvalidUserInputRequest);
@@ -121,11 +115,8 @@ TEST_F(InputRequestHelperTest, DecodeInputRequest)
       { kInputRequestMetadataField, metadata },
       { kInputRequestInputTypeField, { sup::dto::StringType, json_type }}
     }};
-    // Encode explicitly
-    auto encoded = sup::protocol::Base64VariableCodec::Encode(payload_av);
-    EXPECT_TRUE(encoded.first);
     // Decode
-    auto decoded = DecodeInputRequest(encoded.second);
+    auto decoded = DecodeInputRequest(payload_av);
     EXPECT_EQ(std::get<0>(decoded), false);
     EXPECT_EQ(std::get<1>(decoded), 0);
     EXPECT_EQ(std::get<2>(decoded), kInvalidUserInputRequest);
@@ -140,11 +131,8 @@ TEST_F(InputRequestHelperTest, DecodeInputRequest)
       { kInputRequestMetadataField, metadata },
       { kInputRequestInputTypeField, { sup::dto::StringType, json_type }}
     }};
-    // Encode explicitly
-    auto encoded = sup::protocol::Base64VariableCodec::Encode(payload_av);
-    EXPECT_TRUE(encoded.first);
     // Decode
-    auto decoded = DecodeInputRequest(encoded.second);
+    auto decoded = DecodeInputRequest(payload_av);
     EXPECT_EQ(std::get<0>(decoded), false);
     EXPECT_EQ(std::get<1>(decoded), 0);
     EXPECT_EQ(std::get<2>(decoded), kInvalidUserInputRequest);
@@ -160,11 +148,8 @@ TEST_F(InputRequestHelperTest, DecodeInputRequest)
       { kInputRequestMetadataField, metadata },
       { kInputRequestInputTypeField, { sup::dto::StringType, json_type }}
     }};
-    // Encode explicitly
-    auto encoded = sup::protocol::Base64VariableCodec::Encode(payload_av);
-    EXPECT_TRUE(encoded.first);
     // Decode
-    auto decoded = DecodeInputRequest(encoded.second);
+    auto decoded = DecodeInputRequest(payload_av);
     EXPECT_EQ(std::get<0>(decoded), false);
     EXPECT_EQ(std::get<1>(decoded), 0);
     EXPECT_EQ(std::get<2>(decoded), kInvalidUserInputRequest);
@@ -178,11 +163,8 @@ TEST_F(InputRequestHelperTest, DecodeInputRequest)
       { kInputRequestTypeField, static_cast<sup::dto::uint32>(InputRequestType::kUserChoice) },
       { kInputRequestInputTypeField, { sup::dto::StringType, json_type }}
     }};
-    // Encode explicitly
-    auto encoded = sup::protocol::Base64VariableCodec::Encode(payload_av);
-    EXPECT_TRUE(encoded.first);
     // Decode
-    auto decoded = DecodeInputRequest(encoded.second);
+    auto decoded = DecodeInputRequest(payload_av);
     EXPECT_EQ(std::get<0>(decoded), false);
     EXPECT_EQ(std::get<1>(decoded), 0);
     EXPECT_EQ(std::get<2>(decoded), kInvalidUserInputRequest);
@@ -196,11 +178,8 @@ TEST_F(InputRequestHelperTest, DecodeInputRequest)
       { kInputRequestTypeField, static_cast<sup::dto::uint32>(InputRequestType::kUserChoice) },
       { kInputRequestMetadataField, metadata }
     }};
-    // Encode explicitly
-    auto encoded = sup::protocol::Base64VariableCodec::Encode(payload_av);
-    EXPECT_TRUE(encoded.first);
     // Decode
-    auto decoded = DecodeInputRequest(encoded.second);
+    auto decoded = DecodeInputRequest(payload_av);
     EXPECT_EQ(std::get<0>(decoded), false);
     EXPECT_EQ(std::get<1>(decoded), 0);
     EXPECT_EQ(std::get<2>(decoded), kInvalidUserInputRequest);
@@ -215,11 +194,8 @@ TEST_F(InputRequestHelperTest, DecodeInputRequest)
       { kInputRequestMetadataField, metadata },
       { kInputRequestInputTypeField, { sup::dto::BooleanType, true }}
     }};
-    // Encode explicitly
-    auto encoded = sup::protocol::Base64VariableCodec::Encode(payload_av);
-    EXPECT_TRUE(encoded.first);
     // Decode
-    auto decoded = DecodeInputRequest(encoded.second);
+    auto decoded = DecodeInputRequest(payload_av);
     EXPECT_EQ(std::get<0>(decoded), false);
     EXPECT_EQ(std::get<1>(decoded), 0);
     EXPECT_EQ(std::get<2>(decoded), kInvalidUserInputRequest);
@@ -235,11 +211,8 @@ TEST_F(InputRequestHelperTest, DecodeInputRequest)
       { kInputRequestMetadataField, metadata },
       { kInputRequestInputTypeField, { sup::dto::StringType, json_type }}
     }};
-    // Encode explicitly
-    auto encoded = sup::protocol::Base64VariableCodec::Encode(payload_av);
-    EXPECT_TRUE(encoded.first);
     // Decode
-    auto decoded = DecodeInputRequest(encoded.second);
+    auto decoded = DecodeInputRequest(payload_av);
     EXPECT_EQ(std::get<0>(decoded), false);
     EXPECT_EQ(std::get<1>(decoded), 0);
     EXPECT_EQ(std::get<2>(decoded), kInvalidUserInputRequest);

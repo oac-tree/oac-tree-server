@@ -56,40 +56,40 @@ namespace sup
 namespace auto_server
 {
 
-const dto::AnyValue kVariableAnyValue = {{
-  { protocol::kEncodingField, protocol::kBase64Encoding},
-  { protocol::kValueField, "" }
+const sup::dto::AnyValue kVariableAnyValue = {{
+  { kVariableValueField, {} },
+  { kVariableConnectedField, false }
 }, kVariableType };
 
-const dto::AnyValue kInputRequestAnyValue = {{
-  { protocol::kEncodingField, protocol::kBase64Encoding},
-  { protocol::kValueField, "" }
+const sup::dto::AnyValue kInputRequestAnyValue = {{
+  { kInputRequestIndexField, { sup::dto::UnsignedInteger64Type, 0 }},
+  { kInputRequestTypeField, { sup::dto::UnsignedInteger32Type, 0 }},
+  { kInputRequestMetadataField, {} },
+  { kInputRequestInputTypeField, { sup::dto::StringType, "" }}
 }, kInputRequestType };
 
-const dto::AnyValue kLogEntryAnyValue = {{
+const sup::dto::AnyValue kLogEntryAnyValue = {{
   { sup::sequencer::Constants::kIndexField, { sup::dto::UnsignedInteger64Type, 0 } },
   { kSeverityField, { sup::dto::SignedInteger32Type, 0 } },
   { kMessageField, "" }
 }, kLogEntryType };
 
-const dto::AnyValue kMessageEntryAnyValue = {{
+const sup::dto::AnyValue kMessageEntryAnyValue = {{
   { sup::sequencer::Constants::kIndexField, { sup::dto::UnsignedInteger64Type, 0 } },
   { kMessageField, "" }
 }, kMessageEntryType };
 
-const dto::AnyValue kOutputValueEntryAnyValue = {{
+const sup::dto::AnyValue kOutputValueEntryAnyValue = {{
   { sup::sequencer::Constants::kIndexField, { sup::dto::UnsignedInteger64Type, 0 } },
   { kDescriptionField, "" },
   { kValueField, {} }
 }, kOutputValueEntryType };
 
-const dto::AnyValue kNextInstructionsAnyValue = {{
-  { protocol::kEncodingField, protocol::kBase64Encoding},
-  { protocol::kValueField, "" }
-}, kNextInstructionsType };
+const sup::dto::AnyValue kNextInstructionsAnyValue =
+  sup::dto::AnyValue{0, sup::dto::UnsignedInteger32Type, kNextInstructionsType};
 
-const dto::AnyValue kJobStateAnyValue = {{
-  { kJobStateField, static_cast<dto::uint32>(sequencer::JobState::kInitial)}
+const sup::dto::AnyValue kJobStateAnyValue = {{
+  { kJobStateField, static_cast<sup::dto::uint32>(sequencer::JobState::kInitial)}
 }, kJobStateType };
 
 namespace status
@@ -141,12 +141,12 @@ std::string CreateJobPrefix(const std::string& server_prefix, sup::dto::uint32 i
   return server_prefix + ":PROC-" + std::to_string(idx) + ":";
 }
 
-std::string GetInstructionPVName(const std::string& prefix, dto::uint32 index)
+std::string GetInstructionPVName(const std::string& prefix, sup::dto::uint32 index)
 {
   return prefix + kInstructionId + std::to_string(index);
 }
 
-std::string GetVariablePVName(const std::string& prefix, dto::uint32 index)
+std::string GetVariablePVName(const std::string& prefix, sup::dto::uint32 index)
 {
   return prefix + kVariableId + std::to_string(index);
 }
@@ -186,80 +186,54 @@ std::string GetJobStatePVName(const std::string& prefix)
   return prefix + kJobStateId;
 }
 
-dto::AnyValue GetJobStateValue(sequencer::JobState state)
+sup::dto::AnyValue GetJobStateValue(sequencer::JobState state)
 {
   auto result = kJobStateAnyValue;
-  result[kJobStateField] = static_cast<dto::uint32>(state);
+  result[kJobStateField] = static_cast<sup::dto::uint32>(state);
   return result;
 }
 
-dto::AnyValue EncodeVariableState(const dto::AnyValue& value, bool connected)
+sup::dto::AnyValue EncodeVariableState(const sup::dto::AnyValue& value, bool connected)
 {
-  dto::AnyValue payload = {{
+  sup::dto::AnyValue var_state = {{
     { kVariableValueField, value },
     { kVariableConnectedField, connected }
   }};
-  auto encoded = protocol::Base64VariableCodec::Encode(payload);
-  if (!encoded.first)
-  {
-    const std::string error = "EncodeVariableState(): could not encode the variable's state";
-    throw InvalidOperationException(error);
-  }
-  return encoded.second;
+  return var_state;
 }
 
-std::pair<sup::dto::AnyValue, bool> DecodeVariableState(const dto::AnyValue& encoded)
+std::pair<sup::dto::AnyValue, bool> DecodeVariableState(const sup::dto::AnyValue& encoded)
 {
-  const std::pair<sup::dto::AnyValue, bool> failure{ {}, false };
-  auto decoded = protocol::Base64VariableCodec::Decode(encoded);
-  if (!decoded.first)
+  if (ValidateVariablePayload(encoded))
   {
-    return failure;
+    return { encoded[kVariableValueField], encoded[kVariableConnectedField].As<sup::dto::boolean>() };
   }
-  auto& payload = decoded.second;
-  if (!ValidateVariablePayload(payload))
-  {
-    return failure;
-  }
-  return { payload[kVariableValueField], payload[kVariableConnectedField].As<sup::dto::boolean>() };
+  return { {}, false };
 }
 
 sup::dto::AnyValue EncodeNextInstructionIndices(const std::vector<sup::dto::uint32>& next_indices)
 {
-  sup::dto::AnyValue payload{next_indices.size(), sup::dto::UnsignedInteger32Type};
+  sup::dto::AnyValue encoded{next_indices.size(), sup::dto::UnsignedInteger32Type};
   for (std::size_t i=0; i<next_indices.size(); ++i)
   {
-    payload[i] = next_indices[i];
+    encoded[i] = next_indices[i];
   }
-  auto encoded = protocol::Base64VariableCodec::Encode(payload);
-  if (!encoded.first)
-  {
-    const std::string error = "EncodeNextInstructionIndices(): could not encode index list";
-    throw InvalidOperationException(error);
-  }
-  return encoded.second;
+  return encoded;
 }
 
 std::pair<bool, std::vector<sup::dto::uint32>> DecodeNextInstructionIndices(
-  const dto::AnyValue& encoded)
+  const sup::dto::AnyValue& encoded)
 {
-  const std::pair<bool, std::vector<sup::dto::uint32>> failure{ false, {} };
-  auto decoded = protocol::Base64VariableCodec::Decode(encoded);
-  if (!decoded.first)
+  if (ValidateNextInstructionsPayload(encoded))
   {
-    return failure;
+    std::vector<sup::dto::uint32> indices;
+    for (size_t i = 0; i < encoded.NumberOfElements(); ++i)
+    {
+      indices.push_back(encoded[i].As<sup::dto::uint32>());
+    }
+    return { true, indices };
   }
-  auto& payload = decoded.second;
-  if (!ValidateNextInstructionsPayload(payload))
-  {
-    return failure;
-  }
-  std::vector<sup::dto::uint32> indices;
-  for (size_t i = 0; i < payload.NumberOfElements(); ++i)
-  {
-    indices.push_back(payload[i].As<sup::dto::uint32>());
-  }
-  return { true, indices };
+  return { false, {} };
 }
 
 ValueNameInfo ParseValueName(const std::string& val_name)
