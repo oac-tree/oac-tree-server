@@ -35,7 +35,7 @@
 
 namespace
 {
-bool ValidateVariablePayload(const sup::dto::AnyValue& payload);
+bool ValidateVariableAnyValue(const sup::dto::AnyValue& payload);
 
 /**
  * @brief Validate if the provided AnyValue encodes a list of instruction indices.
@@ -44,7 +44,7 @@ bool ValidateVariablePayload(const sup::dto::AnyValue& payload);
  *
  * @return True if the AnyValue encodes a list of instruction indices.
  */
-bool ValidateNextInstructionsPayload(const sup::dto::AnyValue& payload);
+bool ValidateNextInstructionsAnyValue(const sup::dto::AnyValue& payload);
 
 bool EndsWith(const std::string& str, const std::string& sub_str);
 
@@ -204,7 +204,7 @@ sup::dto::AnyValue EncodeVariableState(const sup::dto::AnyValue& value, bool con
 
 std::pair<sup::dto::AnyValue, bool> DecodeVariableState(const sup::dto::AnyValue& encoded)
 {
-  if (ValidateVariablePayload(encoded))
+  if (ValidateVariableAnyValue(encoded))
   {
     return { encoded[kVariableValueField], encoded[kVariableConnectedField].As<sup::dto::boolean>() };
   }
@@ -224,7 +224,7 @@ sup::dto::AnyValue EncodeNextInstructionIndices(const std::vector<sup::dto::uint
 std::pair<bool, std::vector<sup::dto::uint32>> DecodeNextInstructionIndices(
   const sup::dto::AnyValue& encoded)
 {
-  if (ValidateNextInstructionsPayload(encoded))
+  if (ValidateNextInstructionsAnyValue(encoded))
   {
     std::vector<sup::dto::uint32> indices;
     for (size_t i = 0; i < encoded.NumberOfElements(); ++i)
@@ -346,13 +346,13 @@ std::pair<bool, sup::dto::AnyValue> Base64DecodeAnyValue(const sup::dto::AnyValu
 namespace
 {
 using namespace sup::auto_server;
-bool ValidateVariablePayload(const sup::dto::AnyValue& payload)
+bool ValidateVariableAnyValue(const sup::dto::AnyValue& var_value)
 {
-  if (!payload.HasField(kVariableValueField))
+  if (!var_value.HasField(kVariableValueField))
   {
     return false;
   }
-  if (!sup::sequencer::utils::ValidateMemberType(payload, kVariableConnectedField,
+  if (!sup::sequencer::utils::ValidateMemberType(var_value, kVariableConnectedField,
                                                  sup::dto::BooleanType))
   {
     return false;
@@ -360,13 +360,13 @@ bool ValidateVariablePayload(const sup::dto::AnyValue& payload)
   return true;
 }
 
-bool ValidateNextInstructionsPayload(const sup::dto::AnyValue& payload)
+bool ValidateNextInstructionsAnyValue(const sup::dto::AnyValue& next_instr_av)
 {
-  if (!sup::dto::IsArrayValue(payload))
+  if (!sup::dto::IsArrayValue(next_instr_av))
   {
     return false;
   }
-  if (payload.GetType().ElementType() != sup::dto::UnsignedInteger32Type)
+  if (next_instr_av.GetType().ElementType() != sup::dto::UnsignedInteger32Type)
   {
     return false;
   }
