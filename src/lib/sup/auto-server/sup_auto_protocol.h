@@ -373,6 +373,25 @@ sup::protocol::ProtocolResult ExtractJobIndex(
 sup::protocol::ProtocolResult ExtractInstructionIndex(
   const sup::dto::AnyValue& input, sup::dto::uint32 n_instr, sup::dto::uint32& idx);
 
+/**
+ * @brief This encoding can be used for all server AnyValues to enfore them to have the same type.
+ * The encoded AnyValue will be a struct with two string members (one for the encoding name and
+ * the other for the base64 encoded anyvalue).
+ *
+ * @param value AnyValue to encode.
+ * @return Encoded AnyValue.
+ */
+sup::dto::AnyValue Base64EncodeAnyValue(const sup::dto::AnyValue& value);
+
+/**
+ * @brief Decode a base64 encoded AnyValue. See also `Base64EncodeAnyValue`.
+ *
+ * @param value AnyValue to decode.
+ * @return Boolean indicating success of the decoding operation and the decoded AnyValue
+ * (if success).
+ */
+std::pair<bool, sup::dto::AnyValue> Base64DecodeAnyValue(const sup::dto::AnyValue& value);
+
 }  // namespace auto_server
 
 }  // namespace sup

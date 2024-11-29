@@ -30,6 +30,7 @@
 #include <sup/epics/pv_access_client_pv.h>
 #include <sup/sequencer/user_input_request.h>
 
+#include <utility>
 #include <vector>
 
 namespace sup
@@ -86,8 +87,7 @@ EPICSIOClientImpl::EPICSIOClientImpl(IAnyValueManager& av_mgr)
 
 EPICSIOClientImpl::~EPICSIOClientImpl() = default;
 
-bool EPICSIOClientImpl::AddAnyValues(
-  const IAnyValueIO::NameAnyValueSet& monitor_set)
+bool EPICSIOClientImpl::AddAnyValues(const IAnyValueIO::NameAnyValueSet& monitor_set)
 {
   if (!m_av_mgr.AddAnyValues(monitor_set))
   {
@@ -119,7 +119,11 @@ bool EPICSIOClientImpl::AddInputHandler(const std::string& input_server_name)
   auto cb = [this, input_server_name](const PvAccessClientPV::ExtendedValue& ext_val) {
     if (ext_val.connected)
     {
-      HandleUserInput(input_server_name, ext_val.value);
+      auto decoded = Base64DecodeAnyValue(ext_val.value);
+      if (decoded.first)
+      {
+        HandleUserInput(input_server_name, decoded.second);
+      }
     }
   };
   m_client_pvs.emplace_back(input_request_pv_name, cb);
@@ -132,7 +136,11 @@ void EPICSIOClientImpl::AddMonitorPV(const std::string& channel)
   auto cb = [this, channel](const PvAccessClientPV::ExtendedValue& ext_val) {
     if (ext_val.connected)
     {
-      m_av_mgr.UpdateAnyValue(channel, ext_val.value);
+      auto decoded = Base64DecodeAnyValue(ext_val.value);
+      if (decoded.first)
+      {
+        m_av_mgr.UpdateAnyValue(channel, decoded.second);
+      }
     }
   };
   m_client_pvs.emplace_back(channel, cb);

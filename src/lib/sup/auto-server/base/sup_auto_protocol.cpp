@@ -344,6 +344,27 @@ sup::protocol::ProtocolResult ExtractInstructionIndex(
   return sup::protocol::Success;
 }
 
+sup::dto::AnyValue Base64EncodeAnyValue(const sup::dto::AnyValue& value)
+{
+  auto encoded = sup::protocol::Base64VariableCodec::Encode(value);
+  if (!encoded.first)
+  {
+    const std::string error = "Base64EncodeAnyValue(): could not base64 encode an AnyValue";
+    throw InvalidOperationException(error);
+  }
+  return encoded.second;
+}
+
+std::pair<bool, sup::dto::AnyValue> Base64DecodeAnyValue(const sup::dto::AnyValue& value)
+{
+  auto decoded = sup::protocol::Base64VariableCodec::Decode(value);
+  if (decoded.first)
+  {
+    return { true, decoded.second };
+  }
+  return { false, {} };
+}
+
 }  // namespace auto_server
 
 }  // namespace sup

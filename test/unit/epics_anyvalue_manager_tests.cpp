@@ -22,6 +22,7 @@
 #include "unit_test_helper.h"
 
 #include <sup/auto-server/epics/epics_anyvalue_manager.h>
+#include <sup/auto-server/sup_auto_protocol.h>
 
 #include <sup/epics/pv_access_client_pv.h>
 
@@ -89,13 +90,19 @@ TEST_F(EPICSAnyValueManagerTest, ServeAndUpdate)
   auto pv_callback = [this](const sup::epics::PvAccessClientPV::ExtendedValue& val) {
     if(val.connected)
     {
-      OnUpdateValue(val.value);
+      auto decoded = Base64DecodeAnyValue(val.value);
+      if (decoded.first)
+      {
+        OnUpdateValue(decoded.second);
+      }
     }
   };
   sup::epics::PvAccessClientPV val0_pv{"val0", pv_callback};
   EXPECT_TRUE(val0_pv.WaitForValidValue(1.0));
   auto val0 = val0_pv.GetValue();
-  EXPECT_EQ(val0, scalar);
+  auto decoded0 = Base64DecodeAnyValue(val0);
+  ASSERT_TRUE(decoded0.first);
+  EXPECT_EQ(decoded0.second, scalar);
 
   // Update variable and wait for update to be published
   auto update_1 = scalar;
@@ -108,7 +115,9 @@ TEST_F(EPICSAnyValueManagerTest, ServeAndUpdate)
   sup::epics::PvAccessClientPV val2_pv{"val2", pv_callback};
   EXPECT_TRUE(val2_pv.WaitForValidValue(1.0));
   auto val2 = val2_pv.GetValue();
-  EXPECT_EQ(val2, scalar);
+  auto decoded2 = Base64DecodeAnyValue(val2);
+  ASSERT_TRUE(decoded2.first);
+  EXPECT_EQ(decoded2.second, scalar);
 
   // Update variable and wait for update to be published
   auto update_2 = scalar;

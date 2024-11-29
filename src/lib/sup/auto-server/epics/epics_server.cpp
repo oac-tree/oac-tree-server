@@ -21,13 +21,15 @@
 
 #include "epics_server.h"
 
+#include <sup/auto-server/exceptions.h>
+#include <sup/auto-server/sup_auto_protocol.h>
+
 #include <sup/epics/pv_access_server.h>
 
 namespace sup
 {
 namespace auto_server
 {
-
 EPICSServer::EPICSServer(const IAnyValueIO::NameAnyValueSet& name_value_set)
   : m_update_queue{}
   , m_update_future{}
@@ -42,7 +44,8 @@ EPICSServer::~EPICSServer()
 
 void EPICSServer::UpdateAnyValue(const std::string& name, const sup::dto::AnyValue& value)
 {
-  m_update_queue.Push(name, value);
+  const auto update_val = Base64EncodeAnyValue(value);
+  m_update_queue.Push(name, update_val);
 }
 
 void EPICSServer::UpdateLoop(const IAnyValueIO::NameAnyValueSet& name_value_set)
@@ -50,7 +53,8 @@ void EPICSServer::UpdateLoop(const IAnyValueIO::NameAnyValueSet& name_value_set)
   sup::epics::PvAccessServer server;
   for (const auto& name_value_pair : name_value_set)
   {
-    server.AddVariable(name_value_pair.first, name_value_pair.second);
+    const auto value = Base64EncodeAnyValue(name_value_pair.second);
+    server.AddVariable(name_value_pair.first, value);
   }
   server.Start();
   bool exit = false;
