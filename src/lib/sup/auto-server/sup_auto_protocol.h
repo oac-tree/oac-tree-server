@@ -374,7 +374,7 @@ sup::protocol::ProtocolResult ExtractInstructionIndex(
   const sup::dto::AnyValue& input, sup::dto::uint32 n_instr, sup::dto::uint32& idx);
 
 /**
- * @brief This encoding can be used for all server AnyValues to enfore them to have the same type.
+ * @brief This encoding can be used for all server AnyValues to enforce them to have the same type.
  * The encoded AnyValue will be a struct with two string members (one for the encoding name and
  * the other for the base64 encoded anyvalue).
  *

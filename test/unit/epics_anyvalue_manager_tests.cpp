@@ -19,8 +19,6 @@
  * of the distribution package.
  ******************************************************************************/
 
-#include "unit_test_helper.h"
-
 #include <sup/auto-server/epics/epics_anyvalue_manager.h>
 #include <sup/auto-server/sup_auto_protocol.h>
 
