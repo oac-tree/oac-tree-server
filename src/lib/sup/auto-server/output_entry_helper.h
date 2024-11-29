@@ -24,6 +24,8 @@
 
 #include <sup/auto-server/output_entry_types.h>
 
+#include <utility>
+
 namespace sup
 {
 namespace auto_server
@@ -45,7 +47,7 @@ bool ValidateOutputValueEntryAnyValue(const sup::dto::AnyValue& anyvalue);
 
 sup::dto::AnyValue EncodeOutputValueEntry(const OutputValueEntry& output_entry);
 
-OutputValueEntry DecodeOutputValueEntry(const sup::dto::AnyValue& anyvalue);
+std::pair<bool, OutputValueEntry> DecodeOutputValueEntry(const sup::dto::AnyValue& anyvalue);
 
 }  // namespace auto_server
 

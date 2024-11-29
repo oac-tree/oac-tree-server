@@ -57,6 +57,7 @@ TEST_F(OutputEntriesTest, OutputValueEntrySerialization)
   OutputValueEntry original{ 42u, "hello", { sup::dto::BooleanType, true }};
   auto av = EncodeOutputValueEntry(original);
   EXPECT_TRUE(ValidateOutputValueEntryAnyValue(av));
-  auto copy = DecodeOutputValueEntry(av);
-  EXPECT_EQ(copy, original);
+  auto decoded = DecodeOutputValueEntry(av);
+  ASSERT_TRUE(decoded.first);
+  EXPECT_EQ(decoded.second, original);
 }

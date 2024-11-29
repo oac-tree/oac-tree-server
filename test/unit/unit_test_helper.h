@@ -45,9 +45,11 @@ R"RAW(
   <Workspace/>
 )RAW"};
 
+    // <Output fromVar="var1" description="Variable is"/>
 const std::string kWorkspaceSequenceBody{
 R"RAW(
   <Sequence>
+    <Message text="Hello"/>
     <Copy inputVar="one" outputVar="var1"/>
     <Copy inputVar="one" outputVar="var2"/>
   </Sequence>

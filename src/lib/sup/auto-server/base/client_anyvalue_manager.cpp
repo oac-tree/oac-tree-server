@@ -252,8 +252,11 @@ void UpdateOutputValueEntry(IJobInfoIO& job_info_io, const sup::dto::AnyValue& a
   {
     return;
   }
-  auto out_val_entry = DecodeOutputValueEntry(anyvalue);
-  job_info_io.PutValue(out_val_entry.m_value, out_val_entry.m_description);
+  auto decoded = DecodeOutputValueEntry(anyvalue);
+  if (decoded.first)
+  {
+    job_info_io.PutValue(decoded.second.m_value, decoded.second.m_description);
+  }
 }
 
 void UpdateNextInstructions(IJobInfoIO& job_info_io, const sup::dto::AnyValue& anyvalue)

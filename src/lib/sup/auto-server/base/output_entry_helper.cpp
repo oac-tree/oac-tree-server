@@ -21,6 +21,7 @@
 
 #include <sup/auto-server/output_entry_helper.h>
 #include <sup/auto-server/sup_auto_protocol.h>
+#include <sup/auto-server/exceptions.h>
 
 #include <sup/sequencer/anyvalue_utils.h>
 #include <sup/sequencer/constants.h>
@@ -129,16 +130,18 @@ sup::dto::AnyValue EncodeOutputValueEntry(const OutputValueEntry& output_entry)
   return result;
 }
 
-OutputValueEntry DecodeOutputValueEntry(const sup::dto::AnyValue& anyvalue)
+std::pair<bool, OutputValueEntry> DecodeOutputValueEntry(const sup::dto::AnyValue& anyvalue)
 {
-  OutputValueEntry result = { 0, "", {} };
+  std::pair<bool, OutputValueEntry> failure = { false, {} };
   if (ValidateOutputValueEntryAnyValue(anyvalue))
   {
+    OutputValueEntry result{};
     result.m_index = anyvalue[kIndexField].As<sup::dto::uint64>();
     result.m_description = anyvalue[kDescriptionField].As<std::string>();
     result.m_value = anyvalue[kValueField];
+    return { true, result };
   }
-  return result;
+  return failure;
 }
 
 }  // namespace auto_server
