@@ -31,3 +31,12 @@ if(NOT DEFINED TEST_OUTPUT_DIRECTORY)
 endif()
 
 file(MAKE_DIRECTORY ${TEST_OUTPUT_DIRECTORY})
+
+# -----------------------------------------------------------------------------
+# Dependencies
+# -----------------------------------------------------------------------------
+find_package(sup-utils REQUIRED)
+find_package(sup-dto REQUIRED)
+find_package(sup-epics REQUIRED)
+find_package(sequencer REQUIRED)
+find_package(sup-protocol REQUIRED)

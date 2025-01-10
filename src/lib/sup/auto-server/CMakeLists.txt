@@ -15,11 +15,6 @@ target_include_directories(sup-auto-server PUBLIC
   $<BUILD_INTERFACE:${CMAKE_CURRENT_LIST_DIR}/../..>
 )
 
-find_package(sup-dto REQUIRED)
-find_package(sup-epics REQUIRED)
-find_package(sequencer REQUIRED)
-find_package(sup-protocol REQUIRED)
-
 target_link_libraries(sup-auto-server
   PUBLIC
     sequencer::sequencer

@@ -1,8 +1,5 @@
 add_executable(sup-automation-server)
 
-find_package(sup-utils REQUIRED)
-find_package(sup-epics REQUIRED)
-
 target_link_libraries(sup-automation-server
   PRIVATE
   sup-auto-server
