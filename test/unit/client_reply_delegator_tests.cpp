@@ -128,12 +128,16 @@ void ClientReplyDelegatorTest::SetTimeout(double timeout_sec)
 
 ClientReplyDelegator::ReplyFunction ClientReplyDelegatorTest::GetReplyFunction()
 {
-  return std::bind(&ClientReplyDelegatorTest::Reply, this, _1, _2);
+  return [this](sup::dto::uint64 id, const UserInputReply& reply){
+    Reply(id, reply);
+  };
 }
 
 ClientReplyDelegator::InterruptFunction ClientReplyDelegatorTest::GetInterruptFunction()
 {
-  return std::bind(&ClientReplyDelegatorTest::Interrupt, this, _1);
+  return [this](sup::dto::uint64 id){
+    Interrupt(id);
+  };
 }
 
 void ClientReplyDelegatorTest::Reply(sup::dto::uint64 id, const UserInputReply& reply)
