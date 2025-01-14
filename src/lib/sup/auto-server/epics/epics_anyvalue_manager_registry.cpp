@@ -34,7 +34,7 @@ EPICSAnyValueManagerRegistry::EPICSAnyValueManagerRegistry(sup::dto::uint32 n_ma
   m_anyvalue_managers.reserve(n_managers);
   for (sup::dto::uint32 idx = 0; idx < n_managers; ++idx)
   {
-    m_anyvalue_managers.emplace_back(new EPICSAnyValueManager{});
+    m_anyvalue_managers.emplace_back(std::make_unique<EPICSAnyValueManager>());
   }
 }
 

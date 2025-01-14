@@ -55,7 +55,7 @@ ClientJob::ClientJob(IJobManager& job_manager, sup::dto::uint32 job_idx,
                      const AnyValueIOFactoryFunction& factory_func,
                      sup::sequencer::IJobInfoIO& job_info_io)
   : IJob{}
-  , m_impl{new ClientJobImpl{job_manager, job_idx, factory_func, job_info_io}}
+  , m_impl{std::make_unique<ClientJobImpl>(job_manager, job_idx, factory_func, job_info_io)}
 {}
 
 ClientJob::~ClientJob() = default;
@@ -138,7 +138,7 @@ std::unique_ptr<sup::sequencer::IJob> CreateClientJob(
   std::unique_ptr<sup::sequencer::IJob> result{};
   try
   {
-    result.reset(new ClientJob{job_manager, job_idx, factory_func, job_info_io});
+    result = std::make_unique<ClientJob>(job_manager, job_idx, factory_func, job_info_io);
   }
   catch(const MessageException& e)
   {
@@ -165,7 +165,7 @@ ClientJobImpl::ClientJobImpl(IJobManager& job_manager, sup::dto::uint32 job_idx,
   }
   auto server_prefix = m_job_manager.GetServerPrefix();
   auto job_prefix = CreateJobPrefix(server_prefix, job_idx);
-  m_job_info.reset(new sup::sequencer::JobInfo(m_job_manager.GetJobInfo(job_idx)));
+  m_job_info = std::make_unique<sup::sequencer::JobInfo>(m_job_manager.GetJobInfo(job_idx));
   InitializeJobAndVariables(*m_anyvalue_io, job_prefix, m_job_info->GetNumberOfVariables());
   InitializeInstructions(*m_anyvalue_io, job_prefix, m_job_info->GetNumberOfInstructions());
 }

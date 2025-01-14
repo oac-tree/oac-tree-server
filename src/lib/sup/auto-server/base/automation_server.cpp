@@ -50,8 +50,8 @@ void AutomationServer::AddJob(std::unique_ptr<sup::sequencer::Procedure> proc)
   auto idx = m_jobs.size();
   auto job_prefix = CreateJobPrefix(m_server_prefix, idx);
   auto n_vars = GetNumberOfVariables(*proc);
-  std::unique_ptr<sup::sequencer::IJobInfoIO> job_info_io{
-    new ServerJobInfoIO{job_prefix, n_vars, m_av_mgr_registry.GetAnyValueManager(idx)}};
+  auto job_info_io = std::make_unique<ServerJobInfoIO>(job_prefix, n_vars,
+                                                       m_av_mgr_registry.GetAnyValueManager(idx));
   m_job_info_ios.emplace_back(std::move(job_info_io));
   m_jobs.emplace_back(std::move(proc), *m_job_info_ios.back());
 }

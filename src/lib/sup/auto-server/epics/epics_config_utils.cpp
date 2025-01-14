@@ -36,7 +36,7 @@ namespace utils
 
 std::unique_ptr<IAnyValueIO> CreateEPICSIOClient(IAnyValueManager& av_mgr)
 {
-  return std::unique_ptr<IAnyValueIO>(new EPICSIOClient(av_mgr));
+  return std::make_unique<EPICSIOClient>(av_mgr);
 }
 
 std::unique_ptr<IJobManager> CreateEPICSJobManager(const std::string& server_name)
@@ -46,15 +46,15 @@ std::unique_ptr<IJobManager> CreateEPICSJobManager(const std::string& server_nam
   auto control_server_name = GetControlServerName(server_name);
   auto control_config = sup::epics::GetDefaultRPCClientConfig(control_server_name);
   auto control_protocol = sup::epics::CreateEPICSRPCClientStack(control_config);
-  std::unique_ptr<IJobManager> result{
-      new AutomationClientStack{std::move(info_protocol), std::move(control_protocol)}};
+  auto result = std::make_unique<AutomationClientStack>(std::move(info_protocol),
+                                                        std::move(control_protocol));
   return result;
 }
 
 std::unique_ptr<IAnyValueManagerRegistry> CreateEPICSAnyValueManagerRegistry(
     sup::dto::uint32 n_managers)
 {
-  std::unique_ptr<IAnyValueManagerRegistry> result{new EPICSAnyValueManagerRegistry{n_managers}};
+  auto result = std::make_unique<EPICSAnyValueManagerRegistry>(n_managers);
   return result;
 }
 

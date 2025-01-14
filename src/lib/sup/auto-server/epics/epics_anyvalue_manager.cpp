@@ -59,7 +59,7 @@ bool EPICSAnyValueManager::AddInputHandler(const std::string& input_server_name)
     {
       return false;
     }
-    std::unique_ptr<EPICSInputServer> input_server{new EPICSInputServer(input_server_name)};
+    auto input_server = std::make_unique<EPICSInputServer>(input_server_name);
     m_name_input_server_map[input_server_name] = input_server.get();
     m_input_servers.emplace_back(std::move(input_server));
   }
@@ -129,7 +129,7 @@ bool EPICSAnyValueManager::AddAnyValuesImpl(const NameAnyValueSet &name_value_se
     return false;
   }
   auto names = GetNames(name_value_set);
-  std::unique_ptr<EPICSServer> server{new EPICSServer(name_value_set)};
+  auto server = std::make_unique<EPICSServer>(name_value_set);
   for (const auto &name : names)
   {
     m_name_server_map[name] = server.get();

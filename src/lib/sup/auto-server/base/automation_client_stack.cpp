@@ -57,8 +57,8 @@ AutomationClientStack::AutomationClientStack(
       "AutomationClientStack ctor: trying to construct a client stack with an empty protocol";
     throw InvalidOperationException(error);
   }
-  m_impl.reset(new AutomationClientStackImpl{std::move(info_protocol),
-                                             std::move(control_protocol)});
+  m_impl = std::make_unique<AutomationClientStackImpl>(std::move(info_protocol),
+                                                       std::move(control_protocol));
 }
 
 AutomationClientStack::~AutomationClientStack() = default;
