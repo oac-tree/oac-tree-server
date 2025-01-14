@@ -67,7 +67,7 @@ protected:
 
   bool WaitForValue(const sup::dto::AnyValue& value, double seconds)
   {
-    auto duration = std::chrono::nanoseconds(std::lround(seconds * 1e9));
+    auto duration = std::chrono::duration<double>(seconds);
     std::unique_lock<std::mutex> lk{m_mtx};
     auto pred = [this, value](){
       return m_value_cache == value;

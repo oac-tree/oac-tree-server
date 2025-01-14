@@ -117,7 +117,7 @@ void TestJobInfoIO::NextInstructionsUpdated(const std::vector<sup::dto::uint32>&
 
 bool TestJobInfoIO::WaitFor(std::function<bool()> pred, double seconds)
 {
-  auto duration = std::chrono::nanoseconds(std::lround(seconds * 1e9));
+  auto duration = std::chrono::duration<double>(seconds);
   std::unique_lock<std::mutex> lk{m_mtx};
   return m_cv.wait_for(lk, duration, pred);
 }
@@ -249,7 +249,7 @@ sup::dto::uint32 TestAnyValueManager::GetSize() const
 bool TestAnyValueManager::WaitForValue(const std::string& name, const sup::dto::AnyValue& value,
                                        double seconds) const
 {
-  auto duration = std::chrono::nanoseconds(std::lround(seconds * 1e9));
+  auto duration = std::chrono::duration<double>(seconds);
   std::unique_lock<std::mutex> lk{m_mtx};
   auto pred = [this, name, value](){
     return GetAnyValueImpl(name) == value;
@@ -266,7 +266,7 @@ void TestAnyValueManager::SetUserInputReply(const UserInputReply& reply)
 bool TestAnyValueManager::WaitForInputRequest(const UserInputRequest& request,
                                               double seconds) const
 {
-  auto duration = std::chrono::nanoseconds(std::lround(seconds * 1e9));
+  auto duration = std::chrono::duration<double>(seconds);
   std::unique_lock<std::mutex> lk{m_mtx};
   auto pred = [this, request](){
     if (m_input_requests.size() == 0)

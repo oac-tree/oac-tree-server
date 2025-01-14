@@ -171,7 +171,7 @@ void ClientReplyDelegatorTest::Interrupt(sup::dto::uint64 id)
 
 bool ClientReplyDelegatorTest::WaitForReply(const UserInputReply& reply, double seconds) const
 {
-  auto duration = std::chrono::nanoseconds(std::lround(seconds * 1e9));
+  auto duration = std::chrono::duration<double>(seconds);
   std::unique_lock<std::mutex> lk{m_mtx};
   auto pred = [this, reply](){
     return m_reply == reply;
@@ -181,7 +181,7 @@ bool ClientReplyDelegatorTest::WaitForReply(const UserInputReply& reply, double 
 
 bool ClientReplyDelegatorTest::WaitForId(sup::dto::uint64 id, double seconds) const
 {
-  auto duration = std::chrono::nanoseconds(std::lround(seconds * 1e9));
+  auto duration = std::chrono::duration<double>(seconds);
   std::unique_lock<std::mutex> lk{m_mtx};
   auto pred = [this, id](){
     return m_id == id;
@@ -191,7 +191,7 @@ bool ClientReplyDelegatorTest::WaitForId(sup::dto::uint64 id, double seconds) co
 
 bool ClientReplyDelegatorTest::Wait() const
 {
-  auto duration = std::chrono::nanoseconds(std::lround(m_timeout_sec * 1e9));
+  auto duration = std::chrono::duration<double>(m_timeout_sec);
   std::unique_lock<std::mutex> lk{m_mtx};
   auto pred = [this](){
     return m_id == 0;
