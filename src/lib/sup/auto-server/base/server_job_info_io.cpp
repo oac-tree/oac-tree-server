@@ -91,13 +91,13 @@ bool ServerJobInfoIO::GetUserValue(sup::dto::uint64 id, sup::dto::AnyValue& valu
   auto input_request = sup::sequencer::CreateUserValueRequest(value, description);
   auto input_server_name = GetInputServerName(m_job_prefix);
   auto response = m_av_manager.GetUserInput(input_server_name, id, input_request);
-  auto parsed_reply = sup::sequencer::ParseUserValueReply(response);
-  if (!parsed_reply.first)
+  auto [parsed, reply] = sup::sequencer::ParseUserValueReply(response);
+  if (!parsed)
   {
     return false;
   }
   // Use TryAssign, since it is up to concrete Instructions to handle possible type mismatches:
-  if (!sup::dto::TryAssign(value, parsed_reply.second))
+  if (!sup::dto::TryAssign(value, reply))
   {
     return false;
   }
@@ -110,12 +110,12 @@ int ServerJobInfoIO::GetUserChoice(sup::dto::uint64 id, const std::vector<std::s
   auto input_request = sup::sequencer::CreateUserChoiceRequest(options, metadata);
   auto input_server_name = GetInputServerName(m_job_prefix);
   auto response = m_av_manager.GetUserInput(input_server_name, id, input_request);
-  auto parsed_reply = ParseUserChoiceReply(response);
-  if (!parsed_reply.first)
+  auto [parsed, reply] = ParseUserChoiceReply(response);
+  if (!parsed)
   {
     return -1;
   }
-  return parsed_reply.second;
+  return reply;
 }
 
 void ServerJobInfoIO::Interrupt(sup::dto::uint64 id)

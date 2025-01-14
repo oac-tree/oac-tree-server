@@ -88,19 +88,19 @@ TEST_F(EPICSAnyValueManagerTest, ServeAndUpdate)
   auto pv_callback = [this](const sup::epics::PvAccessClientPV::ExtendedValue& val) {
     if(val.connected)
     {
-      auto decoded = Base64DecodeAnyValue(val.value);
-      if (decoded.first)
+      auto [decoded, value] = Base64DecodeAnyValue(val.value);
+      if (decoded)
       {
-        OnUpdateValue(decoded.second);
+        OnUpdateValue(value);
       }
     }
   };
   sup::epics::PvAccessClientPV val0_pv{"val0", pv_callback};
   EXPECT_TRUE(val0_pv.WaitForValidValue(1.0));
   auto val0 = val0_pv.GetValue();
-  auto decoded0 = Base64DecodeAnyValue(val0);
-  ASSERT_TRUE(decoded0.first);
-  EXPECT_EQ(decoded0.second, scalar);
+  auto [decoded0, value0] = Base64DecodeAnyValue(val0);
+  ASSERT_TRUE(decoded0);
+  EXPECT_EQ(value0, scalar);
 
   // Update variable and wait for update to be published
   auto update_1 = scalar;
@@ -113,9 +113,9 @@ TEST_F(EPICSAnyValueManagerTest, ServeAndUpdate)
   sup::epics::PvAccessClientPV val2_pv{"val2", pv_callback};
   EXPECT_TRUE(val2_pv.WaitForValidValue(1.0));
   auto val2 = val2_pv.GetValue();
-  auto decoded2 = Base64DecodeAnyValue(val2);
-  ASSERT_TRUE(decoded2.first);
-  EXPECT_EQ(decoded2.second, scalar);
+  auto [decoded2, value2] = Base64DecodeAnyValue(val2);
+  ASSERT_TRUE(decoded2);
+  EXPECT_EQ(value2, scalar);
 
   // Update variable and wait for update to be published
   auto update_2 = scalar;

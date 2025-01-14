@@ -39,9 +39,9 @@ TEST_F(OutputEntriesTest, LogEntrySerialization)
   LogEntry original{ 42u, 1729, "hello"};
   auto av = EncodeLogEntry(original);
   EXPECT_TRUE(ValidateLogEntryAnyValue(av));
-  auto decoded = DecodeLogEntry(av);
-  ASSERT_TRUE(decoded.first);
-  EXPECT_EQ(decoded.second, original);
+  auto [decoded, log_entry] = DecodeLogEntry(av);
+  ASSERT_TRUE(decoded);
+  EXPECT_EQ(log_entry, original);
 }
 
 TEST_F(OutputEntriesTest, MessageEntrySerialization)
@@ -49,9 +49,9 @@ TEST_F(OutputEntriesTest, MessageEntrySerialization)
   MessageEntry original{ 42u, "hello"};
   auto av = EncodeMessageEntry(original);
   EXPECT_TRUE(ValidateMessageEntryAnyValue(av));
-  auto decoded = DecodeMessageEntry(av);
-  ASSERT_TRUE(decoded.first);
-  EXPECT_EQ(decoded.second, original);
+  auto [decoded, msg_entry] = DecodeMessageEntry(av);
+  ASSERT_TRUE(decoded);
+  EXPECT_EQ(msg_entry, original);
 }
 
 TEST_F(OutputEntriesTest, OutputValueEntrySerialization)
@@ -59,7 +59,7 @@ TEST_F(OutputEntriesTest, OutputValueEntrySerialization)
   OutputValueEntry original{ 42u, "hello", { sup::dto::BooleanType, true }};
   auto av = EncodeOutputValueEntry(original);
   EXPECT_TRUE(ValidateOutputValueEntryAnyValue(av));
-  auto decoded = DecodeOutputValueEntry(av);
-  ASSERT_TRUE(decoded.first);
-  EXPECT_EQ(decoded.second, original);
+  auto [decoded, out_entry] = DecodeOutputValueEntry(av);
+  ASSERT_TRUE(decoded);
+  EXPECT_EQ(out_entry, original);
 }

@@ -105,13 +105,13 @@ UserInputReply EPICSAnyValueManager::GetUserInput(const std::string& input_serve
   auto input_request = EncodeInputRequest(id, request);
   input_pv_server->UpdateAnyValue(input_request_name, input_request);
   // This will block until a reply is received or the request is interrupted:
-  auto result = input_server->WaitForReply(id);
+  auto [retrieved, value] = input_server->WaitForReply(id);
   input_pv_server->UpdateAnyValue(input_request_name, kInputRequestAnyValue);
-  if (!result.first)
+  if (!retrieved)
   {
     return sup::sequencer::kInvalidUserInputReply;
   }
-  return result.second;
+  return value;
 }
 
 void EPICSAnyValueManager::Interrupt(const std::string& input_server_name, sup::dto::uint64 id)

@@ -44,9 +44,9 @@ TEST_F(InputRequestServerTest, Construction)
   InputRequestServer server{};
 
   // Id zero will immediately return an invalid reply:
-  auto result = server.WaitForReply(0);
-  EXPECT_FALSE(result.first);
-  EXPECT_EQ(result.second, kInvalidUserInputReply);
+  auto [retrieved, value] = server.WaitForReply(0);
+  EXPECT_FALSE(retrieved);
+  EXPECT_EQ(value, kInvalidUserInputReply);
 
   // Setting the client reply fails for zero index, index that is not correct and invalid replies:
   UserInputReply reply{ InputRequestType::kUserChoice, true, { sup::dto::SignedInteger32Type, 0 }};
@@ -67,9 +67,9 @@ TEST_F(InputRequestServerTest, SingleThreaded)
   // second set reply fails:
   EXPECT_FALSE(server.SetClientReply(1u, reply));
   // now there is a reply available:
-  auto result = server.WaitForReply(1u);
-  EXPECT_TRUE(result.first);
-  EXPECT_EQ(result.second, reply);
+  auto [retrieved1, value1] = server.WaitForReply(1u);
+  EXPECT_TRUE(retrieved1);
+  EXPECT_EQ(value1, reply);
 
   // Test 'forgotten' request
   server.InitNewRequest(2u);
@@ -78,9 +78,9 @@ TEST_F(InputRequestServerTest, SingleThreaded)
   EXPECT_FALSE(server.SetClientReply(2u, reply));
   // Only this will succeed:
   EXPECT_TRUE(server.SetClientReply(3u, reply));
-  result = server.WaitForReply(3u);
-  EXPECT_TRUE(result.first);
-  EXPECT_EQ(result.second, reply);
+  auto [retrieved2, value2] = server.WaitForReply(3u);
+  EXPECT_TRUE(retrieved2);
+  EXPECT_EQ(value2, reply);
 
   // Test interrupted
   server.InitNewRequest(4u);
@@ -88,9 +88,9 @@ TEST_F(InputRequestServerTest, SingleThreaded)
   server.Interrupt(3u);
   // Interrupting the current request makes an invalid reply available:
   server.Interrupt(4u);
-  result = server.WaitForReply(4u);
-  EXPECT_FALSE(result.first);
-  EXPECT_EQ(result.second, kInvalidUserInputReply);
+  auto [retrieved3, value3] = server.WaitForReply(4u);
+  EXPECT_FALSE(retrieved3);
+  EXPECT_EQ(value3, kInvalidUserInputReply);
 }
 
 TEST_F(InputRequestServerTest, MultiThreaded)
@@ -112,9 +112,9 @@ TEST_F(InputRequestServerTest, MultiThreaded)
     server.InitNewRequest(1u);
     auto client_thread = std::async(std::launch::async, reply_setter);
     ready_future.get();
-    auto result = server.WaitForReply(1u);
-    EXPECT_TRUE(result.first);
-    EXPECT_EQ(result.second, reply);
+    auto [retrieved, value] = server.WaitForReply(1u);
+    EXPECT_TRUE(retrieved);
+    EXPECT_EQ(value, reply);
   }
   {
     // Interrupting the request from a different thread makes an invalid reply available
@@ -131,8 +131,8 @@ TEST_F(InputRequestServerTest, MultiThreaded)
     server.InitNewRequest(2u);
     auto client_thread = std::async(std::launch::async, interrupt_setter);
     ready_future.get();
-    auto result = server.WaitForReply(2u);
-    EXPECT_FALSE(result.first);
-    EXPECT_EQ(result.second, kInvalidUserInputReply);
+    auto [retrieved, value] = server.WaitForReply(2u);
+    EXPECT_FALSE(retrieved);
+    EXPECT_EQ(value, kInvalidUserInputReply);
   }
 }

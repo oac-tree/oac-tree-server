@@ -124,10 +124,10 @@ bool EPICSIOClientImpl::AddInputHandler(const std::string& input_server_name)
   auto cb = [this, input_server_name](const PvAccessClientPV::ExtendedValue& ext_val) {
     if (ext_val.connected)
     {
-      auto decoded = Base64DecodeAnyValue(ext_val.value);
-      if (decoded.first)
+      auto [decoded, value] = Base64DecodeAnyValue(ext_val.value);
+      if (decoded)
       {
-        HandleUserInput(input_server_name, decoded.second);
+        HandleUserInput(input_server_name, value);
       }
     }
   };
@@ -141,10 +141,10 @@ void EPICSIOClientImpl::AddMonitorPV(const std::string& channel)
   auto cb = [this, channel](const PvAccessClientPV::ExtendedValue& ext_val) {
     if (ext_val.connected)
     {
-      auto decoded = Base64DecodeAnyValue(ext_val.value);
-      if (decoded.first)
+      auto [decoded, value] = Base64DecodeAnyValue(ext_val.value);
+      if (decoded)
       {
-        m_av_mgr.UpdateAnyValue(channel, decoded.second);
+        m_av_mgr.UpdateAnyValue(channel, value);
       }
     }
   };

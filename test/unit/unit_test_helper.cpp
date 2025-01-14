@@ -180,9 +180,9 @@ bool TestAnyValueManager::AddAnyValues(const NameAnyValueSet& name_value_set)
         return false;
       }
     }
-    for (const auto& name_value_pair : name_value_set)
+    for (const auto& [name, value] : name_value_set)
     {
-      m_value_map[name_value_pair.first] = name_value_pair.second;
+      m_value_map[name] = value;
     }
   }
   m_cv.notify_one();
@@ -302,10 +302,10 @@ sup::dto::AnyValue TestAnyValueManager::GetAnyValueImpl(const std::string& name)
 
 std::ostream& operator<<(std::ostream& stream, const TestAnyValueManager& server_if)
 {
-  for (const auto& name_value_pair : server_if.m_value_map)
+  for (const auto& [name, value] : server_if.m_value_map)
   {
-    stream << name_value_pair.first << std::endl;
-    stream << sup::dto::PrintAnyValue(name_value_pair.second);
+    stream << name << std::endl;
+    stream << sup::dto::PrintAnyValue(value);
     stream << std::endl << std::endl;
   }
   return stream;

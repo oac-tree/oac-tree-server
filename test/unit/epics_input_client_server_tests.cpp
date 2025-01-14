@@ -46,9 +46,9 @@ TEST_F(EPICSInputClientServerTest, SingleThreaded)
   sup::dto::uint64 id{77};
   server.InitNewRequest(id);
   client.SetClientReply(id, reply);
-  auto reply_at_server = server.WaitForReply(id);
-  EXPECT_TRUE(reply_at_server.first);
-  EXPECT_EQ(reply_at_server.second, reply);
+  auto [retrieved, value] = server.WaitForReply(id);
+  EXPECT_TRUE(retrieved);
+  EXPECT_EQ(value, reply);
 }
 
 TEST_F(EPICSInputClientServerTest, MultiThreaded)
@@ -63,9 +63,9 @@ TEST_F(EPICSInputClientServerTest, MultiThreaded)
     client.SetClientReply(id, reply);
   };
   auto client_future = std::async(std::launch::async, client_func);
-  auto reply_at_server = server.WaitForReply(id);
-  EXPECT_TRUE(reply_at_server.first);
-  EXPECT_EQ(reply_at_server.second, reply);
+  auto [retrieved, value] = server.WaitForReply(id);
+  EXPECT_TRUE(retrieved);
+  EXPECT_EQ(value, reply);
 }
 
 TEST_F(EPICSInputClientServerTest, MultiThreadedInterrupted)
@@ -85,8 +85,8 @@ TEST_F(EPICSInputClientServerTest, MultiThreadedInterrupted)
   };
   auto client_future = std::async(std::launch::async, client_func);
   server.Interrupt(id);
-  auto reply_at_server = server.WaitForReply(id);
-  EXPECT_FALSE(reply_at_server.first);
-  EXPECT_EQ(reply_at_server.second, sup::sequencer::kInvalidUserInputReply);
+  auto [retrieved, value] = server.WaitForReply(id);
+  EXPECT_FALSE(retrieved);
+  EXPECT_EQ(value, sup::sequencer::kInvalidUserInputReply);
   halt.store(true);
 }

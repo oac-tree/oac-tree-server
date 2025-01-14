@@ -246,15 +246,15 @@ ValueNameInfo ParseValueName(const std::string& val_name)
     { kNextInstructionsId, ValueNameType::kNextInstructions }
   };
   ValueNameInfo unknown{ ValueNameType::kUnknown, 0 };
-  for (const auto& postfix_type : postfixes)
+  for (const auto& [postfix, postfix_type] : postfixes)
   {
-    if (EndsWith(val_name, postfix_type.first))
+    if (EndsWith(val_name, postfix))
     {
-      if (val_name.size() == postfix_type.first.size())
+      if (val_name.size() == postfix.size())
       {
         return unknown;
       }
-      return { postfix_type.second, 0 };
+      return { postfix_type, 0 };
     }
   }
   auto pos = val_name.find_last_of("-");
@@ -320,21 +320,21 @@ sup::protocol::ProtocolResult ExtractInstructionIndex(
 
 sup::dto::AnyValue Base64EncodeAnyValue(const sup::dto::AnyValue& value)
 {
-  auto encoded = sup::protocol::Base64VariableCodec::Encode(value);
-  if (!encoded.first)
+  auto [encoded, base64value] = sup::protocol::Base64VariableCodec::Encode(value);
+  if (!encoded)
   {
     const std::string error = "Base64EncodeAnyValue(): could not base64 encode an AnyValue";
     throw InvalidOperationException(error);
   }
-  return encoded.second;
+  return base64value;
 }
 
 std::pair<bool, sup::dto::AnyValue> Base64DecodeAnyValue(const sup::dto::AnyValue& value)
 {
-  auto decoded = sup::protocol::Base64VariableCodec::Decode(value);
-  if (decoded.first)
+  auto [decoded, anyvalue] = sup::protocol::Base64VariableCodec::Decode(value);
+  if (decoded)
   {
-    return { true, decoded.second };
+    return { true, anyvalue };
   }
   return { false, {} };
 }

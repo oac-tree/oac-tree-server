@@ -48,9 +48,9 @@ TEST_F(InputProtocolClientServerTest, SingleThreaded)
   sup::dto::uint64 id{77};
   m_server.InitNewRequest(id);
   m_client.SetClientReply(id, reply);
-  auto reply_at_server = m_server.WaitForReply(id);
-  EXPECT_TRUE(reply_at_server.first);
-  EXPECT_EQ(reply_at_server.second, reply);
+  auto [retrieved, value] = m_server.WaitForReply(id);
+  EXPECT_TRUE(retrieved);
+  EXPECT_EQ(value, reply);
 }
 
 TEST_F(InputProtocolClientServerTest, MultiThreaded)
@@ -62,9 +62,9 @@ TEST_F(InputProtocolClientServerTest, MultiThreaded)
     m_client.SetClientReply(id, reply);
   };
   auto client_future = std::async(std::launch::async, client_func);
-  auto reply_at_server = m_server.WaitForReply(id);
-  EXPECT_TRUE(reply_at_server.first);
-  EXPECT_EQ(reply_at_server.second, reply);
+  auto [retrieved, value] = m_server.WaitForReply(id);
+  EXPECT_TRUE(retrieved);
+  EXPECT_EQ(value, reply);
 }
 
 TEST_F(InputProtocolClientServerTest, MultiThreadedInterrupted)
@@ -81,9 +81,9 @@ TEST_F(InputProtocolClientServerTest, MultiThreadedInterrupted)
   };
   auto client_future = std::async(std::launch::async, client_func);
   m_server.Interrupt(id);
-  auto reply_at_server = m_server.WaitForReply(id);
-  EXPECT_FALSE(reply_at_server.first);
-  EXPECT_EQ(reply_at_server.second, sup::sequencer::kInvalidUserInputReply);
+  auto [retrieved, value] = m_server.WaitForReply(id);
+  EXPECT_FALSE(retrieved);
+  EXPECT_EQ(value, sup::sequencer::kInvalidUserInputReply);
   halt.store(true);
 }
 

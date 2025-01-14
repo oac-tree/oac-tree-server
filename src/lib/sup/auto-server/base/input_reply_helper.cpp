@@ -59,12 +59,11 @@ std::tuple<bool, sup::dto::uint64, UserInputReply> DecodeInputReply(
 {
   const std::tuple<bool, sup::dto::uint64, UserInputReply> failure{ false, 0,
                                                                     kInvalidUserInputReply };
-  auto decoded = Base64DecodeAnyValue(encoded);
-  if (!decoded.first)
+  auto [decoded, payload] = Base64DecodeAnyValue(encoded);
+  if (!decoded)
   {
     return failure;
   }
-  auto& payload = decoded.second;
   if (!ValidateInputReplyPayload(payload))
   {
     return failure;

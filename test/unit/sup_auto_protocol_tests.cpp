@@ -296,7 +296,7 @@ TEST_F(SupAutoProtocolTest, ParseValueName)
 TEST_F(SupAutoProtocolTest, DecodeNextInstructions)
 {
   auto next_instr_av = kNextInstructionsAnyValue;
-  auto decoded = DecodeNextInstructionIndices(next_instr_av);
-  EXPECT_TRUE(decoded.first);
-  EXPECT_EQ(decoded.second.size(), 0);
+  auto [decoded, next_instr] = DecodeNextInstructionIndices(next_instr_av);
+  EXPECT_TRUE(decoded);
+  EXPECT_EQ(next_instr.size(), 0);
 }

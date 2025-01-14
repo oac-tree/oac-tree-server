@@ -60,21 +60,20 @@ ClientAnyValueManager::~ClientAnyValueManager() = default;
 bool ClientAnyValueManager::AddAnyValues(const NameAnyValueSet& name_value_set)
 {
   sup::dto::uint32 n_instr = 0;
-  for (auto& name_value_pair : name_value_set)
+  for (auto& [name, value] : name_value_set)
   {
-    auto& value_name = name_value_pair.first;
-    if (m_cb_map.find(value_name) != m_cb_map.end())
+    if (m_cb_map.find(name) != m_cb_map.end())
     {
       return false;
     }
-    auto value_name_info = ParseValueName(value_name);
+    auto value_name_info = ParseValueName(name);
     if (value_name_info.val_type == ValueNameType::kInstruction)
     {
       ++n_instr;
     }
     auto cb = CreateCallback(value_name_info);
-    cb(m_job_info_io, name_value_pair.second);
-    m_cb_map[value_name] = cb;
+    cb(m_job_info_io, value);
+    m_cb_map[name] = cb;
   }
   if (n_instr > 0)
   {
@@ -218,12 +217,12 @@ void UpdateInstructionState(IJobInfoIO& job_info_io, sup::dto::uint32 instr_idx,
 void UpdateVariableState(IJobInfoIO& job_info_io, sup::dto::uint32 var_idx,
                         const sup::dto::AnyValue& anyvalue)
 {
-  auto var_state = DecodeVariableState(anyvalue);
-  if (sup::dto::IsEmptyValue(var_state.first))
+  auto [value, state] = DecodeVariableState(anyvalue);
+  if (sup::dto::IsEmptyValue(value))
   {
     return;
   }
-  job_info_io.VariableUpdated(var_idx, var_state.first, var_state.second);
+  job_info_io.VariableUpdated(var_idx, value, state);
 }
 
 void UpdateLogEntry(IJobInfoIO& job_info_io, const sup::dto::AnyValue& anyvalue)
@@ -232,10 +231,9 @@ void UpdateLogEntry(IJobInfoIO& job_info_io, const sup::dto::AnyValue& anyvalue)
   {
     return;
   }
-  auto decoded = DecodeLogEntry(anyvalue);
-  if (decoded.first)
+  auto [valid, log_entry] = DecodeLogEntry(anyvalue);
+  if (valid)
   {
-    const auto& log_entry = decoded.second;
     job_info_io.Log(log_entry.m_severity, log_entry.m_message);
   }
 }
@@ -246,10 +244,9 @@ void UpdateMessageEntry(IJobInfoIO& job_info_io, const sup::dto::AnyValue& anyva
   {
     return;
   }
-  auto decoded = DecodeMessageEntry(anyvalue);
-  if (decoded.first)
+  auto [valid, msg_entry] = DecodeMessageEntry(anyvalue);
+  if (valid)
   {
-    const auto& msg_entry = decoded.second;
     job_info_io.Message(msg_entry.m_message);
   }
 }
@@ -260,20 +257,18 @@ void UpdateOutputValueEntry(IJobInfoIO& job_info_io, const sup::dto::AnyValue& a
   {
     return;
   }
-  auto decoded = DecodeOutputValueEntry(anyvalue);
-  if (decoded.first)
+  auto [decoded, output_entry] = DecodeOutputValueEntry(anyvalue);
+  if (decoded)
   {
-    const auto& output_entry = decoded.second;
     job_info_io.PutValue(output_entry.m_value, output_entry.m_description);
   }
 }
 
 void UpdateNextInstructions(IJobInfoIO& job_info_io, const sup::dto::AnyValue& anyvalue)
 {
-  auto decoded = DecodeNextInstructionIndices(anyvalue);
-  if (decoded.first)
+  auto [decoded, next_instr] = DecodeNextInstructionIndices(anyvalue);
+  if (decoded)
   {
-    const auto& next_instr = decoded.second;
     job_info_io.NextInstructionsUpdated(next_instr);
   }
 }

@@ -51,10 +51,9 @@ void EPICSServer::UpdateAnyValue(const std::string& name, const sup::dto::AnyVal
 void EPICSServer::UpdateLoop(const IAnyValueIO::NameAnyValueSet& name_value_set)
 {
   sup::epics::PvAccessServer server;
-  for (const auto& name_value_pair : name_value_set)
+  for (const auto& [name, value] : name_value_set)
   {
-    const auto value = Base64EncodeAnyValue(name_value_pair.second);
-    server.AddVariable(name_value_pair.first, value);
+    server.AddVariable(name, Base64EncodeAnyValue(value));
   }
   server.Start();
   bool exit = false;
