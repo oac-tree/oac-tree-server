@@ -109,14 +109,9 @@ bool EPICSIOClientImpl::AddInputHandler(const std::string& input_server_name)
     return false;
   }
   m_input_client = std::make_unique<EPICSInputClient>(input_server_name);
-  auto reply_func = [this](sup::dto::uint64 id, const UserInputReply& reply)
-  {
-    m_input_client->SetClientReply(id, reply);
-  };
-  auto interrupt_func = [this, input_server_name](sup::dto::uint64 id)
-  {
-    m_av_mgr.Interrupt(input_server_name, id);
-  };
+  auto reply_func = std::bind(&EPICSInputClient::SetClientReply, m_input_client.get(), _1, _2);
+  auto interrupt_func = std::bind(&IAnyValueManager::Interrupt, std::addressof(m_av_mgr),
+                                  input_server_name, _1);
   m_reply_delegator = std::make_unique<ClientReplyDelegator>(reply_func, interrupt_func);
   auto input_request_pv_name = GetInputRequestPVName(input_server_name);
   IAnyValueIO::NameAnyValueSet input_pv_set;
