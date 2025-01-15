@@ -21,9 +21,6 @@
 
 #include <sup/auto-server/input_request_server.h>
 
-#include <chrono>
-#include <cmath>
-
 namespace
 {
 bool IsValid(const sup::sequencer::UserInputReply& reply);

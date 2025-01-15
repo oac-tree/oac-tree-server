@@ -25,7 +25,7 @@
 #include <sup/epics/pv_access_client_pv.h>
 
 #include <chrono>
-#include <cmath>
+#include <condition_variable>
 
 #include <gtest/gtest.h>
 

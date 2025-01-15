@@ -25,7 +25,6 @@
 #include <sup/sequencer/sequence_parser.h>
 
 #include <chrono>
-#include <cmath>
 #include <fstream>
 #include <iostream>
 

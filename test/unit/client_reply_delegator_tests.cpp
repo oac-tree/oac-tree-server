@@ -25,7 +25,6 @@
 
 #include <gtest/gtest.h>
 
-#include <cmath>
 #include <functional>
 
 using namespace sup::auto_server;
