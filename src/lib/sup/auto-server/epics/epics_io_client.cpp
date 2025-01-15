@@ -56,9 +56,10 @@ private:
   void HandleUserInput(const std::string& input_server_name, const sup::dto::AnyValue& req_av);
 
   IAnyValueManager& m_av_mgr;
-  std::vector<sup::epics::PvAccessClientPV> m_client_pvs;
   std::unique_ptr<EPICSInputClient> m_input_client;
   std::unique_ptr<ClientReplyDelegator> m_reply_delegator;
+  // Order matters: destroy these client PVs before the objects that are involved in callbacks:
+  std::vector<sup::epics::PvAccessClientPV> m_client_pvs;
 };
 
 EPICSIOClient::EPICSIOClient(IAnyValueManager& av_mgr)
@@ -80,9 +81,9 @@ bool EPICSIOClient::AddInputHandler(const std::string& input_server_name)
 
 EPICSIOClientImpl::EPICSIOClientImpl(IAnyValueManager& av_mgr)
   : m_av_mgr{av_mgr}
-  , m_client_pvs{}
   , m_input_client{}
   , m_reply_delegator{}
+  , m_client_pvs{}
 {}
 
 EPICSIOClientImpl::~EPICSIOClientImpl() = default;
