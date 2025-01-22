@@ -28,13 +28,13 @@
 #include <sup/auto-server/sup_auto_protocol.h>
 
 #include <sup/dto/anyvalue_helper.h>
-#include <sup/sequencer/user_input_reply.h>
+#include <sup/oac-tree/user_input_reply.h>
 
 namespace sup
 {
 namespace auto_server
 {
-using sup::sequencer::InstructionState;
+using sup::oac_tree::InstructionState;
 
 ServerJobInfoIO::ServerJobInfoIO(const std::string& job_prefix, sup::dto::uint32 n_vars,
                                  IAnyValueManager& av_manager)
@@ -70,7 +70,7 @@ void ServerJobInfoIO::VariableUpdated(sup::dto::uint32 var_idx, const sup::dto::
   m_av_manager.UpdateAnyValue(var_val_name, var_info);
 }
 
-void ServerJobInfoIO::JobStateUpdated(sup::sequencer::JobState state)
+void ServerJobInfoIO::JobStateUpdated(sup::oac_tree::JobState state)
 {
   auto job_state_name = GetJobStatePVName(m_job_prefix);
   auto job_state_value = GetJobStateValue(state);
@@ -88,10 +88,10 @@ void ServerJobInfoIO::PutValue(const sup::dto::AnyValue& value, const std::strin
 bool ServerJobInfoIO::GetUserValue(sup::dto::uint64 id, sup::dto::AnyValue& value,
                                    const std::string& description)
 {
-  auto input_request = sup::sequencer::CreateUserValueRequest(value, description);
+  auto input_request = sup::oac_tree::CreateUserValueRequest(value, description);
   auto input_server_name = GetInputServerName(m_job_prefix);
   auto response = m_av_manager.GetUserInput(input_server_name, id, input_request);
-  auto [parsed, reply] = sup::sequencer::ParseUserValueReply(response);
+  auto [parsed, reply] = sup::oac_tree::ParseUserValueReply(response);
   if (!parsed)
   {
     return false;
@@ -107,7 +107,7 @@ bool ServerJobInfoIO::GetUserValue(sup::dto::uint64 id, sup::dto::AnyValue& valu
 int ServerJobInfoIO::GetUserChoice(sup::dto::uint64 id, const std::vector<std::string>& options,
                                    const sup::dto::AnyValue& metadata)
 {
-  auto input_request = sup::sequencer::CreateUserChoiceRequest(options, metadata);
+  auto input_request = sup::oac_tree::CreateUserChoiceRequest(options, metadata);
   auto input_server_name = GetInputServerName(m_job_prefix);
   auto response = m_av_manager.GetUserInput(input_server_name, id, input_request);
   auto [parsed, reply] = ParseUserChoiceReply(response);

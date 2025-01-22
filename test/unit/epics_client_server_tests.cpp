@@ -31,7 +31,7 @@
 #include <sup/epics/epics_protocol_factory.h>
 #include <sup/epics/pv_access_rpc_client.h>
 #include <sup/protocol/protocol_rpc.h>
-#include <sup/sequencer/user_input_request.h>
+#include <sup/oac-tree/user_input_request.h>
 
 #include <gtest/gtest.h>
 
@@ -136,10 +136,10 @@ TEST_F(EPICSClientServerTest, GetUserInput)
 
   // Get user input over the network
   sup::dto::AnyValue value{ sup::dto::UnsignedInteger64Type, 42u };
-  auto user_reply = sup::sequencer::CreateUserValueReply(true, value);
+  auto user_reply = sup::oac_tree::CreateUserValueReply(true, value);
   m_test_av_manager.SetUserInputReply(user_reply);
   sup::dto::AnyValue empty{};
-  auto input_request = sup::sequencer::CreateUserValueRequest(empty, "Provide a value");
+  auto input_request = sup::oac_tree::CreateUserValueRequest(empty, "Provide a value");
   auto reply_received = m_epics_av_manager.GetUserInput(input_server_name, 1u, input_request);
   EXPECT_EQ(reply_received, user_reply);
   EXPECT_EQ(m_test_av_manager.GetNbrInputRequests(), 1);

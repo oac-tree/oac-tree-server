@@ -23,15 +23,15 @@
 #include <sup/auto-server/sup_auto_protocol.h>
 #include <sup/auto-server/exceptions.h>
 
-#include <sup/sequencer/anyvalue_utils.h>
-#include <sup/sequencer/constants.h>
+#include <sup/oac-tree/anyvalue_utils.h>
+#include <sup/oac-tree/constants.h>
 
 namespace sup
 {
 namespace auto_server
 {
-using sup::sequencer::utils::ValidateMemberType;
-using sup::sequencer::Constants::kIndexField;
+using sup::oac_tree::utils::ValidateMemberType;
+using sup::oac_tree::Constants::kIndexField;
 
 bool ValidateLogEntryAnyValue(const sup::dto::AnyValue& anyvalue)
 {

@@ -25,7 +25,7 @@
 #include <sup/auto-server/i_anyvalue_manager_registry.h>
 #include <sup/auto-server/i_job_manager.h>
 
-#include <sup/sequencer/local_job.h>
+#include <sup/oac-tree/local_job.h>
 
 #include <memory>
 #include <mutex>
@@ -50,28 +50,28 @@ public:
   AutomationServer(const std::string& server_prefix, IAnyValueManagerRegistry& av_mgr_registry);
   virtual ~AutomationServer();
 
-  void AddJob(std::unique_ptr<sup::sequencer::Procedure> proc);
+  void AddJob(std::unique_ptr<sup::oac_tree::Procedure> proc);
 
   std::string GetServerPrefix() const override;
   sup::dto::uint32 GetNumberOfJobs() const override;
 
-  sup::sequencer::JobInfo GetJobInfo(sup::dto::uint32 job_idx) const override;
+  sup::oac_tree::JobInfo GetJobInfo(sup::dto::uint32 job_idx) const override;
 
   void EditBreakpoint(sup::dto::uint32 job_idx, sup::dto::uint32 instr_idx, bool breakpoint_active) override;
 
-  void SendJobCommand(sup::dto::uint32 job_idx, sup::sequencer::JobCommand command) override;
+  void SendJobCommand(sup::dto::uint32 job_idx, sup::oac_tree::JobCommand command) override;
 
 private:
-  sup::sequencer::LocalJob& GetJob(sup::dto::uint32 job_idx);
-  const sup::sequencer::LocalJob& GetJob(sup::dto::uint32 job_idx) const;
+  sup::oac_tree::LocalJob& GetJob(sup::dto::uint32 job_idx);
+  const sup::oac_tree::LocalJob& GetJob(sup::dto::uint32 job_idx) const;
   const std::string m_server_prefix;
   IAnyValueManagerRegistry& m_av_mgr_registry;
-  std::vector<std::unique_ptr<sup::sequencer::IJobInfoIO>> m_job_info_ios;
-  std::vector<sup::sequencer::LocalJob> m_jobs;
+  std::vector<std::unique_ptr<sup::oac_tree::IJobInfoIO>> m_job_info_ios;
+  std::vector<sup::oac_tree::LocalJob> m_jobs;
   mutable std::mutex m_mtx;
 };
 
-sup::dto::uint32 GetNumberOfVariables(const sup::sequencer::Procedure& proc);
+sup::dto::uint32 GetNumberOfVariables(const sup::oac_tree::Procedure& proc);
 
 }  // namespace auto_server
 

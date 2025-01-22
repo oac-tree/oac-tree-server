@@ -42,7 +42,7 @@ TEST_F(EPICSInputClientServerTest, SingleThreaded)
   const std::string server_name = "EPICSInputClientServer_Tests::SingleThreaded";
   auto server = EPICSInputServer{server_name};
   auto client = EPICSInputClient{server_name};
-  auto reply = sup::sequencer::CreateUserChoiceReply(true, 42);
+  auto reply = sup::oac_tree::CreateUserChoiceReply(true, 42);
   sup::dto::uint64 id{77};
   server.InitNewRequest(id);
   client.SetClientReply(id, reply);
@@ -56,7 +56,7 @@ TEST_F(EPICSInputClientServerTest, MultiThreaded)
   const std::string server_name = "EPICSInputClientServer_Tests::MultiThreaded";
   auto server = EPICSInputServer{server_name};
   auto client = EPICSInputClient{server_name};
-  auto reply = sup::sequencer::CreateUserChoiceReply(true, 42);
+  auto reply = sup::oac_tree::CreateUserChoiceReply(true, 42);
   sup::dto::uint64 id{77};
   server.InitNewRequest(id);
   auto client_func = [&client, id, reply]() {
@@ -73,7 +73,7 @@ TEST_F(EPICSInputClientServerTest, MultiThreadedInterrupted)
   const std::string server_name = "EPICSInputClientServer_Tests::MultiThreadedInterrupted";
   auto server = EPICSInputServer{server_name};
   auto client = EPICSInputClient{server_name};
-  auto reply = sup::sequencer::CreateUserChoiceReply(true, 42);
+  auto reply = sup::oac_tree::CreateUserChoiceReply(true, 42);
   sup::dto::uint64 id{77};
   server.InitNewRequest(id);
   std::atomic_bool halt{false};
@@ -87,6 +87,6 @@ TEST_F(EPICSInputClientServerTest, MultiThreadedInterrupted)
   server.Interrupt(id);
   auto [retrieved, value] = server.WaitForReply(id);
   EXPECT_FALSE(retrieved);
-  EXPECT_EQ(value, sup::sequencer::kInvalidUserInputReply);
+  EXPECT_EQ(value, sup::oac_tree::kInvalidUserInputReply);
   halt.store(true);
 }

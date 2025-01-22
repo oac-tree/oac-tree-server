@@ -24,14 +24,14 @@
 #include <sup/auto-server/server_job_info_io.h>
 #include <sup/auto-server/sup_auto_protocol.h>
 
-#include <sup/sequencer/procedure.h>
-#include <sup/sequencer/workspace.h>
+#include <sup/oac-tree/procedure.h>
+#include <sup/oac-tree/workspace.h>
 
 namespace sup
 {
 namespace auto_server
 {
-using sup::sequencer::LocalJob;
+using sup::oac_tree::LocalJob;
 
 AutomationServer::AutomationServer(const std::string& server_prefix,
                                    IAnyValueManagerRegistry& av_mgr_registry)
@@ -44,7 +44,7 @@ AutomationServer::AutomationServer(const std::string& server_prefix,
 
 AutomationServer::~AutomationServer() = default;
 
-void AutomationServer::AddJob(std::unique_ptr<sup::sequencer::Procedure> proc)
+void AutomationServer::AddJob(std::unique_ptr<sup::oac_tree::Procedure> proc)
 {
   std::lock_guard<std::mutex> lk{m_mtx};
   auto idx = m_jobs.size();
@@ -67,7 +67,7 @@ sup::dto::uint32 AutomationServer::GetNumberOfJobs() const
   return m_jobs.size();
 }
 
-sup::sequencer::JobInfo AutomationServer::GetJobInfo(sup::dto::uint32 job_idx) const
+sup::oac_tree::JobInfo AutomationServer::GetJobInfo(sup::dto::uint32 job_idx) const
 {
   auto& job = GetJob(job_idx);
   return job.GetInfo();
@@ -88,9 +88,9 @@ void AutomationServer::EditBreakpoint(sup::dto::uint32 job_idx, sup::dto::uint32
   return;
 }
 
-void AutomationServer::SendJobCommand(sup::dto::uint32 job_idx, sup::sequencer::JobCommand command)
+void AutomationServer::SendJobCommand(sup::dto::uint32 job_idx, sup::oac_tree::JobCommand command)
 {
-  using sup::sequencer::JobCommand;
+  using sup::oac_tree::JobCommand;
   auto& job = GetJob(job_idx);
   switch (command)
   {
@@ -135,7 +135,7 @@ const LocalJob& AutomationServer::GetJob(sup::dto::uint32 job_idx) const
   return m_jobs[job_idx];
 }
 
-sup::dto::uint32 GetNumberOfVariables(const sup::sequencer::Procedure& proc)
+sup::dto::uint32 GetNumberOfVariables(const sup::oac_tree::Procedure& proc)
 {
   const auto& ws = proc.GetWorkspace();
   auto var_names = ws.VariableNames();

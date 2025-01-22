@@ -31,7 +31,7 @@ using namespace sup::auto_server;
 
 const std::string kAutoServerName = "CTRL-SUP-AUTO:TEST-SERVER";
 
-sup::sequencer::IJobInfoIO& GetMyJobInfoIO();
+sup::oac_tree::IJobInfoIO& GetMyJobInfoIO();
 
 int main(int argc, char* argv[])
 {

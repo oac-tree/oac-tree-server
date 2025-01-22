@@ -47,12 +47,12 @@ TEST_F(SupAutoProtocolTest, JobStateValue)
   const std::string prefix = "Test_JobStateValue";
 
   // Construct procedure
-  auto job_state_value = GetJobStateValue(sup::sequencer::JobState::kFailed);
+  auto job_state_value = GetJobStateValue(sup::oac_tree::JobState::kFailed);
   EXPECT_EQ(job_state_value.GetType(), kJobStateAnyValue.GetType());
   EXPECT_EQ(job_state_value.GetTypeName(), kJobStateType);
   ASSERT_TRUE(job_state_value.HasField(kJobStateField));
   EXPECT_EQ(job_state_value[kJobStateField].As<sup::dto::uint32>(),
-            static_cast<sup::dto::uint32>(sup::sequencer::JobState::kFailed));
+            static_cast<sup::dto::uint32>(sup::oac_tree::JobState::kFailed));
 }
 
 TEST_F(SupAutoProtocolTest, EncodeVariableState)

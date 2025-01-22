@@ -28,9 +28,9 @@
 
 using namespace sup::auto_server;
 
-using sup::sequencer::kInvalidUserInputReply;
-using sup::sequencer::InputRequestType;
-using sup::sequencer::UserInputReply;
+using sup::oac_tree::kInvalidUserInputReply;
+using sup::oac_tree::InputRequestType;
+using sup::oac_tree::UserInputReply;
 
 class InputRequestServerTest : public ::testing::Test
 {

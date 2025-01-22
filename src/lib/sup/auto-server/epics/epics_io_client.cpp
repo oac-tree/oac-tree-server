@@ -28,7 +28,7 @@
 #include <sup/auto-server/sup_auto_protocol.h>
 
 #include <sup/epics/pv_access_client_pv.h>
-#include <sup/sequencer/user_input_request.h>
+#include <sup/oac-tree/user_input_request.h>
 
 #include <utility>
 #include <vector>
@@ -37,7 +37,7 @@ namespace sup
 {
 namespace auto_server
 {
-using sup::sequencer::UserInputRequest;
+using sup::oac_tree::UserInputRequest;
 using namespace std::placeholders;
 
 class EPICSIOClientImpl

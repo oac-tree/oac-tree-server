@@ -29,7 +29,7 @@
 namespace
 {
 sup::protocol::ProtocolResult ExtractJobCommand(const sup::dto::AnyValue& input,
-                                                sup::sequencer::JobCommand& command);
+                                                sup::oac_tree::JobCommand& command);
 }  // unnamed namespace
 
 namespace sup
@@ -107,7 +107,7 @@ sup::protocol::ProtocolResult ControlProtocolServer::SendJobCommand(
   {
     return result;
   }
-  sup::sequencer::JobCommand command{sup::sequencer::JobCommand::kStart};
+  sup::oac_tree::JobCommand command{sup::oac_tree::JobCommand::kStart};
   result = ExtractJobCommand(input, command);
   if (result != sup::protocol::Success)
   {
@@ -125,7 +125,7 @@ namespace
 {
 using namespace sup::auto_server;
 sup::protocol::ProtocolResult ExtractJobCommand(const sup::dto::AnyValue& input,
-                                                sup::sequencer::JobCommand& command)
+                                                sup::oac_tree::JobCommand& command)
 {
   sup::dto::AnyValue command_av;
   if (!sup::protocol::FunctionProtocolExtract(command_av, input, kJobCommandFieldName))
@@ -137,11 +137,11 @@ sup::protocol::ProtocolResult ExtractJobCommand(const sup::dto::AnyValue& input,
   {
     return sup::protocol::ServerProtocolDecodingError;
   }
-  if (command_int >= static_cast<sup::dto::uint32>(sup::sequencer::JobCommand::kTerminate))
+  if (command_int >= static_cast<sup::dto::uint32>(sup::oac_tree::JobCommand::kTerminate))
   {
     return UnknownJobCommand;
   }
-  command = static_cast<sup::sequencer::JobCommand>(command_int);
+  command = static_cast<sup::oac_tree::JobCommand>(command_int);
   return sup::protocol::Success;
 }
 

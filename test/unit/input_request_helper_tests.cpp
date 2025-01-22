@@ -26,8 +26,8 @@
 
 using namespace sup::auto_server;
 
-using sup::sequencer::InputRequestType;
-using sup::sequencer::kInvalidUserInputRequest;
+using sup::oac_tree::InputRequestType;
+using sup::oac_tree::kInvalidUserInputRequest;
 
 class InputRequestHelperTest : public ::testing::Test
 {
@@ -40,7 +40,7 @@ TEST_F(InputRequestHelperTest, EncodeInputRequest)
 {
   sup::dto::AnyValue value{ sup::dto::UnsignedInteger32Type, 42u };
   std::string description = "Give a number";
-  auto request = sup::sequencer::CreateUserValueRequest(value, description);
+  auto request = sup::oac_tree::CreateUserValueRequest(value, description);
 
   // Encode
   sup::dto::uint64 id = 32u;

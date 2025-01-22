@@ -24,13 +24,13 @@
 #include <sup/auto-server/output_entry_helper.h>
 #include <sup/auto-server/output_entry_types.h>
 
-#include <sup/sequencer/anyvalue_utils.h>
-#include <sup/sequencer/user_input_reply.h>
+#include <sup/oac-tree/anyvalue_utils.h>
+#include <sup/oac-tree/user_input_reply.h>
 
 namespace
 {
 using namespace sup::auto_server;
-using sup::sequencer::IJobInfoIO;
+using sup::oac_tree::IJobInfoIO;
 
 void UpdateJobState(IJobInfoIO& job_info_io, const sup::dto::AnyValue& anyvalue);
 void UpdateInstructionState(IJobInfoIO& job_info_io, sup::dto::uint32 instr_idx,
@@ -48,7 +48,7 @@ namespace sup
 namespace auto_server
 {
 
-using namespace sup::sequencer;
+using namespace sup::oac_tree;
 
 ClientAnyValueManager::ClientAnyValueManager(IJobInfoIO& job_info_io)
   : m_job_info_io{job_info_io}
@@ -189,13 +189,13 @@ namespace
 {
 void UpdateJobState(IJobInfoIO& job_info_io, const sup::dto::AnyValue& anyvalue)
 {
-  if (!sup::sequencer::utils::ValidateMemberType(anyvalue, kJobStateField,
+  if (!sup::oac_tree::utils::ValidateMemberType(anyvalue, kJobStateField,
                                                  sup::dto::UnsignedInteger32Type))
   {
     return;
   }
   auto job_state_int = anyvalue[kJobStateField].As<sup::dto::uint32>();
-  auto job_state = static_cast<sup::sequencer::JobState>(job_state_int);
+  auto job_state = static_cast<sup::oac_tree::JobState>(job_state_int);
   job_info_io.JobStateUpdated(job_state);
 }
 
@@ -204,7 +204,7 @@ void UpdateInstructionState(IJobInfoIO& job_info_io, sup::dto::uint32 instr_idx,
 {
   try
   {
-    auto instr_state = sup::sequencer::ToInstructionState(anyvalue);
+    auto instr_state = sup::oac_tree::ToInstructionState(anyvalue);
     job_info_io.InstructionStateUpdated(instr_idx, instr_state);
   }
   catch(const std::exception&)

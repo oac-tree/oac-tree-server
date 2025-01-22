@@ -25,10 +25,10 @@
 
 #include <sup/protocol/base64_variable_codec.h>
 #include <sup/protocol/function_protocol_extract.h>
-#include <sup/sequencer/anyvalue_utils.h>
-#include <sup/sequencer/constants.h>
-#include <sup/sequencer/execution_status.h>
-#include <sup/sequencer/job_states.h>
+#include <sup/oac-tree/anyvalue_utils.h>
+#include <sup/oac-tree/constants.h>
+#include <sup/oac-tree/execution_status.h>
+#include <sup/oac-tree/job_states.h>
 
 #include <limits>
 #include <map>
@@ -69,18 +69,18 @@ const sup::dto::AnyValue kInputRequestAnyValue = {{
 }, kInputRequestType };
 
 const sup::dto::AnyValue kLogEntryAnyValue = {{
-  { sup::sequencer::Constants::kIndexField, { sup::dto::UnsignedInteger64Type, 0 } },
+  { sup::oac_tree::Constants::kIndexField, { sup::dto::UnsignedInteger64Type, 0 } },
   { kSeverityField, { sup::dto::SignedInteger32Type, 0 } },
   { kMessageField, "" }
 }, kLogEntryType };
 
 const sup::dto::AnyValue kMessageEntryAnyValue = {{
-  { sup::sequencer::Constants::kIndexField, { sup::dto::UnsignedInteger64Type, 0 } },
+  { sup::oac_tree::Constants::kIndexField, { sup::dto::UnsignedInteger64Type, 0 } },
   { kMessageField, "" }
 }, kMessageEntryType };
 
 const sup::dto::AnyValue kOutputValueEntryAnyValue = {{
-  { sup::sequencer::Constants::kIndexField, { sup::dto::UnsignedInteger64Type, 0 } },
+  { sup::oac_tree::Constants::kIndexField, { sup::dto::UnsignedInteger64Type, 0 } },
   { kDescriptionField, "" },
   { kValueField, {} }
 }, kOutputValueEntryType };
@@ -89,7 +89,7 @@ const sup::dto::AnyValue kNextInstructionsAnyValue =
   sup::dto::AnyValue{0, sup::dto::UnsignedInteger32Type, kNextInstructionsType};
 
 const sup::dto::AnyValue kJobStateAnyValue = {{
-  { kJobStateField, static_cast<sup::dto::uint32>(sequencer::JobState::kInitial)}
+  { kJobStateField, static_cast<sup::dto::uint32>(oac_tree::JobState::kInitial)}
 }, kJobStateType };
 
 namespace status
@@ -186,7 +186,7 @@ std::string GetJobStatePVName(const std::string& prefix)
   return prefix + kJobStateId;
 }
 
-sup::dto::AnyValue GetJobStateValue(sequencer::JobState state)
+sup::dto::AnyValue GetJobStateValue(oac_tree::JobState state)
 {
   auto result = kJobStateAnyValue;
   result[kJobStateField] = static_cast<sup::dto::uint32>(state);
@@ -352,7 +352,7 @@ bool ValidateVariableAnyValue(const sup::dto::AnyValue& var_value)
   {
     return false;
   }
-  if (!sup::sequencer::utils::ValidateMemberType(var_value, kVariableConnectedField,
+  if (!sup::oac_tree::utils::ValidateMemberType(var_value, kVariableConnectedField,
                                                  sup::dto::BooleanType))
   {
     return false;

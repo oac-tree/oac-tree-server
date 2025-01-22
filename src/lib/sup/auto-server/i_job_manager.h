@@ -22,8 +22,8 @@
 #ifndef SUP_AUTO_SERVER_I_JOB_MANAGER_H_
 #define SUP_AUTO_SERVER_I_JOB_MANAGER_H_
 
-#include <sup/sequencer/job_commands.h>
-#include <sup/sequencer/job_info.h>
+#include <sup/oac-tree/job_commands.h>
+#include <sup/oac-tree/job_info.h>
 
 #include <string>
 
@@ -64,7 +64,7 @@ public:
    * @param job_idx Index that identifies a single job.
    * @return JobInfo object for the requested job.
    */
-  virtual sup::sequencer::JobInfo GetJobInfo(sup::dto::uint32 job_idx) const = 0;
+  virtual sup::oac_tree::JobInfo GetJobInfo(sup::dto::uint32 job_idx) const = 0;
 
   /**
    * @brief (De)activate a breakpoint for the given instruction of the specified job.
@@ -82,7 +82,7 @@ public:
    * @param job_idx Index that identifies a single job.
    * @param command JobCommand to send.
    */
-  virtual void SendJobCommand(sup::dto::uint32 job_idx, sup::sequencer::JobCommand command) = 0;
+  virtual void SendJobCommand(sup::dto::uint32 job_idx, sup::oac_tree::JobCommand command) = 0;
 };
 
 }  // namespace auto_server

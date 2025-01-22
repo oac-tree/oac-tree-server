@@ -23,7 +23,7 @@
 
 namespace
 {
-bool IsValid(const sup::sequencer::UserInputReply& reply);
+bool IsValid(const sup::oac_tree::UserInputReply& reply);
 }  // unnamed namespace
 
 namespace sup
@@ -31,7 +31,7 @@ namespace sup
 namespace auto_server
 {
 
-using sup::sequencer::kInvalidUserInputReply;
+using sup::oac_tree::kInvalidUserInputReply;
 
 InputRequestServer::InputRequestServer()
   : m_request_id{0}
@@ -109,8 +109,8 @@ void InputRequestServer::Interrupt(sup::dto::uint64 id)
 
 namespace
 {
-bool IsValid(const sup::sequencer::UserInputReply& reply)
+bool IsValid(const sup::oac_tree::UserInputReply& reply)
 {
-  return reply.m_request_type != sup::sequencer::InputRequestType::kInvalid;
+  return reply.m_request_type != sup::oac_tree::InputRequestType::kInvalid;
 }
 }  // unnamed namespace

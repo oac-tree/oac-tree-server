@@ -24,13 +24,13 @@
 
 #include <sup/dto/anyvalue.h>
 #include <sup/protocol/protocol.h>
-#include <sup/sequencer/user_input_reply.h>
+#include <sup/oac-tree/user_input_reply.h>
 
 namespace sup
 {
 namespace auto_server
 {
-using sup::sequencer::UserInputReply;
+using sup::oac_tree::UserInputReply;
 
 /**
  * @brief InputProtocolClient .

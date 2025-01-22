@@ -22,7 +22,7 @@
 #ifndef SUP_AUTO_SERVER_CLIENT_REPLY_DELEGATOR_H_
 #define SUP_AUTO_SERVER_CLIENT_REPLY_DELEGATOR_H_
 
-#include <sup/sequencer/user_input_reply.h>
+#include <sup/oac-tree/user_input_reply.h>
 
 #include <atomic>
 #include <condition_variable>
@@ -35,7 +35,7 @@ namespace sup
 {
 namespace auto_server
 {
-using sup::sequencer::UserInputReply;
+using sup::oac_tree::UserInputReply;
 
 /**
  * @brief ClientReplyDelegator delegates a call to reply to user input to a separate thread. This

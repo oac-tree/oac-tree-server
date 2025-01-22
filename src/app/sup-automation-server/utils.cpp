@@ -21,7 +21,7 @@
 
 #include "utils.h"
 
-#include <sup/sequencer/sequence_parser.h>
+#include <sup/oac-tree/sequence_parser.h>
 
 #include <filesystem>
 
@@ -69,7 +69,7 @@ ProcedureList GetProcedureList(sup::cli::CommandLineParser& parser)
   auto filenames = GetProcedureFilenames(parser);
   for (const auto& filename : filenames)
   {
-    result.emplace_back(sup::sequencer::ParseProcedureFile(filename));
+    result.emplace_back(sup::oac_tree::ParseProcedureFile(filename));
   }
   return result;
 }

@@ -25,7 +25,7 @@
 #include <sup/auto-server/i_anyvalue_manager_registry.h>
 #include <sup/auto-server/i_job_manager.h>
 
-#include <sup/sequencer/i_job_info_io.h>
+#include <sup/oac-tree/i_job_info_io.h>
 #include <sup/dto/anyvalue.h>
 
 #include <gmock/gmock.h>
@@ -73,13 +73,13 @@ namespace auto_server
 namespace UnitTestHelper
 {
 
-class MockJobInfoIO : public sup::sequencer::IJobInfoIO
+class MockJobInfoIO : public sup::oac_tree::IJobInfoIO
 {
 public:
   MOCK_METHOD(void, InitNumberOfInstructions, (sup::dto::uint32), (override));
-  MOCK_METHOD(void, InstructionStateUpdated, (sup::dto::uint32, sup::sequencer::InstructionState), (override));
+  MOCK_METHOD(void, InstructionStateUpdated, (sup::dto::uint32, sup::oac_tree::InstructionState), (override));
   MOCK_METHOD(void, VariableUpdated, (sup::dto::uint32, const sup::dto::AnyValue&, bool), (override));
-  MOCK_METHOD(void, JobStateUpdated, (sup::sequencer::JobState), (override));
+  MOCK_METHOD(void, JobStateUpdated, (sup::oac_tree::JobState), (override));
   MOCK_METHOD(void, PutValue, (const sup::dto::AnyValue&, const std::string&), (override));
   MOCK_METHOD(bool, GetUserValue, (sup::dto::uint64, sup::dto::AnyValue&, const std::string&), (override));
   MOCK_METHOD(int, GetUserChoice, (sup::dto::uint64, const std::vector<std::string>&, const sup::dto::AnyValue&), (override));
@@ -111,22 +111,22 @@ class MockJobManager : public IJobManager
 public:
   MOCK_METHOD(std::string, GetServerPrefix, (), (const override));
   MOCK_METHOD(sup::dto::uint32, GetNumberOfJobs, (), (const override));
-  MOCK_METHOD(sup::sequencer::JobInfo, GetJobInfo, (sup::dto::uint32), (const override));
+  MOCK_METHOD(sup::oac_tree::JobInfo, GetJobInfo, (sup::dto::uint32), (const override));
   MOCK_METHOD(void, EditBreakpoint, (sup::dto::uint32, sup::dto::uint32, bool), (override));
-  MOCK_METHOD(void, SendJobCommand, (sup::dto::uint32, sup::sequencer::JobCommand), (override));
+  MOCK_METHOD(void, SendJobCommand, (sup::dto::uint32, sup::oac_tree::JobCommand), (override));
 };
 
-class TestJobInfoIO : public sup::sequencer::IJobInfoIO
+class TestJobInfoIO : public sup::oac_tree::IJobInfoIO
 {
 public:
   TestJobInfoIO();
   ~TestJobInfoIO() = default;
   void InitNumberOfInstructions(sup::dto::uint32 n_instr) override;
   void InstructionStateUpdated(sup::dto::uint32 instr_idx,
-                               sup::sequencer::InstructionState state) override;
+                               sup::oac_tree::InstructionState state) override;
   void VariableUpdated(sup::dto::uint32 var_idx, const sup::dto::AnyValue& value,
                                bool connected) override;
-  void JobStateUpdated(sup::sequencer::JobState state) override;
+  void JobStateUpdated(sup::oac_tree::JobState state) override;
   void PutValue(const sup::dto::AnyValue& value, const std::string& description) override;
   bool GetUserValue(sup::dto::uint64 id, sup::dto::AnyValue& value,
                             const std::string& description) override;
@@ -139,17 +139,17 @@ public:
 
   bool WaitFor(std::function<bool()> pred, double seconds);
   bool WaitForInstructionState(sup::dto::uint32 instr_idx,
-                               sup::sequencer::InstructionState state, double seconds);
+                               sup::oac_tree::InstructionState state, double seconds);
   bool WaitForVariableValue(sup::dto::uint32 var_idx,
                                const sup::dto::AnyValue& value, double seconds);
-  bool WaitForJobState(sup::sequencer::JobState state, double seconds);
+  bool WaitForJobState(sup::oac_tree::JobState state, double seconds);
 
   // Public data members for testing:
   sup::dto::uint32 m_n_instr;
-  std::map<sup::dto::uint32, sup::sequencer::InstructionState> m_instr_states;
+  std::map<sup::dto::uint32, sup::oac_tree::InstructionState> m_instr_states;
   std::map<sup::dto::uint32, sup::dto::AnyValue> m_var_values;
   std::map<sup::dto::uint32, sup::dto::AnyValue> m_var_connected;
-  sup::sequencer::JobState m_job_state;
+  sup::oac_tree::JobState m_job_state;
   std::mutex m_mtx;
   std::condition_variable m_cv;
 };
@@ -205,7 +205,7 @@ private:
 };
 
 /**
- * Creates a string representing a valid XML of sequencer procedure by enclosing user provided body
+ * Creates a string representing a valid XML of oac-tree procedure by enclosing user provided body
  * between appropriate header and footer.
  */
 std::string CreateProcedureString(const std::string& body);

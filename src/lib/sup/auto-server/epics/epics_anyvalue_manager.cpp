@@ -99,7 +99,7 @@ UserInputReply EPICSAnyValueManager::GetUserInput(const std::string& input_serve
   auto input_pv_server = FindServer(input_request_name);
   if (input_server == nullptr || input_pv_server == nullptr)
   {
-    return sup::sequencer::kInvalidUserInputReply;
+    return sup::oac_tree::kInvalidUserInputReply;
   }
   input_server->InitNewRequest(id);
   auto input_request = EncodeInputRequest(id, request);
@@ -109,7 +109,7 @@ UserInputReply EPICSAnyValueManager::GetUserInput(const std::string& input_serve
   input_pv_server->UpdateAnyValue(input_request_name, kInputRequestAnyValue);
   if (!retrieved)
   {
-    return sup::sequencer::kInvalidUserInputReply;
+    return sup::oac_tree::kInvalidUserInputReply;
   }
   return value;
 }

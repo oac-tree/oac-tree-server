@@ -22,7 +22,7 @@
 #include "unit_test_helper.h"
 
 #include <sup/dto/anyvalue_helper.h>
-#include <sup/sequencer/sequence_parser.h>
+#include <sup/oac-tree/sequence_parser.h>
 
 #include <chrono>
 #include <fstream>
@@ -40,7 +40,7 @@ TestJobInfoIO::TestJobInfoIO()
   , m_instr_states{}
   , m_var_values{}
   , m_var_connected{}
-  , m_job_state{sup::sequencer::JobState::kInitial}
+  , m_job_state{sup::oac_tree::JobState::kInitial}
   , m_mtx{}
   , m_cv{}
 {}
@@ -55,7 +55,7 @@ void TestJobInfoIO::InitNumberOfInstructions(sup::dto::uint32 n_instr)
 }
 
 void TestJobInfoIO::InstructionStateUpdated(sup::dto::uint32 instr_idx,
-                                            sup::sequencer::InstructionState state)
+                                            sup::oac_tree::InstructionState state)
 {
   {
     std::lock_guard<std::mutex> lk{m_mtx};
@@ -78,7 +78,7 @@ void TestJobInfoIO::VariableUpdated(sup::dto::uint32 var_idx, const sup::dto::An
   m_cv.notify_one();
 }
 
-void TestJobInfoIO::JobStateUpdated(sup::sequencer::JobState state)
+void TestJobInfoIO::JobStateUpdated(sup::oac_tree::JobState state)
 {
   {
     std::lock_guard<std::mutex> lk{m_mtx};
@@ -122,7 +122,7 @@ bool TestJobInfoIO::WaitFor(std::function<bool()> pred, double seconds)
 }
 
 bool TestJobInfoIO::WaitForInstructionState(sup::dto::uint32 instr_idx,
-                                            sup::sequencer::InstructionState state, double seconds)
+                                            sup::oac_tree::InstructionState state, double seconds)
 {
   auto pred = [this, instr_idx, state](){
     auto instr_state_it = m_instr_states.find(instr_idx);
@@ -149,7 +149,7 @@ bool TestJobInfoIO::WaitForVariableValue(sup::dto::uint32 var_idx,
   return WaitFor(pred, seconds);
 }
 
-bool TestJobInfoIO::WaitForJobState(sup::sequencer::JobState state, double seconds)
+bool TestJobInfoIO::WaitForJobState(sup::oac_tree::JobState state, double seconds)
 {
   auto pred = [this, state](){
     return m_job_state == state;
@@ -159,7 +159,7 @@ bool TestJobInfoIO::WaitForJobState(sup::sequencer::JobState state, double secon
 
 TestAnyValueManager::TestAnyValueManager()
     : m_value_map{}
-    , m_user_input_reply{sup::sequencer::kInvalidUserInputReply}
+    , m_user_input_reply{sup::oac_tree::kInvalidUserInputReply}
     , m_input_requests{}
     , m_mtx{}
     , m_cv{}
@@ -326,10 +326,10 @@ std::string CreateProcedureString(const std::string &body)
 {
   static const std::string header{
       R"RAW(<?xml version="1.0" encoding="UTF-8"?>
-<Procedure xmlns="http://codac.iter.org/sup/sequencer" version="1.0"
+<Procedure xmlns="http://codac.iter.org/sup/oac-tree" version="1.0"
            name="Common header"
            xmlns:xs="http://www.w3.org/2001/XMLSchema-instance"
-           xs:schemaLocation="http://codac.iter.org/sup/sequencer sequencer.xsd">)RAW"};
+           xs:schemaLocation="http://codac.iter.org/sup/oac-tree oac-tree.xsd">)RAW"};
 
   static const std::string footer{R"RAW(</Procedure>)RAW"};
 

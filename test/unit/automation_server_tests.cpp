@@ -25,7 +25,7 @@
 #include <sup/auto-server/exceptions.h>
 #include <sup/auto-server/sup_auto_protocol.h>
 
-#include <sup/sequencer/sequence_parser.h>
+#include <sup/oac-tree/sequence_parser.h>
 
 #include <gtest/gtest.h>
 
@@ -44,7 +44,7 @@ protected:
 
 TEST_F(AutomationServerTests, ServerWithoutProcedures)
 {
-  using sup::sequencer::JobCommand;
+  using sup::oac_tree::JobCommand;
   const std::string prefix = "AutomationServerTests:Empty";
   AutomationServer auto_server{prefix, m_test_av_mgr_registry};
   EXPECT_EQ(auto_server.GetServerPrefix(), prefix);
@@ -55,10 +55,10 @@ TEST_F(AutomationServerTests, ServerWithoutProcedures)
 
 TEST_F(AutomationServerTests, ServerWithOneProcedure)
 {
-  using sup::sequencer::JobCommand;
+  using sup::oac_tree::JobCommand;
   const std::string prefix = "AutomationServerTests:Single";
   const auto procedure_string = UnitTestHelper::CreateProcedureString(kLongWaitProcedureBody);
-  auto proc = sup::sequencer::ParseProcedureString(procedure_string);
+  auto proc = sup::oac_tree::ParseProcedureString(procedure_string);
   ASSERT_NE(proc.get(), nullptr);
   AutomationServer auto_server{prefix, m_test_av_mgr_registry};
   auto_server.AddJob(std::move(proc));
@@ -74,12 +74,12 @@ TEST_F(AutomationServerTests, ServerWithOneProcedure)
 
 TEST_F(AutomationServerTests, ServerWithTwoProcedures)
 {
-  using sup::sequencer::JobCommand;
+  using sup::oac_tree::JobCommand;
   const std::string prefix = "AutomationServerTests:Two";
   const auto procedure_string = UnitTestHelper::CreateProcedureString(kLongWaitProcedureBody);
-  auto proc_1 = sup::sequencer::ParseProcedureString(procedure_string);
+  auto proc_1 = sup::oac_tree::ParseProcedureString(procedure_string);
   ASSERT_NE(proc_1.get(), nullptr);
-  auto proc_2 = sup::sequencer::ParseProcedureString(procedure_string);
+  auto proc_2 = sup::oac_tree::ParseProcedureString(procedure_string);
   ASSERT_NE(proc_2.get(), nullptr);
   AutomationServer auto_server{prefix, m_test_av_mgr_registry};
   auto_server.AddJob(std::move(proc_1));

@@ -25,7 +25,7 @@
 #include <sup/auto-server/i_anyvalue_manager_registry.h>
 
 #include <sup/cli/command_line_parser.h>
-#include <sup/sequencer/procedure.h>
+#include <sup/oac-tree/procedure.h>
 
 #include <memory>
 
@@ -35,7 +35,7 @@ namespace auto_server
 {
 namespace utils
 {
-using ProcedureList = std::vector<std::unique_ptr<sup::sequencer::Procedure>>;
+using ProcedureList = std::vector<std::unique_ptr<sup::oac_tree::Procedure>>;
 
 std::vector<std::string> GetProcedureFilenames(sup::cli::CommandLineParser& parser);
 

@@ -17,7 +17,7 @@ target_include_directories(sup-auto-server PUBLIC
 
 target_link_libraries(sup-auto-server
   PUBLIC
-    sequencer::sequencer
+    oac-tree::oac-tree
     sup-dto::sup-dto
     sup-protocol::sup-protocol
   PRIVATE

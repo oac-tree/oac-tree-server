@@ -48,8 +48,8 @@ TEST_F(ClientAnyValueManagerTests, Construction)
     // Set Expectations on mock IJobInfoIO calls
     {
       InSequence seq;
-      EXPECT_CALL(m_test_job_info_io, JobStateUpdated(sup::sequencer::JobState::kInitial));
-      EXPECT_CALL(m_test_job_info_io, JobStateUpdated(sup::sequencer::JobState::kRunning));
+      EXPECT_CALL(m_test_job_info_io, JobStateUpdated(sup::oac_tree::JobState::kInitial));
+      EXPECT_CALL(m_test_job_info_io, JobStateUpdated(sup::oac_tree::JobState::kRunning));
     }
     // Add only job state anyvalue
     IAnyValueIO::NameAnyValueSet value_set;
@@ -59,7 +59,7 @@ TEST_F(ClientAnyValueManagerTests, Construction)
 
     // Update job state anyvalue
     auto new_job_state = kJobStateAnyValue;
-    new_job_state[kJobStateField] = static_cast<sup::dto::uint32>(sup::sequencer::JobState::kRunning);
+    new_job_state[kJobStateField] = static_cast<sup::dto::uint32>(sup::oac_tree::JobState::kRunning);
     client_av_mgr.UpdateAnyValue(val_name, new_job_state);
   }
 }

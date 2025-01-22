@@ -27,9 +27,9 @@
 #include <sup/auto-server/sup_auto_protocol.h>
 
 #include <sup/epics/epics_protocol_factory.h>
-#include <sup/sequencer/instruction_map.h>
-#include <sup/sequencer/job_info_utils.h>
-#include <sup/sequencer/sequence_parser.h>
+#include <sup/oac-tree/instruction_map.h>
+#include <sup/oac-tree/job_info_utils.h>
+#include <sup/oac-tree/sequence_parser.h>
 
 #include "unit_test_helper.h"
 
@@ -41,10 +41,10 @@ using ::testing::Return;
 using ::testing::AtLeast;
 
 using namespace sup::auto_server;
-using sup::sequencer::JobState;
-using sup::sequencer::InstructionState;
-using sup::sequencer::ExecutionStatus;
-using sup::sequencer::JobCommand;
+using sup::oac_tree::JobState;
+using sup::oac_tree::InstructionState;
+using sup::oac_tree::ExecutionStatus;
+using sup::oac_tree::JobCommand;
 
 const std::string kTestAutomationServiceName = "Test::FullClientServerStack";
 const std::string kTestServerPrefix = "FullStackServerPrefix";
@@ -193,7 +193,7 @@ void FullClientServerStackTest::SetUpTestSuite()
   m_control_stack = sup::epics::CreateEPICSRPCServerStack(m_control_server, control_server_config);
 
   const auto procedure_string = UnitTestHelper::CreateProcedureString(kWorkspaceSequenceBody);
-  auto proc = sup::sequencer::ParseProcedureString(procedure_string);
+  auto proc = sup::oac_tree::ParseProcedureString(procedure_string);
   m_automation_server.AddJob(std::move(proc));
 }
 

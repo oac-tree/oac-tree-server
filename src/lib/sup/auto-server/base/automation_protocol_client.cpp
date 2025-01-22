@@ -27,8 +27,8 @@
 #include <sup/protocol/function_protocol.h>
 #include <sup/protocol/function_protocol_extract.h>
 #include <sup/protocol/function_protocol_pack.h>
-#include <sup/sequencer/anyvalue_utils.h>
-#include <sup/sequencer/job_info_utils.h>
+#include <sup/oac-tree/anyvalue_utils.h>
+#include <sup/oac-tree/job_info_utils.h>
 
 namespace sup
 {
@@ -85,7 +85,7 @@ sup::dto::uint32 AutomationProtocolClient::GetNumberOfJobs() const
   return result.As<sup::dto::uint64>();
 }
 
-sup::sequencer::JobInfo AutomationProtocolClient::GetJobInfo(sup::dto::uint32 job_idx) const
+sup::oac_tree::JobInfo AutomationProtocolClient::GetJobInfo(sup::dto::uint32 job_idx) const
 {
   auto input = sup::protocol::FunctionProtocolInput(kGetJobInfoFunctionName);
   sup::dto::AnyValue job_idx_av{sup::dto::UnsignedInteger64Type, job_idx};
@@ -107,7 +107,7 @@ sup::sequencer::JobInfo AutomationProtocolClient::GetJobInfo(sup::dto::uint32 jo
   }
   try
   {
-    auto job_info = sup::sequencer::utils::ToJobInfo(job_info_av);
+    auto job_info = sup::oac_tree::utils::ToJobInfo(job_info_av);
     return job_info;
   }
   catch(const InvalidOperationException&)
@@ -137,7 +137,7 @@ void AutomationProtocolClient::EditBreakpoint(sup::dto::uint32 job_idx, sup::dto
   }
 }
 
-void AutomationProtocolClient::SendJobCommand(sup::dto::uint32 job_idx, sup::sequencer::JobCommand command)
+void AutomationProtocolClient::SendJobCommand(sup::dto::uint32 job_idx, sup::oac_tree::JobCommand command)
 {
   auto input = sup::protocol::FunctionProtocolInput(kSendJobCommandFunctionName);
   sup::dto::AnyValue job_idx_av{sup::dto::UnsignedInteger64Type, job_idx};

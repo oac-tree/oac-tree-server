@@ -22,7 +22,7 @@
 #include <sup/auto-server/i_anyvalue_io.h>
 #include <sup/auto-server/sup_auto_protocol.h>
 
-#include <sup/sequencer/constants.h>
+#include <sup/oac-tree/constants.h>
 
 #include <algorithm>
 
@@ -49,7 +49,7 @@ IAnyValueIO::NameAnyValueSet GetInitialValueSet(const std::string& job_prefix,
 {
   IAnyValueIO::NameAnyValueSet result;
   auto job_value_name = GetJobStatePVName(job_prefix);
-  auto job_value = GetJobStateValue(sequencer::JobState::kInitial);
+  auto job_value = GetJobStateValue(oac_tree::JobState::kInitial);
   result.emplace_back(job_value_name, job_value);
   auto log_entry_name = GetLogEntryName(job_prefix);
   result.emplace_back(log_entry_name, kLogEntryAnyValue);
@@ -74,7 +74,7 @@ IAnyValueIO::NameAnyValueSet GetInstructionValueSet(const std::string& job_prefi
   for (sup::dto::uint32 instr_idx = 0; instr_idx < n_instr; ++instr_idx)
   {
     const auto name = GetInstructionPVName(job_prefix, instr_idx);
-    result.emplace_back(name, sup::sequencer::Constants::kInstructionStateAnyValue);
+    result.emplace_back(name, sup::oac_tree::Constants::kInstructionStateAnyValue);
   }
   return result;
 }

@@ -22,7 +22,7 @@
 #ifndef SUP_AUTO_SERVER_INPUT_REQUEST_SERVER_H_
 #define SUP_AUTO_SERVER_INPUT_REQUEST_SERVER_H_
 
-#include <sup/sequencer/user_input_reply.h>
+#include <sup/oac-tree/user_input_reply.h>
 
 #include <condition_variable>
 #include <mutex>
@@ -33,7 +33,7 @@ namespace sup
 namespace auto_server
 {
 
-using sup::sequencer::UserInputReply;
+using sup::oac_tree::UserInputReply;
 
 /**
  * @brief InputRequestServer is a helper class that manages a single request for user input at

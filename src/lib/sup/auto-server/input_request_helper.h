@@ -22,7 +22,7 @@
 #ifndef SUP_AUTO_SERVER_INPUT_REQUEST_HELPER_H_
 #define SUP_AUTO_SERVER_INPUT_REQUEST_HELPER_H_
 
-#include <sup/sequencer/user_input_request.h>
+#include <sup/oac-tree/user_input_request.h>
 
 #include <sup/dto/anyvalue.h>
 
@@ -33,7 +33,7 @@ namespace sup
 namespace auto_server
 {
 
-using sup::sequencer::UserInputRequest;
+using sup::oac_tree::UserInputRequest;
 
 /**
  * @brief Pack an UserInputRequest with the given request id into a base64 encoded AnyValue.

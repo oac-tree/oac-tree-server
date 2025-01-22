@@ -28,8 +28,8 @@
 
 using namespace sup::auto_server;
 
-using sup::sequencer::InputRequestType;
-using sup::sequencer::kInvalidUserInputReply;
+using sup::oac_tree::InputRequestType;
+using sup::oac_tree::kInvalidUserInputReply;
 
 class InputReplyHelperTest : public ::testing::Test
 {
@@ -41,7 +41,7 @@ protected:
 TEST_F(InputReplyHelperTest, EncodeInputReply)
 {
   sup::dto::AnyValue value{ sup::dto::UnsignedInteger32Type, 42u };
-  auto reply = sup::sequencer::CreateUserValueReply(true, value);
+  auto reply = sup::oac_tree::CreateUserValueReply(true, value);
 
   // Encode
   sup::dto::uint64 id = 32u;

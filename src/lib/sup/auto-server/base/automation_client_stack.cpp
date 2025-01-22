@@ -73,7 +73,7 @@ sup::dto::uint32 AutomationClientStack::GetNumberOfJobs() const
   return m_impl->GetJobManager().GetNumberOfJobs();
 }
 
-sup::sequencer::JobInfo AutomationClientStack::GetJobInfo(sup::dto::uint32 job_idx) const
+sup::oac_tree::JobInfo AutomationClientStack::GetJobInfo(sup::dto::uint32 job_idx) const
 {
   return m_impl->GetJobManager().GetJobInfo(job_idx);
 }
@@ -85,7 +85,7 @@ void AutomationClientStack::EditBreakpoint(sup::dto::uint32 job_idx, sup::dto::u
 }
 
 void AutomationClientStack::SendJobCommand(sup::dto::uint32 job_idx,
-                                           sup::sequencer::JobCommand command)
+                                           sup::oac_tree::JobCommand command)
 {
   return m_impl->GetJobManager().SendJobCommand(job_idx, command);
 }

@@ -26,7 +26,7 @@
 
 #include <sup/dto/anytype_helper.h>
 #include <sup/dto/json_type_parser.h>
-#include <sup/sequencer/anyvalue_utils.h>
+#include <sup/oac-tree/anyvalue_utils.h>
 
 namespace
 {
@@ -37,8 +37,8 @@ namespace sup
 {
 namespace auto_server
 {
-using sup::sequencer::utils::ValidateMemberType;
-using namespace sup::sequencer;
+using sup::oac_tree::utils::ValidateMemberType;
+using namespace sup::oac_tree;
 
 sup::dto::AnyValue EncodeInputRequest(sup::dto::uint64 id, const UserInputRequest& input_request)
 {

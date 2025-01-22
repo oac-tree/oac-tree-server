@@ -46,11 +46,11 @@ public:
   std::string GetServerPrefix() const override;
   sup::dto::uint32 GetNumberOfJobs() const override;
 
-  sup::sequencer::JobInfo GetJobInfo(sup::dto::uint32 job_idx) const override;
+  sup::oac_tree::JobInfo GetJobInfo(sup::dto::uint32 job_idx) const override;
 
   void EditBreakpoint(sup::dto::uint32 job_idx, sup::dto::uint32 instr_idx, bool breakpoint_active) override;
 
-  void SendJobCommand(sup::dto::uint32 job_idx, sup::sequencer::JobCommand command) override;
+  void SendJobCommand(sup::dto::uint32 job_idx, sup::oac_tree::JobCommand command) override;
 
 private:
   class AutomationClientStackImpl;

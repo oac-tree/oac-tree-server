@@ -25,9 +25,9 @@
 #include <sup/auto-server/sup_auto_protocol.h>
 
 #include <sup/epics/epics_protocol_factory.h>
-#include <sup/sequencer/instruction_map.h>
-#include <sup/sequencer/job_info_utils.h>
-#include <sup/sequencer/sequence_parser.h>
+#include <sup/oac-tree/instruction_map.h>
+#include <sup/oac-tree/job_info_utils.h>
+#include <sup/oac-tree/sequence_parser.h>
 
 #include "unit_test_helper.h"
 
@@ -67,7 +67,7 @@ public:
     return m_job_manager->GetNumberOfJobs();
   }
 
-  sup::sequencer::JobInfo GetJobInfo(sup::dto::uint32 job_idx) const override
+  sup::oac_tree::JobInfo GetJobInfo(sup::dto::uint32 job_idx) const override
   {
     return m_job_manager->GetJobInfo(job_idx);
   }
@@ -78,7 +78,7 @@ public:
     m_job_manager->EditBreakpoint(job_idx, instr_idx, breakpoint_active);
   }
 
-  void SendJobCommand(sup::dto::uint32 job_idx, sup::sequencer::JobCommand command) override
+  void SendJobCommand(sup::dto::uint32 job_idx, sup::oac_tree::JobCommand command) override
   {
     m_job_manager->SendJobCommand(job_idx, command);
   }
@@ -131,11 +131,11 @@ TEST_F(JobManagerClientServerStackTest, GetJobInfo)
 
   // Build JobInfo
   const auto procedure_string = UnitTestHelper::CreateProcedureString(kWorkspaceSequenceBody);
-  auto proc = sup::sequencer::ParseProcedureString(procedure_string);
+  auto proc = sup::oac_tree::ParseProcedureString(procedure_string);
   ASSERT_NE(proc.get(), nullptr);
   auto root = proc->RootInstruction();
-  sup::sequencer::InstructionMap instr_map{root};
-  auto job_info = sup::sequencer::utils::CreateJobInfo(*proc, instr_map);
+  sup::oac_tree::InstructionMap instr_map{root};
+  auto job_info = sup::oac_tree::utils::CreateJobInfo(*proc, instr_map);
 
   // Create stack and test
   const sup::dto::uint32 n_jobs = 42u;
@@ -150,11 +150,11 @@ TEST_F(JobManagerClientServerStackTest, EditBreakpoint)
 {
   // Build JobInfo
   const auto procedure_string = UnitTestHelper::CreateProcedureString(kWorkspaceSequenceBody);
-  auto proc = sup::sequencer::ParseProcedureString(procedure_string);
+  auto proc = sup::oac_tree::ParseProcedureString(procedure_string);
   ASSERT_NE(proc.get(), nullptr);
   auto root = proc->RootInstruction();
-  sup::sequencer::InstructionMap instr_map{root};
-  auto job_info = sup::sequencer::utils::CreateJobInfo(*proc, instr_map);
+  sup::oac_tree::InstructionMap instr_map{root};
+  auto job_info = sup::oac_tree::utils::CreateJobInfo(*proc, instr_map);
 
   // Test EditBreakpoint over the whole EPICS stack
   const sup::dto::uint32 n_jobs = 42u;
@@ -171,7 +171,7 @@ TEST_F(JobManagerClientServerStackTest, SendJobCommand)
   // Test SendJobCommand over the whole EPICS stack
   const sup::dto::uint32 n_jobs = 42u;
   const sup::dto::uint32 job_id = 32u;
-  auto command = sup::sequencer::JobCommand::kStart;
+  auto command = sup::oac_tree::JobCommand::kStart;
   EXPECT_CALL(m_job_manager, GetNumberOfJobs()).Times(Exactly(1)).WillOnce(Return(n_jobs));
   EXPECT_CALL(m_job_manager, SendJobCommand(job_id, command)).Times(Exactly(1));
   m_client_job_manager->SendJobCommand(job_id, command);

@@ -44,7 +44,7 @@ protected:
 
 TEST_F(InputProtocolClientServerTest, SingleThreaded)
 {
-  auto reply = sup::sequencer::CreateUserChoiceReply(true, 42);
+  auto reply = sup::oac_tree::CreateUserChoiceReply(true, 42);
   sup::dto::uint64 id{77};
   m_server.InitNewRequest(id);
   m_client.SetClientReply(id, reply);
@@ -55,7 +55,7 @@ TEST_F(InputProtocolClientServerTest, SingleThreaded)
 
 TEST_F(InputProtocolClientServerTest, MultiThreaded)
 {
-  auto reply = sup::sequencer::CreateUserChoiceReply(true, 42);
+  auto reply = sup::oac_tree::CreateUserChoiceReply(true, 42);
   sup::dto::uint64 id{77};
   m_server.InitNewRequest(id);
   auto client_func = [this, id, reply]() {
@@ -69,7 +69,7 @@ TEST_F(InputProtocolClientServerTest, MultiThreaded)
 
 TEST_F(InputProtocolClientServerTest, MultiThreadedInterrupted)
 {
-  auto reply = sup::sequencer::CreateUserChoiceReply(true, 42);
+  auto reply = sup::oac_tree::CreateUserChoiceReply(true, 42);
   sup::dto::uint64 id{77};
   m_server.InitNewRequest(id);
   std::atomic_bool halt{false};
@@ -83,7 +83,7 @@ TEST_F(InputProtocolClientServerTest, MultiThreadedInterrupted)
   m_server.Interrupt(id);
   auto [retrieved, value] = m_server.WaitForReply(id);
   EXPECT_FALSE(retrieved);
-  EXPECT_EQ(value, sup::sequencer::kInvalidUserInputReply);
+  EXPECT_EQ(value, sup::oac_tree::kInvalidUserInputReply);
   halt.store(true);
 }
 

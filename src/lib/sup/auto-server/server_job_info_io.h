@@ -25,7 +25,7 @@
 #include <sup/auto-server/i_anyvalue_manager.h>
 #include <sup/auto-server/index_generator.h>
 
-#include <sup/sequencer/i_job_info_io.h>
+#include <sup/oac-tree/i_job_info_io.h>
 
 namespace sup
 {
@@ -35,7 +35,7 @@ namespace auto_server
  * @brief Implementation of IJobInfoIO that delegates its calls to an IAnyValueManager
  * implementation. This implementation will be used at the server side.
  */
-class ServerJobInfoIO : public sup::sequencer::IJobInfoIO
+class ServerJobInfoIO : public sup::oac_tree::IJobInfoIO
 {
 public:
   ServerJobInfoIO(const std::string& job_prefix, sup::dto::uint32 n_vars,
@@ -45,12 +45,12 @@ public:
   void InitNumberOfInstructions(sup::dto::uint32 n_instr) override;
 
   void InstructionStateUpdated(sup::dto::uint32 instr_idx,
-                               sup::sequencer::InstructionState state) override;
+                               sup::oac_tree::InstructionState state) override;
 
   void VariableUpdated(sup::dto::uint32 var_idx, const sup::dto::AnyValue& value,
                        bool connected) override;
 
-  void JobStateUpdated(sup::sequencer::JobState state) override;
+  void JobStateUpdated(sup::oac_tree::JobState state) override;
 
   void PutValue(const sup::dto::AnyValue& value, const std::string& description) override;
 

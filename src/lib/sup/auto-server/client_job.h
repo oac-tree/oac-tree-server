@@ -25,8 +25,8 @@
 #include <sup/auto-server/i_anyvalue_io.h>
 #include <sup/auto-server/i_job_manager.h>
 
-#include <sup/sequencer/i_job.h>
-#include <sup/sequencer/i_job_info_io.h>
+#include <sup/oac-tree/i_job.h>
+#include <sup/oac-tree/i_job_info_io.h>
 
 #include <memory>
 
@@ -40,18 +40,18 @@ class ClientJobImpl;
  * with a job on the client side. It uses a provided IJobInfoIO object to handle all updates and
  * input/output requests.
  */
-class ClientJob : public sup::sequencer::IJob
+class ClientJob : public sup::oac_tree::IJob
 {
 public:
   ClientJob(IJobManager& job_manager, sup::dto::uint32 job_idx,
             const AnyValueIOFactoryFunction& factory_func,
-            sup::sequencer::IJobInfoIO& job_info_io);
+            sup::oac_tree::IJobInfoIO& job_info_io);
   ~ClientJob();
 
   ClientJob(ClientJob&& other);
   ClientJob& operator=(ClientJob&& other);
 
-  const sup::sequencer::JobInfo& GetInfo() const override;
+  const sup::oac_tree::JobInfo& GetInfo() const override;
   void SetBreakpoint(sup::dto::uint32 instr_idx) override;
   void RemoveBreakpoint(sup::dto::uint32 instr_idx) override;
   void Start() override;
@@ -74,9 +74,9 @@ private:
  * @param job_info_io User provided IJobInfoIO object that will receive all updates and user IO.
  * @return An IJob object on success. An empty unique_ptr on failure.
  */
-std::unique_ptr<sup::sequencer::IJob> CreateClientJob(
+std::unique_ptr<sup::oac_tree::IJob> CreateClientJob(
     IJobManager &job_manager, sup::dto::uint32 job_idx,
-    const AnyValueIOFactoryFunction &factory_func, sup::sequencer::IJobInfoIO &job_info_io);
+    const AnyValueIOFactoryFunction &factory_func, sup::oac_tree::IJobInfoIO &job_info_io);
 
 }  // namespace auto_server
 

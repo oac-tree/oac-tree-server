@@ -25,7 +25,7 @@
 #include <sup/auto-server/input_protocol_server.h>
 
 #include <sup/protocol/protocol_factory.h>
-#include <sup/sequencer/user_input_reply.h>
+#include <sup/oac-tree/user_input_reply.h>
 
 #include <memory>
 
@@ -34,7 +34,7 @@ namespace sup
 namespace auto_server
 {
 
-using sup::sequencer::UserInputReply;
+using sup::oac_tree::UserInputReply;
 
 /**
  * @brief EPICSInputServer is the EPICS implementation of an RPC server that handles user input.

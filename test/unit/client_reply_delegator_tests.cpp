@@ -21,7 +21,7 @@
 
 #include <sup/auto-server/client_reply_delegator.h>
 
-#include <sup/sequencer/user_input_reply.h>
+#include <sup/oac-tree/user_input_reply.h>
 
 #include <gtest/gtest.h>
 
@@ -60,7 +60,7 @@ TEST_F(ClientReplyDelegatorTest, NoTimeout)
 {
   ClientReplyDelegator delegator{GetReplyFunction(), GetInterruptFunction()};
   sup::dto::uint64 id{42u};
-  auto reply = sup::sequencer::CreateUserChoiceReply(true, 5);
+  auto reply = sup::oac_tree::CreateUserChoiceReply(true, 5);
   delegator.QueueReply(id, reply);
   EXPECT_TRUE(WaitForReply(reply, 1.0));
   EXPECT_TRUE(WaitForId(0, 1.0));
@@ -70,9 +70,9 @@ TEST_F(ClientReplyDelegatorTest, WaitForSecond)
 {
   ClientReplyDelegator delegator{GetReplyFunction(), GetInterruptFunction()};
   sup::dto::uint64 id{42u};
-  auto reply_1 = sup::sequencer::CreateUserChoiceReply(true, 1);
-  auto reply_2 = sup::sequencer::CreateUserChoiceReply(true, 2);
-  auto reply_3 = sup::sequencer::CreateUserChoiceReply(true, 3);
+  auto reply_1 = sup::oac_tree::CreateUserChoiceReply(true, 1);
+  auto reply_2 = sup::oac_tree::CreateUserChoiceReply(true, 2);
+  auto reply_3 = sup::oac_tree::CreateUserChoiceReply(true, 3);
   SetTimeout(0.2);
   delegator.QueueReply(id, reply_1);
   delegator.QueueReply(id + 1, reply_2);
@@ -89,12 +89,12 @@ TEST_F(ClientReplyDelegatorTest, InterruptOne)
   ClientReplyDelegator delegator{GetReplyFunction(), GetInterruptFunction()};
   sup::dto::uint64 id{42u};
   SetTimeout(1.0);
-  auto reply = sup::sequencer::CreateUserChoiceReply(true, 5);
+  auto reply = sup::oac_tree::CreateUserChoiceReply(true, 5);
   delegator.QueueReply(id, reply);
   EXPECT_TRUE(WaitForId(id, 1.0));
   delegator.InterruptAll();
   EXPECT_TRUE(WaitForId(0, 1.0));
-  EXPECT_TRUE(WaitForReply(sup::sequencer::kInvalidUserInputReply, 1.0));
+  EXPECT_TRUE(WaitForReply(sup::oac_tree::kInvalidUserInputReply, 1.0));
 }
 
 TEST_F(ClientReplyDelegatorTest, InterruptMultiple)
@@ -102,20 +102,20 @@ TEST_F(ClientReplyDelegatorTest, InterruptMultiple)
   ClientReplyDelegator delegator{GetReplyFunction(), GetInterruptFunction()};
   sup::dto::uint64 id{42u};
   SetTimeout(1.0);
-  auto reply = sup::sequencer::CreateUserChoiceReply(true, 5);
+  auto reply = sup::oac_tree::CreateUserChoiceReply(true, 5);
   delegator.QueueReply(id, reply);
   delegator.QueueReply(id + 1, reply);
   delegator.QueueReply(id + 2, reply);
   EXPECT_TRUE(WaitForId(id, 1.0));
   delegator.InterruptAll();
   EXPECT_TRUE(WaitForId(0, 1.0));
-  EXPECT_TRUE(WaitForReply(sup::sequencer::kInvalidUserInputReply, 1.0));
+  EXPECT_TRUE(WaitForReply(sup::oac_tree::kInvalidUserInputReply, 1.0));
 }
 
 ClientReplyDelegatorTest::ClientReplyDelegatorTest()
   : m_timeout_sec{0.0}
   , m_id{0}
-  , m_reply{sup::sequencer::kInvalidUserInputReply}
+  , m_reply{sup::oac_tree::kInvalidUserInputReply}
   , m_mtx{}
   , m_cv{}
 {}

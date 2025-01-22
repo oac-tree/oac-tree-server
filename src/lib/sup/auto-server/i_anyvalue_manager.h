@@ -25,16 +25,16 @@
 #include <sup/auto-server/i_anyvalue_io.h>
 #include <sup/auto-server/input_request_helper.h>
 
-#include <sup/sequencer/user_input_reply.h>
-#include <sup/sequencer/user_input_request.h>
+#include <sup/oac-tree/user_input_reply.h>
+#include <sup/oac-tree/user_input_request.h>
 
 namespace sup
 {
 namespace auto_server
 {
 
-using sup::sequencer::UserInputReply;
-using sup::sequencer::UserInputRequest;
+using sup::oac_tree::UserInputReply;
+using sup::oac_tree::UserInputRequest;
 
 /**
  * @brief IAnyValueManager defines an additional API for updates to managed AnyValues and to

@@ -25,7 +25,7 @@
 #include <sup/auto-server/i_anyvalue_manager.h>
 #include <sup/auto-server/sup_auto_protocol.h>
 
-#include <sup/sequencer/i_job_info_io.h>
+#include <sup/oac-tree/i_job_info_io.h>
 
 #include <functional>
 #include <map>
@@ -41,9 +41,9 @@ namespace auto_server
 class ClientAnyValueManager : public IAnyValueManager
 {
 public:
-  using AnyValueCallback = std::function<void(sup::sequencer::IJobInfoIO&, const sup::dto::AnyValue&)>;
+  using AnyValueCallback = std::function<void(sup::oac_tree::IJobInfoIO&, const sup::dto::AnyValue&)>;
 
-  ClientAnyValueManager(sup::sequencer::IJobInfoIO& job_info_io);
+  ClientAnyValueManager(sup::oac_tree::IJobInfoIO& job_info_io);
 
   virtual ~ClientAnyValueManager();
 
@@ -59,7 +59,7 @@ public:
   void Interrupt(const std::string& input_server_name, sup::dto::uint64 id) override;
 
 private:
-  sup::sequencer::IJobInfoIO& m_job_info_io;
+  sup::oac_tree::IJobInfoIO& m_job_info_io;
   std::map<std::string, AnyValueCallback> m_cb_map;
 };
 

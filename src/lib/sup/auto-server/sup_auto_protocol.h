@@ -23,7 +23,7 @@
 #define SUP_AUTO_SERVER_SUP_AUTO_PROTOCOL_H_
 
 #include <sup/dto/anyvalue.h>
-#include <sup/sequencer/job_states.h>
+#include <sup/oac-tree/job_states.h>
 
 #include <sup/protocol/protocol_result.h>
 
@@ -300,7 +300,7 @@ std::string GetJobStatePVName(const std::string& prefix);
  * @param state Job state to encode in AnyValue.
  * @return AnyValue representing the given job state.
  */
-sup::dto::AnyValue GetJobStateValue(sup::sequencer::JobState state);
+sup::dto::AnyValue GetJobStateValue(sup::oac_tree::JobState state);
 
 /**
  * @brief Pack a variable's value and connected state into a base64 encoded AnyValue.
