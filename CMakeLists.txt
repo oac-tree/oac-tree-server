@@ -15,7 +15,7 @@
 # of the distribution package.
 
 cmake_minimum_required(VERSION 3.13...3.31)
-project(sup-auto-server-project VERSION 1.0.0)
+project(sup-auto-server-project VERSION 1.1.0)
 
 option(COA_COVERAGE "Generate unit test coverage information" OFF)
 option(COA_EXPORT_BUILD_TREE "Export build tree in /home/user/.cmake registry" OFF)
