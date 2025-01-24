@@ -1,0 +1,27 @@
+target_sources(oac-tree-server-shared
+  PRIVATE
+  anyvalue_io_helper.cpp
+  automation_client_stack.cpp
+  automation_protocol_client.cpp
+  info_protocol_server.cpp
+  automation_server.cpp
+  client_anyvalue_manager.cpp
+  client_job.cpp
+  client_reply_delegator.cpp
+  control_protocol_server.cpp
+  exceptions.cpp
+  i_anyvalue_io.cpp
+  i_anyvalue_manager_registry.cpp
+  i_anyvalue_manager.cpp
+  i_job_manager.cpp
+  index_generator.cpp
+  input_protocol_client.cpp
+  input_protocol_server.cpp
+  input_reply_helper.cpp
+  input_request_helper.cpp
+  input_request_server.cpp
+  output_entry_helper.cpp
+  output_entry_types.cpp
+  server_job_info_io.cpp
+  sup_auto_protocol.cpp
+)

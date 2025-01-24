@@ -2,7 +2,7 @@
  * $HeadURL: $
  * $Id: $
  *
- * Project       : SUP - AUTOMATION-SERVER
+ * Project       : SUP - OAC-TREE-SERVER
  *
  * Description   : Unit test code
  *
@@ -19,12 +19,12 @@
  * of the distribution package.
  ******************************************************************************/
 
-#include <sup/auto-server/automation_server.h>
-#include <sup/auto-server/client_job.h>
-#include <sup/auto-server/control_protocol_server.h>
-#include <sup/auto-server/epics_config_utils.h>
-#include <sup/auto-server/info_protocol_server.h>
-#include <sup/auto-server/sup_auto_protocol.h>
+#include <sup/oac-tree-server/automation_server.h>
+#include <sup/oac-tree-server/client_job.h>
+#include <sup/oac-tree-server/control_protocol_server.h>
+#include <sup/oac-tree-server/epics_config_utils.h>
+#include <sup/oac-tree-server/info_protocol_server.h>
+#include <sup/oac-tree-server/sup_auto_protocol.h>
 
 #include <sup/epics/epics_protocol_factory.h>
 #include <sup/oac-tree/instruction_map.h>

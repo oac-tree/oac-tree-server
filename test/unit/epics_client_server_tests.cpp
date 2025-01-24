@@ -2,7 +2,7 @@
  * $HeadURL: $
  * $Id: $
  *
- * Project       : SUP - AUTOMATION-SERVER
+ * Project       : SUP - OAC-TREE-SERVER
  *
  * Description   : Unit test code
  *
@@ -21,12 +21,12 @@
 
 #include "unit_test_helper.h"
 
-#include <sup/auto-server/anyvalue_io_helper.h>
-#include <sup/auto-server/input_protocol_client.h>
-#include <sup/auto-server/sup_auto_protocol.h>
+#include <sup/oac-tree-server/anyvalue_io_helper.h>
+#include <sup/oac-tree-server/input_protocol_client.h>
+#include <sup/oac-tree-server/sup_auto_protocol.h>
 
-#include <sup/auto-server/epics/epics_anyvalue_manager.h>
-#include <sup/auto-server/epics/epics_io_client.h>
+#include <sup/oac-tree-server/epics/epics_anyvalue_manager.h>
+#include <sup/oac-tree-server/epics/epics_io_client.h>
 
 #include <sup/epics/epics_protocol_factory.h>
 #include <sup/epics/pv_access_rpc_client.h>

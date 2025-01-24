@@ -2,7 +2,7 @@
  * $HeadURL: $
  * $Id: $
  *
- * Project       : SUP - AUTOMATION-SERVER
+ * Project       : SUP - OAC-TREE-SERVER
  *
  * Description   : Unit test code
  *
@@ -19,7 +19,7 @@
  * of the distribution package.
  ******************************************************************************/
 
-#include <sup/auto-server/input_request_server.h>
+#include <sup/oac-tree-server/input_request_server.h>
 
 #include <future>
 

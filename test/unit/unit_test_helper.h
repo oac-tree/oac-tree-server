@@ -19,11 +19,11 @@
  * of the distribution package.
  ******************************************************************************/
 
-#ifndef SUP_AUTO_SERVER_UNIT_TEST_HELPER_H_
-#define SUP_AUTO_SERVER_UNIT_TEST_HELPER_H_
+#ifndef SUP_OAC_TREE_SERVER_UNIT_TEST_HELPER_H_
+#define SUP_OAC_TREE_SERVER_UNIT_TEST_HELPER_H_
 
-#include <sup/auto-server/i_anyvalue_manager_registry.h>
-#include <sup/auto-server/i_job_manager.h>
+#include <sup/oac-tree-server/i_anyvalue_manager_registry.h>
+#include <sup/oac-tree-server/i_job_manager.h>
 
 #include <sup/oac-tree/i_job_info_io.h>
 #include <sup/dto/anyvalue.h>
@@ -221,4 +221,4 @@ void DumpAnyValue(const sup::dto::AnyValue& value);
 
 }  // namespace sup
 
-#endif  // SUP_AUTO_SERVER_UNIT_TEST_HELPER_H_
+#endif  // SUP_OAC_TREE_SERVER_UNIT_TEST_HELPER_H_

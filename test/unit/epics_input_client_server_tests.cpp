@@ -2,7 +2,7 @@
  * $HeadURL: $
  * $Id: $
  *
- * Project       : SUP - AUTOMATION-SERVER
+ * Project       : SUP - OAC-TREE-SERVER
  *
  * Description   : Unit test code
  *
@@ -19,8 +19,8 @@
  * of the distribution package.
  ******************************************************************************/
 
-#include <sup/auto-server/epics/epics_input_client.h>
-#include <sup/auto-server/epics/epics_input_server.h>
+#include <sup/oac-tree-server/epics/epics_input_client.h>
+#include <sup/oac-tree-server/epics/epics_input_server.h>
 
 #include <gtest/gtest.h>
 

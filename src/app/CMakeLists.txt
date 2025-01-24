@@ -1,1 +1,1 @@
-add_subdirectory(sup-automation-server)
+add_subdirectory(oac-tree-server)

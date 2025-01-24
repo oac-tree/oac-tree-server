@@ -2,9 +2,9 @@
  $HeadURL: $
  $Id: $
 
- Project       : SUP automation server
+ Project       : oac-tree server
 
- Description   : The definition and implementation for the SUP automation server.
+ Description   : The definition and implementation for the oac-tree server.
 
  Authors       : CODAC Operation Applications Team
 
@@ -26,9 +26,9 @@
     <artifactId>sup-auto-server</artifactId>
     <packaging>codac</packaging>
     <!-- See ChangeLog file for details -->
-    <version>1.1.0</version>
-    <name>SUP automation server module</name>
-    <description>Library for the SUP automation server</description>
+    <version>2.0.0</version>
+    <name>oac-tree server module</name>
+    <description>Library for the oac-tree server</description>
     <url>http://www.iter.org/</url>
 
     <!-- Project properties -->
@@ -94,6 +94,8 @@
                             <include type="file" source="bin" target="bin">
                                 <include>*</include>
                             </include>
+                            <!-- Symlinks -->
+                            <include type="symlink" link="/bin/sup-automation-server" target="/bin/oac-tree-server" linkroot="CODAC_ROOT" targetroot="CODAC_ROOT" />
                             <!-- Package dependencies -->
                             <requires codac="true">sup-dto</requires>
                             <requires codac="true">sup-epics</requires>
@@ -106,7 +108,7 @@
                         </package>
                         <package name="devel">
                             <!-- CMAKE -->
-                            <include type="file" source="lib/cmake/sup-auto-server" target="lib/cmake/sup-auto-server">
+                            <include type="file" source="lib/cmake/oac-tree-server-shared" target="lib/cmake/oac-tree-server-shared">
                                 <include>*.cmake</include>
                             </include>
                             <!--  Libraries  -->
@@ -114,7 +116,7 @@
                                 <include>*.so</include>
                             </include>
                             <!--  Public API headers  -->
-                            <include type="file" source="include/sup/auto-server" target="include/sup/auto-server">
+                            <include type="file" source="include/sup/oac-tree-server" target="include/sup/oac-tree-server">
                                 <include>*.h</include>
                             </include>
                             <!-- Package dependencies -->

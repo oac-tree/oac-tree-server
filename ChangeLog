@@ -1,5 +1,6 @@
-Changes for 1.1.0:
+Changes for 2.0.0:
 
+- Rename to oac-tree-server
 - Adapt to support sequencer name change to oac-tree
 
 Changes for 1.0.0:

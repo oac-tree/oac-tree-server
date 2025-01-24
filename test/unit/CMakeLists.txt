@@ -24,7 +24,7 @@ target_sources(unit-tests
     protocol_client_server_tests.cpp
     sup_auto_protocol_tests.cpp
     unit_test_helper.cpp
-    ../../src/app/sup-automation-server/utils.cpp
+    ../../src/app/oac-tree-server/utils.cpp
 )
 
 target_include_directories(unit-tests
@@ -43,7 +43,7 @@ target_link_libraries(unit-tests
     GTest::GTest
     GTest::Main
     GTest::gmock
-    sup-auto-server
+    oac-tree-server-shared
     sup-epics::sup-epics
     sup-utils::sup-cli
 )

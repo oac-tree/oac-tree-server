@@ -2,7 +2,7 @@
  * $HeadURL: $
  * $Id: $
  *
- * Project       : SUP - AUTOMATION-SERVER
+ * Project       : SUP - OAC-TREE-SERVER
  *
  * Description   : Unit test code
  *
@@ -21,8 +21,8 @@
 
 #include "unit_test_helper.h"
 
-#include <sup/auto-server/input_protocol_client.h>
-#include <sup/auto-server/input_protocol_server.h>
+#include <sup/oac-tree-server/input_protocol_client.h>
+#include <sup/oac-tree-server/input_protocol_server.h>
 
 #include <gtest/gtest.h>
 

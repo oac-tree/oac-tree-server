@@ -1,1 +1,1 @@
-add_subdirectory(auto-server)
+add_subdirectory(oac-tree-server)

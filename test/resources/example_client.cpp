@@ -2,9 +2,9 @@
  * $HeadURL: $
  * $Id: $
  *
- * Project       : SUP - AUTOMATION-SERVER
+ * Project       : SUP - OAC-TREE-SERVER
  *
- * Description   : SUP automation server
+ * Description   : oac-tree server
  *
  * Author        : Walter Van Herck (IO)
  *
@@ -19,8 +19,8 @@
  * of the distribution package.
  ******************************************************************************/
 
-#include <sup/auto-server/client_job.h>
-#include <sup/auto-server/epics_config_utils.h>
+#include <sup/oac-tree-server/client_job.h>
+#include <sup/oac-tree-server/epics_config_utils.h>
 
 #include <sup/protocol/protocol_rpc_client.h>
 
