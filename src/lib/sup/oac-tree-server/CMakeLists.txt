@@ -1,21 +1,21 @@
-add_library(oac-tree-server-shared SHARED)
-add_library(oac-tree-server-shared::oac-tree-server-shared ALIAS oac-tree-server-shared) # alias for build-tree usage
+add_library(oac-tree-server SHARED)
+add_library(oac-tree-server::oac-tree-server ALIAS oac-tree-server) # alias for build-tree usage
 
 add_subdirectory(base)
 add_subdirectory(epics)
 
-set_target_properties(oac-tree-server-shared PROPERTIES
+set_target_properties(oac-tree-server PROPERTIES
   VERSION ${LIBVERSION}
   SOVERSION ${LIBSOVERSION}
   OUTPUT_NAME oac-tree-server
 )
 
-target_include_directories(oac-tree-server-shared PUBLIC
+target_include_directories(oac-tree-server PUBLIC
   $<INSTALL_INTERFACE:include>
   $<BUILD_INTERFACE:${CMAKE_CURRENT_LIST_DIR}/../..>
 )
 
-target_link_libraries(oac-tree-server-shared
+target_link_libraries(oac-tree-server
   PUBLIC
     oac-tree::oac-tree
     sup-dto::sup-dto
@@ -25,7 +25,7 @@ target_link_libraries(oac-tree-server-shared
 )
 
 # -- Installation --
-install(TARGETS oac-tree-server-shared EXPORT oac-tree-server-shared-targets LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR})
+install(TARGETS oac-tree-server EXPORT oac-tree-server-targets LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR})
 
 install(FILES
   anyvalue_io_helper.h

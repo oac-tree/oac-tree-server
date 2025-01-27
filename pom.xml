@@ -106,7 +106,7 @@
                         </package>
                         <package name="devel">
                             <!-- CMAKE -->
-                            <include type="file" source="lib/cmake/oac-tree-server-shared" target="lib/cmake/oac-tree-server-shared">
+                            <include type="file" source="lib/cmake/oac-tree-server" target="lib/cmake/oac-tree-server">
                                 <include>*.cmake</include>
                             </include>
                             <!--  Libraries  -->

@@ -1,4 +1,4 @@
-target_sources(oac-tree-server-shared
+target_sources(oac-tree-server
   PRIVATE
   anyvalue_update_command.cpp
   anyvalue_update_queue.cpp

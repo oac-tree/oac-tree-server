@@ -43,7 +43,7 @@ target_link_libraries(unit-tests
     GTest::GTest
     GTest::Main
     GTest::gmock
-    oac-tree-server-shared
+    oac-tree-server
     sup-epics::sup-epics
     sup-utils::sup-cli
 )

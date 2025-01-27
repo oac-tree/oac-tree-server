@@ -1,4 +1,4 @@
-target_sources(oac-tree-server-shared
+target_sources(oac-tree-server
   PRIVATE
   anyvalue_io_helper.cpp
   automation_client_stack.cpp
