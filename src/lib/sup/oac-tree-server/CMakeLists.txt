@@ -25,7 +25,7 @@ target_link_libraries(oac-tree-server-shared
 )
 
 # -- Installation --
-install(TARGETS oac-tree-server-shared EXPORT oac-tree-server-targets LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR})
+install(TARGETS oac-tree-server-shared EXPORT oac-tree-server-shared-targets LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR})
 
 install(FILES
   anyvalue_io_helper.h
