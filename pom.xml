@@ -94,8 +94,6 @@
                             <include type="file" source="bin" target="bin">
                                 <include>*</include>
                             </include>
-                            <!-- Symlinks -->
-                            <include type="symlink" link="/bin/sup-automation-server" target="/bin/oac-tree-server" linkroot="CODAC_ROOT" targetroot="CODAC_ROOT" />
                             <!-- Package dependencies -->
                             <requires codac="true">sup-dto</requires>
                             <requires codac="true">sup-epics</requires>
