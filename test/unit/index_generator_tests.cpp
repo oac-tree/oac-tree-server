@@ -23,7 +23,7 @@
 
 #include <gtest/gtest.h>
 
-using namespace sup::auto_server;
+using namespace sup::oac_tree_server;
 
 class IndexGeneratorTest : public ::testing::Test
 {

@@ -28,7 +28,7 @@
 
 namespace sup
 {
-namespace auto_server
+namespace oac_tree_server
 {
 
 class AutomationClientStack::AutomationClientStackImpl
@@ -103,6 +103,6 @@ IJobManager& AutomationClientStack::AutomationClientStackImpl::GetJobManager()
   return m_auto_protocol_client;
 }
 
-}  // namespace auto_server
+}  // namespace oac_tree_server
 
 }  // namespace sup

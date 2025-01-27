@@ -27,7 +27,7 @@
 
 namespace sup
 {
-namespace auto_server
+namespace oac_tree_server
 {
 class ClientJobImpl
 {
@@ -187,6 +187,6 @@ const sup::oac_tree::JobInfo& ClientJobImpl::GetInfo() const
   return *m_job_info;
 }
 
-}  // namespace auto_server
+}  // namespace oac_tree_server
 
 }  // namespace sup

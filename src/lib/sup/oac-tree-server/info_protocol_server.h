@@ -29,7 +29,7 @@
 
 namespace sup
 {
-namespace auto_server
+namespace oac_tree_server
 {
 /**
  * @brief InfoProtocolServer provides the server side protocol for requests to get information about
@@ -58,7 +58,7 @@ private:
                                            sup::dto::AnyValue& output);
 };
 
-}  // namespace auto_server
+}  // namespace oac_tree_server
 
 }  // namespace sup
 

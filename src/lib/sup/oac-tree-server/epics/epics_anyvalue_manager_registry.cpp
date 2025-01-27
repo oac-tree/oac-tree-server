@@ -25,7 +25,7 @@
 
 namespace sup
 {
-namespace auto_server
+namespace oac_tree_server
 {
 
 EPICSAnyValueManagerRegistry::EPICSAnyValueManagerRegistry(sup::dto::uint32 n_managers)
@@ -46,6 +46,6 @@ IAnyValueManager& EPICSAnyValueManagerRegistry::GetAnyValueManager(sup::dto::uin
   return *m_anyvalue_managers[valid_idx];
 }
 
-}  // namespace auto_server
+}  // namespace oac_tree_server
 
 }  // namespace sup

@@ -26,7 +26,7 @@
 #include <gtest/gtest.h>
 #include <thread>
 
-using namespace sup::auto_server;
+using namespace sup::oac_tree_server;
 
 using sup::oac_tree::kInvalidUserInputReply;
 using sup::oac_tree::InputRequestType;

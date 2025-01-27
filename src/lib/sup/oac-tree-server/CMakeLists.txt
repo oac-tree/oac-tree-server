@@ -49,9 +49,9 @@ install(FILES
   input_reply_helper.h
   input_request_helper.h
   input_request_server.h
+  oac_tree_protocol.h
   output_entry_helper.h
   output_entry_types.h
   server_job_info_io.h
-  sup_auto_protocol.h
   DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/sup/oac-tree-server
 )

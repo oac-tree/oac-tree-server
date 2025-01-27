@@ -21,7 +21,7 @@
 
 #include <sup/oac-tree-server/control_protocol_server.h>
 
-#include <sup/oac-tree-server/sup_auto_protocol.h>
+#include <sup/oac-tree-server/oac_tree_protocol.h>
 
 #include <sup/protocol/function_protocol_extract.h>
 #include <sup/protocol/protocol_rpc.h>
@@ -34,7 +34,7 @@ sup::protocol::ProtocolResult ExtractJobCommand(const sup::dto::AnyValue& input,
 
 namespace sup
 {
-namespace auto_server
+namespace oac_tree_server
 {
 
 ControlProtocolServer::ControlProtocolServer(IJobManager& job_manager)
@@ -117,13 +117,13 @@ sup::protocol::ProtocolResult ControlProtocolServer::SendJobCommand(
   return sup::protocol::Success;
 }
 
-}  // namespace auto_server
+}  // namespace oac_tree_server
 
 }  // namespace sup
 
 namespace
 {
-using namespace sup::auto_server;
+using namespace sup::oac_tree_server;
 sup::protocol::ProtocolResult ExtractJobCommand(const sup::dto::AnyValue& input,
                                                 sup::oac_tree::JobCommand& command)
 {

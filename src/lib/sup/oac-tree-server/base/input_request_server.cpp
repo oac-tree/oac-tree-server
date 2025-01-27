@@ -28,7 +28,7 @@ bool IsValid(const sup::oac_tree::UserInputReply& reply);
 
 namespace sup
 {
-namespace auto_server
+namespace oac_tree_server
 {
 
 using sup::oac_tree::kInvalidUserInputReply;
@@ -103,7 +103,7 @@ void InputRequestServer::Interrupt(sup::dto::uint64 id)
   m_cv.notify_one();
 }
 
-}  // namespace auto_server
+}  // namespace oac_tree_server
 
 }  // namespace sup
 

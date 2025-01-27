@@ -29,7 +29,7 @@
 
 namespace sup
 {
-namespace auto_server
+namespace oac_tree_server
 {
 /**
  * @brief Implementation of IJobInfoIO that delegates its calls to an IAnyValueManager
@@ -77,7 +77,7 @@ private:
   IndexGenerator m_out_val_idx_gen;
 };
 
-}  // namespace auto_server
+}  // namespace oac_tree_server
 
 }  // namespace sup
 

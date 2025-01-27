@@ -28,7 +28,7 @@
 #include <future>
 #include <thread>
 
-using namespace sup::auto_server;
+using namespace sup::oac_tree_server;
 
 class EPICSInputClientServerTest : public ::testing::Test
 {

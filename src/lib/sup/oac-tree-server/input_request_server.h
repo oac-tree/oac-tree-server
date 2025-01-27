@@ -30,7 +30,7 @@
 
 namespace sup
 {
-namespace auto_server
+namespace oac_tree_server
 {
 
 using sup::oac_tree::UserInputReply;
@@ -96,7 +96,7 @@ private:
   std::condition_variable m_cv;
 };
 
-}  // namespace auto_server
+}  // namespace oac_tree_server
 
 }  // namespace sup
 

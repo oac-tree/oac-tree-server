@@ -30,7 +30,7 @@
 
 namespace sup
 {
-namespace auto_server
+namespace oac_tree_server
 {
 /**
  * @brief AutomationClientStack creates a client IJobManager that takes ownership of the whole
@@ -57,7 +57,7 @@ private:
   std::unique_ptr<AutomationClientStackImpl> m_impl;
 };
 
-}  // namespace auto_server
+}  // namespace oac_tree_server
 
 }  // namespace sup
 

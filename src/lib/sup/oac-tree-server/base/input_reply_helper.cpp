@@ -22,7 +22,7 @@
 #include <sup/oac-tree-server/input_reply_helper.h>
 
 #include <sup/oac-tree-server/exceptions.h>
-#include <sup/oac-tree-server/sup_auto_protocol.h>
+#include <sup/oac-tree-server/oac_tree_protocol.h>
 
 #include <sup/dto/anytype_helper.h>
 #include <sup/dto/anyvalue_helper.h>
@@ -36,7 +36,7 @@ bool ValidateInputReplyPayload(const sup::dto::AnyValue& payload);
 
 namespace sup
 {
-namespace auto_server
+namespace oac_tree_server
 {
 using sup::oac_tree::utils::ValidateMemberType;
 using namespace sup::oac_tree;
@@ -76,13 +76,13 @@ std::tuple<bool, sup::dto::uint64, UserInputReply> DecodeInputReply(
   return { true, req_idx, input_reply };
 }
 
-}  // namespace auto_server
+}  // namespace oac_tree_server
 
 }  // namespace sup
 
 namespace
 {
-using namespace sup::auto_server;
+using namespace sup::oac_tree_server;
 bool ValidateInputReplyPayload(const sup::dto::AnyValue& payload)
 {
   if (!ValidateMemberType(payload, kInputReplyIndexField, sup::dto::UnsignedInteger64Type))

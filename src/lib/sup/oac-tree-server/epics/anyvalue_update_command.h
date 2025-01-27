@@ -29,7 +29,7 @@
 namespace sup
 {
 
-namespace auto_server
+namespace oac_tree_server
 {
 
 /**
@@ -69,7 +69,7 @@ private:
   sup::dto::AnyValue m_value;
 };
 
-}  // namespace auto_server
+}  // namespace oac_tree_server
 
 }  // namespace sup
 

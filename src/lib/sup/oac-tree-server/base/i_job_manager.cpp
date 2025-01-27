@@ -23,11 +23,11 @@
 
 namespace sup
 {
-namespace auto_server
+namespace oac_tree_server
 {
 
 IJobManager::~IJobManager() = default;
 
-}  // namespace auto_server
+}  // namespace oac_tree_server
 
 }  // namespace sup

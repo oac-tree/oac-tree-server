@@ -23,7 +23,7 @@
 #define SUP_OAC_TREE_SERVER_CLIENT_ANYVALUE_MANAGER_H_
 
 #include <sup/oac-tree-server/i_anyvalue_manager.h>
-#include <sup/oac-tree-server/sup_auto_protocol.h>
+#include <sup/oac-tree-server/oac_tree_protocol.h>
 
 #include <sup/oac-tree/i_job_info_io.h>
 
@@ -32,7 +32,7 @@
 
 namespace sup
 {
-namespace auto_server
+namespace oac_tree_server
 {
 
 /**
@@ -65,7 +65,7 @@ private:
 
 ClientAnyValueManager::AnyValueCallback CreateCallback(const ValueNameInfo& value_name_info);
 
-}  // namespace auto_server
+}  // namespace oac_tree_server
 
 }  // namespace sup
 

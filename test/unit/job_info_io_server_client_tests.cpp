@@ -35,7 +35,7 @@ using ::testing::InSequence;
 using ::testing::Return;
 using ::testing::SetArgReferee;
 
-using namespace sup::auto_server;
+using namespace sup::oac_tree_server;
 
 using sup::oac_tree::InstructionState;
 

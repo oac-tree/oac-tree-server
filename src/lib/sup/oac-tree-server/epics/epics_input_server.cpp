@@ -26,7 +26,7 @@
 
 namespace sup
 {
-namespace auto_server
+namespace oac_tree_server
 {
 EPICSInputServer::EPICSInputServer(const std::string& server_name)
   : m_protocol_server{}
@@ -51,7 +51,7 @@ void EPICSInputServer::Interrupt(sup::dto::uint64 id)
   m_protocol_server.Interrupt(id);
 }
 
-}  // namespace auto_server
+}  // namespace oac_tree_server
 
 }  // namespace sup
 

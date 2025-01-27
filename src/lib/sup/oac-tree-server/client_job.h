@@ -32,7 +32,7 @@
 
 namespace sup
 {
-namespace auto_server
+namespace oac_tree_server
 {
 class ClientJobImpl;
 /**
@@ -78,7 +78,7 @@ std::unique_ptr<sup::oac_tree::IJob> CreateClientJob(
     IJobManager &job_manager, sup::dto::uint32 job_idx,
     const AnyValueIOFactoryFunction &factory_func, sup::oac_tree::IJobInfoIO &job_info_io);
 
-}  // namespace auto_server
+}  // namespace oac_tree_server
 
 }  // namespace sup
 

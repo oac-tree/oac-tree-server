@@ -20,8 +20,8 @@ target_sources(oac-tree-server-shared
   input_reply_helper.cpp
   input_request_helper.cpp
   input_request_server.cpp
+  oac_tree_protocol.cpp
   output_entry_helper.cpp
   output_entry_types.cpp
   server_job_info_io.cpp
-  sup_auto_protocol.cpp
 )

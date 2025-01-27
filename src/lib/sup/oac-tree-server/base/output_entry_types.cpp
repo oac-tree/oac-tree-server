@@ -23,7 +23,7 @@
 
 namespace sup
 {
-namespace auto_server
+namespace oac_tree_server
 {
 
 bool operator==(const LogEntry& left, const LogEntry& right)
@@ -88,6 +88,6 @@ bool operator!=(const OutputValueEntry& left, const OutputValueEntry& right)
   return !(left == right);
 }
 
-}  // namespace auto_server
+}  // namespace oac_tree_server
 
 }  // namespace sup

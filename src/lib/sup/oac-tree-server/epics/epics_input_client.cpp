@@ -26,7 +26,7 @@
 
 namespace sup
 {
-namespace auto_server
+namespace oac_tree_server
 {
 
 EPICSInputClient::EPICSInputClient(const std::string& server_name)
@@ -42,6 +42,6 @@ bool EPICSInputClient::SetClientReply(sup::dto::uint64 id, const UserInputReply&
   return m_protocol_client.SetClientReply(id, reply);
 }
 
-}  // namespace auto_server
+}  // namespace oac_tree_server
 
 }  // namespace sup

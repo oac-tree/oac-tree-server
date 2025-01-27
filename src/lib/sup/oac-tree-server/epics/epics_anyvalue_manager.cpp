@@ -25,11 +25,11 @@
 #include "epics_server.h"
 
 #include <sup/oac-tree-server/input_request_helper.h>
-#include <sup/oac-tree-server/sup_auto_protocol.h>
+#include <sup/oac-tree-server/oac_tree_protocol.h>
 
 namespace sup
 {
-namespace auto_server
+namespace oac_tree_server
 {
 
 EPICSAnyValueManager::EPICSAnyValueManager()
@@ -178,6 +178,6 @@ EPICSInputServer* EPICSAnyValueManager::FindInputServer(const std::string& serve
   return iter->second;
 }
 
-}  // namespace auto_server
+}  // namespace oac_tree_server
 
 }  // namespace sup

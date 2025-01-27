@@ -30,7 +30,7 @@
 
 namespace sup
 {
-namespace auto_server
+namespace oac_tree_server
 {
 
 /**
@@ -70,7 +70,7 @@ private:
   std::future<void> m_update_future;
 };
 
-}  // namespace auto_server
+}  // namespace oac_tree_server
 
 }  // namespace sup
 

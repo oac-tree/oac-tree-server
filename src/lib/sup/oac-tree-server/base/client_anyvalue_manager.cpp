@@ -29,7 +29,7 @@
 
 namespace
 {
-using namespace sup::auto_server;
+using namespace sup::oac_tree_server;
 using sup::oac_tree::IJobInfoIO;
 
 void UpdateJobState(IJobInfoIO& job_info_io, const sup::dto::AnyValue& anyvalue);
@@ -45,7 +45,7 @@ void UpdateNextInstructions(IJobInfoIO& job_info_io, const sup::dto::AnyValue& a
 
 namespace sup
 {
-namespace auto_server
+namespace oac_tree_server
 {
 
 using namespace sup::oac_tree;
@@ -181,7 +181,7 @@ ClientAnyValueManager::AnyValueCallback CreateCallback(const ValueNameInfo& valu
   return ignore;
 }
 
-}  // namespace auto_server
+}  // namespace oac_tree_server
 
 }  // namespace sup
 

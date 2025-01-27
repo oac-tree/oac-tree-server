@@ -30,7 +30,7 @@
 
 namespace sup
 {
-namespace auto_server
+namespace oac_tree_server
 {
 
 /**
@@ -56,7 +56,7 @@ private:
   InputProtocolClient m_protocol_client;
 };
 
-}  // namespace auto_server
+}  // namespace oac_tree_server
 
 }  // namespace sup
 

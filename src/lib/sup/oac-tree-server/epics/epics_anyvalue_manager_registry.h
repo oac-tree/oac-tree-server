@@ -26,7 +26,7 @@
 
 namespace sup
 {
-namespace auto_server
+namespace oac_tree_server
 {
 
   /**
@@ -46,7 +46,7 @@ private:
   std::vector<std::unique_ptr<IAnyValueManager>> m_anyvalue_managers;
 };
 
-}  // namespace auto_server
+}  // namespace oac_tree_server
 
 }  // namespace sup
 

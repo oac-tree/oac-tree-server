@@ -34,7 +34,7 @@
 
 namespace sup
 {
-namespace auto_server
+namespace oac_tree_server
 {
 /**
  * @brief Server implementation of the IJobManager interface. This class manages multiple jobs,
@@ -73,7 +73,7 @@ private:
 
 sup::dto::uint32 GetNumberOfVariables(const sup::oac_tree::Procedure& proc);
 
-}  // namespace auto_server
+}  // namespace oac_tree_server
 
 }  // namespace sup
 

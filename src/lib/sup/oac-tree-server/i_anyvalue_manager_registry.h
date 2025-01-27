@@ -26,7 +26,7 @@
 
 namespace sup
 {
-namespace auto_server
+namespace oac_tree_server
 {
 
   /**
@@ -52,7 +52,7 @@ public:
   virtual IAnyValueManager& GetAnyValueManager(sup::dto::uint32 idx) = 0;
 };
 
-}  // namespace auto_server
+}  // namespace oac_tree_server
 
 }  // namespace sup
 

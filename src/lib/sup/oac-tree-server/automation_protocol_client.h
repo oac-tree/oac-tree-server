@@ -28,7 +28,7 @@
 
 namespace sup
 {
-namespace auto_server
+namespace oac_tree_server
 {
 /**
  * @brief AutomationProtocolClient.
@@ -55,7 +55,7 @@ private:
   sup::protocol::Protocol& m_control_protocol;
 };
 
-}  // namespace auto_server
+}  // namespace oac_tree_server
 
 }  // namespace sup
 

@@ -30,7 +30,7 @@
 
 namespace sup
 {
-namespace auto_server
+namespace oac_tree_server
 {
 namespace UnitTestHelper
 {
@@ -343,6 +343,6 @@ void DumpAnyValue(const sup::dto::AnyValue& value)
 
 }  // namespace UnitTestHelper
 
-}  // namespace auto_server
+}  // namespace oac_tree_server
 
 }  // namespace sup

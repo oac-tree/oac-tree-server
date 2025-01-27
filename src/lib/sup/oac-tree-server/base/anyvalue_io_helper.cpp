@@ -21,11 +21,11 @@
 
 #include <sup/oac-tree-server/anyvalue_io_helper.h>
 
-#include <sup/oac-tree-server/sup_auto_protocol.h>
+#include <sup/oac-tree-server/oac_tree_protocol.h>
 
 namespace sup
 {
-namespace auto_server
+namespace oac_tree_server
 {
 
 void InitializeJobAndVariables(IAnyValueIO& anyvalue_io, const std::string& job_prefix,
@@ -44,6 +44,6 @@ void InitializeInstructions(IAnyValueIO& anyvalue_io, const std::string& job_pre
   anyvalue_io.AddAnyValues(instr_value_set);
 }
 
-}  // namespace auto_server
+}  // namespace oac_tree_server
 
 }  // namespace sup

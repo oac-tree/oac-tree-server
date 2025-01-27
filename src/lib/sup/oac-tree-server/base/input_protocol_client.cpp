@@ -22,14 +22,14 @@
 #include <sup/oac-tree-server/input_protocol_client.h>
 
 #include <sup/oac-tree-server/input_reply_helper.h>
-#include <sup/oac-tree-server/sup_auto_protocol.h>
+#include <sup/oac-tree-server/oac_tree_protocol.h>
 
 #include <sup/protocol/function_protocol.h>
 #include <sup/protocol/function_protocol_pack.h>
 
 namespace sup
 {
-namespace auto_server
+namespace oac_tree_server
 {
 
 InputProtocolClient::InputProtocolClient(sup::protocol::Protocol& protocol)
@@ -52,6 +52,6 @@ bool InputProtocolClient::SetClientReply(sup::dto::uint64 id, const UserInputRep
   return true;
 }
 
-}  // namespace auto_server
+}  // namespace oac_tree_server
 
 }  // namespace sup

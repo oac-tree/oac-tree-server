@@ -25,7 +25,7 @@
 
 namespace sup
 {
-namespace auto_server
+namespace oac_tree_server
 {
 
 ClientReplyDelegator::ClientReplyDelegator(ReplyFunction reply_func, InterruptFunction interrupt_func)
@@ -96,6 +96,6 @@ void ClientReplyDelegator::Halt()
   m_cv.notify_one();
 }
 
-}  // namespace auto_server
+}  // namespace oac_tree_server
 
 }  // namespace sup

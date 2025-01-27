@@ -35,7 +35,7 @@
 namespace sup
 {
 
-namespace auto_server
+namespace oac_tree_server
 {
 
 /**
@@ -82,7 +82,7 @@ private:
 using ValueUpdateFunction = std::function<void(const std::string&, const sup::dto::AnyValue&)>;
 bool ProcessCommandQueue(std::deque<AnyValueUpdateCommand>& queue, const ValueUpdateFunction& func);
 
-}  // namespace auto_server
+}  // namespace oac_tree_server
 
 }  // namespace sup
 

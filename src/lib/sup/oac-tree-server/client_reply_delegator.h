@@ -33,7 +33,7 @@
 
 namespace sup
 {
-namespace auto_server
+namespace oac_tree_server
 {
 using sup::oac_tree::UserInputReply;
 
@@ -78,7 +78,7 @@ private:
   std::thread m_delegatee;
 };
 
-}  // namespace auto_server
+}  // namespace oac_tree_server
 
 }  // namespace sup
 

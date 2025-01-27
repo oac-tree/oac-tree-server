@@ -23,7 +23,7 @@
 
 namespace sup
 {
-namespace auto_server
+namespace oac_tree_server
 {
 
 MessageException::MessageException(std::string message)
@@ -39,6 +39,6 @@ InvalidOperationException::InvalidOperationException(const std::string& message)
   : MessageException{message}
 {}
 
-}  // namespace auto_server
+}  // namespace oac_tree_server
 
 }  // namespace sup

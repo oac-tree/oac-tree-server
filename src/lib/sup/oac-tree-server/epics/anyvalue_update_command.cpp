@@ -23,7 +23,7 @@
 
 namespace sup
 {
-namespace auto_server
+namespace oac_tree_server
 {
 
 AnyValueUpdateCommand AnyValueUpdateCommand::CreateValueUpdate(const std::string& channel,
@@ -71,6 +71,6 @@ AnyValueUpdateCommand::AnyValueUpdateCommand(CommandType command_type, std::stri
   , m_value{std::move(value)}
 {}
 
-}  // namespace auto_server
+}  // namespace oac_tree_server
 
 }  // namespace sup

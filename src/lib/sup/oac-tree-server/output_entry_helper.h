@@ -28,7 +28,7 @@
 
 namespace sup
 {
-namespace auto_server
+namespace oac_tree_server
 {
 
 bool ValidateLogEntryAnyValue(const sup::dto::AnyValue& anyvalue);
@@ -49,7 +49,7 @@ sup::dto::AnyValue EncodeOutputValueEntry(const OutputValueEntry& output_entry);
 
 std::pair<bool, OutputValueEntry> DecodeOutputValueEntry(const sup::dto::AnyValue& anyvalue);
 
-}  // namespace auto_server
+}  // namespace oac_tree_server
 
 }  // namespace sup
 

@@ -29,7 +29,7 @@
 
 namespace sup
 {
-namespace auto_server
+namespace oac_tree_server
 {
 
 /**
@@ -85,7 +85,7 @@ public:
   virtual void SendJobCommand(sup::dto::uint32 job_idx, sup::oac_tree::JobCommand command) = 0;
 };
 
-}  // namespace auto_server
+}  // namespace oac_tree_server
 
 }  // namespace sup
 

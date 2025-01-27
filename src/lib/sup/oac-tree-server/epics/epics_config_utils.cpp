@@ -23,13 +23,13 @@
 
 #include <sup/oac-tree-server/automation_client_stack.h>
 #include <sup/oac-tree-server/epics/epics_anyvalue_manager_registry.h>
-#include <sup/oac-tree-server/sup_auto_protocol.h>
+#include <sup/oac-tree-server/oac_tree_protocol.h>
 #include <sup/epics/epics_protocol_factory.h>
 #include <sup/epics/pv_access_rpc_client.h>
 
 namespace sup
 {
-namespace auto_server
+namespace oac_tree_server
 {
 namespace utils
 {
@@ -60,6 +60,6 @@ std::unique_ptr<IAnyValueManagerRegistry> CreateEPICSAnyValueManagerRegistry(
 
 }  // namespace utils
 
-}  // namespace auto_server
+}  // namespace oac_tree_server
 
 }  // namespace sup

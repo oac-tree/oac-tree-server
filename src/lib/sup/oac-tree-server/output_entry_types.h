@@ -28,7 +28,7 @@
 
 namespace sup
 {
-namespace auto_server
+namespace oac_tree_server
 {
 
 struct LogEntry
@@ -60,7 +60,7 @@ struct OutputValueEntry
 bool operator==(const OutputValueEntry& left, const OutputValueEntry& right);
 bool operator!=(const OutputValueEntry& left, const OutputValueEntry& right);
 
-}  // namespace auto_server
+}  // namespace oac_tree_server
 
 }  // namespace sup
 

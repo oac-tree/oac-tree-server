@@ -27,7 +27,7 @@
 #include <chrono>
 #include <thread>
 
-using namespace sup::auto_server;
+using namespace sup::oac_tree_server;
 
 const std::string kAutoServerName = "CTRL-SUP-AUTO:TEST-SERVER";
 

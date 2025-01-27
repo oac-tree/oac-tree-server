@@ -31,7 +31,7 @@
 
 namespace sup
 {
-namespace auto_server
+namespace oac_tree_server
 {
 
 using sup::oac_tree::UserInputReply;
@@ -83,7 +83,7 @@ private:
   std::unique_ptr<sup::protocol::RPCServerInterface> m_server_stack;
 };
 
-}  // namespace auto_server
+}  // namespace oac_tree_server
 
 }  // namespace sup
 

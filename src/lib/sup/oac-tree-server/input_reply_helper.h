@@ -30,7 +30,7 @@
 
 namespace sup
 {
-namespace auto_server
+namespace oac_tree_server
 {
 
 using sup::oac_tree::UserInputReply;
@@ -54,7 +54,7 @@ sup::dto::AnyValue EncodeInputReply(sup::dto::uint64 id, const UserInputReply& i
  */
 std::tuple<bool, sup::dto::uint64, UserInputReply> DecodeInputReply(const dto::AnyValue& encoded);
 
-}  // namespace auto_server
+}  // namespace oac_tree_server
 
 }  // namespace sup
 

@@ -23,7 +23,7 @@
 
 #include <sup/oac-tree-server/anyvalue_io_helper.h>
 #include <sup/oac-tree-server/input_protocol_client.h>
-#include <sup/oac-tree-server/sup_auto_protocol.h>
+#include <sup/oac-tree-server/oac_tree_protocol.h>
 
 #include <sup/oac-tree-server/epics/epics_anyvalue_manager.h>
 #include <sup/oac-tree-server/epics/epics_io_client.h>
@@ -37,7 +37,7 @@
 
 using ::testing::Exactly;
 
-using namespace sup::auto_server;
+using namespace sup::oac_tree_server;
 
 namespace
 {

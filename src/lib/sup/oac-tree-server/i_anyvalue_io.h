@@ -32,7 +32,7 @@
 
 namespace sup
 {
-namespace auto_server
+namespace oac_tree_server
 {
 class IAnyValueManager;
 
@@ -101,7 +101,7 @@ IAnyValueIO::NameAnyValueSet GetInstructionValueSet(const std::string& job_prefi
 using AnyValueIOFactoryFunction =
   std::function<std::unique_ptr<IAnyValueIO>(IAnyValueManager&)>;
 
-}  // namespace auto_server
+}  // namespace oac_tree_server
 
 }  // namespace sup
 

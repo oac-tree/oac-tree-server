@@ -21,7 +21,7 @@
 
 #include <sup/oac-tree-server/info_protocol_server.h>
 
-#include <sup/oac-tree-server/sup_auto_protocol.h>
+#include <sup/oac-tree-server/oac_tree_protocol.h>
 
 #include <sup/dto/anyvalue_helper.h>
 #include <sup/protocol/function_protocol_extract.h>
@@ -31,7 +31,7 @@
 
 namespace sup
 {
-namespace auto_server
+namespace oac_tree_server
 {
 
 InfoProtocolServer::InfoProtocolServer(IJobManager& job_manager)
@@ -116,6 +116,6 @@ sup::protocol::ProtocolResult InfoProtocolServer::GetJobInfo(
   return sup::protocol::Success;
 }
 
-}  // namespace auto_server
+}  // namespace oac_tree_server
 
 }  // namespace sup

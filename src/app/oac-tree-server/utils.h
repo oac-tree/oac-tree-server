@@ -31,7 +31,7 @@
 
 namespace sup
 {
-namespace auto_server
+namespace oac_tree_server
 {
 namespace utils
 {
@@ -43,7 +43,7 @@ ProcedureList GetProcedureList(sup::cli::CommandLineParser& parser);
 
 }  // namespace utils
 
-}  // namespace auto_server
+}  // namespace oac_tree_server
 
 }  // namespace sup
 

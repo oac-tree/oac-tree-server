@@ -27,7 +27,7 @@
 
 #include <functional>
 
-using namespace sup::auto_server;
+using namespace sup::oac_tree_server;
 using namespace std::placeholders;
 
 class ClientReplyDelegatorTest : public ::testing::Test

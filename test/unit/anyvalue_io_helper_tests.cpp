@@ -22,14 +22,14 @@
 #include "unit_test_helper.h"
 
 #include <sup/oac-tree-server/anyvalue_io_helper.h>
-#include <sup/oac-tree-server/sup_auto_protocol.h>
+#include <sup/oac-tree-server/oac_tree_protocol.h>
 
 #include <gtest/gtest.h>
 
 using ::testing::_;
 using ::testing::Exactly;
 
-using namespace sup::auto_server;
+using namespace sup::oac_tree_server;
 
 class AnyValueIOHelperTest : public ::testing::Test
 {

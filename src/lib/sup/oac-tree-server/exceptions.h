@@ -27,7 +27,7 @@
 
 namespace sup
 {
-namespace auto_server
+namespace oac_tree_server
 {
 
   /**
@@ -51,7 +51,7 @@ public:
   explicit InvalidOperationException(const std::string& message);
 };
 
-}  // namespace auto_server
+}  // namespace oac_tree_server
 
 }  // namespace sup
 

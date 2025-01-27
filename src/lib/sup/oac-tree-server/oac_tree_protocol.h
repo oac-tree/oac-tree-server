@@ -31,7 +31,7 @@
 
 namespace sup
 {
-namespace auto_server
+namespace oac_tree_server
 {
 
 // Prefix suggestion: e.g. for CC2D loop:
@@ -392,7 +392,7 @@ sup::dto::AnyValue Base64EncodeAnyValue(const sup::dto::AnyValue& value);
  */
 std::pair<bool, sup::dto::AnyValue> Base64DecodeAnyValue(const sup::dto::AnyValue& value);
 
-}  // namespace auto_server
+}  // namespace oac_tree_server
 
 }  // namespace sup
 

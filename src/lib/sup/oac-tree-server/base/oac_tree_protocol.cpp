@@ -19,7 +19,7 @@
  * of the distribution package.
  ******************************************************************************/
 
-#include <sup/oac-tree-server/sup_auto_protocol.h>
+#include <sup/oac-tree-server/oac_tree_protocol.h>
 
 #include <sup/oac-tree-server/exceptions.h>
 
@@ -53,7 +53,7 @@ bool ParseIndex(const std::string& idx_str, sup::dto::uint32& idx);
 
 namespace sup
 {
-namespace auto_server
+namespace oac_tree_server
 {
 
 const sup::dto::AnyValue kVariableAnyValue = {{
@@ -339,13 +339,13 @@ std::pair<bool, sup::dto::AnyValue> Base64DecodeAnyValue(const sup::dto::AnyValu
   return { false, {} };
 }
 
-}  // namespace auto_server
+}  // namespace oac_tree_server
 
 }  // namespace sup
 
 namespace
 {
-using namespace sup::auto_server;
+using namespace sup::oac_tree_server;
 bool ValidateVariableAnyValue(const sup::dto::AnyValue& var_value)
 {
   if (!var_value.HasField(kVariableValueField))

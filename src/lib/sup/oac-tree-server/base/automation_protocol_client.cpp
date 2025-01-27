@@ -22,7 +22,7 @@
 #include <sup/oac-tree-server/automation_protocol_client.h>
 
 #include <sup/oac-tree-server/exceptions.h>
-#include <sup/oac-tree-server/sup_auto_protocol.h>
+#include <sup/oac-tree-server/oac_tree_protocol.h>
 
 #include <sup/protocol/function_protocol.h>
 #include <sup/protocol/function_protocol_extract.h>
@@ -32,7 +32,7 @@
 
 namespace sup
 {
-namespace auto_server
+namespace oac_tree_server
 {
 AutomationProtocolClient::AutomationProtocolClient(sup::protocol::Protocol& info_protocol,
                                                    sup::protocol::Protocol& control_protocol)
@@ -155,6 +155,6 @@ void AutomationProtocolClient::SendJobCommand(sup::dto::uint32 job_idx, sup::oac
   }
 }
 
-}  // namespace auto_server
+}  // namespace oac_tree_server
 
 }  // namespace sup

@@ -20,11 +20,11 @@
  ******************************************************************************/
 
 #include <sup/oac-tree-server/input_request_helper.h>
-#include <sup/oac-tree-server/sup_auto_protocol.h>
+#include <sup/oac-tree-server/oac_tree_protocol.h>
 
 #include <gtest/gtest.h>
 
-using namespace sup::auto_server;
+using namespace sup::oac_tree_server;
 
 using sup::oac_tree::InputRequestType;
 using sup::oac_tree::kInvalidUserInputRequest;

@@ -22,7 +22,7 @@
 #include <sup/oac-tree-server/automation_protocol_client.h>
 #include <sup/oac-tree-server/control_protocol_server.h>
 #include <sup/oac-tree-server/info_protocol_server.h>
-#include <sup/oac-tree-server/sup_auto_protocol.h>
+#include <sup/oac-tree-server/oac_tree_protocol.h>
 
 #include <sup/oac-tree/instruction_map.h>
 #include <sup/oac-tree/job_info_utils.h>
@@ -36,7 +36,7 @@ using ::testing::_;
 using ::testing::Exactly;
 using ::testing::Return;
 
-using namespace sup::auto_server;
+using namespace sup::oac_tree_server;
 
 const std::string kTestAutomationServiceName = "Test::ProtocolClientServer";
 

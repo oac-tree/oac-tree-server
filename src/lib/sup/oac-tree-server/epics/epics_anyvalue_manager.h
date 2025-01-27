@@ -30,7 +30,7 @@
 
 namespace sup
 {
-namespace auto_server
+namespace oac_tree_server
 {
 class EPICSServer;
 class EPICSInputServer;
@@ -66,7 +66,7 @@ private:
   std::vector<std::unique_ptr<EPICSInputServer>> m_input_servers;
 };
 
-}  // namespace auto_server
+}  // namespace oac_tree_server
 
 }  // namespace sup
 

@@ -28,7 +28,7 @@
 
 namespace sup
 {
-namespace auto_server
+namespace oac_tree_server
 {
 class EPICSIOClientImpl;
 /**
@@ -48,7 +48,7 @@ private:
   std::unique_ptr<EPICSIOClientImpl> m_impl;
 };
 
-}  // namespace auto_server
+}  // namespace oac_tree_server
 
 }  // namespace sup
 

@@ -24,7 +24,7 @@
 #include <sup/oac-tree-server/control_protocol_server.h>
 #include <sup/oac-tree-server/info_protocol_server.h>
 #include <sup/oac-tree-server/automation_server.h>
-#include <sup/oac-tree-server/sup_auto_protocol.h>
+#include <sup/oac-tree-server/oac_tree_protocol.h>
 #include <sup/oac-tree-server/epics_config_utils.h>
 
 #include <sup/cli/command_line_parser.h>
@@ -34,7 +34,7 @@
 #include <iostream>
 #include <thread>
 
-using namespace sup::auto_server;
+using namespace sup::oac_tree_server;
 
 int main(int argc, char* argv[])
 {

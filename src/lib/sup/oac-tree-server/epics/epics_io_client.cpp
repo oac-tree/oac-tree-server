@@ -25,7 +25,7 @@
 
 #include <sup/oac-tree-server/i_anyvalue_manager.h>
 #include <sup/oac-tree-server/client_reply_delegator.h>
-#include <sup/oac-tree-server/sup_auto_protocol.h>
+#include <sup/oac-tree-server/oac_tree_protocol.h>
 
 #include <sup/epics/pv_access_client_pv.h>
 #include <sup/oac-tree/user_input_request.h>
@@ -35,7 +35,7 @@
 
 namespace sup
 {
-namespace auto_server
+namespace oac_tree_server
 {
 using sup::oac_tree::UserInputRequest;
 using namespace std::placeholders;
@@ -162,6 +162,6 @@ void EPICSIOClientImpl::HandleUserInput(const std::string& input_server_name,
   m_reply_delegator->QueueReply(id, reply);
 }
 
-}  // namespace auto_server
+}  // namespace oac_tree_server
 
 }  // namespace sup

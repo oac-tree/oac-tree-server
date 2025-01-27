@@ -22,11 +22,11 @@
 #include "unit_test_helper.h"
 
 #include <sup/oac-tree-server/client_anyvalue_manager.h>
-#include <sup/oac-tree-server/sup_auto_protocol.h>
+#include <sup/oac-tree-server/oac_tree_protocol.h>
 
 #include <gtest/gtest.h>
 
-using namespace sup::auto_server;
+using namespace sup::oac_tree_server;
 
 using ::testing::_;
 using ::testing::InSequence;

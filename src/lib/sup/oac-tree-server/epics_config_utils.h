@@ -31,7 +31,7 @@
 
 namespace sup
 {
-namespace auto_server
+namespace oac_tree_server
 {
 namespace utils
 {
@@ -45,7 +45,7 @@ std::unique_ptr<IAnyValueManagerRegistry> CreateEPICSAnyValueManagerRegistry(
 
 }  // namespace utils
 
-}  // namespace auto_server
+}  // namespace oac_tree_server
 
 }  // namespace sup
 

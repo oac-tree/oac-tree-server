@@ -22,13 +22,13 @@
 #include "epics_server.h"
 
 #include <sup/oac-tree-server/exceptions.h>
-#include <sup/oac-tree-server/sup_auto_protocol.h>
+#include <sup/oac-tree-server/oac_tree_protocol.h>
 
 #include <sup/epics/pv_access_server.h>
 
 namespace sup
 {
-namespace auto_server
+namespace oac_tree_server
 {
 EPICSServer::EPICSServer(const IAnyValueIO::NameAnyValueSet& name_value_set)
   : m_update_queue{}
@@ -68,6 +68,6 @@ void EPICSServer::UpdateLoop(const IAnyValueIO::NameAnyValueSet& name_value_set)
   }
 }
 
-}  // namespace auto_server
+}  // namespace oac_tree_server
 
 }  // namespace sup

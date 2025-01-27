@@ -20,7 +20,7 @@
  ******************************************************************************/
 
 #include <sup/oac-tree-server/epics/epics_anyvalue_manager.h>
-#include <sup/oac-tree-server/sup_auto_protocol.h>
+#include <sup/oac-tree-server/oac_tree_protocol.h>
 
 #include <sup/epics/pv_access_client_pv.h>
 
@@ -29,7 +29,7 @@
 
 #include <gtest/gtest.h>
 
-using namespace sup::auto_server;
+using namespace sup::oac_tree_server;
 
 namespace
 {

@@ -23,7 +23,7 @@
 
 namespace sup
 {
-namespace auto_server
+namespace oac_tree_server
 {
 
 AnyValueUpdateQueue::AnyValueUpdateQueue()
@@ -88,6 +88,6 @@ bool ProcessCommandQueue(std::deque<AnyValueUpdateCommand>& queue, const ValueUp
   return false;
 }
 
-}  // namespace auto_server
+}  // namespace oac_tree_server
 
 }  // namespace sup

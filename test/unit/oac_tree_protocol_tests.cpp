@@ -19,11 +19,11 @@
  * of the distribution package.
  ******************************************************************************/
 
-#include <sup/oac-tree-server/sup_auto_protocol.h>
+#include <sup/oac-tree-server/oac_tree_protocol.h>
 
 #include <gtest/gtest.h>
 
-using namespace sup::auto_server;
+using namespace sup::oac_tree_server;
 
 class SupAutoProtocolTest : public ::testing::Test
 {

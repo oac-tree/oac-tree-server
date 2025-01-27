@@ -24,7 +24,7 @@
 #include <sup/oac-tree-server/control_protocol_server.h>
 #include <sup/oac-tree-server/epics_config_utils.h>
 #include <sup/oac-tree-server/info_protocol_server.h>
-#include <sup/oac-tree-server/sup_auto_protocol.h>
+#include <sup/oac-tree-server/oac_tree_protocol.h>
 
 #include <sup/epics/epics_protocol_factory.h>
 #include <sup/oac-tree/instruction_map.h>
@@ -40,7 +40,7 @@ using ::testing::Exactly;
 using ::testing::Return;
 using ::testing::AtLeast;
 
-using namespace sup::auto_server;
+using namespace sup::oac_tree_server;
 using sup::oac_tree::JobState;
 using sup::oac_tree::InstructionState;
 using sup::oac_tree::ExecutionStatus;

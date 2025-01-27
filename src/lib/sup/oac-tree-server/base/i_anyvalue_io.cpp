@@ -20,7 +20,7 @@
  ******************************************************************************/
 
 #include <sup/oac-tree-server/i_anyvalue_io.h>
-#include <sup/oac-tree-server/sup_auto_protocol.h>
+#include <sup/oac-tree-server/oac_tree_protocol.h>
 
 #include <sup/oac-tree/constants.h>
 
@@ -28,7 +28,7 @@
 
 namespace sup
 {
-namespace auto_server
+namespace oac_tree_server
 {
 
 IAnyValueIO::~IAnyValueIO() = default;
@@ -79,6 +79,6 @@ IAnyValueIO::NameAnyValueSet GetInstructionValueSet(const std::string& job_prefi
   return result;
 }
 
-}  // namespace auto_server
+}  // namespace oac_tree_server
 
 }  // namespace sup

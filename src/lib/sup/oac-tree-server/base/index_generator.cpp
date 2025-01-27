@@ -23,7 +23,7 @@
 
 namespace sup
 {
-namespace auto_server
+namespace oac_tree_server
 {
 
 IndexGenerator::IndexGenerator()
@@ -49,6 +49,6 @@ sup::dto::uint64 IndexGenerator::NewIndex()
   return m_last_idx;
 }
 
-}  // namespace auto_server
+}  // namespace oac_tree_server
 
 }  // namespace sup

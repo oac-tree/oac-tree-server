@@ -22,14 +22,14 @@
 #include <sup/oac-tree-server/automation_server.h>
 #include <sup/oac-tree-server/exceptions.h>
 #include <sup/oac-tree-server/server_job_info_io.h>
-#include <sup/oac-tree-server/sup_auto_protocol.h>
+#include <sup/oac-tree-server/oac_tree_protocol.h>
 
 #include <sup/oac-tree/procedure.h>
 #include <sup/oac-tree/workspace.h>
 
 namespace sup
 {
-namespace auto_server
+namespace oac_tree_server
 {
 using sup::oac_tree::LocalJob;
 
@@ -142,6 +142,6 @@ sup::dto::uint32 GetNumberOfVariables(const sup::oac_tree::Procedure& proc)
   return var_names.size();
 }
 
-}  // namespace auto_server
+}  // namespace oac_tree_server
 
 }  // namespace sup

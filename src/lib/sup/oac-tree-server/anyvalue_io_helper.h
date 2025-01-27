@@ -26,7 +26,7 @@
 
 namespace sup
 {
-namespace auto_server
+namespace oac_tree_server
 {
 
 void InitializeJobAndVariables(IAnyValueIO& anyvalue_io, const std::string& job_prefix,
@@ -35,7 +35,7 @@ void InitializeJobAndVariables(IAnyValueIO& anyvalue_io, const std::string& job_
 void InitializeInstructions(IAnyValueIO& anyvalue_io, const std::string& job_prefix,
                             sup::dto::uint32 n_instr);
 
-}  // namespace auto_server
+}  // namespace oac_tree_server
 
 }  // namespace sup
 

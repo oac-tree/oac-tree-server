@@ -20,7 +20,7 @@
  ******************************************************************************/
 
 #include <sup/oac-tree-server/output_entry_helper.h>
-#include <sup/oac-tree-server/sup_auto_protocol.h>
+#include <sup/oac-tree-server/oac_tree_protocol.h>
 #include <sup/oac-tree-server/exceptions.h>
 
 #include <sup/oac-tree/anyvalue_utils.h>
@@ -28,7 +28,7 @@
 
 namespace sup
 {
-namespace auto_server
+namespace oac_tree_server
 {
 using sup::oac_tree::utils::ValidateMemberType;
 using sup::oac_tree::Constants::kIndexField;
@@ -146,6 +146,6 @@ std::pair<bool, OutputValueEntry> DecodeOutputValueEntry(const sup::dto::AnyValu
   return failure;
 }
 
-}  // namespace auto_server
+}  // namespace oac_tree_server
 
 }  // namespace sup
