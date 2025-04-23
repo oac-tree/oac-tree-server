@@ -1,6 +1,10 @@
-add_executable(unit-tests)
+set(unit-tests oac-tree-unit-tests)
+add_executable(${unit-tests})
 
-target_sources(unit-tests
+set_target_properties(${unit-tests} PROPERTIES OUTPUT_NAME "unit-tests")
+set_target_properties(${unit-tests} PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${TEST_OUTPUT_DIRECTORY})
+
+target_sources(${unit-tests}
   PRIVATE
     anyvalue_io_helper_tests.cpp
     anyvalue_update_command_tests.cpp
@@ -27,7 +31,7 @@ target_sources(unit-tests
     ../../src/app/oac-tree-server/utils.cpp
 )
 
-target_include_directories(unit-tests
+target_include_directories(${unit-tests}
   PRIVATE
   ${CMAKE_CURRENT_LIST_DIR}/../../src
 )
@@ -38,7 +42,7 @@ find_package(sup-epics REQUIRED)
 
 include(GoogleTest)
 
-target_link_libraries(unit-tests
+target_link_libraries(${unit-tests}
   PRIVATE
     GTest::GTest
     GTest::Main
@@ -50,9 +54,7 @@ target_link_libraries(unit-tests
 
 if (CMAKE_CXX_COMPILER_ID STREQUAL "Clang" OR (CMAKE_CXX_COMPILER_ID STREQUAL "GNU" AND CMAKE_CXX_COMPILER_VERSION VERSION_LESS 9.1))
 message(VERBOSE "Linking stdc++fs")
-target_link_libraries(unit-tests PRIVATE stdc++fs)
+target_link_libraries(${unit-tests} PRIVATE stdc++fs)
 endif ()
 
-set_target_properties(unit-tests PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${TEST_OUTPUT_DIRECTORY})
-
-gtest_discover_tests(unit-tests)
+gtest_discover_tests(${unit-tests})
