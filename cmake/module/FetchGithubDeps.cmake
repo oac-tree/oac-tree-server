@@ -9,6 +9,13 @@ message(STATUS "Building dependencies from source")
 include(FetchContent)
 
 FetchContent_Declare(
+  sup-di
+  GIT_REPOSITORY https://github.com/oac-tree/sup-di.git
+  GIT_TAG develop
+  OVERRIDE_FIND_PACKAGE
+)
+
+FetchContent_Declare(
   sup-protocol
   GIT_REPOSITORY https://github.com/oac-tree/sup-protocol.git
   GIT_TAG develop
