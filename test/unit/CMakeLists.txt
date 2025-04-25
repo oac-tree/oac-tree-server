@@ -1,4 +1,4 @@
-set(unit-tests oac-tree-unit-tests)
+set(unit-tests oac-tree-server-unit-tests)
 add_executable(${unit-tests})
 
 set_target_properties(${unit-tests} PROPERTIES OUTPUT_NAME "unit-tests")
