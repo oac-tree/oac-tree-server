@@ -57,4 +57,4 @@ message(VERBOSE "Linking stdc++fs")
 target_link_libraries(${unit-tests} PRIVATE stdc++fs)
 endif ()
 
-gtest_discover_tests(${unit-tests})
+gtest_discover_tests(${unit-tests} DISCOVERY_MODE PRE_TEST)
