@@ -12,6 +12,9 @@ Welcome to oac-tree-server's documentation!
    :maxdepth: 2
    :caption: Contents:
 
+   introduction
+   application
+
 Indices and tables
 ==================
 
