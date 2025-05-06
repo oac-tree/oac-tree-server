@@ -69,31 +69,6 @@ Architecture of *oac-tree-server*
    - The server supports user input requests during job execution.
    - Input requests are published via dedicated input servers, and clients can respond with the required data.
 
-Example: Serving a Procedure
-============================
-
-Below is an example of how the *oac-tree-server* serves a procedure:
-
-.. code-block:: xml
-
-  <Procedure xmlns="http://codac.iter.org/sup/oac-tree" version="1.0"
-             name="example-procedure">
-    <Plugin>liboac-tree-ca.so</Plugin>
-    <Sequence name="MainSequence">
-      <Wait timeout="1.0"/>
-      <Include name="SubProcedure" path="SubProcedure"/>
-    </Sequence>
-    <Workspace>
-      <Local name="counter" type='{"type":"uint32"}' value="0"/>
-    </Workspace>
-  </Procedure>
-
-The server will:
-
-1. Load the procedure and create a job.
-2. Expose job-related information via an information server.
-3. Allow clients to control the job via a control server.
-
 Benefits of *oac-tree-server*
 =============================
 
