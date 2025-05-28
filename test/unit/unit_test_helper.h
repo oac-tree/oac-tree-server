@@ -87,7 +87,7 @@ public:
   MOCK_METHOD(void, Interrupt, (sup::dto::uint64), (override));
   MOCK_METHOD(void, Message, (const std::string&), (override));
   MOCK_METHOD(void, Log, (int, const std::string&), (override));
-  MOCK_METHOD(void, NextInstructionsUpdated, (const std::vector<sup::dto::uint32>&), (override));
+  MOCK_METHOD(void, ProcedureTicked, (), (override));
 };
 
 class MockAnyValueIO : public IAnyValueIO
@@ -136,7 +136,7 @@ public:
   void Interrupt(sup::dto::uint64 id) override;
   void Message(const std::string& message) override;
   void Log(int severity, const std::string& message) override;
-  void NextInstructionsUpdated(const std::vector<sup::dto::uint32>& instr_indices) override;
+  void ProcedureTicked() override;
 
   bool WaitFor(std::function<bool()> pred, double seconds);
   bool WaitForInstructionState(sup::dto::uint32 instr_idx,

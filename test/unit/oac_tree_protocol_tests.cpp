@@ -152,26 +152,6 @@ TEST_F(SupAutoProtocolTest, ParseValueName)
     EXPECT_EQ(info.idx, 0);
   }
   {
-    // Next instructions field with prefix is correctly parsed as such
-    std::string val_name = "prefix:" + kNextInstructionsId;
-    auto info = ParseValueName(val_name);
-    EXPECT_EQ(info.val_type, ValueNameType::kNextInstructions);
-    EXPECT_EQ(info.idx, 0);
-  }
-  {
-    // Next instructions field with single character prefix is correctly parsed as such
-    std::string val_name = "p" + kNextInstructionsId;
-    auto info = ParseValueName(val_name);
-    EXPECT_EQ(info.val_type, ValueNameType::kNextInstructions);
-    EXPECT_EQ(info.idx, 0);
-  }
-  {
-    // Next instructions field without prefix is parsed as unknown
-    auto info = ParseValueName(kNextInstructionsId);
-    EXPECT_EQ(info.val_type, ValueNameType::kUnknown);
-    EXPECT_EQ(info.idx, 0);
-  }
-  {
     // Instruction state field correctly parsed
     std::string val_name = "prefix:" + kInstructionId + "42";
     auto info = ParseValueName(val_name);
@@ -292,12 +272,4 @@ TEST_F(SupAutoProtocolTest, ParseValueName)
     EXPECT_EQ(info.val_type, ValueNameType::kUnknown);
     EXPECT_EQ(info.idx, 0);
   }
-}
-
-TEST_F(SupAutoProtocolTest, DecodeNextInstructions)
-{
-  auto next_instr_av = kNextInstructionsAnyValue;
-  auto [decoded, next_instr] = DecodeNextInstructionIndices(next_instr_av);
-  EXPECT_TRUE(decoded);
-  EXPECT_EQ(next_instr.size(), 0);
 }

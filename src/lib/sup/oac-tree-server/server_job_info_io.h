@@ -67,7 +67,7 @@ public:
 
   void Log(int severity, const std::string& message) override;
 
-  void NextInstructionsUpdated(const std::vector<sup::dto::uint32>& instr_indices) override;
+  void ProcedureTicked() override;
 
 private:
   const std::string m_job_prefix;

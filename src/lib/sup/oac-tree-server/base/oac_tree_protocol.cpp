@@ -38,15 +38,6 @@ namespace
 {
 bool ValidateVariableAnyValue(const sup::dto::AnyValue& payload);
 
-/**
- * @brief Validate if the provided AnyValue encodes a list of instruction indices.
- *
- * @param payload AnyValue to validate.
- *
- * @return True if the AnyValue encodes a list of instruction indices.
- */
-bool ValidateNextInstructionsAnyValue(const sup::dto::AnyValue& payload);
-
 bool EndsWith(const std::string& str, const std::string& sub_str);
 
 bool ParseIndex(const std::string& idx_str, sup::dto::uint32& idx);
@@ -85,9 +76,6 @@ const sup::dto::AnyValue kOutputValueEntryAnyValue = {{
   { kDescriptionField, "" },
   { kValueField, {} }
 }, kOutputValueEntryType };
-
-const sup::dto::AnyValue kNextInstructionsAnyValue =
-  sup::dto::AnyValue{0, sup::dto::UnsignedInteger32Type, kNextInstructionsType};
 
 const sup::dto::AnyValue kJobStateAnyValue = {{
   { kJobStateField, static_cast<sup::dto::uint32>(oac_tree::JobState::kInitial)}
@@ -177,11 +165,6 @@ std::string GetOutputValueEntryName(const std::string& prefix)
   return prefix + kOutputValueEntryId;
 }
 
-std::string GetNextInstructionsName(const std::string& prefix)
-{
-  return prefix + kNextInstructionsId;
-}
-
 std::string GetJobStatePVName(const std::string& prefix)
 {
   return prefix + kJobStateId;
@@ -212,39 +195,13 @@ std::pair<sup::dto::AnyValue, bool> DecodeVariableState(const sup::dto::AnyValue
   return { {}, false };
 }
 
-sup::dto::AnyValue EncodeNextInstructionIndices(const std::vector<sup::dto::uint32>& next_indices)
-{
-  sup::dto::AnyValue encoded{next_indices.size(), sup::dto::UnsignedInteger32Type};
-  for (std::size_t i=0; i<next_indices.size(); ++i)
-  {
-    encoded[i] = next_indices[i];
-  }
-  return encoded;
-}
-
-std::pair<bool, std::vector<sup::dto::uint32>> DecodeNextInstructionIndices(
-  const sup::dto::AnyValue& encoded)
-{
-  if (ValidateNextInstructionsAnyValue(encoded))
-  {
-    std::vector<sup::dto::uint32> indices;
-    for (size_t i = 0; i < encoded.NumberOfElements(); ++i)
-    {
-      indices.push_back(encoded[i].As<sup::dto::uint32>());
-    }
-    return { true, indices };
-  }
-  return { false, {} };
-}
-
 ValueNameInfo ParseValueName(const std::string& val_name)
 {
   static const std::vector<std::pair<std::string, ValueNameType>> postfixes = {
     { kJobStateId, ValueNameType::kJobStatus },
     { kLogEntryId, ValueNameType::kLogEntry },
     { kMessageEntryId, ValueNameType::kMessageEntry },
-    { kOutputValueEntryId, ValueNameType::kOutputValueEntry },
-    { kNextInstructionsId, ValueNameType::kNextInstructions }
+    { kOutputValueEntryId, ValueNameType::kOutputValueEntry }
   };
   ValueNameInfo unknown{ ValueNameType::kUnknown, 0 };
   for (const auto& [postfix, postfix_type] : postfixes)
@@ -355,19 +312,6 @@ bool ValidateVariableAnyValue(const sup::dto::AnyValue& var_value)
   }
   if (!sup::oac_tree::utils::ValidateMemberType(var_value, kVariableConnectedField,
                                                  sup::dto::BooleanType))
-  {
-    return false;
-  }
-  return true;
-}
-
-bool ValidateNextInstructionsAnyValue(const sup::dto::AnyValue& next_instr_av)
-{
-  if (!sup::dto::IsArrayValue(next_instr_av))
-  {
-    return false;
-  }
-  if (next_instr_av.GetType().ElementType() != sup::dto::UnsignedInteger32Type)
   {
     return false;
   }

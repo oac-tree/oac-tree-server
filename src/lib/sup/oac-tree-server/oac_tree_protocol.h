@@ -104,13 +104,6 @@ const std::string kValueField = "value";
 // Basic output value entry AnyValue
 extern const sup::dto::AnyValue kOutputValueEntryAnyValue;
 
-// Next instructions pv identifier
-const std::string kNextInstructionsId = "NEXT_INSTR";
-const std::string kNextInstructionsType = "sup::nextInstructionsType/v1.0";
-
-// Basic AnyValue for next instruction indices
-extern const sup::dto::AnyValue kNextInstructionsAnyValue;
-
 // Job state postfix:
 const std::string kJobStateId = "STATE";
 // Job state type name and fields:
@@ -160,8 +153,7 @@ enum class ValueNameType
   kLogEntry,
   kMessageEntry,
   kOutputValueEntry,
-  kJobStatus,
-  kNextInstructions
+  kJobStatus
 };
 
 struct ValueNameInfo
@@ -280,14 +272,6 @@ std::string GetMessageEntryName(const std::string& prefix);
 std::string GetOutputValueEntryName(const std::string& prefix);
 
 /**
- * @brief Create a PV channel name for notifying the next instruction leaves to be executed.
- *
- * @param prefix Prefix that needs to be unique among all running jobs in the network.
- * @return Name for notifying the next instruction leaves to be executed.
- */
-std::string GetNextInstructionsName(const std::string& prefix);
-
-/**
  * @brief Create a PV channel name for the job state from a given prefix.
  *
  * @param prefix Prefix that needs to be unique among all running jobs in the network.
@@ -322,25 +306,6 @@ sup::dto::AnyValue EncodeVariableState(const dto::AnyValue& value, bool connecte
  * @return Pair of variable value and its connected state.
  */
 std::pair<sup::dto::AnyValue, bool> DecodeVariableState(const dto::AnyValue& encoded);
-
-/**
- * @brief Encode the indices of the next instruction leaves into a base64 encoded AnyValue.
- *
- * @param next_indices List of instruction indices.
- *
- * @return Encoded AnyValue.
- */
-sup::dto::AnyValue EncodeNextInstructionIndices(const std::vector<sup::dto::uint32>& next_indices);
-
-/**
- * @brief Decode the encoded AnyValue of next instruction indices.
- *
- * @param encoded Encoded AnyValue of next instruction indices.
- *
- * @return Pair of boolean indicating success and the decoded list of indices (if successful).
- */
-std::pair<bool, std::vector<sup::dto::uint32>> DecodeNextInstructionIndices(
-  const dto::AnyValue& encoded);
 
 /**
  * @brief Parse a given AnyValue name into its type (instruction, variable, etc.) and optional

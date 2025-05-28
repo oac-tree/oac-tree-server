@@ -58,8 +58,6 @@ IAnyValueIO::NameAnyValueSet GetInitialValueSet(const std::string& job_prefix,
   result.emplace_back(msg_entry_name, kMessageEntryAnyValue);
   auto out_val_entry_name = GetOutputValueEntryName(job_prefix);
   result.emplace_back(out_val_entry_name, kOutputValueEntryAnyValue);
-  auto next_instr_name = GetNextInstructionsName(job_prefix);
-  result.emplace_back(next_instr_name, kNextInstructionsAnyValue);
   for (sup::dto::uint32 var_idx = 0; var_idx < n_vars; ++var_idx)
   {
     const auto name = GetVariablePVName(job_prefix, var_idx);

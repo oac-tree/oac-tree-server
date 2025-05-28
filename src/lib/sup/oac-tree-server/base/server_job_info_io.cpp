@@ -141,12 +141,9 @@ void ServerJobInfoIO::Log(int severity, const std::string& message)
   m_av_manager.UpdateAnyValue(log_val_name, EncodeLogEntry(log_val));
 }
 
-void ServerJobInfoIO::NextInstructionsUpdated(const std::vector<sup::dto::uint32>& instr_indices)
-{
-  auto next_instr_name = GetNextInstructionsName(m_job_prefix);
-  auto next_instr_value = EncodeNextInstructionIndices(instr_indices);
-  m_av_manager.UpdateAnyValue(next_instr_name, next_instr_value);
-}
+// Procedure ticks are not forwarded over the network!
+void ServerJobInfoIO::ProcedureTicked()
+{}
 
 }  // namespace oac_tree_server
 

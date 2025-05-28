@@ -112,7 +112,7 @@ void TestJobInfoIO::Message(const std::string& message)
 void TestJobInfoIO::Log(int severity, const std::string& message)
 {}
 
-void TestJobInfoIO::NextInstructionsUpdated(const std::vector<sup::dto::uint32>& instr_indices)
+void TestJobInfoIO::ProcedureTicked()
 {}
 
 bool TestJobInfoIO::WaitFor(std::function<bool()> pred, double seconds)
