@@ -1,3 +1,7 @@
+Changes for 2.2.0:
+
+- API change from oac-tree: IJobInfoIO::NextInstructionsUpdated -> IJobInfoIO::ProcedureTicked
+
 Changes for 2.1.0:
 
 - Update pom for CODAC 7.3
