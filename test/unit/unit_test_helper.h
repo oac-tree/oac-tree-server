@@ -79,6 +79,7 @@ class MockJobInfoIO : public sup::oac_tree::IJobInfoIO
 public:
   MOCK_METHOD(void, InitNumberOfInstructions, (sup::dto::uint32), (override));
   MOCK_METHOD(void, InstructionStateUpdated, (sup::dto::uint32, sup::oac_tree::InstructionState), (override));
+  MOCK_METHOD(void, BreakpointInstructionUpdated, (sup::dto::uint32), (override));
   MOCK_METHOD(void, VariableUpdated, (sup::dto::uint32, const sup::dto::AnyValue&, bool), (override));
   MOCK_METHOD(void, JobStateUpdated, (sup::oac_tree::JobState), (override));
   MOCK_METHOD(void, PutValue, (const sup::dto::AnyValue&, const std::string&), (override));
@@ -125,6 +126,7 @@ public:
   void InitNumberOfInstructions(sup::dto::uint32 n_instr) override;
   void InstructionStateUpdated(sup::dto::uint32 instr_idx,
                                sup::oac_tree::InstructionState state) override;
+  void BreakpointInstructionUpdated(sup::dto::uint32 instr_idx) override;
   void VariableUpdated(sup::dto::uint32 var_idx, const sup::dto::AnyValue& value,
                                bool connected) override;
   void JobStateUpdated(sup::oac_tree::JobState state) override;

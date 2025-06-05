@@ -65,6 +65,12 @@ void TestJobInfoIO::InstructionStateUpdated(sup::dto::uint32 instr_idx,
   m_cv.notify_one();
 }
 
+void TestJobInfoIO::BreakpointInstructionUpdated(sup::dto::uint32 instr_idx)
+{
+  // TODO: store this info
+  (void)instr_idx;
+}
+
 void TestJobInfoIO::VariableUpdated(sup::dto::uint32 var_idx, const sup::dto::AnyValue& value,
                                     bool connected)
 {

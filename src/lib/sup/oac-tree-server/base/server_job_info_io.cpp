@@ -63,6 +63,12 @@ void ServerJobInfoIO::InstructionStateUpdated(sup::dto::uint32 instr_idx, Instru
   m_av_manager.UpdateAnyValue(instr_val_name, instr_state_av);
 }
 
+void ServerJobInfoIO::BreakpointInstructionUpdated(sup::dto::uint32 instr_idx)
+{
+  // TODO: publish this
+  (void)instr_idx;
+}
+
 void ServerJobInfoIO::VariableUpdated(sup::dto::uint32 var_idx, const sup::dto::AnyValue& value,
                                       bool connected)
 {
