@@ -146,12 +146,14 @@ public:
   bool WaitForVariableValue(sup::dto::uint32 var_idx,
                                const sup::dto::AnyValue& value, double seconds);
   bool WaitForJobState(sup::oac_tree::JobState state, double seconds);
+  bool WaitForBreakpointInstruction(sup::dto::uint32 instr_idx, double seconds);
 
   // Public data members for testing:
   sup::dto::uint32 m_n_instr;
+  sup::dto::uint32 m_bp_instr;
   std::map<sup::dto::uint32, sup::oac_tree::InstructionState> m_instr_states;
   std::map<sup::dto::uint32, sup::dto::AnyValue> m_var_values;
-  std::map<sup::dto::uint32, sup::dto::AnyValue> m_var_connected;
+  std::map<sup::dto::uint32, bool> m_var_connected;
   sup::oac_tree::JobState m_job_state;
   std::mutex m_mtx;
   std::condition_variable m_cv;

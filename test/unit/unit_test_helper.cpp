@@ -35,9 +35,11 @@ namespace oac_tree_server
 {
 namespace UnitTestHelper
 {
+using sup::oac_tree::kInvalidInstructionIndex;
 
 TestJobInfoIO::TestJobInfoIO()
   : m_n_instr{0}
+  , m_bp_instr{kInvalidInstructionIndex}
   , m_instr_states{}
   , m_var_values{}
   , m_var_connected{}
@@ -67,8 +69,11 @@ void TestJobInfoIO::InstructionStateUpdated(sup::dto::uint32 instr_idx,
 
 void TestJobInfoIO::BreakpointInstructionUpdated(sup::dto::uint32 instr_idx)
 {
-  // TODO: store this info
-  (void)instr_idx;
+  {
+    std::lock_guard<std::mutex> lk{m_mtx};
+    m_bp_instr = instr_idx;
+  }
+  m_cv.notify_one();
 }
 
 void TestJobInfoIO::VariableUpdated(sup::dto::uint32 var_idx, const sup::dto::AnyValue& value,
@@ -160,6 +165,14 @@ bool TestJobInfoIO::WaitForJobState(sup::oac_tree::JobState state, double second
 {
   auto pred = [this, state](){
     return m_job_state == state;
+  };
+  return WaitFor(pred, seconds);
+}
+
+bool TestJobInfoIO::WaitForBreakpointInstruction(sup::dto::uint32 instr_idx, double seconds)
+{
+  auto pred = [this, instr_idx](){
+    return m_bp_instr == instr_idx;
   };
   return WaitFor(pred, seconds);
 }

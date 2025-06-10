@@ -115,6 +115,41 @@ TEST_F(FullClientServerStackTest, JobCommands)
   EXPECT_TRUE(m_job_info_io.WaitForVariableValue(2, one_av, 1.0));
 }
 
+TEST_F(FullClientServerStackTest, BreakpointHit)
+{
+  // Query information about the server and its job
+  ASSERT_EQ(m_client_job_manager->GetNumberOfJobs(), 1u);
+  sup::dto::uint32 job_id{0};
+  auto job_0 = CreateClientJob(*m_client_job_manager, job_id, utils::CreateEPICSIOClient,
+                               m_job_info_io);
+
+  EXPECT_TRUE(m_job_info_io.WaitForJobState(JobState::kInitial, 1.0));
+  m_client_job_manager->EditBreakpoint(job_id, 1, true);
+  m_client_job_manager->SendJobCommand(job_id, JobCommand::kStart);
+  EXPECT_TRUE(m_job_info_io.WaitForJobState(JobState::kPaused, 1.0));
+  EXPECT_TRUE(m_job_info_io.WaitForBreakpointInstruction(1, 1.0));
+
+  m_client_job_manager->SendJobCommand(job_id, JobCommand::kStart);
+  EXPECT_TRUE(m_job_info_io.WaitForJobState(JobState::kSucceeded, 1.0));
+  EXPECT_TRUE(m_job_info_io.WaitForBreakpointInstruction(
+    sup::oac_tree::kInvalidInstructionIndex, 1.0));
+
+  InstructionState success{ false, ExecutionStatus::SUCCESS };
+  InstructionState bp_state{ true, ExecutionStatus::SUCCESS };
+  EXPECT_TRUE(m_job_info_io.WaitForInstructionState(0, success, 1.0));
+  EXPECT_TRUE(m_job_info_io.WaitForInstructionState(1, bp_state, 1.0));
+  EXPECT_TRUE(m_job_info_io.WaitForInstructionState(2, success, 1.0));
+  sup::dto::AnyValue zero_av{ sup::dto::UnsignedInteger32Type, 0 };
+  sup::dto::AnyValue one_av{ sup::dto::UnsignedInteger32Type, 1 };
+  EXPECT_TRUE(m_job_info_io.WaitForVariableValue(0, one_av, 1.0));
+  EXPECT_TRUE(m_job_info_io.WaitForVariableValue(1, one_av, 1.0));
+  EXPECT_TRUE(m_job_info_io.WaitForVariableValue(2, one_av, 1.0));
+
+  // Reset breakpoint
+  m_client_job_manager->EditBreakpoint(job_id, 1, false);
+  EXPECT_TRUE(m_job_info_io.WaitForInstructionState(1, success, 1.0));
+}
+
 TEST_F(FullClientServerStackTest, JobReset)
 {
   // Test resetting a job and running it again
