@@ -24,6 +24,7 @@
 #include <sup/oac-tree-server/oac_tree_protocol.h>
 
 #include <sup/oac-tree/constants.h>
+#include <sup/oac-tree/i_job_info_io.h>
 
 #include <algorithm>
 
@@ -52,6 +53,9 @@ IAnyValueIO::NameAnyValueSet GetInitialValueSet(const std::string& job_prefix,
   auto job_value_name = GetJobStatePVName(job_prefix);
   auto job_value = GetJobStateValue(oac_tree::JobState::kInitial);
   result.emplace_back(job_value_name, job_value);
+  auto breakpoint_instr_name = GetBreakpointInstructionPVName(job_prefix);
+  auto breakpoint_instr_value = GetBreakpointInstructionValue(sup::oac_tree::kInvalidInstructionIndex);
+  result.emplace_back(breakpoint_instr_name, breakpoint_instr_value);
   auto log_entry_name = GetLogEntryName(job_prefix);
   result.emplace_back(log_entry_name, kLogEntryAnyValue);
   auto msg_entry_name = GetMessageEntryName(job_prefix);

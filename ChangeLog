@@ -1,5 +1,6 @@
 Changes for 2.2.0:
 
+- Added channel for communicating the current breakpoint instruction
 - API change from oac-tree: IJobInfoIO::NextInstructionsUpdated -> IJobInfoIO::ProcedureTicked
 
 Changes for 2.1.0:

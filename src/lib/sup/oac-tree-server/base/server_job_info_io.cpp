@@ -65,8 +65,9 @@ void ServerJobInfoIO::InstructionStateUpdated(sup::dto::uint32 instr_idx, Instru
 
 void ServerJobInfoIO::BreakpointInstructionUpdated(sup::dto::uint32 instr_idx)
 {
-  // TODO: publish this
-  (void)instr_idx;
+  auto breakpoint_instr_name = GetBreakpointInstructionPVName(m_job_prefix);
+  auto breakpoint_instr_av = GetBreakpointInstructionValue(instr_idx);
+  m_av_manager.UpdateAnyValue(breakpoint_instr_name, breakpoint_instr_av);
 }
 
 void ServerJobInfoIO::VariableUpdated(sup::dto::uint32 var_idx, const sup::dto::AnyValue& value,

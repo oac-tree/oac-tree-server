@@ -41,6 +41,7 @@ void UpdateVariableState(IJobInfoIO& job_info_io, sup::dto::uint32 var_idx,
 void UpdateLogEntry(IJobInfoIO& job_info_io, const sup::dto::AnyValue& anyvalue);
 void UpdateMessageEntry(IJobInfoIO& job_info_io, const sup::dto::AnyValue& anyvalue);
 void UpdateOutputValueEntry(IJobInfoIO& job_info_io, const sup::dto::AnyValue& anyvalue);
+void UpdateBreakpointInstruction(IJobInfoIO& job_info_io, const sup::dto::AnyValue& anyvalue);
 }  // unnamed namespace
 
 namespace sup
@@ -166,6 +167,8 @@ ClientAnyValueManager::AnyValueCallback CreateCallback(const ValueNameInfo& valu
     return UpdateMessageEntry;
   case ValueNameType::kOutputValueEntry:
     return UpdateOutputValueEntry;
+  case ValueNameType::kBreakpointInstruction:
+    return UpdateBreakpointInstruction;
   case ValueNameType::kUnknown:
     break;
   default:
@@ -225,10 +228,6 @@ void UpdateVariableState(IJobInfoIO& job_info_io, sup::dto::uint32 var_idx,
 
 void UpdateLogEntry(IJobInfoIO& job_info_io, const sup::dto::AnyValue& anyvalue)
 {
-  if (!ValidateLogEntryAnyValue(anyvalue))
-  {
-    return;
-  }
   auto [valid, log_entry] = DecodeLogEntry(anyvalue);
   if (valid)
   {
@@ -238,10 +237,6 @@ void UpdateLogEntry(IJobInfoIO& job_info_io, const sup::dto::AnyValue& anyvalue)
 
 void UpdateMessageEntry(IJobInfoIO& job_info_io, const sup::dto::AnyValue& anyvalue)
 {
-  if (!ValidateMessageEntryAnyValue(anyvalue))
-  {
-    return;
-  }
   auto [valid, msg_entry] = DecodeMessageEntry(anyvalue);
   if (valid)
   {
@@ -251,14 +246,19 @@ void UpdateMessageEntry(IJobInfoIO& job_info_io, const sup::dto::AnyValue& anyva
 
 void UpdateOutputValueEntry(IJobInfoIO& job_info_io, const sup::dto::AnyValue& anyvalue)
 {
-  if (!ValidateOutputValueEntryAnyValue(anyvalue))
-  {
-    return;
-  }
   auto [decoded, output_entry] = DecodeOutputValueEntry(anyvalue);
   if (decoded)
   {
     job_info_io.PutValue(output_entry.m_value, output_entry.m_description);
+  }
+}
+
+void UpdateBreakpointInstruction(IJobInfoIO& job_info_io, const sup::dto::AnyValue& anyvalue)
+{
+  auto [valid, instr_idx] = DecodeBreakpointInstructionIndex(anyvalue);
+  if (valid)
+  {
+    job_info_io.BreakpointInstructionUpdated(instr_idx);
   }
 }
 

@@ -44,6 +44,9 @@ const std::string kControlServerId = "CONTROL:";
 // Instruction pv identifier
 const std::string kInstructionId = "INSTR-";
 
+// Breakpoint instruction pv identifier
+const std::string kBreakpointInstructionId = "BP-INSTR";
+
 // Variable pv identifier
 const std::string kVariableId = "VAR-";
 const std::string kVariableType = "sup::variableType/v1.0";
@@ -153,7 +156,8 @@ enum class ValueNameType
   kLogEntry,
   kMessageEntry,
   kOutputValueEntry,
-  kJobStatus
+  kJobStatus,
+  kBreakpointInstruction
 };
 
 struct ValueNameInfo
@@ -223,6 +227,14 @@ std::string CreateJobPrefix(const std::string& server_prefix, sup::dto::uint32 i
 std::string GetInstructionPVName(const std::string& prefix, sup::dto::uint32 index);
 
 /**
+ * @brief Create a PV channel name for the current breakpoint instruction.
+ *
+ * @param prefix Prefix that needs to be unique among all running jobs in the network.
+ * @return PV channel name for the current breakpoint instruction.
+ */
+std::string GetBreakpointInstructionPVName(const std::string& prefix);
+
+/**
  * @brief Create a PV channel name for a variable with the given index and prefix.
  *
  * @param prefix Prefix that needs to be unique among all running jobs in the network.
@@ -286,6 +298,23 @@ std::string GetJobStatePVName(const std::string& prefix);
  * @return AnyValue representing the given job state.
  */
 sup::dto::AnyValue GetJobStateValue(sup::oac_tree::JobState state);
+
+/**
+ * @brief Create an AnyValue representing the current breakpoint instruction.
+ *
+ * @param instr_idx Index of the current breakpoint instruction.
+ * @return AnyValue representing the current breakpoint instruction.
+ */
+sup::dto::AnyValue GetBreakpointInstructionValue(sup::dto::uint32 instr_idx);
+
+/**
+ * @brief Parse the index of the current breakpoint instruction from the given AnyValue.
+ *
+ * @param breakpoint_instr_value AnyValue encoding the current breakpoint instruction.
+ * @return Boolean indicating successful decoding and index of the current breakpoint instruction.
+ */
+std::pair<bool, sup::dto::uint32> DecodeBreakpointInstructionIndex(
+  const sup::dto::AnyValue& breakpoint_instr_value);
 
 /**
  * @brief Pack a variable's value and connected state into a base64 encoded AnyValue.

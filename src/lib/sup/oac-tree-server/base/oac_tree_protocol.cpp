@@ -29,6 +29,7 @@
 #include <sup/oac-tree/anyvalue_utils.h>
 #include <sup/oac-tree/constants.h>
 #include <sup/oac-tree/execution_status.h>
+#include <sup/oac-tree/i_job_info_io.h>
 #include <sup/oac-tree/job_states.h>
 
 #include <limits>
@@ -135,6 +136,11 @@ std::string GetInstructionPVName(const std::string& prefix, sup::dto::uint32 ind
   return prefix + kInstructionId + std::to_string(index);
 }
 
+std::string GetBreakpointInstructionPVName(const std::string& prefix)
+{
+  return prefix + kBreakpointInstructionId;
+}
+
 std::string GetVariablePVName(const std::string& prefix, sup::dto::uint32 index)
 {
   return prefix + kVariableId + std::to_string(index);
@@ -177,6 +183,29 @@ sup::dto::AnyValue GetJobStateValue(oac_tree::JobState state)
   return result;
 }
 
+sup::dto::AnyValue GetBreakpointInstructionValue(sup::dto::uint32 instr_idx)
+{
+  sup::dto::AnyValue breakpoint_instr_value = {{
+    { sup::oac_tree::Constants::kIndexField, instr_idx }
+  }};
+  return breakpoint_instr_value;
+}
+
+std::pair<bool, sup::dto::uint32> DecodeBreakpointInstructionIndex(
+  const sup::dto::AnyValue& breakpoint_instr_value)
+{
+  if (!breakpoint_instr_value.HasField(sup::oac_tree::Constants::kIndexField))
+  {
+    return { false, 0 };
+  }
+  auto &index_av = breakpoint_instr_value[sup::oac_tree::Constants::kIndexField];
+  if (index_av.GetType() != sup::dto::UnsignedInteger32Type)
+  {
+    return { false, 0 };
+  }
+  return { true, index_av.As<sup::dto::uint32>() };
+}
+
 sup::dto::AnyValue EncodeVariableState(const sup::dto::AnyValue& value, bool connected)
 {
   sup::dto::AnyValue var_state = {{
@@ -201,7 +230,8 @@ ValueNameInfo ParseValueName(const std::string& val_name)
     { kJobStateId, ValueNameType::kJobStatus },
     { kLogEntryId, ValueNameType::kLogEntry },
     { kMessageEntryId, ValueNameType::kMessageEntry },
-    { kOutputValueEntryId, ValueNameType::kOutputValueEntry }
+    { kOutputValueEntryId, ValueNameType::kOutputValueEntry },
+    { kBreakpointInstructionId, ValueNameType::kBreakpointInstruction }
   };
   ValueNameInfo unknown{ ValueNameType::kUnknown, 0 };
   for (const auto& [postfix, postfix_type] : postfixes)
