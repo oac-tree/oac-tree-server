@@ -68,7 +68,7 @@ const std::string kInputRequestType = "sup::inputRequestType/v1.0";
 const std::string kInputRequestIndexField = "idx";
 const std::string kInputRequestTypeField = "request_type";
 const std::string kInputRequestMetadataField = "metadata";
-const std::string kInputRequestInputTypeField = "input_type";
+const std::string kInputRequestInputValueField = "input_value";
 // Input reply fields:
 const std::string kInputReplyIndexField = "idx";
 const std::string kInputReplyTypeField = "Reply_type";

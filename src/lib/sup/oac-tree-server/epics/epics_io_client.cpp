@@ -39,6 +39,7 @@ namespace sup
 namespace oac_tree_server
 {
 using sup::oac_tree::UserInputRequest;
+using sup::oac_tree::InputRequestType;
 using namespace std::placeholders;
 
 class EPICSIOClientImpl
@@ -152,14 +153,15 @@ void EPICSIOClientImpl::HandleUserInput(const std::string& input_server_name,
                                         const sup::dto::AnyValue& req_av)
 {
   auto req = DecodeInputRequest(req_av);
-  auto id = std::get<1>(req);
   auto success = std::get<0>(req);
-  if (!success)
+  auto id = std::get<1>(req);
+  auto input_request = std::get<2>(req);
+  if (!success || input_request.m_request_type == InputRequestType::kInvalid)
   {
     m_reply_delegator->InterruptAll();
     return;
   }
-  auto reply = m_av_mgr.GetUserInput(input_server_name, id, std::get<2>(req));
+  auto reply = m_av_mgr.GetUserInput(input_server_name, id, input_request);
   m_reply_delegator->QueueReply(id, reply);
 }
 

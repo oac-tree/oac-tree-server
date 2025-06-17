@@ -26,7 +26,6 @@
 #include <sup/oac-tree-server/oac_tree_protocol.h>
 
 #include <sup/dto/anytype_helper.h>
-#include <sup/dto/json_type_parser.h>
 #include <sup/oac-tree/anyvalue_utils.h>
 
 namespace
@@ -49,7 +48,7 @@ sup::dto::AnyValue EncodeInputRequest(sup::dto::uint64 id, const UserInputReques
     { kInputRequestIndexField, { sup::dto::UnsignedInteger64Type, id }},
     { kInputRequestTypeField, request_type_av },
     { kInputRequestMetadataField, input_request.m_meta_data },
-    { kInputRequestInputTypeField, sup::dto::AnyTypeToJSONString(input_request.m_input_type) }
+    { kInputRequestInputValueField, input_request.m_input_value }
   }};
   return encoded;
 }
@@ -66,13 +65,8 @@ std::tuple<bool, sup::dto::uint64, UserInputRequest> DecodeInputRequest(
   auto req_idx = encoded[kInputRequestIndexField].As<sup::dto::uint64>();
   InputRequestType request_type =
     static_cast<InputRequestType>(encoded[kInputRequestTypeField].As<sup::dto::uint32>());
-  sup::dto::JSONAnyTypeParser type_parser;
-  if (!type_parser.ParseString(encoded[kInputRequestInputTypeField].As<std::string>()))
-  {
-    return failure;
-  }
   UserInputRequest input_request{ request_type, encoded[kInputRequestMetadataField],
-                                  type_parser.MoveAnyType() };
+                                  encoded[kInputRequestInputValueField] };
   return { true, req_idx, input_request };
 }
 
@@ -97,7 +91,7 @@ bool ValidateInputRequestPayload(const sup::dto::AnyValue& payload)
   {
     return false;
   }
-  if (!ValidateMemberType(payload, kInputRequestInputTypeField, sup::dto::StringType))
+  if (!payload.HasField(kInputRequestInputValueField))
   {
     return false;
   }

@@ -51,7 +51,7 @@ TEST_F(InputRequestHelperTest, EncodeInputRequest)
   EXPECT_EQ(encoded[kInputRequestIndexField], id);
   ASSERT_TRUE(encoded.HasField(kInputRequestTypeField));
   ASSERT_TRUE(encoded.HasField(kInputRequestMetadataField));
-  ASSERT_TRUE(encoded.HasField(kInputRequestInputTypeField));
+  ASSERT_TRUE(encoded.HasField(kInputRequestInputValueField));
 
   auto decoded = DecodeInputRequest(encoded);
   EXPECT_EQ(std::get<0>(decoded), true);
@@ -65,12 +65,12 @@ TEST_F(InputRequestHelperTest, DecodeInputRequest)
     // Successful decoding
     sup::dto::uint64 req_id = 42u;
     sup::dto::AnyValue metadata{ sup::dto::StringType, "meta" };
-    const std::string json_type = R"RAW({"type":"uint16"})RAW";
+    sup::dto::AnyValue value{ sup::dto::UnsignedInteger16Type, 42u };
     sup::dto::AnyValue payload_av{{
       { kInputRequestIndexField, req_id },
       { kInputRequestTypeField, static_cast<sup::dto::uint32>(InputRequestType::kUserChoice)},
       { kInputRequestMetadataField, metadata },
-      { kInputRequestInputTypeField, { sup::dto::StringType, json_type }}
+      { kInputRequestInputValueField, value }
     }};
     // Decode
     auto decoded = DecodeInputRequest(payload_av);
@@ -79,7 +79,7 @@ TEST_F(InputRequestHelperTest, DecodeInputRequest)
     auto input_req = std::get<2>(decoded);
     EXPECT_EQ(input_req.m_request_type, InputRequestType::kUserChoice);
     EXPECT_EQ(input_req.m_meta_data, metadata);
-    EXPECT_EQ(input_req.m_input_type, sup::dto::UnsignedInteger16Type);
+    EXPECT_EQ(input_req.m_input_value, value);
   }
   {
     // Unable to decode
@@ -97,7 +97,7 @@ TEST_F(InputRequestHelperTest, DecodeInputRequest)
     sup::dto::AnyValue payload_av{{
       { kInputRequestTypeField, static_cast<sup::dto::uint32>(InputRequestType::kUserChoice) },
       { kInputRequestMetadataField, metadata },
-      { kInputRequestInputTypeField, { sup::dto::StringType, json_type }}
+      { kInputRequestInputValueField, { sup::dto::StringType, json_type }}
     }};
     // Decode
     auto decoded = DecodeInputRequest(payload_av);
@@ -114,7 +114,7 @@ TEST_F(InputRequestHelperTest, DecodeInputRequest)
       { kInputRequestIndexField, { sup::dto::SignedInteger16Type, req_id }},
       { kInputRequestTypeField, static_cast<sup::dto::uint32>(InputRequestType::kUserChoice) },
       { kInputRequestMetadataField, metadata },
-      { kInputRequestInputTypeField, { sup::dto::StringType, json_type }}
+      { kInputRequestInputValueField, { sup::dto::StringType, json_type }}
     }};
     // Decode
     auto decoded = DecodeInputRequest(payload_av);
@@ -130,7 +130,7 @@ TEST_F(InputRequestHelperTest, DecodeInputRequest)
     sup::dto::AnyValue payload_av{{
       { kInputRequestIndexField, req_id },
       { kInputRequestMetadataField, metadata },
-      { kInputRequestInputTypeField, { sup::dto::StringType, json_type }}
+      { kInputRequestInputValueField, { sup::dto::StringType, json_type }}
     }};
     // Decode
     auto decoded = DecodeInputRequest(payload_av);
@@ -147,7 +147,7 @@ TEST_F(InputRequestHelperTest, DecodeInputRequest)
       { kInputRequestIndexField, req_id },
       { kInputRequestTypeField, { sup::dto::Float32Type, 1.0f }},
       { kInputRequestMetadataField, metadata },
-      { kInputRequestInputTypeField, { sup::dto::StringType, json_type }}
+      { kInputRequestInputValueField, { sup::dto::StringType, json_type }}
     }};
     // Decode
     auto decoded = DecodeInputRequest(payload_av);
@@ -162,7 +162,7 @@ TEST_F(InputRequestHelperTest, DecodeInputRequest)
     sup::dto::AnyValue payload_av{{
       { kInputRequestIndexField, req_id },
       { kInputRequestTypeField, static_cast<sup::dto::uint32>(InputRequestType::kUserChoice) },
-      { kInputRequestInputTypeField, { sup::dto::StringType, json_type }}
+      { kInputRequestInputValueField, { sup::dto::StringType, json_type }}
     }};
     // Decode
     auto decoded = DecodeInputRequest(payload_av);
@@ -171,46 +171,13 @@ TEST_F(InputRequestHelperTest, DecodeInputRequest)
     EXPECT_EQ(std::get<2>(decoded), kInvalidUserInputRequest);
   }
   {
-    // Missing input type field
+    // Missing input value field
     sup::dto::uint64 req_id = 42u;
     sup::dto::AnyValue metadata{ sup::dto::StringType, "meta" };
     sup::dto::AnyValue payload_av{{
       { kInputRequestIndexField, req_id },
       { kInputRequestTypeField, static_cast<sup::dto::uint32>(InputRequestType::kUserChoice) },
       { kInputRequestMetadataField, metadata }
-    }};
-    // Decode
-    auto decoded = DecodeInputRequest(payload_av);
-    EXPECT_EQ(std::get<0>(decoded), false);
-    EXPECT_EQ(std::get<1>(decoded), 0);
-    EXPECT_EQ(std::get<2>(decoded), kInvalidUserInputRequest);
-  }
-  {
-    // Wrong type of input type field
-    sup::dto::uint64 req_id = 42u;
-    sup::dto::AnyValue metadata{ sup::dto::StringType, "meta" };
-    sup::dto::AnyValue payload_av{{
-      { kInputRequestIndexField, req_id },
-      { kInputRequestTypeField, static_cast<sup::dto::uint32>(InputRequestType::kUserChoice) },
-      { kInputRequestMetadataField, metadata },
-      { kInputRequestInputTypeField, { sup::dto::BooleanType, true }}
-    }};
-    // Decode
-    auto decoded = DecodeInputRequest(payload_av);
-    EXPECT_EQ(std::get<0>(decoded), false);
-    EXPECT_EQ(std::get<1>(decoded), 0);
-    EXPECT_EQ(std::get<2>(decoded), kInvalidUserInputRequest);
-  }
-  {
-    // Input type field cannot be parsed to AnyType
-    sup::dto::uint64 req_id = 42u;
-    sup::dto::AnyValue metadata{ sup::dto::StringType, "meta" };
-    const std::string json_type = R"RAW({"type":"does_not_exist"})RAW";
-    sup::dto::AnyValue payload_av{{
-      { kInputRequestIndexField, req_id },
-      { kInputRequestTypeField, static_cast<sup::dto::uint32>(InputRequestType::kUserChoice) },
-      { kInputRequestMetadataField, metadata },
-      { kInputRequestInputTypeField, { sup::dto::StringType, json_type }}
     }};
     // Decode
     auto decoded = DecodeInputRequest(payload_av);

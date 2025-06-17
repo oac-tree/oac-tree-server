@@ -58,7 +58,7 @@ const sup::dto::AnyValue kInputRequestAnyValue = {{
   { kInputRequestIndexField, { sup::dto::UnsignedInteger64Type, 0 }},
   { kInputRequestTypeField, { sup::dto::UnsignedInteger32Type, 0 }},
   { kInputRequestMetadataField, {} },
-  { kInputRequestInputTypeField, { sup::dto::StringType, "" }}
+  { kInputRequestInputValueField, {} }
 }, kInputRequestType };
 
 const sup::dto::AnyValue kLogEntryAnyValue = {{
