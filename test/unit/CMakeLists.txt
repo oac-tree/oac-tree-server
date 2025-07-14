@@ -12,6 +12,7 @@ target_sources(${unit-tests}
     app_utils_tests.cpp
     automation_server_tests.cpp
     client_anyvalue_manager_tests.cpp
+    client_job_tests.cpp
     client_reply_delegator_tests.cpp
     epics_anyvalue_manager_tests.cpp
     epics_client_server_tests.cpp
