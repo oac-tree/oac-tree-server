@@ -144,6 +144,7 @@ TEST_F(EPICSClientServerTest, GetUserInput)
   auto reply_received = m_epics_av_manager.GetUserInput(input_server_name, 1u, input_request);
   EXPECT_EQ(reply_received, user_reply);
   EXPECT_EQ(m_test_av_manager.GetNbrInputRequests(), 1);
+  ASSERT_NO_THROW(m_epics_av_manager.Interrupt(input_server_name, 1u));
 }
 
 EPICSClientServerTest::EPICSClientServerTest()

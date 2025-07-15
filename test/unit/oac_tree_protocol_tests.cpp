@@ -273,3 +273,13 @@ TEST_F(SupAutoProtocolTest, ParseValueName)
     EXPECT_EQ(info.idx, 0);
   }
 }
+
+TEST_F(SupAutoProtocolTest, ResultToString)
+{
+  EXPECT_EQ(AutomationServerResultToString(sup::protocol::Success), "Success");
+  EXPECT_EQ(AutomationServerResultToString(UnknownJob), "UnknownJob");
+  EXPECT_EQ(AutomationServerResultToString(UnknownInstruction), "UnknownInstruction");
+  EXPECT_EQ(AutomationServerResultToString(UnknownJobCommand), "UnknownJobCommand");
+  EXPECT_EQ(AutomationServerResultToString(ClientReplyRefused), "ClientReplyRefused");
+  EXPECT_EQ(AutomationServerResultToString((sup::protocol::ProtocolResult)999), "Unknown ProtocolResult for SUP automation interface: 999");
+}

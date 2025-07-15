@@ -26,6 +26,7 @@
 #include <sup/oac-tree-server/epics_config_utils.h>
 #include <sup/oac-tree-server/info_protocol_server.h>
 #include <sup/oac-tree-server/oac_tree_protocol.h>
+#include <sup/oac-tree-server/exceptions.h>
 
 #include <sup/epics/epics_protocol_factory.h>
 #include <sup/oac-tree/instruction_map.h>
@@ -71,6 +72,12 @@ protected:
   static std::unique_ptr<sup::protocol::RPCServerInterface> m_control_stack;
 };
 
+TEST_F(ClientJobTests, ConstructorError)
+{
+  EXPECT_THROW(ClientJob job_0(*m_client_job_manager, 999, utils::CreateEPICSIOClient,
+                               m_job_info_io), InvalidOperationException);
+}
+
 TEST_F(ClientJobTests, JobCommands)
 {
   // Query information about the server and its job
@@ -90,6 +97,16 @@ TEST_F(ClientJobTests, JobCommands)
   EXPECT_NO_THROW(job_0->Start());
   EXPECT_NO_THROW(job_0->Pause());
   EXPECT_NO_THROW(job_0->Halt());
+  EXPECT_NO_THROW(job_0->Reset());
+}
+
+TEST_F(ClientJobTests, MoveConstructor)
+{
+  sup::dto::uint32 job_id{0};
+  ClientJob job_0{*m_client_job_manager, job_id, utils::CreateEPICSIOClient,
+                               m_job_info_io};
+
+  EXPECT_NO_THROW(ClientJob moved_job = std::move(job_0));
 }
 
 ClientJobTests::ClientJobTests()

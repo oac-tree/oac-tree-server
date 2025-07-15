@@ -10,6 +10,7 @@ target_sources(${unit-tests}
     anyvalue_update_command_tests.cpp
     anyvalue_update_queue_tests.cpp
     app_utils_tests.cpp
+    automation_client_tests.cpp
     automation_server_tests.cpp
     client_anyvalue_manager_tests.cpp
     client_job_tests.cpp

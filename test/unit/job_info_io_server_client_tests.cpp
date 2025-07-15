@@ -355,3 +355,26 @@ TEST_F(JobInfoIOServerClientTest, ProcedureTicked)
   server_job_info_io.InitNumberOfInstructions(nr_instr);
   server_job_info_io.ProcedureTicked();
 }
+
+TEST_F(JobInfoIOServerClientTest, Interrupt)
+{
+  // Procedure ticks are not forwarded over the network!
+  unsigned nr_instr = 10u;
+  EXPECT_CALL(m_test_job_info_io, InitNumberOfInstructions(10)).Times(Exactly(1));
+  InstructionState initial_instr_state{ false, sup::oac_tree::ExecutionStatus::NOT_STARTED };
+  EXPECT_CALL(m_test_job_info_io, InstructionStateUpdated(_, initial_instr_state)).Times(Exactly(nr_instr));
+  EXPECT_CALL(m_test_job_info_io, JobStateUpdated(_)).Times(Exactly(1));
+  EXPECT_CALL(m_test_job_info_io, PutValue(_, _)).Times(Exactly(1));
+  EXPECT_CALL(m_test_job_info_io, Message(_)).Times(Exactly(1));
+  EXPECT_CALL(m_test_job_info_io, Log(_, _)).Times(Exactly(1));
+  EXPECT_CALL(m_test_job_info_io, BreakpointInstructionUpdated(kInvalidInstructionIndex))
+                                    .Times(Exactly(1));
+  EXPECT_CALL(m_test_job_info_io, Interrupt(1u)).Times(Exactly(1));
+
+
+  const std::string job_prefix = "JobInfoIOClientServerTest";
+  ClientAnyValueManager client_av_mgr{m_test_job_info_io};
+  ServerJobInfoIO server_job_info_io{job_prefix, 5, client_av_mgr};
+  server_job_info_io.InitNumberOfInstructions(nr_instr);
+  server_job_info_io.Interrupt(1u);
+}

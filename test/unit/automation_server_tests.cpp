@@ -50,7 +50,11 @@ TEST_F(AutomationServerTests, ServerWithoutProcedures)
   AutomationServer auto_server{prefix, m_test_av_mgr_registry};
   EXPECT_EQ(auto_server.GetServerPrefix(), prefix);
   EXPECT_EQ(auto_server.GetNumberOfJobs(), 0);
-  EXPECT_THROW(auto_server.GetJobInfo(0), InvalidOperationException);
+  try {
+    auto_server.GetJobInfo(0);
+  } catch (InvalidOperationException& e) {
+    EXPECT_STREQ(e.what(), "AutomationServer::GetJob(): index out of bounds; requesting0 out of 0 jobs");
+  }
   EXPECT_THROW(auto_server.SendJobCommand(0, JobCommand::kStart), InvalidOperationException);
 }
 
@@ -97,4 +101,5 @@ TEST_F(AutomationServerTests, ServerWithTwoProcedures)
   EXPECT_NO_THROW(auto_server.SendJobCommand(0, JobCommand::kStart));
   EXPECT_NO_THROW(auto_server.SendJobCommand(1, JobCommand::kStart));
   EXPECT_THROW(auto_server.SendJobCommand(2, JobCommand::kStart), InvalidOperationException);
+  EXPECT_THROW(auto_server.SendJobCommand(1, JobCommand::kTerminate), InvalidOperationException);
 }

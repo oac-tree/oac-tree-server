@@ -43,6 +43,12 @@ TEST_F(OutputEntriesTest, LogEntrySerialization)
   auto [decoded, log_entry] = DecodeLogEntry(av);
   ASSERT_TRUE(decoded);
   EXPECT_EQ(log_entry, original);
+  LogEntry diff_index{ 43u, 1729, "hello"};
+  EXPECT_NE(original, diff_index);
+  LogEntry diff_severity{ 42u, 42, "hello"};
+  EXPECT_NE(original, diff_severity);
+  LogEntry diff_message{ 42u, 1729, "world"};
+  EXPECT_NE(original, diff_message);
 }
 
 TEST_F(OutputEntriesTest, MessageEntrySerialization)
@@ -53,6 +59,8 @@ TEST_F(OutputEntriesTest, MessageEntrySerialization)
   auto [decoded, msg_entry] = DecodeMessageEntry(av);
   ASSERT_TRUE(decoded);
   EXPECT_EQ(msg_entry, original);
+  MessageEntry fake{ 42u, "world"};
+  EXPECT_NE(original, fake);
 }
 
 TEST_F(OutputEntriesTest, OutputValueEntrySerialization)
@@ -63,4 +71,6 @@ TEST_F(OutputEntriesTest, OutputValueEntrySerialization)
   auto [decoded, out_entry] = DecodeOutputValueEntry(av);
   ASSERT_TRUE(decoded);
   EXPECT_EQ(out_entry, original);
+  OutputValueEntry fake{ 42u, "hello", { sup::dto::BooleanType, false }};
+  EXPECT_NE(original, fake);
 }

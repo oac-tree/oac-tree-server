@@ -54,6 +54,24 @@ protected:
   AutomationProtocolClient m_client_job_manager;
 };
 
+TEST_F(ProtocolClientServerTest, ControlServerService)
+{
+  sup::dto::AnyValue input;
+  sup::dto::AnyValue output;
+  EXPECT_EQ(m_control_server.Service(input, output), NotSupported);
+  input = sup::dto::AnyValue{sup::dto::StringType, "application_protocol_info"};
+  EXPECT_EQ(m_control_server.Service(input, output), sup::protocol::Success);
+}
+
+TEST_F(ProtocolClientServerTest, InfoServerService)
+{
+  sup::dto::AnyValue input;
+  sup::dto::AnyValue output;
+  EXPECT_EQ(m_info_server.Service(input, output), NotSupported);
+  input = sup::dto::AnyValue{sup::dto::StringType, "application_protocol_info"};
+  EXPECT_EQ(m_control_server.Service(input, output), sup::protocol::Success);
+}
+
 TEST_F(ProtocolClientServerTest, GetServerPrefix)
 {
   // Test GetServerPrefix over the protocol layer
