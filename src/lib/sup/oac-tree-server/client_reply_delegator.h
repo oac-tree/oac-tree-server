@@ -74,7 +74,7 @@ private:
   sup::dto::uint64 m_active_id;
   std::condition_variable m_cv;
   std::mutex m_mtx;
-  std::atomic_bool m_halt;
+  bool m_halt;
   std::deque<ReplyInfo> m_reply_queue;
   std::thread m_delegatee;
 };

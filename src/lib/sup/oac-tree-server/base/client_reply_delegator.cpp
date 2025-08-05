@@ -72,9 +72,9 @@ void ClientReplyDelegator::InterruptAll()
 void ClientReplyDelegator::HandleClientReply()
 {
   auto pred = [this]() {
-    return !m_reply_queue.empty() || m_halt.load();
+    return !m_reply_queue.empty() || m_halt;
   };
-  while (m_halt.load() == false)
+  while (true)
   {
     std::unique_lock<std::mutex> lk{m_mtx};
     m_cv.wait(lk, pred);
@@ -88,12 +88,19 @@ void ClientReplyDelegator::HandleClientReply()
       lk.lock();
       m_active_id = 0;
     }
+    if (m_halt)
+    {
+      break;
+    }
   }
 }
 
 void ClientReplyDelegator::Halt()
 {
-  m_halt.store(true);
+  {
+    std::lock_guard<std::mutex> lk{m_mtx};
+    m_halt = true;
+  }
   m_cv.notify_one();
 }
 
