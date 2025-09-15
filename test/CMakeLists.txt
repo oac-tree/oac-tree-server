@@ -1,4 +1,5 @@
 add_subdirectory(unit)
+add_subdirectory(parasoft)
 
 file(WRITE ${TEST_OUTPUT_DIRECTORY}/test.sh
 "#!/bin/bash
