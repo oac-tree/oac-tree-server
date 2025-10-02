@@ -15,3 +15,13 @@ cpptest_add_executable(oac-tree-server-cpptest
 
 get_target_property(OAC_TREE_SERVER_INCLUDE_DIRECTORIES oac-tree-server INCLUDE_DIRECTORIES)
 target_include_directories(oac-tree-server-cpptest PUBLIC ${OAC_TREE_SERVER_INCLUDE_DIRECTORIES})
+
+target_link_libraries(oac-tree-server-cpptest
+  PUBLIC
+  sup-dto::sup-dto
+  sup-utils::sup-cli
+  sup-protocol::sup-protocol
+  sup-epics::sup-epics
+  oac-tree::oac-tree
+  oac-tree-server
+)
