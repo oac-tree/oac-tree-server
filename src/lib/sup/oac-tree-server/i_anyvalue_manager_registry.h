@@ -37,6 +37,11 @@ namespace oac_tree_server
 class IAnyValueManagerRegistry
 {
 public:
+  IAnyValueManagerRegistry() = default;
+  IAnyValueManagerRegistry(const IAnyValueManagerRegistry &) = delete;
+  IAnyValueManagerRegistry(IAnyValueManagerRegistry &&) = delete;
+  IAnyValueManagerRegistry &operator=(const IAnyValueManagerRegistry &) = delete;
+  IAnyValueManagerRegistry &operator=(IAnyValueManagerRegistry &&) = delete;
   virtual ~IAnyValueManagerRegistry();
 
   /**

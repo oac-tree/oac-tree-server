@@ -48,7 +48,11 @@ using sup::oac_tree::UserInputRequest;
 class IAnyValueManager : public IAnyValueIO
 {
 public:
-
+  IAnyValueManager() = default;
+  IAnyValueManager(const IAnyValueManager&) = delete;
+  IAnyValueManager(IAnyValueManager&&) = delete;
+  IAnyValueManager& operator=(const IAnyValueManager&) = delete;
+  IAnyValueManager& operator=(IAnyValueManager&&) = delete;
   virtual ~IAnyValueManager();
 
   /**

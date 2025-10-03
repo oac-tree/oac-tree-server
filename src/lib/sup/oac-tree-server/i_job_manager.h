@@ -41,6 +41,11 @@ namespace oac_tree_server
 class IJobManager
 {
 public:
+  IJobManager() = default;
+  IJobManager(const IJobManager &) = delete;
+  IJobManager(IJobManager &&) = delete;
+  IJobManager &operator=(const IJobManager &) = delete;
+  IJobManager &operator=(IJobManager &&) = delete;
   virtual ~IJobManager();
 
   /**

@@ -39,6 +39,10 @@ class AutomationProtocolClient : public IJobManager
 public:
   explicit AutomationProtocolClient(sup::protocol::Protocol& info_protocol,
                                     sup::protocol::Protocol& control_protocol);
+  AutomationProtocolClient(const AutomationProtocolClient&) = delete;
+  AutomationProtocolClient(AutomationProtocolClient&&) = delete;
+  AutomationProtocolClient& operator=(const AutomationProtocolClient&) = delete;
+  AutomationProtocolClient& operator=(AutomationProtocolClient&&) = delete;
   virtual ~AutomationProtocolClient();
 
   std::string GetServerPrefix() const override;

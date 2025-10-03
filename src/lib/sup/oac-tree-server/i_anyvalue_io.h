@@ -46,6 +46,12 @@ public:
   using NameAnyValuePair = std::pair<std::string, sup::dto::AnyValue>;
   using NameAnyValueSet = std::vector<NameAnyValuePair>;
 
+  IAnyValueIO() = default;
+  IAnyValueIO(const IAnyValueIO&) = delete;
+  IAnyValueIO(IAnyValueIO&&) = delete;
+  IAnyValueIO& operator=(const IAnyValueIO&) = delete;
+  IAnyValueIO& operator=(IAnyValueIO&&) = delete;
+
   virtual ~IAnyValueIO();
 
   /**

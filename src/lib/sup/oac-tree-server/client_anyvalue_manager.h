@@ -45,7 +45,10 @@ public:
   using AnyValueCallback = std::function<void(sup::oac_tree::IJobInfoIO&, const sup::dto::AnyValue&)>;
 
   explicit ClientAnyValueManager(sup::oac_tree::IJobInfoIO& job_info_io);
-
+  ClientAnyValueManager(const ClientAnyValueManager&) = delete;
+  ClientAnyValueManager(ClientAnyValueManager&&) = delete;
+  ClientAnyValueManager& operator=(const ClientAnyValueManager&) = delete;
+  ClientAnyValueManager& operator=(ClientAnyValueManager&&) = delete;
   virtual ~ClientAnyValueManager();
 
   bool AddAnyValues(const NameAnyValueSet& name_value_set) override;

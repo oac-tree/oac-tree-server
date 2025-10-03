@@ -45,8 +45,9 @@ class ClientJob : public sup::oac_tree::IJob
 {
 public:
   ClientJob(IJobManager& job_manager, sup::dto::uint32 job_idx,
-            const AnyValueIOFactoryFunction& factory_func,
-            sup::oac_tree::IJobInfoIO& job_info_io);
+            const AnyValueIOFactoryFunction& factory_func, sup::oac_tree::IJobInfoIO& job_info_io);
+  ClientJob(const ClientJob&) = delete;
+  ClientJob& operator=(const ClientJob&) = delete;
   ~ClientJob() override;
 
   ClientJob(ClientJob&& other) noexcept;

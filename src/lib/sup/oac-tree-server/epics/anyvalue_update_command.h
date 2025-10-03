@@ -52,6 +52,8 @@ public:
                                                  const sup::dto::AnyValue& value);
   static AnyValueUpdateCommand CreateExitCommand();
 
+  AnyValueUpdateCommand(const AnyValueUpdateCommand&) = delete;
+  AnyValueUpdateCommand& operator=(const AnyValueUpdateCommand&) = delete;
   ~AnyValueUpdateCommand();
 
   // Move only
