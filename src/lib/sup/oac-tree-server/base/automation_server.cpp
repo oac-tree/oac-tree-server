@@ -20,6 +20,7 @@
  * of the distribution package.
  ******************************************************************************/
 
+#include <sup/dto/basic_scalar_types.h>
 #include <sup/oac-tree-server/automation_server.h>
 #include <sup/oac-tree-server/exceptions.h>
 #include <sup/oac-tree-server/server_job_info_io.h>
@@ -48,7 +49,7 @@ AutomationServer::~AutomationServer() = default;
 void AutomationServer::AddJob(std::unique_ptr<sup::oac_tree::Procedure> proc)
 {
   std::lock_guard<std::mutex> lk{m_mtx};
-  auto idx = m_jobs.size();
+  auto idx = static_cast<dto::uint32>(m_jobs.size());
   auto job_prefix = CreateJobPrefix(m_server_prefix, idx);
   auto n_vars = GetNumberOfVariables(*proc);
   auto job_info_io = std::make_unique<ServerJobInfoIO>(job_prefix, n_vars,
@@ -65,7 +66,8 @@ std::string AutomationServer::GetServerPrefix() const
 sup::dto::uint32 AutomationServer::GetNumberOfJobs() const
 {
   std::lock_guard<std::mutex> lk{m_mtx};
-  return m_jobs.size();
+  auto n_jobs = static_cast<dto::uint32>(m_jobs.size());
+  return n_jobs;
 }
 
 sup::oac_tree::JobInfo AutomationServer::GetJobInfo(sup::dto::uint32 job_idx) const
@@ -140,7 +142,8 @@ sup::dto::uint32 GetNumberOfVariables(const sup::oac_tree::Procedure& proc)
 {
   const auto& ws = proc.GetWorkspace();
   auto var_names = ws.VariableNames();
-  return var_names.size();
+  auto n_vars = static_cast<dto::uint32>(var_names.size());
+  return n_vars;
 }
 
 }  // namespace oac_tree_server

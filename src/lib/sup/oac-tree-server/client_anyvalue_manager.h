@@ -44,7 +44,7 @@ class ClientAnyValueManager : public IAnyValueManager
 public:
   using AnyValueCallback = std::function<void(sup::oac_tree::IJobInfoIO&, const sup::dto::AnyValue&)>;
 
-  ClientAnyValueManager(sup::oac_tree::IJobInfoIO& job_info_io);
+  explicit ClientAnyValueManager(sup::oac_tree::IJobInfoIO& job_info_io);
 
   virtual ~ClientAnyValueManager();
 

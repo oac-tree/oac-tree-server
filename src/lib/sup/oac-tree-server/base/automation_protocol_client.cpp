@@ -83,7 +83,7 @@ sup::dto::uint32 AutomationProtocolClient::GetNumberOfJobs() const
       "number of jobs from server reply";
     throw InvalidOperationException(error);
   }
-  return result.As<sup::dto::uint64>();
+  return result.As<sup::dto::uint32>();
 }
 
 sup::oac_tree::JobInfo AutomationProtocolClient::GetJobInfo(sup::dto::uint32 job_idx) const
