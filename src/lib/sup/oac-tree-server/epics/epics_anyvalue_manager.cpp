@@ -62,11 +62,11 @@ bool EPICSAnyValueManager::AddInputHandler(const std::string& input_server_name)
     }
     auto input_server = std::make_unique<EPICSInputServer>(input_server_name);
     m_name_input_server_map[input_server_name] = input_server.get();
-    m_input_servers.emplace_back(std::move(input_server));
+    (void)m_input_servers.emplace_back(std::move(input_server));
   }
   auto input_request_name = GetInputRequestPVName(input_server_name);
   NameAnyValueSet value_set;
-  value_set.emplace_back(input_request_name, kInputRequestAnyValue);
+  (void)value_set.emplace_back(input_request_name, kInputRequestAnyValue);
   {
     std::lock_guard<std::mutex> lk{m_map_mtx};
     if (!AddAnyValuesImpl(value_set))
@@ -135,7 +135,7 @@ bool EPICSAnyValueManager::AddAnyValuesImpl(const NameAnyValueSet &name_value_se
   {
     m_name_server_map[name] = server.get();
   }
-  m_servers.emplace_back(std::move(server));
+  (void)m_servers.emplace_back(std::move(server));
   return true;
 }
 

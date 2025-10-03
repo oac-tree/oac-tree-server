@@ -53,8 +53,8 @@ void AutomationServer::AddJob(std::unique_ptr<sup::oac_tree::Procedure> proc)
   auto n_vars = GetNumberOfVariables(*proc);
   auto job_info_io = std::make_unique<ServerJobInfoIO>(job_prefix, n_vars,
                                                        m_av_mgr_registry.GetAnyValueManager(idx));
-  m_job_info_ios.emplace_back(std::move(job_info_io));
-  m_jobs.emplace_back(std::move(proc), *m_job_info_ios.back());
+  (void)m_job_info_ios.emplace_back(std::move(job_info_io));
+  (void)m_jobs.emplace_back(std::move(proc), *m_job_info_ios.back());
 }
 
 std::string AutomationServer::GetServerPrefix() const

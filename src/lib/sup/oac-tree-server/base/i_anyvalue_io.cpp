@@ -41,7 +41,7 @@ std::set<std::string> GetNames(const IAnyValueIO::NameAnyValueSet& name_value_se
   auto func = [](const IAnyValueIO::NameAnyValuePair& name_value_pair) {
     return name_value_pair.first;
   };
-  std::transform(name_value_set.begin(), name_value_set.end(),
+  (void)std::transform(name_value_set.begin(), name_value_set.end(),
                  std::inserter(result, result.end()), func);
   return result;
 }
@@ -52,20 +52,20 @@ IAnyValueIO::NameAnyValueSet GetInitialValueSet(const std::string& job_prefix,
   IAnyValueIO::NameAnyValueSet result;
   auto job_value_name = GetJobStatePVName(job_prefix);
   auto job_value = GetJobStateValue(oac_tree::JobState::kInitial);
-  result.emplace_back(job_value_name, job_value);
+  (void)result.emplace_back(job_value_name, job_value);
   auto breakpoint_instr_name = GetBreakpointInstructionPVName(job_prefix);
   auto breakpoint_instr_value = GetBreakpointInstructionValue(sup::oac_tree::kInvalidInstructionIndex);
-  result.emplace_back(breakpoint_instr_name, breakpoint_instr_value);
+  (void)result.emplace_back(breakpoint_instr_name, breakpoint_instr_value);
   auto log_entry_name = GetLogEntryName(job_prefix);
-  result.emplace_back(log_entry_name, kLogEntryAnyValue);
+  (void)result.emplace_back(log_entry_name, kLogEntryAnyValue);
   auto msg_entry_name = GetMessageEntryName(job_prefix);
-  result.emplace_back(msg_entry_name, kMessageEntryAnyValue);
+  (void)result.emplace_back(msg_entry_name, kMessageEntryAnyValue);
   auto out_val_entry_name = GetOutputValueEntryName(job_prefix);
-  result.emplace_back(out_val_entry_name, kOutputValueEntryAnyValue);
+  (void)result.emplace_back(out_val_entry_name, kOutputValueEntryAnyValue);
   for (sup::dto::uint32 var_idx = 0; var_idx < n_vars; ++var_idx)
   {
     const auto name = GetVariablePVName(job_prefix, var_idx);
-    result.emplace_back(name, kVariableAnyValue);
+    (void)result.emplace_back(name, kVariableAnyValue);
   }
   return result;
 }
@@ -77,7 +77,7 @@ IAnyValueIO::NameAnyValueSet GetInstructionValueSet(const std::string& job_prefi
   for (sup::dto::uint32 instr_idx = 0; instr_idx < n_instr; ++instr_idx)
   {
     const auto name = GetInstructionPVName(job_prefix, instr_idx);
-    result.emplace_back(name, sup::oac_tree::Constants::kInstructionStateAnyValue);
+    (void)result.emplace_back(name, sup::oac_tree::Constants::kInstructionStateAnyValue);
   }
   return result;
 }

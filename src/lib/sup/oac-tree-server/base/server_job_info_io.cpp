@@ -60,14 +60,14 @@ void ServerJobInfoIO::InstructionStateUpdated(sup::dto::uint32 instr_idx, Instru
 {
   auto instr_val_name = GetInstructionPVName(m_job_prefix, instr_idx);
   auto instr_state_av = ToAnyValue(state);
-  m_av_manager.UpdateAnyValue(instr_val_name, instr_state_av);
+  (void)m_av_manager.UpdateAnyValue(instr_val_name, instr_state_av);
 }
 
 void ServerJobInfoIO::BreakpointInstructionUpdated(sup::dto::uint32 instr_idx)
 {
   auto breakpoint_instr_name = GetBreakpointInstructionPVName(m_job_prefix);
   auto breakpoint_instr_av = GetBreakpointInstructionValue(instr_idx);
-  m_av_manager.UpdateAnyValue(breakpoint_instr_name, breakpoint_instr_av);
+  (void)m_av_manager.UpdateAnyValue(breakpoint_instr_name, breakpoint_instr_av);
 }
 
 void ServerJobInfoIO::VariableUpdated(sup::dto::uint32 var_idx, const sup::dto::AnyValue& value,
@@ -75,14 +75,14 @@ void ServerJobInfoIO::VariableUpdated(sup::dto::uint32 var_idx, const sup::dto::
 {
   auto var_val_name = GetVariablePVName(m_job_prefix, var_idx);
   auto var_info = EncodeVariableState(value, connected);
-  m_av_manager.UpdateAnyValue(var_val_name, var_info);
+  (void)m_av_manager.UpdateAnyValue(var_val_name, var_info);
 }
 
 void ServerJobInfoIO::JobStateUpdated(sup::oac_tree::JobState state)
 {
   auto job_state_name = GetJobStatePVName(m_job_prefix);
   auto job_state_value = GetJobStateValue(state);
-  m_av_manager.UpdateAnyValue(job_state_name, job_state_value);
+  (void)m_av_manager.UpdateAnyValue(job_state_name, job_state_value);
 }
 
 void ServerJobInfoIO::PutValue(const sup::dto::AnyValue& value, const std::string& description)
@@ -90,7 +90,7 @@ void ServerJobInfoIO::PutValue(const sup::dto::AnyValue& value, const std::strin
   auto idx = m_out_val_idx_gen.NewIndex();
   auto out_val_name = GetOutputValueEntryName(m_job_prefix);
   OutputValueEntry out_val{ idx, description, value };
-  m_av_manager.UpdateAnyValue(out_val_name, EncodeOutputValueEntry(out_val));
+  (void)m_av_manager.UpdateAnyValue(out_val_name, EncodeOutputValueEntry(out_val));
 }
 
 bool ServerJobInfoIO::GetUserValue(sup::dto::uint64 id, sup::dto::AnyValue& value,
@@ -137,7 +137,7 @@ void ServerJobInfoIO::Message(const std::string& message)
   auto idx = m_msg_idx_gen.NewIndex();
   auto msg_val_name = GetMessageEntryName(m_job_prefix);
   MessageEntry msg_val{ idx, message };
-  m_av_manager.UpdateAnyValue(msg_val_name, EncodeMessageEntry(msg_val));
+  (void)m_av_manager.UpdateAnyValue(msg_val_name, EncodeMessageEntry(msg_val));
 }
 
 void ServerJobInfoIO::Log(int severity, const std::string& message)
@@ -145,7 +145,7 @@ void ServerJobInfoIO::Log(int severity, const std::string& message)
   auto idx = m_log_idx_gen.NewIndex();
   auto log_val_name = GetLogEntryName(m_job_prefix);
   LogEntry log_val{ idx, severity, message };
-  m_av_manager.UpdateAnyValue(log_val_name, EncodeLogEntry(log_val));
+  (void)m_av_manager.UpdateAnyValue(log_val_name, EncodeLogEntry(log_val));
 }
 
 // Procedure ticks are not forwarded over the network!

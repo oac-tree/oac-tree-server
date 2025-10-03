@@ -118,7 +118,7 @@ bool EPICSIOClientImpl::AddInputHandler(const std::string& input_server_name)
   m_reply_delegator = std::make_unique<ClientReplyDelegator>(reply_func, interrupt_func);
   auto input_request_pv_name = GetInputRequestPVName(input_server_name);
   IAnyValueIO::NameAnyValueSet input_pv_set;
-  input_pv_set.emplace_back(input_request_pv_name, kInputRequestAnyValue);
+  (void)input_pv_set.emplace_back(input_request_pv_name, kInputRequestAnyValue);
   auto cb = [this, input_server_name](const PvAccessClientPV::ExtendedValue& ext_val) {
     if (ext_val.connected)
     {
@@ -129,7 +129,7 @@ bool EPICSIOClientImpl::AddInputHandler(const std::string& input_server_name)
       }
     }
   };
-  m_client_pvs.emplace_back(input_request_pv_name, cb);
+  (void)m_client_pvs.emplace_back(input_request_pv_name, cb);
   return true;
 }
 
@@ -146,7 +146,7 @@ void EPICSIOClientImpl::AddMonitorPV(const std::string& channel)
       }
     }
   };
-  m_client_pvs.emplace_back(channel, cb);
+  (void)m_client_pvs.emplace_back(channel, cb);
 }
 
 void EPICSIOClientImpl::HandleUserInput(const std::string& input_server_name,
