@@ -49,8 +49,8 @@ public:
             sup::oac_tree::IJobInfoIO& job_info_io);
   ~ClientJob() override;
 
-  ClientJob(ClientJob&& other);
-  ClientJob& operator=(ClientJob&& other);
+  ClientJob(ClientJob&& other) noexcept;
+  ClientJob& operator=(ClientJob&& other) noexcept;
 
   const sup::oac_tree::JobInfo& GetInfo() const override;
   void SetBreakpoint(sup::dto::uint32 instr_idx) override;

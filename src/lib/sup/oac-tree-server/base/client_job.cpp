@@ -61,12 +61,12 @@ ClientJob::ClientJob(IJobManager& job_manager, sup::dto::uint32 job_idx,
 
 ClientJob::~ClientJob() = default;
 
-ClientJob::ClientJob(ClientJob&& other)
+ClientJob::ClientJob(ClientJob&& other) noexcept
   : IJob{}
   , m_impl{std::move(other.m_impl)}
 {}
 
-ClientJob& ClientJob::operator=(ClientJob&& other)
+ClientJob& ClientJob::operator=(ClientJob&& other) noexcept
 {
   ClientJob moved{std::move(other)};
   std::swap(m_impl, moved.m_impl);

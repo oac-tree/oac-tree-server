@@ -40,9 +40,9 @@ AnyValueUpdateCommand AnyValueUpdateCommand::CreateExitCommand()
 
 AnyValueUpdateCommand::~AnyValueUpdateCommand() = default;
 
-AnyValueUpdateCommand::AnyValueUpdateCommand(AnyValueUpdateCommand&&) = default;
+AnyValueUpdateCommand::AnyValueUpdateCommand(AnyValueUpdateCommand&&) noexcept = default;
 
-AnyValueUpdateCommand& AnyValueUpdateCommand::operator=(AnyValueUpdateCommand&& other)
+AnyValueUpdateCommand& AnyValueUpdateCommand::operator=(AnyValueUpdateCommand&& other) noexcept
 {
   m_command_type = other.m_command_type;
   m_channel = std::move(other.m_channel);

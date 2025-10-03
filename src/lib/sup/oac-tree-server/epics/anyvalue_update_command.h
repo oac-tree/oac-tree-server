@@ -55,8 +55,8 @@ public:
   ~AnyValueUpdateCommand();
 
   // Move only
-  AnyValueUpdateCommand(AnyValueUpdateCommand&& other);
-  AnyValueUpdateCommand& operator=(AnyValueUpdateCommand&& other);
+  AnyValueUpdateCommand(AnyValueUpdateCommand&& other) noexcept;
+  AnyValueUpdateCommand& operator=(AnyValueUpdateCommand&& other) noexcept;
 
   CommandType GetCommandType() const;
 
