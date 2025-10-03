@@ -24,6 +24,7 @@
 #define SUP_OAC_TREE_SERVER_ANYVALUE_UPDATE_COMMAND_H_
 
 #include <sup/dto/anyvalue.h>
+#include <sup/dto/basic_scalar_types.h>
 
 #include <string>
 
@@ -42,7 +43,7 @@ namespace oac_tree_server
 class AnyValueUpdateCommand
 {
 public:
-  enum CommandType
+  enum CommandType : dto::uint32
   {
     kUpdate = 0,
     kExit

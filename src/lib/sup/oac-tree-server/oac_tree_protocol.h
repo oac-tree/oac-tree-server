@@ -26,6 +26,7 @@
 #include <sup/dto/anyvalue.h>
 #include <sup/oac-tree/job_states.h>
 
+#include <sup/dto/basic_scalar_types.h>
 #include <sup/protocol/protocol_result.h>
 
 #include <string>
@@ -148,7 +149,7 @@ const std::string KSetReplyFunctionName = "SetReply";
 // Field names used for the supported functions of input request servers:
 const std::string kUserReplyValueFieldName = "value";
 
-enum class ValueNameType
+enum class ValueNameType : dto::uint32
 {
   kUnknown = 0,
   kInstruction,

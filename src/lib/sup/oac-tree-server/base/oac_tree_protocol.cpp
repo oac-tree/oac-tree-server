@@ -24,6 +24,7 @@
 
 #include <sup/oac-tree-server/exceptions.h>
 
+#include <sup/dto/basic_scalar_types.h>
 #include <sup/protocol/base64_variable_codec.h>
 #include <sup/protocol/function_protocol_extract.h>
 #include <sup/oac-tree/anyvalue_utils.h>
@@ -84,7 +85,7 @@ const sup::dto::AnyValue kJobStateAnyValue = {{
 
 namespace status
 {
-enum AutomationServerStatus
+enum AutomationServerStatus : dto::uint32
 {
   kNotSupported = sup::protocol::SPECIFIC_APPLICATION_ERROR_START,
   kUnknownJob,
