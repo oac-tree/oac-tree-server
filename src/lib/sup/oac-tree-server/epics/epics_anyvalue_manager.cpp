@@ -118,7 +118,10 @@ UserInputReply EPICSAnyValueManager::GetUserInput(const std::string& input_serve
 void EPICSAnyValueManager::Interrupt(const std::string& input_server_name, sup::dto::uint64 id)
 {
   auto input_server = FindInputServer(input_server_name);
-  input_server->Interrupt(id);
+  if (input_server != nullptr)
+  {
+    input_server->Interrupt(id);
+  }
 }
 
 bool EPICSAnyValueManager::AddAnyValuesImpl(const NameAnyValueSet &name_value_set)
