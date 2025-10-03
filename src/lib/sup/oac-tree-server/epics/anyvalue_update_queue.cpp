@@ -33,8 +33,7 @@ AnyValueUpdateQueue::AnyValueUpdateQueue()
   , m_cv{}
 {}
 
-AnyValueUpdateQueue::~AnyValueUpdateQueue()
-{}
+AnyValueUpdateQueue::~AnyValueUpdateQueue() = default;
 
 void AnyValueUpdateQueue::Push(const std::string& channel, const sup::dto::AnyValue& value)
 {
