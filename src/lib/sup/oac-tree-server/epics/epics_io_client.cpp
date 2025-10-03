@@ -45,7 +45,7 @@ using namespace std::placeholders;
 class EPICSIOClientImpl
 {
 public:
-  EPICSIOClientImpl(IAnyValueManager& av_mgr);
+  explicit EPICSIOClientImpl(IAnyValueManager& av_mgr);
   ~EPICSIOClientImpl();
 
   bool AddAnyValues(const IAnyValueIO::NameAnyValueSet& monitor_set);

@@ -38,7 +38,7 @@ class EPICSIOClientImpl;
 class EPICSIOClient : public IAnyValueIO
 {
 public:
-  EPICSIOClient(IAnyValueManager& av_mgr);
+  explicit EPICSIOClient(IAnyValueManager& av_mgr);
   ~EPICSIOClient() override;
 
   bool AddAnyValues(const IAnyValueIO::NameAnyValueSet& name_value_set) override;

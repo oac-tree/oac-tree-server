@@ -39,7 +39,7 @@ using sup::oac_tree::UserInputReply;
 class InputProtocolClient
 {
 public:
-  InputProtocolClient(sup::protocol::Protocol& protocol);
+  explicit InputProtocolClient(sup::protocol::Protocol& protocol);
   ~InputProtocolClient();
 
   // No copy or move

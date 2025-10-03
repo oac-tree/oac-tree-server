@@ -48,7 +48,7 @@ public:
    *
    * @note It is the user's responsibility to ensure the provided names are unique.
    */
-  EPICSServer(const IAnyValueIO::NameAnyValueSet& name_value_set);
+  explicit EPICSServer(const IAnyValueIO::NameAnyValueSet& name_value_set);
   ~EPICSServer();
 
   // No copy or move

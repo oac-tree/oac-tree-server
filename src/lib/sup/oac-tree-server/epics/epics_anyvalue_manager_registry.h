@@ -38,7 +38,7 @@ namespace oac_tree_server
 class EPICSAnyValueManagerRegistry : public IAnyValueManagerRegistry
 {
 public:
-  EPICSAnyValueManagerRegistry(sup::dto::uint32 n_managers);
+  explicit EPICSAnyValueManagerRegistry(sup::dto::uint32 n_managers);
   virtual ~EPICSAnyValueManagerRegistry();
 
   IAnyValueManager& GetAnyValueManager(sup::dto::uint32 idx) override;
