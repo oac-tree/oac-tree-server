@@ -39,7 +39,7 @@ class EPICSIOClient : public IAnyValueIO
 {
 public:
   EPICSIOClient(IAnyValueManager& av_mgr);
-  ~EPICSIOClient();
+  ~EPICSIOClient() override;
 
   bool AddAnyValues(const IAnyValueIO::NameAnyValueSet& monitor_set) override;
 

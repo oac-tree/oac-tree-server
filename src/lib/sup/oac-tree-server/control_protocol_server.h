@@ -40,7 +40,7 @@ class ControlProtocolServer : public sup::protocol::Protocol
 {
 public:
   explicit ControlProtocolServer(IJobManager& job_manager);
-  ~ControlProtocolServer();
+  ~ControlProtocolServer() override;
 
   sup::protocol::ProtocolResult Invoke(const sup::dto::AnyValue& input,
                                        sup::dto::AnyValue& output) override;

@@ -42,7 +42,7 @@ class InputProtocolServer : public sup::protocol::Protocol
 {
 public:
   InputProtocolServer();
-  ~InputProtocolServer();
+  ~InputProtocolServer() override;
 
   // No copy or move
   InputProtocolServer(const InputProtocolServer& other) = delete;

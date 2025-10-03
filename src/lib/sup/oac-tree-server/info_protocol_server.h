@@ -41,7 +41,7 @@ class InfoProtocolServer : public sup::protocol::Protocol
 {
 public:
   explicit InfoProtocolServer(IJobManager& job_manager);
-  ~InfoProtocolServer();
+  ~InfoProtocolServer() override;
 
   sup::protocol::ProtocolResult Invoke(const sup::dto::AnyValue& input,
                                        sup::dto::AnyValue& output) override;

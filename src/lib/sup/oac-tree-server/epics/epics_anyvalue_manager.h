@@ -44,7 +44,7 @@ class EPICSAnyValueManager : public IAnyValueManager
 {
 public:
   EPICSAnyValueManager();
-  ~EPICSAnyValueManager();
+  ~EPICSAnyValueManager() override;
 
   bool AddAnyValues(const NameAnyValueSet& name_value_set) override;
   bool AddInputHandler(const std::string& input_server_name) override;
