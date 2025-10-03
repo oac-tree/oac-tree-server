@@ -48,7 +48,7 @@ public:
     kUpdate = 0,
     kExit
   };
-  static AnyValueUpdateCommand CreateValueUpdate(const std::string& name,
+  static AnyValueUpdateCommand CreateValueUpdate(const std::string& channel,
                                                  const sup::dto::AnyValue& value);
   static AnyValueUpdateCommand CreateExitCommand();
 
@@ -65,9 +65,9 @@ public:
   sup::dto::AnyValue& Value();
 
 private:
-  AnyValueUpdateCommand(CommandType command_type, std::string name, sup::dto::AnyValue value);
+  AnyValueUpdateCommand(CommandType command_type, std::string channel, sup::dto::AnyValue value);
   CommandType m_command_type;
-  std::string m_name;
+  std::string m_channel;
   sup::dto::AnyValue m_value;
 };
 

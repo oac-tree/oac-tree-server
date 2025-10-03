@@ -54,7 +54,7 @@ public:
    * @param name Name of AnyValue to update.
    * @param value Value for update.
    */
-  void Push(const std::string& name, const sup::dto::AnyValue& value);
+  void Push(const std::string& channel, const sup::dto::AnyValue& value);
 
   /**
    * @brief Push a command that will terminate any processing loops.

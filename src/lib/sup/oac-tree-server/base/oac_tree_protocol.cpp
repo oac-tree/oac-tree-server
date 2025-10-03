@@ -335,13 +335,13 @@ std::pair<bool, sup::dto::AnyValue> Base64DecodeAnyValue(const sup::dto::AnyValu
 namespace
 {
 using namespace sup::oac_tree_server;
-bool ValidateVariableAnyValue(const sup::dto::AnyValue& var_value)
+bool ValidateVariableAnyValue(const sup::dto::AnyValue& payload)
 {
-  if (!var_value.HasField(kVariableValueField))
+  if (!payload.HasField(kVariableValueField))
   {
     return false;
   }
-  if (!sup::oac_tree::utils::ValidateMemberType(var_value, kVariableConnectedField,
+  if (!sup::oac_tree::utils::ValidateMemberType(payload, kVariableConnectedField,
                                                  sup::dto::BooleanType))
   {
     return false;
