@@ -121,12 +121,12 @@ UserInputReply ClientAnyValueManager::GetUserInput(
     {
       std::vector<std::string> options{};
       sup::dto::AnyValue metadata{};
-      if (!ParseUserChoiceRequest(request, options, metadata))
+      if (ParseUserChoiceRequest(request, options, metadata))
       {
-        break;;
+        auto choice = m_job_info_io.GetUserChoice(id, options, metadata);
+        return CreateUserChoiceReply(true, choice);
       }
-      auto choice = m_job_info_io.GetUserChoice(id, options, metadata);
-      return CreateUserChoiceReply(true, choice);
+      break;
     }
   default:
     break;
