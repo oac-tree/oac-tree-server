@@ -38,7 +38,7 @@ AnyValueUpdateCommand AnyValueUpdateCommand::CreateExitCommand()
   return AnyValueUpdateCommand(kExit, {}, {});
 }
 
-AnyValueUpdateCommand::~AnyValueUpdateCommand() = default;
+AnyValueUpdateCommand::~AnyValueUpdateCommand() noexcept = default;
 
 AnyValueUpdateCommand::AnyValueUpdateCommand(AnyValueUpdateCommand&&) noexcept = default;
 

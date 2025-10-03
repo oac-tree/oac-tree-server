@@ -54,7 +54,7 @@ public:
 
   AnyValueUpdateCommand(const AnyValueUpdateCommand&) = delete;
   AnyValueUpdateCommand& operator=(const AnyValueUpdateCommand&) = delete;
-  ~AnyValueUpdateCommand();
+  ~AnyValueUpdateCommand() noexcept;
 
   // Move only
   AnyValueUpdateCommand(AnyValueUpdateCommand&& other) noexcept;
