@@ -71,9 +71,9 @@ EPICSIOClient::EPICSIOClient(IAnyValueManager& av_mgr)
 EPICSIOClient::~EPICSIOClient() = default;
 
 bool EPICSIOClient::AddAnyValues(
-  const IAnyValueIO::NameAnyValueSet& monitor_set)
+  const IAnyValueIO::NameAnyValueSet& name_value_set)
 {
-  return m_impl->AddAnyValues(monitor_set);
+  return m_impl->AddAnyValues(name_value_set);
 }
 
 bool EPICSIOClient::AddInputHandler(const std::string& input_server_name)

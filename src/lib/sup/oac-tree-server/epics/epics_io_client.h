@@ -41,7 +41,7 @@ public:
   EPICSIOClient(IAnyValueManager& av_mgr);
   ~EPICSIOClient() override;
 
-  bool AddAnyValues(const IAnyValueIO::NameAnyValueSet& monitor_set) override;
+  bool AddAnyValues(const IAnyValueIO::NameAnyValueSet& name_value_set) override;
 
   bool AddInputHandler(const std::string& input_server_name) override;
 
