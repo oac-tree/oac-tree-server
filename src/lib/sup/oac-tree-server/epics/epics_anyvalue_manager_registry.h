@@ -41,7 +41,7 @@ public:
   explicit EPICSAnyValueManagerRegistry(sup::dto::uint32 n_managers);
   EPICSAnyValueManagerRegistry(const EPICSAnyValueManagerRegistry &) = delete;
   EPICSAnyValueManagerRegistry(EPICSAnyValueManagerRegistry &&) = delete;
-  EPICSAnyValueManagerRegistry &operator=(const EPICSAnyValueManagerRegistry &) = default;
+  EPICSAnyValueManagerRegistry &operator=(const EPICSAnyValueManagerRegistry &) = delete;
   EPICSAnyValueManagerRegistry &operator=(EPICSAnyValueManagerRegistry &&) = delete;
   virtual ~EPICSAnyValueManagerRegistry();
 

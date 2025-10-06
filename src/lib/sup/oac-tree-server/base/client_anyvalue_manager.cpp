@@ -110,12 +110,12 @@ UserInputReply ClientAnyValueManager::GetUserInput(
     {
       std::string description;
       sup::dto::AnyValue value;
-      if (!ParseUserValueRequest(request, value, description))
+      if (ParseUserValueRequest(request, value, description))
       {
-        break;
+        auto result = m_job_info_io.GetUserValue(id, value, description);
+        return CreateUserValueReply(result, value);
       }
-      auto result = m_job_info_io.GetUserValue(id, value, description);
-      return CreateUserValueReply(result, value);
+      break;
     }
   case InputRequestType::kUserChoice:
     {
