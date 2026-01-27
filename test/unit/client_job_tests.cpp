@@ -66,8 +66,8 @@ protected:
   static IAnyValueManagerRegistry& GetAnyValueManagerRegistry();
 
   static AutomationServer m_automation_server;
-  static InfoProtocolServer m_info_server;
-  static ControlProtocolServer m_control_server;
+  static std::unique_ptr<InfoProtocolServer> m_info_server;
+  static std::unique_ptr<ControlProtocolServer> m_control_server;
   static std::unique_ptr<sup::protocol::RPCServerInterface> m_info_stack;
   static std::unique_ptr<sup::protocol::RPCServerInterface> m_control_stack;
 };
@@ -123,8 +123,10 @@ ClientJobTests::~ClientJobTests()
 
 AutomationServer ClientJobTests::m_automation_server{
   kTestServerPrefix, ClientJobTests::GetAnyValueManagerRegistry()};
-InfoProtocolServer ClientJobTests::m_info_server{m_automation_server};
-ControlProtocolServer ClientJobTests::m_control_server{m_automation_server};
+std::unique_ptr<InfoProtocolServer> ClientJobTests::m_info_server{
+  std::make_unique<InfoProtocolServer>(m_automation_server)};
+std::unique_ptr<ControlProtocolServer> ClientJobTests::m_control_server{
+  std::make_unique<ControlProtocolServer>(m_automation_server)};
 std::unique_ptr<sup::protocol::RPCServerInterface> ClientJobTests::m_info_stack{};
 std::unique_ptr<sup::protocol::RPCServerInterface> ClientJobTests::m_control_stack{};
 
@@ -136,11 +138,14 @@ IAnyValueManagerRegistry& ClientJobTests::GetAnyValueManagerRegistry()
 
 void ClientJobTests::SetUpTestSuite()
 {
+  sup::protocol::ProtocolRPCServerConfig rpc_server_config{};
   sup::epics::PvAccessRPCServerConfig info_server_config{kTestAutomationServiceName};
-  m_info_stack = sup::epics::CreateEPICSRPCServerStack(m_info_server, info_server_config);
+  m_info_stack = sup::epics::CreateEPICSRPCServerStack(
+    info_server_config, rpc_server_config, std::move(m_info_server));
   auto control_service_name = GetControlServerName(kTestAutomationServiceName);
   sup::epics::PvAccessRPCServerConfig control_server_config{control_service_name};
-  m_control_stack = sup::epics::CreateEPICSRPCServerStack(m_control_server, control_server_config);
+  m_control_stack = sup::epics::CreateEPICSRPCServerStack(
+    control_server_config, rpc_server_config, std::move(m_control_server));
 
   const auto procedure_string = UnitTestHelper::CreateProcedureString(kWorkspaceSequenceBody);
   auto proc = sup::oac_tree::ParseProcedureString(procedure_string);

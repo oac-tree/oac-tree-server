@@ -30,26 +30,28 @@ namespace sup
 namespace oac_tree_server
 {
 EPICSInputServer::EPICSInputServer(const std::string& server_name)
-  : m_protocol_server{}
+  : m_protocol_server{std::make_unique<InputProtocolServer>()}
+  , m_input_protocol_handle{m_protocol_server.get()}
   , m_server_stack{sup::epics::CreateEPICSRPCServerStack(
-      m_protocol_server, sup::epics::GetDefaultRPCServerConfig(server_name))}
+      sup::epics::GetDefaultRPCServerConfig(server_name), sup::protocol::ProtocolRPCServerConfig{},
+      std::move(m_protocol_server))}
 {}
 
 EPICSInputServer::~EPICSInputServer() = default;
 
 void EPICSInputServer::InitNewRequest(sup::dto::uint64 id)
 {
-  return m_protocol_server.InitNewRequest(id);
+  return m_input_protocol_handle->InitNewRequest(id);
 }
 
 std::pair<bool, UserInputReply> EPICSInputServer::WaitForReply(sup::dto::uint64 id)
 {
-  return m_protocol_server.WaitForReply(id);
+  return m_input_protocol_handle->WaitForReply(id);
 }
 
 void EPICSInputServer::Interrupt(sup::dto::uint64 id)
 {
-  m_protocol_server.Interrupt(id);
+  m_input_protocol_handle->Interrupt(id);
 }
 
 }  // namespace oac_tree_server

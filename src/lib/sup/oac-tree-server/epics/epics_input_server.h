@@ -80,7 +80,8 @@ public:
   void Interrupt(sup::dto::uint64 id);
 
 private:
-  InputProtocolServer m_protocol_server;
+  std::unique_ptr<InputProtocolServer> m_protocol_server;
+  InputProtocolServer* m_input_protocol_handle;
   std::unique_ptr<sup::protocol::RPCServerInterface> m_server_stack;
 };
 
