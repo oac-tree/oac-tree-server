@@ -1,3 +1,7 @@
+Changes for 2.5.0:
+
+- Use new API for RPC server factory functions
+
 Changes for 2.4.0:
 
 - Update copyright year
