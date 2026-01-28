@@ -24,7 +24,6 @@
 #include "non_owning_protocol_decorator.h"
 
 #include <sup/epics/epics_protocol_factory.h>
-#include <sup/epics/pv_access_rpc_server.h>
 
 namespace sup
 {
