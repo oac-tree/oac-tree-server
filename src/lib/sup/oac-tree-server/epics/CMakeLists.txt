@@ -9,4 +9,5 @@ target_sources(oac-tree-server
   epics_input_client.cpp
   epics_input_server.cpp
   epics_server.cpp
+  non_owning_protocol_decorator.cpp
 )

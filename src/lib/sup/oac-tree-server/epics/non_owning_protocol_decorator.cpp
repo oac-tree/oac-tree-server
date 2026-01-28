@@ -20,41 +20,31 @@
  * of the distribution package.
  ******************************************************************************/
 
-#include "epics_input_server.h"
 #include "non_owning_protocol_decorator.h"
-
-#include <sup/epics/epics_protocol_factory.h>
-#include <sup/epics/pv_access_rpc_server.h>
 
 namespace sup
 {
 namespace oac_tree_server
 {
-EPICSInputServer::EPICSInputServer(const std::string& server_name)
-  : m_protocol_server{}
-  , m_server_stack{sup::epics::CreateEPICSRPCServerStack(
-      sup::epics::GetDefaultRPCServerConfig(server_name), sup::protocol::ProtocolRPCServerConfig{},
-      std::make_unique<NonOwningProtocolDecorator>(m_protocol_server))}
+
+NonOwningProtocolDecorator::NonOwningProtocolDecorator(sup::protocol::Protocol& protocol)
+  : m_protocol{protocol}
 {}
 
-EPICSInputServer::~EPICSInputServer() = default;
+NonOwningProtocolDecorator::~NonOwningProtocolDecorator() = default;
 
-void EPICSInputServer::InitNewRequest(sup::dto::uint64 id)
+sup::protocol::ProtocolResult NonOwningProtocolDecorator::Invoke(const sup::dto::AnyValue& input,
+                                                                 sup::dto::AnyValue& output)
 {
-  return m_protocol_server.InitNewRequest(id);
+  return m_protocol.Invoke(input, output);
 }
 
-std::pair<bool, UserInputReply> EPICSInputServer::WaitForReply(sup::dto::uint64 id)
+sup::protocol::ProtocolResult NonOwningProtocolDecorator::Service(const sup::dto::AnyValue& input,
+                                                                  sup::dto::AnyValue& output)
 {
-  return m_protocol_server.WaitForReply(id);
-}
-
-void EPICSInputServer::Interrupt(sup::dto::uint64 id)
-{
-  m_protocol_server.Interrupt(id);
+  return m_protocol.Service(input, output);
 }
 
 }  // namespace oac_tree_server
 
 }  // namespace sup
-
