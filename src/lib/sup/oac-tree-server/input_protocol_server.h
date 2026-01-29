@@ -41,7 +41,7 @@ namespace oac_tree_server
 class InputProtocolServer : public sup::protocol::Protocol
 {
 public:
-  InputProtocolServer();
+  explicit InputProtocolServer(InputRequestServer& request_server);
   ~InputProtocolServer() override;
 
   // No copy or move
@@ -50,17 +50,13 @@ public:
   InputProtocolServer& operator=(const InputProtocolServer& other) = delete;
   InputProtocolServer& operator=(InputProtocolServer&& other) = delete;
 
-  void InitNewRequest(sup::dto::uint64 id);
-  std::pair<bool, UserInputReply> WaitForReply(sup::dto::uint64 id);
-  void Interrupt(sup::dto::uint64 id);
-
   sup::protocol::ProtocolResult Invoke(const sup::dto::AnyValue& input,
                                   sup::dto::AnyValue& output) override;
   sup::protocol::ProtocolResult Service(const sup::dto::AnyValue& input,
                                   sup::dto::AnyValue& output) override;
 private:
   static const sup::protocol::ProtocolMemberFunctionMap<InputProtocolServer>& FunctionMap();
-  InputRequestServer m_request_server;
+  InputRequestServer& m_request_server;
   sup::protocol::ProtocolResult SetClientReply(const sup::dto::AnyValue& input,
                                                sup::dto::AnyValue& output);
 };

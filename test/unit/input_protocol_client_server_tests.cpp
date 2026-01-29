@@ -39,6 +39,7 @@ protected:
   InputProtocolClientServerTest();
   virtual ~InputProtocolClientServerTest() = default;
 
+  InputRequestServer m_request_server;
   InputProtocolServer m_server;
   InputProtocolClient m_client;
 };
@@ -47,9 +48,9 @@ TEST_F(InputProtocolClientServerTest, SingleThreaded)
 {
   auto reply = sup::oac_tree::CreateUserChoiceReply(true, 42);
   sup::dto::uint64 id{77};
-  m_server.InitNewRequest(id);
+  m_request_server.InitNewRequest(id);
   m_client.SetClientReply(id, reply);
-  auto [retrieved, value] = m_server.WaitForReply(id);
+  auto [retrieved, value] = m_request_server.WaitForReply(id);
   EXPECT_TRUE(retrieved);
   EXPECT_EQ(value, reply);
 }
@@ -58,12 +59,12 @@ TEST_F(InputProtocolClientServerTest, MultiThreaded)
 {
   auto reply = sup::oac_tree::CreateUserChoiceReply(true, 42);
   sup::dto::uint64 id{77};
-  m_server.InitNewRequest(id);
+  m_request_server.InitNewRequest(id);
   auto client_func = [this, id, reply]() {
     m_client.SetClientReply(id, reply);
   };
   auto client_future = std::async(std::launch::async, client_func);
-  auto [retrieved, value] = m_server.WaitForReply(id);
+  auto [retrieved, value] = m_request_server.WaitForReply(id);
   EXPECT_TRUE(retrieved);
   EXPECT_EQ(value, reply);
 }
@@ -72,7 +73,7 @@ TEST_F(InputProtocolClientServerTest, MultiThreadedInterrupted)
 {
   auto reply = sup::oac_tree::CreateUserChoiceReply(true, 42);
   sup::dto::uint64 id{77};
-  m_server.InitNewRequest(id);
+  m_request_server.InitNewRequest(id);
   std::atomic_bool halt{false};
   auto client_func = [&halt]() {
     while (!halt)
@@ -81,14 +82,15 @@ TEST_F(InputProtocolClientServerTest, MultiThreadedInterrupted)
     }
   };
   auto client_future = std::async(std::launch::async, client_func);
-  m_server.Interrupt(id);
-  auto [retrieved, value] = m_server.WaitForReply(id);
+  m_request_server.Interrupt(id);
+  auto [retrieved, value] = m_request_server.WaitForReply(id);
   EXPECT_FALSE(retrieved);
   EXPECT_EQ(value, sup::oac_tree::kInvalidUserInputReply);
   halt.store(true);
 }
 
 InputProtocolClientServerTest::InputProtocolClientServerTest()
-  : m_server{}
+  : m_request_server{}
+  , m_server{m_request_server}
   , m_client{m_server}
 {}

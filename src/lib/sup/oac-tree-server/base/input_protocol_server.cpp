@@ -34,26 +34,11 @@ namespace sup
 namespace oac_tree_server
 {
 
-InputProtocolServer::InputProtocolServer()
-  : m_request_server{}
+InputProtocolServer::InputProtocolServer(InputRequestServer& request_server)
+  : m_request_server{request_server}
 {}
 
 InputProtocolServer::~InputProtocolServer() = default;
-
-void InputProtocolServer::InitNewRequest(sup::dto::uint64 id)
-{
-  return m_request_server.InitNewRequest(id);
-}
-
-std::pair<bool, UserInputReply> InputProtocolServer::WaitForReply(sup::dto::uint64 id)
-{
-  return m_request_server.WaitForReply(id);
-}
-
-void InputProtocolServer::Interrupt(sup::dto::uint64 id)
-{
-  m_request_server.Interrupt(id);
-}
 
 sup::protocol::ProtocolResult InputProtocolServer::Invoke(const sup::dto::AnyValue& input,
                                                           sup::dto::AnyValue& output)
