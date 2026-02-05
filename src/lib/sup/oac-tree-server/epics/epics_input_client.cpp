@@ -23,7 +23,6 @@
 #include "epics_input_client.h"
 
 #include <sup/epics/epics_protocol_factory.h>
-#include <sup/epics/pv_access_rpc_client.h>
 
 namespace sup
 {
@@ -32,7 +31,8 @@ namespace oac_tree_server
 
 EPICSInputClient::EPICSInputClient(const std::string& server_name)
   : m_client_stack{sup::epics::CreateEPICSRPCClientStack(
-                       sup::epics::PvAccessRPCClientConfig{server_name, 10.0})}
+                       sup::epics::PvAccessRPCClientConfig{server_name, 10.0},
+                       sup::protocol::ProtocolRPCClientConfig{})}
   , m_protocol_client{*m_client_stack}
 {}
 

@@ -26,7 +26,6 @@
 #include <sup/oac-tree-server/epics/epics_anyvalue_manager_registry.h>
 #include <sup/oac-tree-server/oac_tree_protocol.h>
 #include <sup/epics/epics_protocol_factory.h>
-#include <sup/epics/pv_access_rpc_client.h>
 
 namespace sup
 {
@@ -42,11 +41,12 @@ std::unique_ptr<IAnyValueIO> CreateEPICSIOClient(IAnyValueManager& av_mgr)
 
 std::unique_ptr<IJobManager> CreateEPICSJobManager(const std::string& server_name)
 {
+  sup::protocol::ProtocolRPCClientConfig protocol_config{};
   auto info_config = sup::epics::GetDefaultRPCClientConfig(server_name);
-  auto info_protocol = sup::epics::CreateEPICSRPCClientStack(info_config);
+  auto info_protocol = sup::epics::CreateEPICSRPCClientStack(info_config, protocol_config);
   auto control_server_name = GetControlServerName(server_name);
   auto control_config = sup::epics::GetDefaultRPCClientConfig(control_server_name);
-  auto control_protocol = sup::epics::CreateEPICSRPCClientStack(control_config);
+  auto control_protocol = sup::epics::CreateEPICSRPCClientStack(control_config, protocol_config);
   auto result = std::make_unique<AutomationClientStack>(std::move(info_protocol),
                                                         std::move(control_protocol));
   return result;

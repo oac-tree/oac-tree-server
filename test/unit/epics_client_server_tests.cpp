@@ -30,7 +30,6 @@
 #include <sup/oac-tree-server/epics/epics_io_client.h>
 
 #include <sup/epics/epics_protocol_factory.h>
-#include <sup/epics/pv_access_rpc_client.h>
 #include <sup/protocol/protocol_rpc.h>
 #include <sup/oac-tree/user_input_request.h>
 
@@ -120,8 +119,9 @@ TEST_F(EPICSClientServerTest, ProtocolInformation)
   ASSERT_TRUE(m_epics_av_manager.AddInputHandler(input_server_name));
 
   // Query application protocol information
-  auto client_protocol =
-    sup::epics::CreateEPICSRPCClientStack(sup::epics::GetDefaultRPCClientConfig(input_server_name));
+  auto client_config = sup::epics::GetDefaultRPCClientConfig(input_server_name);
+  sup::protocol::ProtocolRPCClientConfig protocol_config{};
+  auto client_protocol = sup::epics::CreateEPICSRPCClientStack(client_config, protocol_config);
   auto protocol_info = sup::protocol::utils::GetApplicationProtocolInfo(*client_protocol);
   EXPECT_EQ(protocol_info.m_application_type, kAutomationInputRequestServerType);
   EXPECT_EQ(protocol_info.m_application_version, kAutomationInputRequestServerVersion);
