@@ -20,16 +20,15 @@
  * of the distribution package.
  ******************************************************************************/
 
+#include "unit_test_helper.h"
+
 #include <sup/oac-tree-server/automation_protocol_client.h>
 #include <sup/oac-tree-server/control_protocol_server.h>
 #include <sup/oac-tree-server/info_protocol_server.h>
 #include <sup/oac-tree-server/oac_tree_protocol.h>
-
 #include <sup/oac-tree/instruction_map.h>
 #include <sup/oac-tree/job_info_utils.h>
 #include <sup/oac-tree/sequence_parser.h>
-
-#include "unit_test_helper.h"
 
 #include <gtest/gtest.h>
 
@@ -143,10 +142,11 @@ TEST_F(ProtocolClientServerTest, SendJobCommand)
 }
 
 ProtocolClientServerTest::ProtocolClientServerTest()
-  : m_job_manager{}
-  , m_info_server{m_job_manager}
-  , m_control_server{m_job_manager}
-  , m_client_job_manager{m_info_server, m_control_server}
-{}
+    : m_job_manager{}
+    , m_info_server{m_job_manager}
+    , m_control_server{m_job_manager}
+    , m_client_job_manager{m_info_server, m_control_server}
+{
+}
 
 ProtocolClientServerTest::~ProtocolClientServerTest() = default;
