@@ -345,4 +345,5 @@ Again, there is no reply message from the server. The client will receive an upd
 
 ## Open issues
 
-* Handle user input messages
+* Get current state of job, instructions and variables. This is required when a client connects to a job that was already running.
+* Handle user input messages.
