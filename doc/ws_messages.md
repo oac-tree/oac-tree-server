@@ -10,14 +10,14 @@ Transmission of instruction state updates could be very simple JSON messages, fo
 
 ```json
 {
-  "type": 2,
+  "update": 2,
   "id": 5,
   "breakpoint": false,
   "state": 3
 }
 ```
 
-where `"type": 2` denotes that this is an update of instruction status (see further), the `id` field encodes the numeric id of the instruction and `state` is the numeric value of the `ExecutionStatus` enumeration.
+where `"update": 2` denotes that this is an update of instruction status (see further), the `id` field encodes the numeric id of the instruction and `state` is the numeric value of the `ExecutionStatus` enumeration.
 
 Note that this breaks the current API for such updates in `IAnyValueManager`.
 
@@ -33,10 +33,12 @@ For each specific procedure, the URL will be `ws://<HOST>:<PORT>/<PREFIX>`, wher
 
 The content for server side publishing of updates related to a single procedure is determined by the member functions in `ServerJobInfoIO`.
 
-The `type` field in the message structures will be the integer value of the following enumeration:
+All such update messages will be sent to all clients that are connected to the endpoint for the job in question.
+
+The `update` field in the message structures will be the integer value of the following enumeration:
 
 ```c++
-enum class MessageType
+enum class UpdateMessageType
 {
   kJobState = 0,
   kBreakPoint,
@@ -56,7 +58,7 @@ Note that `InitNumberOfInstructions` and `ProcedureTicked` do not need to send a
 
 ```json
 {
-  "type": 0,
+  "update": 0,
   "state": 3
 }
 ```
@@ -67,7 +69,7 @@ where the `state` field encodes the `JobState` enumeration as an integer.
 
 ```json
 {
-  "type": 1,
+  "update": 1,
   "id": 8
 }
 ```
@@ -79,7 +81,7 @@ The message structure for instruction state updates was alread mentioned above, 
 
 ```json
 {
-  "type": 2,
+  "update": 2,
   "id": 5,
   "breakpoint": false,
   "state": 3
@@ -90,32 +92,34 @@ The message structure for instruction state updates was alread mentioned above, 
 
 ```json
 {
-  "type": 3,
+  "update": 3,
   "id": 5,
   "connected": true,
-  "value": <JSON rep>
+  "value": <JSON rep>,
+  "type": <JSON rep>
 }
 ```
 
-where `id` denotes the numeric id of the variable. The `value` field should hold some representation of the underlying AnyValue. This could be the direct JSON from sup-dto, or some other representation (note that these values only need to be displayed and that type information is not important here).
+where `id` denotes the numeric id of the variable. The `value` field will hold the JSON representation of the updated value without type information. The `type` field is the JSON representation of its type and may be ignored for webapps that just need to show the updated value.
 
 ### PutValue
 
 ```json
 {
-  "type": 4,
+  "update": 4,
   "description": "Please note this value:",
-  "value": <JSON rep>
+  "value": <JSON rep>,
+  "type": <JSON rep>
 }
 ```
 
-The same issue appears here as in `VariableUpdated`, i.e how to encode the value.
+The `value` and `type` fields are encoded in the same way as for `VariableUpdated`.
 
 ### Message
 
 ```json
 {
-  "type": 5,
+  "update": 5,
   "message": "Hello, there"
 }
 ```
@@ -123,7 +127,7 @@ The same issue appears here as in `VariableUpdated`, i.e how to encode the value
 
 ```json
 {
-  "type": 6,
+  "update": 6,
   "severity": 2,
   "message": "Something went wrong!"
 }
@@ -135,13 +139,108 @@ where the `severity` field directly encodes the integer severity level.
 
 `GetUserValue`, `GetUserChoice` and `Interrupt` are all related to providing a mechanism for user input. This will be delayed to a further stage of the implementation.
 
-## Control protocol server
+## Client side requests
 
-TBD
+The client side requests correspond to the functionality exposed by the control and info protocol servers.
 
-## Info protocol server
+Client messages for getting information about the jobs served are always handled one-to-one, i.e. the server will reply only to the client requesting that information.
 
-TBD
+Client messages will contain a message type that encodes the type of request that is made and this will be the integer value of the following enumeration:
+
+```c++
+enum class ClientMessageType
+{
+  kGetNumberOfJobs = 0,
+  kGetJobInfo,
+  kEditBreakPoint,
+  kSendCommand
+};
+```
+
+### GetServerPrefix
+
+This method is not needed for the websocket implementation, as the server URL is all that is needed. Job specific URL are built by adding a path to it.
+
+### GetNumberOfJobs
+
+Message to server:
+
+```json
+{
+  "request": 0
+}
+```
+
+Reply message from the server:
+
+```json
+{
+  "request": 0,
+  "n_jobs": 3
+}
+```
+
+### GetJobInfo
+
+Message to server:
+
+```json
+{
+  "request": 1
+}
+```
+
+Reply message from the server:
+
+```json
+{
+  "request": 1,
+  "job_info": <JSON representation of the JobInfo>
+}
+```
+
+### EditBreakPoint
+
+Message to server:
+
+```json
+{
+  "request": 2,
+  "id": 5,
+  "active": true
+}
+```
+
+where the `id` field encodes the id of the instruction and `active` encodes if the breakpoint should be set (true) or cleared (false).
+
+There is no reply message from the server. The client will receive an update message of the breakpoint if this action was successful.
+
+### SendJobCommand
+
+Message to server:
+
+```json
+{
+  "request": 3,
+  "command": 0
+}
+```
+
+where the `command` field is the integer representation of the job command enumeration:
+
+```c++
+enum class JobCommand
+{
+  kStart = 0,
+  kStep,
+  kPause,
+  kReset,
+  kHalt,
+  kTerminate
+};
+```
+
+Again, there is no reply message from the server. The client will receive an update message for the job status if this command was handled successfully.
 
 ## Open issues
 
