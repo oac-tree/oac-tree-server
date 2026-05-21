@@ -199,6 +199,101 @@ Reply message from the server:
 }
 ```
 
+The JSON representation of the JobInfo structure is best shown by example. Assume the procedure is defined by the following XML file:
+
+```xml
+<?xml version="1.0" encoding="UTF-8"?>
+<Procedure name="My test procedure">
+    <Sequence name="My root instruction">
+        <Wait timeout="1.0"/>
+        <Wait timeout="2.0"/>
+    </Sequence>
+    <Workspace>
+        <Local name="counter" type='{"type":"int32"}' value="42"/>
+        <File name="from_file" file="variable.json"/>
+    </Workspace>
+</Procedure>
+```
+
+The JobInfo representation in JSON then becomes:
+
+```json
+{
+  "name": "My test procedure",
+  "workspace": [
+    {
+      "name": "counter",
+      "type": "Local",
+      "attributes": [
+        {
+          "name": "type",
+          "value": "{\"type\":\"int32\"}"
+        },
+        {
+          "name": "value",
+          "value": "42"
+        }
+      ]
+    },
+    {
+      "name": "from_file",
+      "type": "File",
+      "attributes": [
+        {
+          "name": "file",
+          "value": "variable.json"
+        }
+      ]
+    }
+  ],
+  "root_instruction": {
+    "type": "Sequence",
+    "category": 2,
+    "id": 0,
+    "attributes": [
+      {
+        "name": "name",
+        "value": "My root instruction"
+      }
+    ],
+    "children": [
+      {
+        "type": "Wait",
+        "category": 0,
+        "id": 1,
+        "attributes": [
+          {
+            "name": "timeout",
+            "value": "1.0"
+          }
+        ]
+      },
+      {
+        "type": "Wait",
+        "category": 0,
+        "id": 2,
+        "attributes": [
+          {
+            "name": "timeout",
+            "value": "2.0"
+          }
+        ]
+      },
+    ]
+  }
+}
+```
+
+```c++
+enum Category
+{
+  kAction = 0,
+  kDecorator,
+  kCompound
+};
+```
+
+
 ### EditBreakPoint
 
 Message to server:
@@ -244,6 +339,4 @@ Again, there is no reply message from the server. The client will receive an upd
 
 ## Open issues
 
-* JSON representation for `VariableUpdated` values;
-* JSON representation for `PutValue` values (similar to the above);
 * Handle user input messages
