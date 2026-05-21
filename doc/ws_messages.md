@@ -186,7 +186,8 @@ Message to server:
 
 ```json
 {
-  "request": 1
+  "request": 1,
+  "job_index": 2
 }
 ```
 
@@ -284,6 +285,8 @@ The JobInfo representation in JSON then becomes:
 }
 ```
 
+where the `category` field for instructions is the integer representation of the following enumeration:
+
 ```c++
 enum Category
 {
@@ -293,6 +296,7 @@ enum Category
 };
 ```
 
+Also note that the variables do not explicitly encode their index, since they are assumed to be listed in order.
 
 ### EditBreakPoint
 
@@ -301,12 +305,13 @@ Message to server:
 ```json
 {
   "request": 2,
-  "id": 5,
+  "job_index": 2,
+  "instr_id": 5,
   "active": true
 }
 ```
 
-where the `id` field encodes the id of the instruction and `active` encodes if the breakpoint should be set (true) or cleared (false).
+where the `instr_id` field encodes the id of the instruction and `active` encodes if the breakpoint should be set (true) or cleared (false).
 
 There is no reply message from the server. The client will receive an update message of the breakpoint if this action was successful.
 
@@ -317,6 +322,7 @@ Message to server:
 ```json
 {
   "request": 3,
+  "job_index": 2,
   "command": 0
 }
 ```
