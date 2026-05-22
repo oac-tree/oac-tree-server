@@ -60,24 +60,24 @@ enum class ClientMessageType : sup::dto::uint32
 namespace ws_message_json_keys
 {
 
-const char* kUpdate = "update";
-const char* kState = "state";
-const char* kId = "id";
-const char* kBreakpoint = "breakpoint";
-const char* kConnected = "connected";
-const char* kValue = "value";
-const char* kType = "type";
-const char* kDescription = "description";
-const char* kMessage = "message";
-const char* kSeverity = "severity";
-const char* kRequest = "request";
-const char* kJobIndex = "job_index";
-const char* kInstructionId = "instr_id";
-const char* kActive = "active";
-const char* kCommand = "command";
-const char* kNumberOfJobs = "n_jobs";
-const char* kJobInfo = "job_info";
-const char* kEmptyJson = "";
+constexpr auto kUpdate = "update";
+constexpr auto kState = "state";
+constexpr auto kId = "id";
+constexpr auto kBreakpoint = "breakpoint";
+constexpr auto kConnected = "connected";
+constexpr auto kValue = "value";
+constexpr auto kType = "type";
+constexpr auto kDescription = "description";
+constexpr auto kMessage = "message";
+constexpr auto kSeverity = "severity";
+constexpr auto kRequest = "request";
+constexpr auto kJobIndex = "job_index";
+constexpr auto kInstructionId = "instr_id";
+constexpr auto kActive = "active";
+constexpr auto kCommand = "command";
+constexpr auto kNumberOfJobs = "n_jobs";
+constexpr auto kJobInfo = "job_info";
+constexpr auto kEmptyJson = "";
 
 }  // namespace ws_message_json_keys
 
