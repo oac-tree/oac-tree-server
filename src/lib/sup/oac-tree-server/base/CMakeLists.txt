@@ -23,7 +23,8 @@ target_sources(oac-tree-server
   oac_tree_protocol.cpp
   output_entry_helper.cpp
   output_entry_types.cpp
-  ws_message.cpp
-  ws_message_json_helpers.cpp
   server_job_info_io.cpp
+  update_message_handler.cpp
+  ws_message_json_helpers.cpp
+  ws_message.cpp
 )
