@@ -40,7 +40,6 @@ class UpdateMessageHandlerTest : public ::testing::Test
 protected:
   using StrictMockJobInfoIO = ::testing::StrictMock<UnitTestHelper::MockJobInfoIO>;
   StrictMockJobInfoIO m_mock_io;
-  UpdateMessageHandler m_handler{m_mock_io};
 };
 
 // ---------------------------------------------------------------------------
@@ -51,46 +50,46 @@ TEST_F(UpdateMessageHandlerTest, HandleMessage_JobStateUpdate)
 {
   const auto state = JobState::kFailed;
   EXPECT_CALL(m_mock_io, JobStateUpdated(state)).Times(Exactly(1));
-  m_handler.HandleMessage(CreateJobStateUpdateMessage(state));
+  HandleUpdateMessage(CreateJobStateUpdateMessage(state), m_mock_io);
 }
 
 TEST_F(UpdateMessageHandlerTest, HandleMessage_BreakpointUpdate)
 {
   EXPECT_CALL(m_mock_io, BreakpointInstructionUpdated(42u)).Times(Exactly(1));
-  m_handler.HandleMessage(CreateBreakpointInstructionUpdateMessage(42u));
+  HandleUpdateMessage(CreateBreakpointInstructionUpdateMessage(42u), m_mock_io);
 }
 
 TEST_F(UpdateMessageHandlerTest, HandleMessage_InstructionStateUpdate)
 {
   InstructionState state{true, ExecutionStatus::SUCCESS};
   EXPECT_CALL(m_mock_io, InstructionStateUpdated(8u, state)).Times(Exactly(1));
-  m_handler.HandleMessage(CreateInstructionStateUpdateMessage(8u, true, state));
+  HandleUpdateMessage(CreateInstructionStateUpdateMessage(8u, true, state), m_mock_io);
 }
 
 TEST_F(UpdateMessageHandlerTest, HandleMessage_VariableStateUpdate)
 {
   const sup::dto::AnyValue value{sup::dto::Float64Type, 6.5};
   EXPECT_CALL(m_mock_io, VariableUpdated(7u, value, true)).Times(Exactly(1));
-  m_handler.HandleMessage(CreateVariableStateUpdateMessage(7u, true, value));
+  HandleUpdateMessage(CreateVariableStateUpdateMessage(7u, true, value), m_mock_io);
 }
 
 TEST_F(UpdateMessageHandlerTest, HandleMessage_PutValueUpdate)
 {
   const sup::dto::AnyValue value{sup::dto::BooleanType, true};
   EXPECT_CALL(m_mock_io, PutValue(value, std::string("desc"))).Times(Exactly(1));
-  m_handler.HandleMessage(CreatePutValueUpdateMessage("desc", value));
+  HandleUpdateMessage(CreatePutValueUpdateMessage("desc", value), m_mock_io);
 }
 
 TEST_F(UpdateMessageHandlerTest, HandleMessage_TextMessageUpdate)
 {
   EXPECT_CALL(m_mock_io, Message(std::string("hello"))).Times(Exactly(1));
-  m_handler.HandleMessage(CreateTextMessageUpdateMessage("hello"));
+  HandleUpdateMessage(CreateTextMessageUpdateMessage("hello"), m_mock_io);
 }
 
 TEST_F(UpdateMessageHandlerTest, HandleMessage_LogUpdate)
 {
   EXPECT_CALL(m_mock_io, Log(5, std::string("warn"))).Times(Exactly(1));
-  m_handler.HandleMessage(CreateLogUpdateMessage(5, "warn"));
+  HandleUpdateMessage(CreateLogUpdateMessage(5, "warn"), m_mock_io);
 }
 
 // ---------------------------------------------------------------------------
@@ -99,25 +98,25 @@ TEST_F(UpdateMessageHandlerTest, HandleMessage_LogUpdate)
 
 TEST_F(UpdateMessageHandlerTest, HandleMessage_InvalidJson)
 {
-  m_handler.HandleMessage("not json");
+  HandleUpdateMessage("not json", m_mock_io);
 }
 
 TEST_F(UpdateMessageHandlerTest, HandleMessage_EmptyString)
 {
-  m_handler.HandleMessage("");
+  HandleUpdateMessage("", m_mock_io);
 }
 
 TEST_F(UpdateMessageHandlerTest, HandleMessage_MissingUpdateField)
 {
-  m_handler.HandleMessage(R"({"state": 0})");
+  HandleUpdateMessage(R"({"state": 0})", m_mock_io);
 }
 
 TEST_F(UpdateMessageHandlerTest, HandleMessage_UnknownUpdateType)
 {
-  m_handler.HandleMessage(R"({"update": 99})");
+  HandleUpdateMessage(R"({"update": 99})", m_mock_io);
 }
 
 TEST_F(UpdateMessageHandlerTest, HandleMessage_JobState_MissingState)
 {
-  m_handler.HandleMessage(R"({"update": 0})");
+  HandleUpdateMessage(R"({"update": 0})", m_mock_io);
 }

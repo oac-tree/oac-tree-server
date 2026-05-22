@@ -31,20 +31,9 @@ namespace oac_tree_server
 {
 
 /**
- * @brief Class that handles json update messages and triggers the corresponding methods in
- * IJobInfoIO.
+ * @brief Parses JSON update messages and triggers the corresponding methods in IJobInfoIO.
  */
-class UpdateMessageHandler
-{
-public:
-  UpdateMessageHandler(sup::oac_tree::IJobInfoIO& job_info_io);
-  ~UpdateMessageHandler();
-
-  void HandleMessage(const std::string& msg);
-
-private:
-  sup::oac_tree::IJobInfoIO& m_job_info_io;
-};
+void HandleUpdateMessage(const std::string& msg, sup::oac_tree::IJobInfoIO& job_info_io);
 
 }  // namespace oac_tree_server
 

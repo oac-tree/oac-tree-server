@@ -61,13 +61,7 @@ void HandleMessageUpdate(const rapidjson::Document& doc, sup::oac_tree::IJobInfo
 void HandleLogUpdate(const rapidjson::Document& doc, sup::oac_tree::IJobInfoIO& job_info_io);
 }  // unnamed namespace
 
-UpdateMessageHandler::UpdateMessageHandler(sup::oac_tree::IJobInfoIO& job_info_io)
-  : m_job_info_io{job_info_io}
-{}
-
-UpdateMessageHandler::~UpdateMessageHandler() = default;
-
-void UpdateMessageHandler::HandleMessage(const std::string& msg)
+void HandleUpdateMessage(const std::string& msg, sup::oac_tree::IJobInfoIO& job_info_io)
 {
   rapidjson::Document doc;
   doc.Parse(msg.c_str());
@@ -80,15 +74,13 @@ void UpdateMessageHandler::HandleMessage(const std::string& msg)
   {
     return;
   }
-
   auto update_idx = doc[kUpdate].GetUint();
   const auto& concrete_handlers = GetConcreteHandlers();
   if (update_idx >= concrete_handlers.size())
   {
     return;
   }
-
-  concrete_handlers[update_idx](doc, m_job_info_io);
+  concrete_handlers[update_idx](doc, job_info_io);
 }
 
 namespace
