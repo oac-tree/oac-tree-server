@@ -21,234 +21,235 @@
  ******************************************************************************/
 
 #include <sup/oac-tree-server/ws_message.h>
+#include <sup/oac-tree-server/base/ws_message_json_helpers.h>
+#include <sup/oac-tree/job_info_utils.h>
+
+#include <sup/dto/anytype_helper.h>
+#include <sup/dto/anyvalue_helper.h>
+#include <sup/dto/json_type_parser.h>
+#include <sup/dto/json_value_parser.h>
+
+#include <rapidjson/document.h>
+
+namespace
+{
+template <typename Allocator>
+rapidjson::Value JSONStringValue(const std::string& str, Allocator& allocator)
+{
+  rapidjson::Value result;
+  result.SetString(rapidjson::StringRef(str.c_str()), allocator);
+  return result;
+}
+}  // unnamed namespace
 
 namespace sup
 {
 namespace oac_tree_server
 {
 
-WsMessage::WsMessage() = default;
-WsMessage::~WsMessage() = default;
-
-UpdateMessage::UpdateMessage(UpdateMessageType type)
-  : WsMessage{}
-  , m_type{type}
-{}
-
-UpdateMessage::~UpdateMessage() = default;
-
-UpdateMessageType UpdateMessage::GetType() const
+std::string CreateJobStateUpdateMessage(sup::oac_tree::JobState state)
 {
-  return m_type;
+  rapidjson::Document doc;
+  doc.SetObject();
+  auto& allocator = doc.GetAllocator();
+
+  doc.AddMember(rapidjson::StringRef(ws_message_json_keys::kUpdate),
+                static_cast<sup::dto::uint32>(UpdateMessageType::kJobState),
+                allocator);
+  doc.AddMember(rapidjson::StringRef(ws_message_json_keys::kState),
+                static_cast<sup::dto::uint32>(state),
+                allocator);
+  return ws_message_json_helpers::SerializeDocumentToJSON(doc);
 }
 
-JobStateUpdateMessage::JobStateUpdateMessage(sup::oac_tree::JobState state)
-  : UpdateMessage{UpdateMessageType::kJobState}
-  , m_state{state}
-{}
-
-sup::oac_tree::JobState JobStateUpdateMessage::GetState() const
+std::string CreateBreakpointInstructionUpdateMessage(sup::dto::uint32 instruction_id)
 {
-  return m_state;
+  rapidjson::Document doc;
+  doc.SetObject();
+  auto& allocator = doc.GetAllocator();
+
+  doc.AddMember(rapidjson::StringRef(ws_message_json_keys::kUpdate),
+                static_cast<sup::dto::uint32>(UpdateMessageType::kBreakPoint),
+                allocator);
+  doc.AddMember(rapidjson::StringRef(ws_message_json_keys::kId), instruction_id, allocator);
+  return ws_message_json_helpers::SerializeDocumentToJSON(doc);
 }
 
-BreakpointInstructionUpdateMessage::BreakpointInstructionUpdateMessage(sup::dto::uint32 instruction_id)
-  : UpdateMessage{UpdateMessageType::kBreakPoint}
-  , m_instruction_id{instruction_id}
-{}
-
-sup::dto::uint32 BreakpointInstructionUpdateMessage::GetInstructionId() const
+std::string CreateInstructionStateUpdateMessage(sup::dto::uint32 instruction_id,
+                                                bool breakpoint,
+                                                sup::oac_tree::InstructionState state)
 {
-  return m_instruction_id;
+  rapidjson::Document doc;
+  doc.SetObject();
+  auto& allocator = doc.GetAllocator();
+
+  doc.AddMember(rapidjson::StringRef(ws_message_json_keys::kUpdate),
+                static_cast<sup::dto::uint32>(UpdateMessageType::kInstructionState),
+                allocator);
+  doc.AddMember(rapidjson::StringRef(ws_message_json_keys::kId), instruction_id, allocator);
+  doc.AddMember(rapidjson::StringRef(ws_message_json_keys::kBreakpoint), breakpoint, allocator);
+  doc.AddMember(rapidjson::StringRef(ws_message_json_keys::kState),
+                static_cast<sup::dto::uint32>(state.m_execution_status),
+                allocator);
+  return ws_message_json_helpers::SerializeDocumentToJSON(doc);
 }
 
-InstructionStateUpdateMessage::InstructionStateUpdateMessage(
-    sup::dto::uint32 instruction_id, bool breakpoint, sup::oac_tree::InstructionState state)
-  : UpdateMessage{UpdateMessageType::kInstructionState}
-  , m_instruction_id{instruction_id}
-  , m_breakpoint{breakpoint}
-  , m_state{state}
-{}
-
-sup::dto::uint32 InstructionStateUpdateMessage::GetInstructionId() const
-{
-  return m_instruction_id;
-}
-
-bool InstructionStateUpdateMessage::IsBreakpoint() const
-{
-  return m_breakpoint;
-}
-
-sup::oac_tree::InstructionState InstructionStateUpdateMessage::GetState() const
-{
-  return m_state;
-}
-
-VariableStateUpdateMessage::VariableStateUpdateMessage(sup::dto::uint32 variable_id,
-                                                       bool connected,
-                                                       const sup::dto::AnyValue& value)
-  : UpdateMessage{UpdateMessageType::kVariableState}
-  , m_variable_id{variable_id}
-  , m_connected{connected}
-  , m_value{value}
-{}
-
-sup::dto::uint32 VariableStateUpdateMessage::GetVariableId() const
-{
-  return m_variable_id;
-}
-
-bool VariableStateUpdateMessage::IsConnected() const
-{
-  return m_connected;
-}
-
-const sup::dto::AnyValue& VariableStateUpdateMessage::GetValue() const
-{
-  return m_value;
-}
-
-PutValueUpdateMessage::PutValueUpdateMessage(const std::string& description,
+std::string CreateVariableStateUpdateMessage(sup::dto::uint32 variable_id,
+                                             bool connected,
                                              const sup::dto::AnyValue& value)
-  : UpdateMessage{UpdateMessageType::kPutValue}
-  , m_description{description}
-  , m_value{value}
-{}
-
-const std::string& PutValueUpdateMessage::GetDescription() const
 {
-  return m_description;
+  rapidjson::Document doc;
+  doc.SetObject();
+  auto& allocator = doc.GetAllocator();
+
+  doc.AddMember(rapidjson::StringRef(ws_message_json_keys::kUpdate),
+                static_cast<sup::dto::uint32>(UpdateMessageType::kVariableState),
+                allocator);
+  doc.AddMember(rapidjson::StringRef(ws_message_json_keys::kId), variable_id, allocator);
+  doc.AddMember(rapidjson::StringRef(ws_message_json_keys::kConnected), connected, allocator);
+  doc.AddMember(rapidjson::StringRef(ws_message_json_keys::kValue),
+                JSONStringValue(sup::dto::ValuesToJSONString(value), allocator), allocator);
+  doc.AddMember(rapidjson::StringRef(ws_message_json_keys::kType),
+                JSONStringValue(sup::dto::AnyTypeToJSONString(value.GetType()), allocator),
+                allocator);
+  return ws_message_json_helpers::SerializeDocumentToJSON(doc);
 }
 
-const sup::dto::AnyValue& PutValueUpdateMessage::GetValue() const
+std::string CreatePutValueUpdateMessage(const std::string& description,
+                                        const sup::dto::AnyValue& value)
 {
-  return m_value;
+  rapidjson::Document doc;
+  doc.SetObject();
+  auto& allocator = doc.GetAllocator();
+
+  doc.AddMember(rapidjson::StringRef(ws_message_json_keys::kUpdate),
+                static_cast<sup::dto::uint32>(UpdateMessageType::kPutValue),
+                allocator);
+  doc.AddMember(rapidjson::StringRef(ws_message_json_keys::kDescription),
+                JSONStringValue(description, allocator), allocator);
+  doc.AddMember(rapidjson::StringRef(ws_message_json_keys::kValue),
+                JSONStringValue(sup::dto::ValuesToJSONString(value), allocator), allocator);
+  doc.AddMember(rapidjson::StringRef(ws_message_json_keys::kType),
+                JSONStringValue(sup::dto::AnyTypeToJSONString(value.GetType()), allocator),
+                allocator);
+  return ws_message_json_helpers::SerializeDocumentToJSON(doc);
 }
 
-TextMessageUpdateMessage::TextMessageUpdateMessage(const std::string& message)
-  : UpdateMessage{UpdateMessageType::kMessage}
-  , m_message{message}
-{}
-
-const std::string& TextMessageUpdateMessage::GetMessage() const
+std::string CreateTextMessageUpdateMessage(const std::string& message)
 {
-  return m_message;
+  rapidjson::Document doc;
+  doc.SetObject();
+  auto& allocator = doc.GetAllocator();
+
+  doc.AddMember(rapidjson::StringRef(ws_message_json_keys::kUpdate),
+                static_cast<sup::dto::uint32>(UpdateMessageType::kMessage),
+                allocator);
+  doc.AddMember(rapidjson::StringRef(ws_message_json_keys::kMessage),
+                JSONStringValue(message, allocator), allocator);
+  return ws_message_json_helpers::SerializeDocumentToJSON(doc);
 }
 
-LogUpdateMessage::LogUpdateMessage(sup::dto::int32 severity, const std::string& message)
-  : UpdateMessage{UpdateMessageType::kLog}
-  , m_severity{severity}
-  , m_message{message}
-{}
-
-sup::dto::int32 LogUpdateMessage::GetSeverity() const
+std::string CreateLogUpdateMessage(sup::dto::int32 severity,
+                                   const std::string& message)
 {
-  return m_severity;
+  rapidjson::Document doc;
+  doc.SetObject();
+  auto& allocator = doc.GetAllocator();
+
+  doc.AddMember(rapidjson::StringRef(ws_message_json_keys::kUpdate),
+                static_cast<sup::dto::uint32>(UpdateMessageType::kLog),
+                allocator);
+  doc.AddMember(rapidjson::StringRef(ws_message_json_keys::kSeverity), severity, allocator);
+  doc.AddMember(rapidjson::StringRef(ws_message_json_keys::kMessage),
+                JSONStringValue(message, allocator), allocator);
+  return ws_message_json_helpers::SerializeDocumentToJSON(doc);
 }
 
-const std::string& LogUpdateMessage::GetMessage() const
+std::string CreateGetNumberOfJobsRequestMessage()
 {
-  return m_message;
+  rapidjson::Document doc;
+  doc.SetObject();
+  auto& allocator = doc.GetAllocator();
+
+  doc.AddMember(rapidjson::StringRef(ws_message_json_keys::kRequest),
+                static_cast<sup::dto::uint32>(ClientMessageType::kGetNumberOfJobs),
+                allocator);
+  return ws_message_json_helpers::SerializeDocumentToJSON(doc);
 }
 
-ClientRequestMessage::ClientRequestMessage(ClientMessageType type)
-  : WsMessage{}
-  , m_type{type}
-{}
-
-ClientRequestMessage::~ClientRequestMessage() = default;
-
-ClientMessageType ClientRequestMessage::GetType() const
+std::string CreateGetJobInfoRequestMessage(sup::dto::uint32 job_index)
 {
-  return m_type;
+  rapidjson::Document doc;
+  doc.SetObject();
+  auto& allocator = doc.GetAllocator();
+
+  doc.AddMember(rapidjson::StringRef(ws_message_json_keys::kRequest),
+                static_cast<sup::dto::uint32>(ClientMessageType::kGetJobInfo),
+                allocator);
+  doc.AddMember(rapidjson::StringRef(ws_message_json_keys::kJobIndex), job_index, allocator);
+  return ws_message_json_helpers::SerializeDocumentToJSON(doc);
 }
 
-GetNumberOfJobsRequestMessage::GetNumberOfJobsRequestMessage()
-  : ClientRequestMessage{ClientMessageType::kGetNumberOfJobs}
-{}
-
-GetJobInfoRequestMessage::GetJobInfoRequestMessage(sup::dto::uint32 job_index)
-  : ClientRequestMessage{ClientMessageType::kGetJobInfo}
-  , m_job_index{job_index}
-{}
-
-sup::dto::uint32 GetJobInfoRequestMessage::GetJobIndex() const
+std::string CreateEditBreakpointRequestMessage(sup::dto::uint32 job_index,
+                                               sup::dto::uint32 instruction_id,
+                                               bool active)
 {
-  return m_job_index;
+  rapidjson::Document doc;
+  doc.SetObject();
+  auto& allocator = doc.GetAllocator();
+
+  doc.AddMember(rapidjson::StringRef(ws_message_json_keys::kRequest),
+                static_cast<sup::dto::uint32>(ClientMessageType::kEditBreakPoint),
+                allocator);
+  doc.AddMember(rapidjson::StringRef(ws_message_json_keys::kJobIndex), job_index, allocator);
+  doc.AddMember(rapidjson::StringRef(ws_message_json_keys::kInstructionId), instruction_id, allocator);
+  doc.AddMember(rapidjson::StringRef(ws_message_json_keys::kActive), active, allocator);
+  return ws_message_json_helpers::SerializeDocumentToJSON(doc);
 }
 
-EditBreakpointRequestMessage::EditBreakpointRequestMessage(sup::dto::uint32 job_index,
-                                                           sup::dto::uint32 instruction_id,
-                                                           bool active)
-  : ClientRequestMessage{ClientMessageType::kEditBreakPoint}
-  , m_job_index{job_index}
-  , m_instruction_id{instruction_id}
-  , m_active{active}
-{}
-
-sup::dto::uint32 EditBreakpointRequestMessage::GetJobIndex() const
+std::string CreateSendJobCommandRequestMessage(sup::dto::uint32 job_index,
+                                               sup::oac_tree::JobCommand command)
 {
-  return m_job_index;
+  rapidjson::Document doc;
+  doc.SetObject();
+  auto& allocator = doc.GetAllocator();
+
+  doc.AddMember(rapidjson::StringRef(ws_message_json_keys::kRequest),
+                static_cast<sup::dto::uint32>(ClientMessageType::kSendCommand),
+                allocator);
+  doc.AddMember(rapidjson::StringRef(ws_message_json_keys::kJobIndex), job_index, allocator);
+  doc.AddMember(rapidjson::StringRef(ws_message_json_keys::kCommand),
+                static_cast<sup::dto::uint32>(command),
+                allocator);
+  return ws_message_json_helpers::SerializeDocumentToJSON(doc);
 }
 
-sup::dto::uint32 EditBreakpointRequestMessage::GetInstructionId() const
+std::string CreateGetNumberOfJobsReplyMessage(sup::dto::uint32 number_of_jobs)
 {
-  return m_instruction_id;
+  rapidjson::Document doc;
+  doc.SetObject();
+  auto& allocator = doc.GetAllocator();
+
+  doc.AddMember(rapidjson::StringRef(ws_message_json_keys::kRequest),
+                static_cast<sup::dto::uint32>(ClientMessageType::kGetNumberOfJobs),
+                allocator);
+  doc.AddMember(rapidjson::StringRef(ws_message_json_keys::kNumberOfJobs), number_of_jobs, allocator);
+  return ws_message_json_helpers::SerializeDocumentToJSON(doc);
 }
 
-bool EditBreakpointRequestMessage::IsActive() const
+std::string CreateGetJobInfoReplyMessage(const sup::oac_tree::JobInfo& job_info)
 {
-  return m_active;
-}
+  rapidjson::Document doc;
+  doc.SetObject();
+  auto& allocator = doc.GetAllocator();
 
-SendJobCommandRequestMessage::SendJobCommandRequestMessage(sup::dto::uint32 job_index,
-                                                           sup::oac_tree::JobCommand command)
-  : ClientRequestMessage{ClientMessageType::kSendCommand}
-  , m_job_index{job_index}
-  , m_command{command}
-{}
-
-sup::dto::uint32 SendJobCommandRequestMessage::GetJobIndex() const
-{
-  return m_job_index;
-}
-
-sup::oac_tree::JobCommand SendJobCommandRequestMessage::GetCommand() const
-{
-  return m_command;
-}
-
-ClientReplyMessage::ClientReplyMessage(ClientMessageType type)
-  : WsMessage{}
-  , m_type{type}
-{}
-
-ClientReplyMessage::~ClientReplyMessage() = default;
-
-ClientMessageType ClientReplyMessage::GetType() const
-{
-  return m_type;
-}
-
-GetNumberOfJobsReplyMessage::GetNumberOfJobsReplyMessage(sup::dto::uint32 number_of_jobs)
-  : ClientReplyMessage{ClientMessageType::kGetNumberOfJobs}
-  , m_number_of_jobs{number_of_jobs}
-{}
-
-sup::dto::uint32 GetNumberOfJobsReplyMessage::GetNumberOfJobs() const
-{
-  return m_number_of_jobs;
-}
-
-GetJobInfoReplyMessage::GetJobInfoReplyMessage(const sup::oac_tree::JobInfo& job_info)
-  : ClientReplyMessage{ClientMessageType::kGetJobInfo}
-  , m_job_info{job_info}
-{}
-
-const sup::oac_tree::JobInfo& GetJobInfoReplyMessage::GetJobInfo() const
-{
-  return m_job_info;
+  doc.AddMember(rapidjson::StringRef(ws_message_json_keys::kRequest),
+                static_cast<sup::dto::uint32>(ClientMessageType::kGetJobInfo),
+                allocator);
+  auto job_info_any = sup::oac_tree::utils::ToAnyValue(job_info);
+  doc.AddMember(rapidjson::StringRef(ws_message_json_keys::kJobInfo),
+                JSONStringValue(sup::dto::ValuesToJSONString(job_info_any), allocator), allocator);
+  return ws_message_json_helpers::SerializeDocumentToJSON(doc);
 }
 
 }  // namespace oac_tree_server

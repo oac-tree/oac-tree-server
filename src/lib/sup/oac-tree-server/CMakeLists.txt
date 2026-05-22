@@ -15,6 +15,10 @@ target_include_directories(oac-tree-server PUBLIC
   $<BUILD_INTERFACE:${CMAKE_CURRENT_LIST_DIR}/../..>
 )
 
+target_include_directories(oac-tree-server PRIVATE
+  ${CMAKE_CURRENT_LIST_DIR}/../../thirdparty
+)
+
 target_link_libraries(oac-tree-server
   PUBLIC
     oac-tree::oac-tree

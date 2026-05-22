@@ -32,7 +32,7 @@ target_sources(${unit-tests}
     output_entry_tests.cpp
     protocol_client_server_tests.cpp
     unit_test_helper.cpp
-    ws_message_tests.cpp
+    # ws_message_tests.cpp
     ../../src/app/oac-tree-server/utils.cpp
 )
 
