@@ -40,6 +40,7 @@ target_sources(${unit-tests}
 target_include_directories(${unit-tests}
   PRIVATE
   ${CMAKE_CURRENT_LIST_DIR}/../../src
+  SYSTEM PRIVATE
   ${CMAKE_CURRENT_LIST_DIR}/../../src/lib/thirdparty
 )
 
