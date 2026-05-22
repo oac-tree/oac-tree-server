@@ -28,12 +28,21 @@
 
 #include "unit_test_helper.h"
 
+#include <rapidjson/document.h>
+
 #include <gtest/gtest.h>
 
 using namespace sup::oac_tree_server;
 
 namespace
 {
+
+rapidjson::Document ParseJson(const std::string& json)
+{
+  rapidjson::Document doc;
+  doc.Parse(json.c_str());
+  return doc;
+}
 
 sup::oac_tree::JobInfo BuildTestJobInfo()
 {
@@ -48,89 +57,194 @@ sup::oac_tree::JobInfo BuildTestJobInfo()
 
 }  // namespace
 
-class WsMessageTest : public ::testing::Test
-{};
-
-TEST_F(WsMessageTest, SerializeUpdateMessageFromData)
+TEST(WsCreateJSONMessageTest, CreateJobStateUpdateMessage)
 {
-  UpdateMessageData message;
-  message.type = UpdateMessageType::kInstructionState;
-  message.id = 5u;
-  message.breakpoint = true;
-  message.state = static_cast<sup::dto::uint32>(sup::oac_tree::ExecutionStatus::SUCCESS);
+  auto json = CreateJobStateUpdateMessage(sup::oac_tree::JobState::kFailed);
+  auto doc = ParseJson(json);
 
-  EXPECT_EQ(SerializeUpdateMessageJSON(message),
-            CreateInstructionStateUpdateMessage(
-              5u,
-              true,
-              {
-                false,
-                sup::oac_tree::ExecutionStatus::SUCCESS
-              }));
+  ASSERT_FALSE(doc.HasParseError());
+  ASSERT_TRUE(doc.IsObject());
+  ASSERT_TRUE(doc.HasMember(ws_message_json_keys::kUpdate));
+  ASSERT_TRUE(doc.HasMember(ws_message_json_keys::kState));
+  EXPECT_EQ(doc[ws_message_json_keys::kUpdate].GetUint(),
+            static_cast<sup::dto::uint32>(UpdateMessageType::kJobState));
+  EXPECT_EQ(doc[ws_message_json_keys::kState].GetUint(),
+            static_cast<sup::dto::uint32>(sup::oac_tree::JobState::kFailed));
 }
 
-TEST_F(WsMessageTest, UpdateMessageJSONRoundTrip)
+TEST(WsCreateJSONMessageTest, CreateBreakpointInstructionUpdateMessage)
 {
-  const sup::dto::AnyValue value{ sup::dto::Float64Type, 9.25 };
-  auto json = CreateVariableStateUpdateMessage(3u, true, value);
+  auto json = CreateBreakpointInstructionUpdateMessage(42u);
+  auto doc = ParseJson(json);
 
-  auto [ok, parsed] = ParseUpdateMessageJSON(json);
-  ASSERT_TRUE(ok);
-  EXPECT_EQ(parsed.type, UpdateMessageType::kVariableState);
-  EXPECT_EQ(parsed.id, 3u);
-  EXPECT_TRUE(parsed.connected);
-  EXPECT_EQ(parsed.value, value);
+  ASSERT_FALSE(doc.HasParseError());
+  ASSERT_TRUE(doc.HasMember(ws_message_json_keys::kUpdate));
+  ASSERT_TRUE(doc.HasMember(ws_message_json_keys::kId));
+  EXPECT_EQ(doc[ws_message_json_keys::kUpdate].GetUint(),
+            static_cast<sup::dto::uint32>(UpdateMessageType::kBreakPoint));
+  EXPECT_EQ(doc[ws_message_json_keys::kId].GetUint(), 42u);
 }
 
-TEST_F(WsMessageTest, SerializeClientRequestMessageFromData)
+TEST(WsCreateJSONMessageTest, CreateInstructionStateUpdateMessage)
 {
-  ClientRequestMessageData message;
-  message.type = ClientMessageType::kEditBreakPoint;
-  message.job_index = 2u;
-  message.instruction_id = 5u;
-  message.active = false;
+  sup::oac_tree::InstructionState state{false, sup::oac_tree::ExecutionStatus::SUCCESS};
+  auto json = CreateInstructionStateUpdateMessage(8u, true, state);
+  auto doc = ParseJson(json);
 
-  EXPECT_EQ(SerializeClientRequestMessageJSON(message),
-            CreateEditBreakpointRequestMessage(2u, 5u, false));
+  ASSERT_FALSE(doc.HasParseError());
+  ASSERT_TRUE(doc.HasMember(ws_message_json_keys::kUpdate));
+  ASSERT_TRUE(doc.HasMember(ws_message_json_keys::kId));
+  ASSERT_TRUE(doc.HasMember(ws_message_json_keys::kBreakpoint));
+  ASSERT_TRUE(doc.HasMember(ws_message_json_keys::kState));
+  EXPECT_EQ(doc[ws_message_json_keys::kUpdate].GetUint(),
+            static_cast<sup::dto::uint32>(UpdateMessageType::kInstructionState));
+  EXPECT_EQ(doc[ws_message_json_keys::kId].GetUint(), 8u);
+  EXPECT_TRUE(doc[ws_message_json_keys::kBreakpoint].GetBool());
+  EXPECT_EQ(doc[ws_message_json_keys::kState].GetUint(),
+            static_cast<sup::dto::uint32>(sup::oac_tree::ExecutionStatus::SUCCESS));
 }
 
-TEST_F(WsMessageTest, ClientRequestMessageJSONRoundTrip)
+TEST(WsCreateJSONMessageTest, CreateVariableStateUpdateMessage)
 {
-  auto json = CreateSendJobCommandRequestMessage(2u, sup::oac_tree::JobCommand::kPause);
+  const sup::dto::AnyValue value{sup::dto::Float64Type, 6.5};
+  auto json = CreateVariableStateUpdateMessage(7u, true, value);
+  auto doc = ParseJson(json);
 
-  auto [ok, parsed] = ParseClientRequestMessageJSON(json);
-  ASSERT_TRUE(ok);
-  EXPECT_EQ(parsed.type, ClientMessageType::kSendCommand);
-  EXPECT_EQ(parsed.job_index, 2u);
-  EXPECT_EQ(parsed.command, static_cast<sup::dto::uint32>(sup::oac_tree::JobCommand::kPause));
+  ASSERT_FALSE(doc.HasParseError());
+  ASSERT_TRUE(doc.HasMember(ws_message_json_keys::kUpdate));
+  ASSERT_TRUE(doc.HasMember(ws_message_json_keys::kId));
+  ASSERT_TRUE(doc.HasMember(ws_message_json_keys::kConnected));
+  ASSERT_TRUE(doc.HasMember(ws_message_json_keys::kValue));
+  ASSERT_TRUE(doc.HasMember(ws_message_json_keys::kType));
+  EXPECT_EQ(doc[ws_message_json_keys::kUpdate].GetUint(),
+            static_cast<sup::dto::uint32>(UpdateMessageType::kVariableState));
+  EXPECT_EQ(doc[ws_message_json_keys::kId].GetUint(), 7u);
+  EXPECT_TRUE(doc[ws_message_json_keys::kConnected].GetBool());
 }
 
-TEST_F(WsMessageTest, SerializeClientReplyMessageFromData)
+TEST(WsCreateJSONMessageTest, CreatePutValueUpdateMessage)
 {
-  ClientReplyMessageData message;
-  message.type = ClientMessageType::kGetNumberOfJobs;
-  message.number_of_jobs = 11u;
+  const sup::dto::AnyValue value{sup::dto::BooleanType, true};
+  auto json = CreatePutValueUpdateMessage("desc", value);
+  auto doc = ParseJson(json);
 
-  EXPECT_EQ(SerializeClientReplyMessageJSON(message),
-            CreateGetNumberOfJobsReplyMessage(11u));
+  ASSERT_FALSE(doc.HasParseError());
+  ASSERT_TRUE(doc.HasMember(ws_message_json_keys::kUpdate));
+  ASSERT_TRUE(doc.HasMember(ws_message_json_keys::kDescription));
+  ASSERT_TRUE(doc.HasMember(ws_message_json_keys::kValue));
+  ASSERT_TRUE(doc.HasMember(ws_message_json_keys::kType));
+  EXPECT_EQ(doc[ws_message_json_keys::kUpdate].GetUint(),
+            static_cast<sup::dto::uint32>(UpdateMessageType::kPutValue));
+  EXPECT_STREQ(doc[ws_message_json_keys::kDescription].GetString(), "desc");
 }
 
-TEST_F(WsMessageTest, ClientReplyMessageJSONRoundTrip)
+TEST(WsCreateJSONMessageTest, CreateTextMessageUpdateMessage)
 {
-  auto json = CreateGetNumberOfJobsReplyMessage(7u);
+  auto json = CreateTextMessageUpdateMessage("hello");
+  auto doc = ParseJson(json);
 
-  auto [ok, parsed] = ParseClientReplyMessageJSON(json);
-  ASSERT_TRUE(ok);
-  EXPECT_EQ(parsed.type, ClientMessageType::kGetNumberOfJobs);
-  EXPECT_EQ(parsed.number_of_jobs, 7u);
+  ASSERT_FALSE(doc.HasParseError());
+  ASSERT_TRUE(doc.HasMember(ws_message_json_keys::kUpdate));
+  ASSERT_TRUE(doc.HasMember(ws_message_json_keys::kMessage));
+  EXPECT_EQ(doc[ws_message_json_keys::kUpdate].GetUint(),
+            static_cast<sup::dto::uint32>(UpdateMessageType::kMessage));
+  EXPECT_STREQ(doc[ws_message_json_keys::kMessage].GetString(), "hello");
 }
 
-TEST_F(WsMessageTest, JobInfoReplyParsingNotSupported)
+TEST(WsCreateJSONMessageTest, CreateLogUpdateMessage)
+{
+  auto json = CreateLogUpdateMessage(5, "warn");
+  auto doc = ParseJson(json);
+
+  ASSERT_FALSE(doc.HasParseError());
+  ASSERT_TRUE(doc.HasMember(ws_message_json_keys::kUpdate));
+  ASSERT_TRUE(doc.HasMember(ws_message_json_keys::kSeverity));
+  ASSERT_TRUE(doc.HasMember(ws_message_json_keys::kMessage));
+  EXPECT_EQ(doc[ws_message_json_keys::kUpdate].GetUint(),
+            static_cast<sup::dto::uint32>(UpdateMessageType::kLog));
+  EXPECT_EQ(doc[ws_message_json_keys::kSeverity].GetInt(), 5);
+  EXPECT_STREQ(doc[ws_message_json_keys::kMessage].GetString(), "warn");
+}
+
+TEST(WsCreateJSONMessageTest, CreateGetNumberOfJobsRequestMessage)
+{
+  auto json = CreateGetNumberOfJobsRequestMessage();
+  auto doc = ParseJson(json);
+
+  ASSERT_FALSE(doc.HasParseError());
+  ASSERT_TRUE(doc.HasMember(ws_message_json_keys::kRequest));
+  EXPECT_EQ(doc[ws_message_json_keys::kRequest].GetUint(),
+            static_cast<sup::dto::uint32>(ClientMessageType::kGetNumberOfJobs));
+}
+
+TEST(WsCreateJSONMessageTest, CreateGetJobInfoRequestMessage)
+{
+  auto json = CreateGetJobInfoRequestMessage(3u);
+  auto doc = ParseJson(json);
+
+  ASSERT_FALSE(doc.HasParseError());
+  ASSERT_TRUE(doc.HasMember(ws_message_json_keys::kRequest));
+  ASSERT_TRUE(doc.HasMember(ws_message_json_keys::kJobIndex));
+  EXPECT_EQ(doc[ws_message_json_keys::kRequest].GetUint(),
+            static_cast<sup::dto::uint32>(ClientMessageType::kGetJobInfo));
+  EXPECT_EQ(doc[ws_message_json_keys::kJobIndex].GetUint(), 3u);
+}
+
+TEST(WsCreateJSONMessageTest, CreateEditBreakpointRequestMessage)
+{
+  auto json = CreateEditBreakpointRequestMessage(2u, 9u, true);
+  auto doc = ParseJson(json);
+
+  ASSERT_FALSE(doc.HasParseError());
+  ASSERT_TRUE(doc.HasMember(ws_message_json_keys::kRequest));
+  ASSERT_TRUE(doc.HasMember(ws_message_json_keys::kJobIndex));
+  ASSERT_TRUE(doc.HasMember(ws_message_json_keys::kInstructionId));
+  ASSERT_TRUE(doc.HasMember(ws_message_json_keys::kActive));
+  EXPECT_EQ(doc[ws_message_json_keys::kRequest].GetUint(),
+            static_cast<sup::dto::uint32>(ClientMessageType::kEditBreakPoint));
+  EXPECT_EQ(doc[ws_message_json_keys::kJobIndex].GetUint(), 2u);
+  EXPECT_EQ(doc[ws_message_json_keys::kInstructionId].GetUint(), 9u);
+  EXPECT_TRUE(doc[ws_message_json_keys::kActive].GetBool());
+}
+
+TEST(WsCreateJSONMessageTest, CreateSendJobCommandRequestMessage)
+{
+  auto json = CreateSendJobCommandRequestMessage(1u, sup::oac_tree::JobCommand::kPause);
+  auto doc = ParseJson(json);
+
+  ASSERT_FALSE(doc.HasParseError());
+  ASSERT_TRUE(doc.HasMember(ws_message_json_keys::kRequest));
+  ASSERT_TRUE(doc.HasMember(ws_message_json_keys::kJobIndex));
+  ASSERT_TRUE(doc.HasMember(ws_message_json_keys::kCommand));
+  EXPECT_EQ(doc[ws_message_json_keys::kRequest].GetUint(),
+            static_cast<sup::dto::uint32>(ClientMessageType::kSendCommand));
+  EXPECT_EQ(doc[ws_message_json_keys::kJobIndex].GetUint(), 1u);
+  EXPECT_EQ(doc[ws_message_json_keys::kCommand].GetUint(),
+            static_cast<sup::dto::uint32>(sup::oac_tree::JobCommand::kPause));
+}
+
+TEST(WsCreateJSONMessageTest, CreateGetNumberOfJobsReplyMessage)
+{
+  auto json = CreateGetNumberOfJobsReplyMessage(11u);
+  auto doc = ParseJson(json);
+
+  ASSERT_FALSE(doc.HasParseError());
+  ASSERT_TRUE(doc.HasMember(ws_message_json_keys::kRequest));
+  ASSERT_TRUE(doc.HasMember(ws_message_json_keys::kNumberOfJobs));
+  EXPECT_EQ(doc[ws_message_json_keys::kRequest].GetUint(),
+            static_cast<sup::dto::uint32>(ClientMessageType::kGetNumberOfJobs));
+  EXPECT_EQ(doc[ws_message_json_keys::kNumberOfJobs].GetUint(), 11u);
+}
+
+TEST(WsCreateJSONMessageTest, CreateGetJobInfoReplyMessage)
 {
   const auto job_info = BuildTestJobInfo();
   auto json = CreateGetJobInfoReplyMessage(job_info);
+  auto doc = ParseJson(json);
 
-  auto [ok, parsed] = ParseClientReplyMessageJSON(json);
-  (void)parsed;
-  EXPECT_FALSE(ok);
+  ASSERT_FALSE(doc.HasParseError());
+  ASSERT_TRUE(doc.HasMember(ws_message_json_keys::kRequest));
+  ASSERT_TRUE(doc.HasMember(ws_message_json_keys::kJobInfo));
+  EXPECT_EQ(doc[ws_message_json_keys::kRequest].GetUint(),
+            static_cast<sup::dto::uint32>(ClientMessageType::kGetJobInfo));
 }

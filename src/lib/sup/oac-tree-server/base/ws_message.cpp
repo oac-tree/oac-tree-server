@@ -37,7 +37,7 @@ template <typename Allocator>
 rapidjson::Value JSONStringValue(const std::string& str, Allocator& allocator)
 {
   rapidjson::Value result;
-  result.SetString(rapidjson::StringRef(str.c_str()), allocator);
+  result.SetString(str.c_str(), allocator);
   return result;
 }
 }  // unnamed namespace
