@@ -25,8 +25,6 @@
 #include <rapidjson/stringbuffer.h>
 #include <rapidjson/writer.h>
 
-#include <limits>
-
 namespace sup
 {
 namespace oac_tree_server

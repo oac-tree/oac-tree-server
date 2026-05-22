@@ -29,7 +29,6 @@
 #include <rapidjson/document.h>
 
 #include <string>
-#include <utility>
 
 namespace sup
 {
