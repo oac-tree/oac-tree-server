@@ -1,5 +1,6 @@
 Changes for 2.6.0:
 
+- Implement WebSocket based API for client/server communication
 - Added unit tests
 
 Changes for 2.5.0:
