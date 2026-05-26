@@ -197,8 +197,110 @@ Reply message from the server:
 {
   "request": 1,
   "job_index": 2
-  "value": <JSON rep>,
-  "type": <JSON rep>
+  "value": <JSON value rep>,
+  "type": <JSON type rep>
+}
+```
+
+As an example, the following procedure
+
+```xml
+<?xml version="1.0" encoding="UTF-8"?>
+<Procedure xmlns="http://codac.iter.org/sup/oac-tree" version="1.0"
+           name="Common header"
+           xmlns:xs="http://www.w3.org/2001/XMLSchema-instance"
+           xs:schemaLocation="http://codac.iter.org/sup/oac-tree oac-tree.xsd">
+  <Sequence>
+    <Message text="Hello"/>
+    <Output fromVar="var1" description="Variable is"/>
+    <Copy inputVar="one" outputVar="var1"/>
+    <Copy inputVar="one" outputVar="var2"/>
+  </Sequence>
+  <Workspace>
+    <Local name="one" type='{"type":"uint32"}' value='1'/>
+    <Local name="var1" type='{"type":"uint32"}' value='0'/>
+    <Local name="var2" type='{"type":"uint32"}' value='0'/>
+  </Workspace>
+</Procedure>
+```
+
+would produce the following JSON string as its value representation (displayed here with indentation for readability):
+
+```json
+{
+  "full_name": "Common header",
+  "ws_info": {
+    "one": {
+      "type": "Local",
+      "index": 0,
+      "attributes": {
+        "name": "one",
+        "type": "{\"type\":\"uint32\"}",
+        "value": "1"
+      }
+    },
+    "var1": {
+      "type": "Local",
+      "index": 1,
+      "attributes": {
+        "name": "var1",
+        "type": "{\"type\":\"uint32\"}",
+        "value": "0"
+      }
+    },
+    "var2": {
+      "type": "Local",
+      "index": 2,
+      "attributes": {
+        "name": "var2",
+        "type": "{\"type\":\"uint32\"}",
+        "value": "0"
+      }
+    }
+  },
+  "instr_tree_info": {
+    "type": "Sequence",
+    "category": 2,
+    "index": 0,
+    "attributes": {},
+    "children": {
+      "child_0": {
+        "type": "Message",
+        "category": 0,
+        "index": 1,
+        "attributes": {
+          "text": "Hello"
+        }
+      },
+      "child_1": {
+        "type": "Output",
+        "category": 0,
+        "index": 2,
+        "attributes": {
+          "fromVar": "var1",
+          "description": "Variable is"
+        }
+      },
+      "child_2": {
+        "type": "Copy",
+        "category": 0,
+        "index": 3,
+        "attributes": {
+          "inputVar": "one",
+          "outputVar": "var1"
+        }
+      },
+      "child_3": {
+        "type": "Copy",
+        "category": 0,
+        "index": 4,
+        "attributes": {
+          "inputVar": "one",
+          "outputVar": "var2"
+        }
+      }
+    }
+  }
 }
 ```
 
