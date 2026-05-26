@@ -45,10 +45,10 @@ bool ParseAnyValue(const rapidjson::Value& value_entry,
                    const rapidjson::Value& type_entry,
                    sup::dto::AnyValue& value);
 
-using ConcreteMsgHandler = std::function<void(const rapidjson::Document&,
+using ConcreteUpdateHandler = std::function<void(const rapidjson::Document&,
                                               sup::oac_tree::IJobInfoIO&)>;
 
-const std::vector<ConcreteMsgHandler>& GetConcreteHandlers();
+const std::vector<ConcreteUpdateHandler>& GetConcreteUpdateHandlers();
 
 void HandleJobStateUpdate(const rapidjson::Document& doc, sup::oac_tree::IJobInfoIO& job_info_io);
 void HandleBreakpointUpdate(const rapidjson::Document& doc, sup::oac_tree::IJobInfoIO& job_info_io);
@@ -59,6 +59,16 @@ void HandleVariableStateUpdate(const rapidjson::Document& doc,
 void HandlePutValueUpdate(const rapidjson::Document& doc, sup::oac_tree::IJobInfoIO& job_info_io);
 void HandleMessageUpdate(const rapidjson::Document& doc, sup::oac_tree::IJobInfoIO& job_info_io);
 void HandleLogUpdate(const rapidjson::Document& doc, sup::oac_tree::IJobInfoIO& job_info_io);
+
+using ConcreteRequestHandler = std::function<std::string(const rapidjson::Document&, IJobManager&)>;
+
+const std::vector<ConcreteRequestHandler>& GetConcreteRequestHandlers();
+
+std::string HandleGetNumberOfJobsRequest(const rapidjson::Document& doc, IJobManager& job_manager);
+std::string HandleGetJobInfoRequest(const rapidjson::Document& doc, IJobManager& job_manager);
+std::string HandleEditBreakpointRequest(const rapidjson::Document& doc, IJobManager& job_manager);
+std::string HandleSendJobCommandRequest(const rapidjson::Document& doc, IJobManager& job_manager);
+
 }  // unnamed namespace
 
 void HandleUpdateMessage(const std::string& msg, sup::oac_tree::IJobInfoIO& job_info_io)
@@ -75,12 +85,34 @@ void HandleUpdateMessage(const std::string& msg, sup::oac_tree::IJobInfoIO& job_
     return;
   }
   auto update_idx = doc[kUpdate].GetUint();
-  const auto& concrete_handlers = GetConcreteHandlers();
+  const auto& concrete_handlers = GetConcreteUpdateHandlers();
   if (update_idx >= concrete_handlers.size())
   {
     return;
   }
   concrete_handlers[update_idx](doc, job_info_io);
+}
+
+std::string HandleJobManagerMessage(const std::string& msg, IJobManager& job_manager)
+{
+  rapidjson::Document doc;
+  doc.Parse(msg.c_str());
+
+  if (doc.HasParseError() || !doc.IsObject())
+  {
+    return {};
+  }
+  if (!doc.HasMember(kRequest) || !doc[kRequest].IsUint())
+  {
+    return {};
+  }
+  auto request_idx = doc[kRequest].GetUint();
+  const auto& concrete_handlers = GetConcreteRequestHandlers();
+  if (request_idx >= concrete_handlers.size())
+  {
+    return {};
+  }
+  return concrete_handlers[request_idx](doc, job_manager);
 }
 
 namespace
@@ -115,9 +147,9 @@ bool ParseAnyValue(const rapidjson::Value& value_entry,
   }
 }
 
-const std::vector<ConcreteMsgHandler>& GetConcreteHandlers()
+const std::vector<ConcreteUpdateHandler>& GetConcreteUpdateHandlers()
 {
-  static const std::vector<ConcreteMsgHandler> concrete_handlers = {
+  static const std::vector<ConcreteUpdateHandler> concrete_handlers = {
     &HandleJobStateUpdate,
     &HandleBreakpointUpdate,
     &HandleInstructionStateUpdate,
@@ -224,6 +256,64 @@ void HandleLogUpdate(const rapidjson::Document& doc, sup::oac_tree::IJobInfoIO& 
   job_info_io.Log(doc[kSeverity].GetInt(), doc[kMessage].GetString());
   return;
 }
+
+const std::vector<ConcreteRequestHandler>& GetConcreteRequestHandlers()
+{
+  static const std::vector<ConcreteRequestHandler> concrete_handlers = {
+    &HandleGetNumberOfJobsRequest,
+    &HandleGetJobInfoRequest,
+    &HandleEditBreakpointRequest,
+    &HandleSendJobCommandRequest
+  };
+  return concrete_handlers;
+}
+
+std::string HandleGetNumberOfJobsRequest(const rapidjson::Document& doc, IJobManager& job_manager)
+{
+  (void)doc;  // Unused parameter
+  auto number_of_jobs = job_manager.GetNumberOfJobs();
+  return CreateGetNumberOfJobsReplyMessage(number_of_jobs);
+}
+
+std::string HandleGetJobInfoRequest(const rapidjson::Document& doc, IJobManager& job_manager)
+{
+  if (!doc.HasMember(kJobIndex) || !doc[kJobIndex].IsUint())
+  {
+    return {};
+  }
+  auto job_index = doc[kJobIndex].GetUint();
+  auto job_info = job_manager.GetJobInfo(job_index);
+  return CreateGetJobInfoReplyMessage(job_index, job_info);
+}
+
+std::string HandleEditBreakpointRequest(const rapidjson::Document& doc, IJobManager& job_manager)
+{
+  if (!doc.HasMember(kJobIndex) || !doc[kJobIndex].IsUint()
+      || !doc.HasMember(kInstructionId) || !doc[kInstructionId].IsUint()
+      || !doc.HasMember(kBreakpoint) || !doc[kBreakpoint].IsBool())
+  {
+    return {};
+  }
+  auto job_index = doc[kJobIndex].GetUint();
+  auto instruction_id = doc[kInstructionId].GetUint();
+  auto breakpoint = doc[kBreakpoint].GetBool();
+  job_manager.EditBreakpoint(job_index, instruction_id, breakpoint);
+  return {};
+}
+
+std::string HandleSendJobCommandRequest(const rapidjson::Document& doc, IJobManager& job_manager)
+{
+  if (!doc.HasMember(kJobIndex) || !doc[kJobIndex].IsUint()
+      || !doc.HasMember(kCommand) || !doc[kCommand].IsUint())
+  {
+    return {};
+  }
+  auto job_index = doc[kJobIndex].GetUint();
+  auto command = static_cast<sup::oac_tree::JobCommand>(doc[kCommand].GetUint());
+  job_manager.SendJobCommand(job_index, command);
+  return {};
+}
+
 }  // unnamed namespace
 
 }  // namespace oac_tree_server
