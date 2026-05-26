@@ -76,7 +76,6 @@ constexpr auto kInstructionId = "instr_id";
 constexpr auto kActive = "active";
 constexpr auto kCommand = "command";
 constexpr auto kNumberOfJobs = "n_jobs";
-constexpr auto kJobInfo = "job_info";
 constexpr auto kEmptyJson = "";
 
 }  // namespace ws_message_json_keys

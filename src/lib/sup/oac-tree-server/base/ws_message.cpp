@@ -244,13 +244,16 @@ std::string CreateGetJobInfoReplyMessage(const sup::oac_tree::JobInfo& job_info)
   doc.SetObject();
   auto& allocator = doc.GetAllocator();
   auto job_info_any = sup::oac_tree::utils::ToAnyValue(job_info);
-  const auto job_info_str = sup::dto::ValuesToJSONString(job_info_any);
+  const auto job_info_val_str = sup::dto::ValuesToJSONString(job_info_any);
+  const auto job_info_type_str = sup::dto::AnyTypeToJSONString(job_info_any.GetType());
 
   doc.AddMember(rapidjson::StringRef(ws_message_json_keys::kRequest),
                 static_cast<sup::dto::uint32>(ClientMessageType::kGetJobInfo),
                 allocator);
-  doc.AddMember(rapidjson::StringRef(ws_message_json_keys::kJobInfo),
-                JSONStringValue(job_info_str), allocator);
+  doc.AddMember(rapidjson::StringRef(ws_message_json_keys::kValue),
+                JSONStringValue(job_info_val_str), allocator);
+  doc.AddMember(rapidjson::StringRef(ws_message_json_keys::kType),
+                JSONStringValue(job_info_type_str), allocator);
   return ws_message_json_helpers::SerializeDocumentToJSON(doc);
 }
 

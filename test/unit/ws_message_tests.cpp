@@ -244,7 +244,8 @@ TEST(WsCreateJSONMessageTest, CreateGetJobInfoReplyMessage)
 
   ASSERT_FALSE(doc.HasParseError());
   ASSERT_TRUE(doc.HasMember(ws_message_json_keys::kRequest));
-  ASSERT_TRUE(doc.HasMember(ws_message_json_keys::kJobInfo));
+  ASSERT_TRUE(doc.HasMember(ws_message_json_keys::kValue));
+  ASSERT_TRUE(doc.HasMember(ws_message_json_keys::kType));
   EXPECT_EQ(doc[ws_message_json_keys::kRequest].GetUint(),
             static_cast<sup::dto::uint32>(ClientMessageType::kGetJobInfo));
 }
