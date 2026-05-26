@@ -20,11 +20,11 @@ target_sources(oac-tree-server
   input_reply_helper.cpp
   input_request_helper.cpp
   input_request_server.cpp
-  json_message_handler.cpp
   oac_tree_protocol.cpp
   output_entry_helper.cpp
   output_entry_types.cpp
   server_job_info_io.cpp
+  ws_message_handler.cpp
   ws_message_json_helpers.cpp
   ws_message.cpp
 )

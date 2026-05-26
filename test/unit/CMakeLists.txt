@@ -28,11 +28,11 @@ target_sources(${unit-tests}
     input_request_server_tests.cpp
     job_info_io_server_client_tests.cpp
     job_manager_client_server_stack_tests.cpp
-    json_message_handler_tests.cpp
     oac_tree_protocol_tests.cpp
     output_entry_tests.cpp
     protocol_client_server_tests.cpp
     unit_test_helper.cpp
+    ws_message_handler_tests.cpp
     ws_message_tests.cpp
     ../../src/app/oac-tree-server/utils.cpp
 )

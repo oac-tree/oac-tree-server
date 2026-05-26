@@ -20,8 +20,8 @@
  * of the distribution package.
  ******************************************************************************/
 
-#ifndef SUP_OAC_TREE_SERVER_JSON_MESSAGE_HANDLER_H_
-#define SUP_OAC_TREE_SERVER_JSON_MESSAGE_HANDLER_H_
+#ifndef SUP_OAC_TREE_SERVER_WS_MESSAGE_HANDLER_H_
+#define SUP_OAC_TREE_SERVER_WS_MESSAGE_HANDLER_H_
 
 #include <sup/oac-tree/i_job_info_io.h>
 
@@ -39,4 +39,4 @@ void HandleUpdateMessage(const std::string& msg, sup::oac_tree::IJobInfoIO& job_
 
 }  // namespace sup
 
-#endif  // SUP_OAC_TREE_SERVER_JSON_MESSAGE_HANDLER_H_
+#endif  // SUP_OAC_TREE_SERVER_WS_MESSAGE_HANDLER_H_

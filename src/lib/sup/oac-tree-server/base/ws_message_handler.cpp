@@ -20,7 +20,7 @@
  * of the distribution package.
  ******************************************************************************/
 
-#include <sup/oac-tree-server/json_message_handler.h>
+#include <sup/oac-tree-server/ws_message_handler.h>
 #include <sup/oac-tree-server/ws_message.h>
 
 #include <sup/dto/anytype_helper.h>
