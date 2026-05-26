@@ -23,16 +23,22 @@
 #include <sup/oac-tree-server/ws_message_handler.h>
 #include <sup/oac-tree-server/ws_message.h>
 
+#include <sup/oac-tree/instruction_map.h>
+#include <sup/oac-tree/job_info_utils.h>
+#include <sup/oac-tree/sequence_parser.h>
+
 #include "unit_test_helper.h"
 
 #include <gtest/gtest.h>
 
 using ::testing::Exactly;
+using ::testing::Return;
 
 using namespace sup::oac_tree_server;
 
 using sup::oac_tree::ExecutionStatus;
 using sup::oac_tree::InstructionState;
+using sup::oac_tree::JobCommand;
 using sup::oac_tree::JobState;
 
 class UpdateMessageHandlerTest : public ::testing::Test
@@ -119,4 +125,109 @@ TEST_F(UpdateMessageHandlerTest, HandleMessage_UnknownUpdateType)
 TEST_F(UpdateMessageHandlerTest, HandleMessage_JobState_MissingState)
 {
   HandleUpdateMessage(R"({"update": 0})", m_mock_io);
+}
+
+// ===========================================================================
+// HandleJobManagerMessage tests
+// ===========================================================================
+
+namespace
+{
+sup::oac_tree::JobInfo BuildJobInfo()
+{
+  const auto procedure_string = sup::oac_tree_server::UnitTestHelper::CreateProcedureString(
+      kWorkspaceSequenceBody);
+  auto proc = sup::oac_tree::ParseProcedureString(procedure_string);
+  auto root = proc->RootInstruction();
+  sup::oac_tree::InstructionMap instr_map{root};
+  return sup::oac_tree::utils::CreateJobInfo(*proc, instr_map);
+}
+}  // namespace
+
+class JobManagerMessageHandlerTest : public ::testing::Test
+{
+protected:
+  using StrictMockJobManager = ::testing::StrictMock<UnitTestHelper::MockJobManager>;
+  StrictMockJobManager m_mock_manager;
+};
+
+// ---------------------------------------------------------------------------
+// Happy-path: one test per concrete handler
+// ---------------------------------------------------------------------------
+
+TEST_F(JobManagerMessageHandlerTest, HandleMessage_GetNumberOfJobs)
+{
+  EXPECT_CALL(m_mock_manager, GetNumberOfJobs()).Times(Exactly(1)).WillOnce(Return(3u));
+  auto reply = HandleJobManagerMessage(CreateGetNumberOfJobsRequestMessage(), m_mock_manager);
+  EXPECT_EQ(reply, CreateGetNumberOfJobsReplyMessage(3u));
+}
+
+TEST_F(JobManagerMessageHandlerTest, HandleMessage_GetJobInfo)
+{
+  const auto job_info = BuildJobInfo();
+  EXPECT_CALL(m_mock_manager, GetJobInfo(1u)).Times(Exactly(1)).WillOnce(Return(job_info));
+  auto reply = HandleJobManagerMessage(CreateGetJobInfoRequestMessage(1u), m_mock_manager);
+  EXPECT_EQ(reply, CreateGetJobInfoReplyMessage(1u, job_info));
+}
+
+TEST_F(JobManagerMessageHandlerTest, HandleMessage_EditBreakpoint)
+{
+  EXPECT_CALL(m_mock_manager, EditBreakpoint(0u, 5u, true)).Times(Exactly(1));
+  auto reply = HandleJobManagerMessage(
+      CreateEditBreakpointRequestMessage(0u, 5u, true), m_mock_manager);
+  EXPECT_TRUE(reply.empty());
+}
+
+TEST_F(JobManagerMessageHandlerTest, HandleMessage_SendJobCommand)
+{
+  EXPECT_CALL(m_mock_manager, SendJobCommand(0u, JobCommand::kStart)).Times(Exactly(1));
+  auto reply = HandleJobManagerMessage(
+      CreateSendJobCommandRequestMessage(0u, JobCommand::kStart), m_mock_manager);
+  EXPECT_TRUE(reply.empty());
+}
+
+// ---------------------------------------------------------------------------
+// Robustness: StrictMock ensures no IJobManager method is called
+// ---------------------------------------------------------------------------
+
+TEST_F(JobManagerMessageHandlerTest, HandleMessage_InvalidJson)
+{
+  auto reply = HandleJobManagerMessage("not json", m_mock_manager);
+  EXPECT_TRUE(reply.empty());
+}
+
+TEST_F(JobManagerMessageHandlerTest, HandleMessage_EmptyString)
+{
+  auto reply = HandleJobManagerMessage("", m_mock_manager);
+  EXPECT_TRUE(reply.empty());
+}
+
+TEST_F(JobManagerMessageHandlerTest, HandleMessage_MissingRequestField)
+{
+  auto reply = HandleJobManagerMessage(R"({"state": 0})", m_mock_manager);
+  EXPECT_TRUE(reply.empty());
+}
+
+TEST_F(JobManagerMessageHandlerTest, HandleMessage_UnknownRequestType)
+{
+  auto reply = HandleJobManagerMessage(R"({"request": 99})", m_mock_manager);
+  EXPECT_TRUE(reply.empty());
+}
+
+TEST_F(JobManagerMessageHandlerTest, HandleMessage_GetJobInfo_MissingJobIndex)
+{
+  auto reply = HandleJobManagerMessage(R"({"request": 1})", m_mock_manager);
+  EXPECT_TRUE(reply.empty());
+}
+
+TEST_F(JobManagerMessageHandlerTest, HandleMessage_EditBreakpoint_MissingFields)
+{
+  auto reply = HandleJobManagerMessage(R"({"request": 2, "job_index": 0, "instr_id": 5})", m_mock_manager);
+  EXPECT_TRUE(reply.empty());
+}
+
+TEST_F(JobManagerMessageHandlerTest, HandleMessage_SendJobCommand_MissingFields)
+{
+  auto reply = HandleJobManagerMessage(R"({"request": 3, "job_index": 0})", m_mock_manager);
+  EXPECT_TRUE(reply.empty());
 }

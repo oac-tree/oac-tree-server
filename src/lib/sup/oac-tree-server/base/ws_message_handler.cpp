@@ -290,13 +290,13 @@ std::string HandleEditBreakpointRequest(const rapidjson::Document& doc, IJobMana
 {
   if (!doc.HasMember(kJobIndex) || !doc[kJobIndex].IsUint()
       || !doc.HasMember(kInstructionId) || !doc[kInstructionId].IsUint()
-      || !doc.HasMember(kBreakpoint) || !doc[kBreakpoint].IsBool())
+      || !doc.HasMember(kActive) || !doc[kActive].IsBool())
   {
     return {};
   }
   auto job_index = doc[kJobIndex].GetUint();
   auto instruction_id = doc[kInstructionId].GetUint();
-  auto breakpoint = doc[kBreakpoint].GetBool();
+  auto breakpoint = doc[kActive].GetBool();
   job_manager.EditBreakpoint(job_index, instruction_id, breakpoint);
   return {};
 }
