@@ -80,6 +80,7 @@ constexpr auto kEmptyJson = "";
 
 }  // namespace ws_message_json_keys
 
+// Factory functions for creating JSON messages for job specific updates from server to client.
 std::string CreateJobStateUpdateMessage(sup::oac_tree::JobState state);
 std::string CreateBreakpointInstructionUpdateMessage(sup::dto::uint32 instruction_id);
 std::string CreateInstructionStateUpdateMessage(sup::dto::uint32 instruction_id,
@@ -94,6 +95,7 @@ std::string CreateTextMessageUpdateMessage(const std::string& message);
 std::string CreateLogUpdateMessage(sup::dto::int32 severity,
                                    const std::string& message);
 
+// Factory functions for creating JSON messages for global requests from client to server.
 std::string CreateGetNumberOfJobsRequestMessage();
 std::string CreateGetJobInfoRequestMessage(sup::dto::uint32 job_index);
 std::string CreateEditBreakpointRequestMessage(sup::dto::uint32 job_index,
@@ -102,6 +104,7 @@ std::string CreateEditBreakpointRequestMessage(sup::dto::uint32 job_index,
 std::string CreateSendJobCommandRequestMessage(sup::dto::uint32 job_index,
                                                sup::oac_tree::JobCommand command);
 
+// Factory functions for creating JSON messages for global replies from server to client.
 std::string CreateGetNumberOfJobsReplyMessage(sup::dto::uint32 number_of_jobs);
 std::string CreateGetJobInfoReplyMessage(sup::dto::uint32 job_index,
                                          const sup::oac_tree::JobInfo& job_info);
