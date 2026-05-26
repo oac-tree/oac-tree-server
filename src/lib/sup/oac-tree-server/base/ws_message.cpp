@@ -238,7 +238,8 @@ std::string CreateGetNumberOfJobsReplyMessage(sup::dto::uint32 number_of_jobs)
   return ws_message_json_helpers::SerializeDocumentToJSON(doc);
 }
 
-std::string CreateGetJobInfoReplyMessage(const sup::oac_tree::JobInfo& job_info)
+std::string CreateGetJobInfoReplyMessage(sup::dto::uint32 job_index,
+                                         const sup::oac_tree::JobInfo& job_info)
 {
   rapidjson::Document doc;
   doc.SetObject();
@@ -250,6 +251,7 @@ std::string CreateGetJobInfoReplyMessage(const sup::oac_tree::JobInfo& job_info)
   doc.AddMember(rapidjson::StringRef(ws_message_json_keys::kRequest),
                 static_cast<sup::dto::uint32>(ClientMessageType::kGetJobInfo),
                 allocator);
+  doc.AddMember(rapidjson::StringRef(ws_message_json_keys::kJobIndex), job_index, allocator);
   doc.AddMember(rapidjson::StringRef(ws_message_json_keys::kValue),
                 JSONStringValue(job_info_val_str), allocator);
   doc.AddMember(rapidjson::StringRef(ws_message_json_keys::kType),

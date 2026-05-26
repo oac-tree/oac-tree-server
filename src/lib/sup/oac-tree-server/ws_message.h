@@ -103,7 +103,8 @@ std::string CreateSendJobCommandRequestMessage(sup::dto::uint32 job_index,
                                                sup::oac_tree::JobCommand command);
 
 std::string CreateGetNumberOfJobsReplyMessage(sup::dto::uint32 number_of_jobs);
-std::string CreateGetJobInfoReplyMessage(const sup::oac_tree::JobInfo& job_info);
+std::string CreateGetJobInfoReplyMessage(sup::dto::uint32 job_index,
+                                         const sup::oac_tree::JobInfo& job_info);
 
 }  // namespace oac_tree_server
 

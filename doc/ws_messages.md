@@ -196,107 +196,11 @@ Reply message from the server:
 ```json
 {
   "request": 1,
-  "job_info": <JSON representation of the JobInfo>
+  "job_index": 2
+  "value": <JSON rep>,
+  "type": <JSON rep>
 }
 ```
-
-The JSON representation of the JobInfo structure is best shown by example. Assume the procedure is defined by the following XML file:
-
-```xml
-<?xml version="1.0" encoding="UTF-8"?>
-<Procedure name="My test procedure">
-    <Sequence name="My root instruction">
-        <Wait timeout="1.0"/>
-        <Wait timeout="2.0"/>
-    </Sequence>
-    <Workspace>
-        <Local name="counter" type='{"type":"int32"}' value="42"/>
-        <File name="from_file" file="variable.json"/>
-    </Workspace>
-</Procedure>
-```
-
-The JobInfo representation in JSON then becomes:
-
-```json
-{
-  "name": "My test procedure",
-  "workspace": [
-    {
-      "name": "counter",
-      "type": "Local",
-      "attributes": [
-        {
-          "name": "type",
-          "value": "{\"type\":\"int32\"}"
-        },
-        {
-          "name": "value",
-          "value": "42"
-        }
-      ]
-    },
-    {
-      "name": "from_file",
-      "type": "File",
-      "attributes": [
-        {
-          "name": "file",
-          "value": "variable.json"
-        }
-      ]
-    }
-  ],
-  "root_instruction": {
-    "type": "Sequence",
-    "category": 2,
-    "id": 0,
-    "attributes": [
-      {
-        "name": "name",
-        "value": "My root instruction"
-      }
-    ],
-    "children": [
-      {
-        "type": "Wait",
-        "category": 0,
-        "id": 1,
-        "attributes": [
-          {
-            "name": "timeout",
-            "value": "1.0"
-          }
-        ]
-      },
-      {
-        "type": "Wait",
-        "category": 0,
-        "id": 2,
-        "attributes": [
-          {
-            "name": "timeout",
-            "value": "2.0"
-          }
-        ]
-      },
-    ]
-  }
-}
-```
-
-where the `category` field for instructions is the integer representation of the following enumeration:
-
-```c++
-enum Category
-{
-  kAction = 0,
-  kDecorator,
-  kCompound
-};
-```
-
-Also note that the variables do not explicitly encode their index, since they are assumed to be listed in order.
 
 ### EditBreakPoint
 

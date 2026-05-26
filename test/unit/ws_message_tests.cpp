@@ -239,11 +239,12 @@ TEST(WsCreateJSONMessageTest, CreateGetNumberOfJobsReplyMessage)
 TEST(WsCreateJSONMessageTest, CreateGetJobInfoReplyMessage)
 {
   const auto job_info = BuildTestJobInfo();
-  auto json = CreateGetJobInfoReplyMessage(job_info);
+  auto json = CreateGetJobInfoReplyMessage(5u, job_info);
   auto doc = ParseJson(json);
 
   ASSERT_FALSE(doc.HasParseError());
   ASSERT_TRUE(doc.HasMember(ws_message_json_keys::kRequest));
+  ASSERT_TRUE(doc.HasMember(ws_message_json_keys::kJobIndex));
   ASSERT_TRUE(doc.HasMember(ws_message_json_keys::kValue));
   ASSERT_TRUE(doc.HasMember(ws_message_json_keys::kType));
   EXPECT_EQ(doc[ws_message_json_keys::kRequest].GetUint(),
