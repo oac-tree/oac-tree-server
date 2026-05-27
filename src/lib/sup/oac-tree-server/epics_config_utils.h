@@ -26,6 +26,7 @@
 #include <sup/oac-tree-server/i_anyvalue_io.h>
 #include <sup/oac-tree-server/i_anyvalue_manager_registry.h>
 #include <sup/oac-tree-server/i_job_manager.h>
+#include <sup/oac-tree-server/i_server_protocol_factory.h>
 
 #include <memory>
 #include <string>
@@ -43,6 +44,8 @@ std::unique_ptr<IJobManager> CreateEPICSJobManager(const std::string& server_nam
 
 std::unique_ptr<IAnyValueManagerRegistry> CreateEPICSAnyValueManagerRegistry(
     sup::dto::uint32 n_managers);
+
+std::unique_ptr<IServerProtocolFactory> CreateEPICSServerProtocolFactory(sup::dto::uint32 n_procs);
 
 }  // namespace utils
 

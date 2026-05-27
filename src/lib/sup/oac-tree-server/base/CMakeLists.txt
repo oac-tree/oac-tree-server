@@ -14,6 +14,7 @@ target_sources(oac-tree-server
   i_anyvalue_manager_registry.cpp
   i_anyvalue_manager.cpp
   i_job_manager.cpp
+  i_server_protocol_factory.cpp
   index_generator.cpp
   input_protocol_client.cpp
   input_protocol_server.cpp

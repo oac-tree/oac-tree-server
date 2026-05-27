@@ -48,6 +48,7 @@ install(FILES
   i_anyvalue_manager_registry.h
   i_anyvalue_manager.h
   i_job_manager.h
+  i_server_protocol_factory.h
   index_generator.h
   info_protocol_server.h
   input_protocol_client.h

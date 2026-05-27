@@ -21,6 +21,9 @@
  ******************************************************************************/
 
 #include "epics_io_client.h"
+#include "epics_server_protocol_factory.h"
+
+#include <sup/oac-tree-server/epics_config_utils.h>
 
 #include <sup/oac-tree-server/automation_client_stack.h>
 #include <sup/oac-tree-server/epics/epics_anyvalue_manager_registry.h>
@@ -57,6 +60,11 @@ std::unique_ptr<IAnyValueManagerRegistry> CreateEPICSAnyValueManagerRegistry(
 {
   auto result = std::make_unique<EPICSAnyValueManagerRegistry>(n_managers);
   return result;
+}
+
+std::unique_ptr<IServerProtocolFactory> CreateEPICSServerProtocolFactory(sup::dto::uint32 n_procs)
+{
+  return std::make_unique<EPICSServerProtocolFactory>(n_procs);
 }
 
 }  // namespace utils
