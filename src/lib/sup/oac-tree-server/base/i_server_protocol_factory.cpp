@@ -27,6 +27,8 @@ namespace sup
 namespace oac_tree_server
 {
 
+IMainServer::~IMainServer() = default;
+
 IServerProtocolFactory::~IServerProtocolFactory() = default;
 
 }  // namespace oac_tree_server

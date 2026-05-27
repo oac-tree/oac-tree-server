@@ -71,18 +71,8 @@ int main(int argc, char* argv[])
   {
     auto_server.AddJob(std::move(proc));
   }
-  // Instantiate RPC server for obtaining job information
-  auto info_server_protocol = std::make_unique<InfoProtocolServer>(auto_server);
-  sup::epics::PvAccessRPCServerConfig info_server_config{service_name};
-  auto info_server_stack = sup::epics::CreateEPICSRPCServerStack(
-    info_server_config, sup::protocol::ProtocolRPCServerConfig{}, std::move(info_server_protocol));
-  // Instantiate RPC server for controlling jobs
-  auto control_server_protocol = std::make_unique<ControlProtocolServer>(auto_server);
-  auto control_service_name = GetControlServerName(service_name);
-  sup::epics::PvAccessRPCServerConfig control_server_config{control_service_name};
-  auto control_server_stack = sup::epics::CreateEPICSRPCServerStack(
-    control_server_config, sup::protocol::ProtocolRPCServerConfig{},
-    std::move(control_server_protocol));
+  // Instantiate main server that will expose the automation server over the network
+  auto main_server = server_protocol_factory->CreateMainServer(service_name, auto_server);
 
   while(true)
   {

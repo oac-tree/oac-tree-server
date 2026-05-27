@@ -37,11 +37,20 @@ namespace oac_tree_server
 class EPICSServerProtocolFactory final : public IServerProtocolFactory
 {
 public:
-  EPICSServerProtocolFactory(sup::dto::uint32 n_procs);
+  EPICSServerProtocolFactory(sup::dto::uint32 n_managers);
  ~EPICSServerProtocolFactory() override;
 
- std::unique_ptr<sup::oac_tree::IJobInfoIO> CreateJobInfoIO(
-  const std::string& server_prefix, sup::dto::uint32 job_idx, sup::dto::uint32 n_vars) override;
+  // No copy or move
+  EPICSServerProtocolFactory(const EPICSServerProtocolFactory& other) = delete;
+  EPICSServerProtocolFactory(EPICSServerProtocolFactory&& other) = delete;
+  EPICSServerProtocolFactory& operator=(const EPICSServerProtocolFactory& other) = delete;
+  EPICSServerProtocolFactory& operator=(EPICSServerProtocolFactory&& other) = delete;
+
+  std::unique_ptr<IMainServer> CreateMainServer(const std::string& service_name,
+                                                AutomationServer& automation_server) override;
+
+  std::unique_ptr<sup::oac_tree::IJobInfoIO> CreateJobInfoIO(
+    const std::string& server_prefix, sup::dto::uint32 job_idx, sup::dto::uint32 n_vars) override;
 
 private:
   EPICSAnyValueManagerRegistry m_av_mgr_registry;

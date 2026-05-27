@@ -338,6 +338,12 @@ TestServerProtocolFactory::TestServerProtocolFactory()
 
 TestServerProtocolFactory::~TestServerProtocolFactory() = default;
 
+std::unique_ptr<IMainServer> TestServerProtocolFactory::CreateMainServer(
+  const std::string& service_name, AutomationServer& automation_server)
+{
+  return {};
+}
+
 std::unique_ptr<sup::oac_tree::IJobInfoIO> TestServerProtocolFactory::CreateJobInfoIO(
     const std::string& server_prefix, sup::dto::uint32 job_idx, sup::dto::uint32 n_vars)
 {
