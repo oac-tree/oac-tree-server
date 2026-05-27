@@ -45,7 +45,6 @@ install(FILES
   epics_config_utils.h
   exceptions.h
   i_anyvalue_io.h
-  i_anyvalue_manager_registry.h
   i_anyvalue_manager.h
   i_job_manager.h
   i_server_protocol_factory.h

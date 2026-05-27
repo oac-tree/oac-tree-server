@@ -23,7 +23,7 @@
 #ifndef SUP_OAC_TREE_SERVER_EPICS_ANYVALUE_MANAGER_REGISTRY_H_
 #define SUP_OAC_TREE_SERVER_EPICS_ANYVALUE_MANAGER_REGISTRY_H_
 
-#include <sup/oac-tree-server/i_anyvalue_manager_registry.h>
+#include <sup/oac-tree-server/i_anyvalue_manager.h>
 
 namespace sup
 {
@@ -31,11 +31,11 @@ namespace oac_tree_server
 {
 
   /**
- * @brief EPICS PvAccess implementation of IAnyValueManagerRegistry. It manages a fixed number of
- * AnyValueManager objects and will return the manager corresponding to the requested index modulo
- * the supported number of managers.
+ * @brief EPICS PvAccess implementation of a registry for IAnyValueManager objects. It manages a
+ * fixed number of IAnyValueManager objects and will return the manager corresponding to the
+ * requested index modulo the supported number of managers.
  */
-class EPICSAnyValueManagerRegistry : public IAnyValueManagerRegistry
+class EPICSAnyValueManagerRegistry
 {
 public:
   explicit EPICSAnyValueManagerRegistry(sup::dto::uint32 n_managers);
@@ -43,9 +43,9 @@ public:
   EPICSAnyValueManagerRegistry(EPICSAnyValueManagerRegistry &&) = delete;
   EPICSAnyValueManagerRegistry &operator=(const EPICSAnyValueManagerRegistry &) = delete;
   EPICSAnyValueManagerRegistry &operator=(EPICSAnyValueManagerRegistry &&) = delete;
-  virtual ~EPICSAnyValueManagerRegistry();
+  ~EPICSAnyValueManagerRegistry();
 
-  IAnyValueManager& GetAnyValueManager(sup::dto::uint32 idx) override;
+  IAnyValueManager& GetAnyValueManager(sup::dto::uint32 idx);
 
 private:
   std::vector<std::unique_ptr<IAnyValueManager>> m_anyvalue_managers;

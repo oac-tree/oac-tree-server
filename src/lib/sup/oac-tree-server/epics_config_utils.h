@@ -24,7 +24,6 @@
 #define SUP_OAC_TREE_SERVER_EPICS_CLIENT_UTILS_H_
 
 #include <sup/oac-tree-server/i_anyvalue_io.h>
-#include <sup/oac-tree-server/i_anyvalue_manager_registry.h>
 #include <sup/oac-tree-server/i_job_manager.h>
 #include <sup/oac-tree-server/i_server_protocol_factory.h>
 

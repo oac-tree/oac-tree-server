@@ -23,8 +23,6 @@
 #ifndef SUP_OAC_TREE_SERVER_SUP_AUTOMATION_SERVER_UTILS_H_
 #define SUP_OAC_TREE_SERVER_SUP_AUTOMATION_SERVER_UTILS_H_
 
-#include <sup/oac-tree-server/i_anyvalue_manager_registry.h>
-
 #include <sup/cli/command_line_parser.h>
 #include <sup/oac-tree/procedure.h>
 

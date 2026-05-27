@@ -11,7 +11,6 @@ target_sources(oac-tree-server
   control_protocol_server.cpp
   exceptions.cpp
   i_anyvalue_io.cpp
-  i_anyvalue_manager_registry.cpp
   i_anyvalue_manager.cpp
   i_job_manager.cpp
   i_server_protocol_factory.cpp
