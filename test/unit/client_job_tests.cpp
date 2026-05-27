@@ -66,10 +66,7 @@ protected:
   static IServerProtocolFactory& GetServerProtocolFactory();
 
   static AutomationServer m_automation_server;
-  static std::unique_ptr<InfoProtocolServer> m_info_server;
-  static std::unique_ptr<ControlProtocolServer> m_control_server;
-  static std::unique_ptr<sup::protocol::RPCServerInterface> m_info_stack;
-  static std::unique_ptr<sup::protocol::RPCServerInterface> m_control_stack;
+  static std::unique_ptr<IMainServer> m_main_server;
 };
 
 TEST_F(ClientJobTests, ConstructorError)
@@ -123,12 +120,7 @@ ClientJobTests::~ClientJobTests()
 
 AutomationServer ClientJobTests::m_automation_server{
   kTestServerPrefix, ClientJobTests::GetServerProtocolFactory()};
-std::unique_ptr<InfoProtocolServer> ClientJobTests::m_info_server{
-  std::make_unique<InfoProtocolServer>(m_automation_server)};
-std::unique_ptr<ControlProtocolServer> ClientJobTests::m_control_server{
-  std::make_unique<ControlProtocolServer>(m_automation_server)};
-std::unique_ptr<sup::protocol::RPCServerInterface> ClientJobTests::m_info_stack{};
-std::unique_ptr<sup::protocol::RPCServerInterface> ClientJobTests::m_control_stack{};
+std::unique_ptr<IMainServer> ClientJobTests::m_main_server{};
 
 IServerProtocolFactory& ClientJobTests::GetServerProtocolFactory()
 {
@@ -138,14 +130,8 @@ IServerProtocolFactory& ClientJobTests::GetServerProtocolFactory()
 
 void ClientJobTests::SetUpTestSuite()
 {
-  sup::protocol::ProtocolRPCServerConfig rpc_server_config{};
-  sup::epics::PvAccessRPCServerConfig info_server_config{kTestAutomationServiceName};
-  m_info_stack = sup::epics::CreateEPICSRPCServerStack(
-    info_server_config, rpc_server_config, std::move(m_info_server));
-  auto control_service_name = GetControlServerName(kTestAutomationServiceName);
-  sup::epics::PvAccessRPCServerConfig control_server_config{control_service_name};
-  m_control_stack = sup::epics::CreateEPICSRPCServerStack(
-    control_server_config, rpc_server_config, std::move(m_control_server));
+  m_main_server =
+    GetServerProtocolFactory().CreateMainServer(kTestAutomationServiceName, m_automation_server);
 
   const auto procedure_string = UnitTestHelper::CreateProcedureString(kWorkspaceSequenceBody);
   auto proc = sup::oac_tree::ParseProcedureString(procedure_string);
@@ -154,6 +140,5 @@ void ClientJobTests::SetUpTestSuite()
 
 void ClientJobTests::TearDownTestSuite()
 {
-  m_info_stack.reset();
-  m_control_stack.reset();
+  m_main_server.reset();
 }

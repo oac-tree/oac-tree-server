@@ -36,12 +36,12 @@ namespace oac_tree_server
 
 /**
  * @brief EPICSMainServer is the EPICS implementation of an RPC server that exposes control and
- * information requests for an automation server.
+ * information requests for a job manager.
  */
 class EPICSMainServer final : public IMainServer
 {
 public:
-  explicit EPICSMainServer(const std::string& service_name, AutomationServer& automation_server);
+  explicit EPICSMainServer(const std::string& service_name, IJobManager& job_manager);
   ~EPICSMainServer();
 
   // No copy or move

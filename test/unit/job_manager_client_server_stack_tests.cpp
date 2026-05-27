@@ -101,11 +101,10 @@ protected:
   static void SetUpTestSuite();
   static void TearDownTestSuite();
 
+  static IServerProtocolFactory& GetServerProtocolFactory();
+
   static ForwardingJobManager m_forwarding_job_manager;
-  static std::unique_ptr<InfoProtocolServer> m_info_server;
-  static std::unique_ptr<ControlProtocolServer> m_control_server;
-  static std::unique_ptr<sup::protocol::RPCServerInterface> m_info_stack;
-  static std::unique_ptr<sup::protocol::RPCServerInterface> m_control_stack;
+  static std::unique_ptr<IMainServer> m_main_server;
 };
 
 TEST_F(JobManagerClientServerStackTest, GetServerPrefix)
@@ -191,27 +190,22 @@ JobManagerClientServerStackTest::~JobManagerClientServerStackTest()
 }
 
 ForwardingJobManager JobManagerClientServerStackTest::m_forwarding_job_manager{};
-std::unique_ptr<InfoProtocolServer> JobManagerClientServerStackTest::m_info_server{
-  std::make_unique<InfoProtocolServer>(m_forwarding_job_manager)};
-std::unique_ptr<ControlProtocolServer> JobManagerClientServerStackTest::m_control_server{
-  std::make_unique<ControlProtocolServer>(m_forwarding_job_manager)};
-std::unique_ptr<sup::protocol::RPCServerInterface> JobManagerClientServerStackTest::m_info_stack{};
-std::unique_ptr<sup::protocol::RPCServerInterface> JobManagerClientServerStackTest::m_control_stack{};
+std::unique_ptr<IMainServer> JobManagerClientServerStackTest::m_main_server{};
+
+IServerProtocolFactory& JobManagerClientServerStackTest::GetServerProtocolFactory()
+{
+  static auto factory = utils::CreateEPICSServerProtocolFactory(1);
+  return *factory;
+}
 
 void JobManagerClientServerStackTest::SetUpTestSuite()
 {
-  sup::protocol::ProtocolRPCServerConfig rpc_server_config{};
-  sup::epics::PvAccessRPCServerConfig info_server_config{kTestAutomationServiceName};
-  m_info_stack = sup::epics::CreateEPICSRPCServerStack(
-    info_server_config, rpc_server_config, std::move(m_info_server));
-  auto control_service_name = GetControlServerName(kTestAutomationServiceName);
-  sup::epics::PvAccessRPCServerConfig control_server_config{control_service_name};
-  m_control_stack = sup::epics::CreateEPICSRPCServerStack(
-    control_server_config, rpc_server_config, std::move(m_control_server));
+  m_main_server =
+    GetServerProtocolFactory().CreateMainServer(kTestAutomationServiceName,
+                                                m_forwarding_job_manager);
 }
 
 void JobManagerClientServerStackTest::TearDownTestSuite()
 {
-  m_info_stack.reset();
-  m_control_stack.reset();
+  m_main_server.reset();
 }

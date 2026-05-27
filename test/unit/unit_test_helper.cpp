@@ -339,7 +339,7 @@ TestServerProtocolFactory::TestServerProtocolFactory()
 TestServerProtocolFactory::~TestServerProtocolFactory() = default;
 
 std::unique_ptr<IMainServer> TestServerProtocolFactory::CreateMainServer(
-  const std::string& service_name, AutomationServer& automation_server)
+  const std::string& service_name, IJobManager& job_manager)
 {
   return {};
 }

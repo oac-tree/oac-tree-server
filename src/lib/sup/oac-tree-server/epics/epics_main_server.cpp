@@ -22,7 +22,6 @@
 
 #include "epics_main_server.h"
 
-#include <sup/oac-tree-server/automation_server.h>
 #include <sup/oac-tree-server/control_protocol_server.h>
 #include <sup/oac-tree-server/info_protocol_server.h>
 #include <sup/oac-tree-server/oac_tree_protocol.h>
@@ -35,18 +34,18 @@ namespace oac_tree_server
 {
 
 EPICSMainServer::EPICSMainServer(const std::string& service_name,
-                                 AutomationServer& automation_server)
+                                 IJobManager& job_manager)
   : IMainServer{}
   , m_info_server_stack{}
   , m_control_server_stack{}
 {
   // Instantiate RPC server for obtaining job information
-  auto info_server_protocol = std::make_unique<InfoProtocolServer>(automation_server);
+  auto info_server_protocol = std::make_unique<InfoProtocolServer>(job_manager);
   sup::epics::PvAccessRPCServerConfig info_server_config{service_name};
   m_info_server_stack = sup::epics::CreateEPICSRPCServerStack(
     info_server_config, sup::protocol::ProtocolRPCServerConfig{}, std::move(info_server_protocol));
   // Instantiate RPC server for controlling jobs
-  auto control_server_protocol = std::make_unique<ControlProtocolServer>(automation_server);
+  auto control_server_protocol = std::make_unique<ControlProtocolServer>(job_manager);
   auto control_service_name = GetControlServerName(service_name);
   sup::epics::PvAccessRPCServerConfig control_server_config{control_service_name};
   m_control_server_stack = sup::epics::CreateEPICSRPCServerStack(

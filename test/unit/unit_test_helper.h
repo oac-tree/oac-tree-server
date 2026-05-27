@@ -206,7 +206,7 @@ public:
   ~TestServerProtocolFactory();
 
   std::unique_ptr<IMainServer> CreateMainServer(const std::string& service_name,
-                                                AutomationServer& automation_server) override;
+                                                IJobManager& job_manager) override;
 
   std::unique_ptr<sup::oac_tree::IJobInfoIO> CreateJobInfoIO(
       const std::string& server_prefix, sup::dto::uint32 job_idx, sup::dto::uint32 n_vars) override;

@@ -39,9 +39,9 @@ EPICSServerProtocolFactory::EPICSServerProtocolFactory(sup::dto::uint32 n_manage
 EPICSServerProtocolFactory::~EPICSServerProtocolFactory() = default;
 
 std::unique_ptr<IMainServer> EPICSServerProtocolFactory::CreateMainServer(
-  const std::string& service_name, AutomationServer& automation_server)
+  const std::string& service_name, IJobManager& job_manager)
 {
-  return std::make_unique<EPICSMainServer>(service_name, automation_server);
+  return std::make_unique<EPICSMainServer>(service_name, job_manager);
 }
 
 std::unique_ptr<sup::oac_tree::IJobInfoIO> EPICSServerProtocolFactory::CreateJobInfoIO(

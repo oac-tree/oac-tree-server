@@ -23,14 +23,14 @@
 #ifndef SUP_OAC_TREE_SERVER_I_SERVER_PROTOCOL_FACTORY_H_
 #define SUP_OAC_TREE_SERVER_I_SERVER_PROTOCOL_FACTORY_H_
 
+#include <sup/oac-tree-server/i_job_manager.h>
+
 #include <sup/oac-tree/i_job_info_io.h>
 
 namespace sup
 {
 namespace oac_tree_server
 {
-class AutomationServer;
-
 class IMainServer
 {
 public:
@@ -62,10 +62,10 @@ public:
 
   /**
    * @brief Create a main server that exposes control and information requests for the given
-   * automation server over the network.
+   * job manager over the network.
    */
   virtual std::unique_ptr<IMainServer> CreateMainServer(const std::string& service_name,
-                                                        AutomationServer& automation_server) = 0;
+                                                        IJobManager& job_manager) = 0;
 
   /**
    * @brief Create a JobInfoIO object for the given job index and number of variables. The server
