@@ -32,7 +32,7 @@ namespace sup
 namespace oac_tree_server
 {
 /**
-  * @brief Interface for server protocol factory.
+  * @brief Server protocol factory implementation that uses EPICS as the network backend.
  */
 class EPICSServerProtocolFactory final : public IServerProtocolFactory
 {
