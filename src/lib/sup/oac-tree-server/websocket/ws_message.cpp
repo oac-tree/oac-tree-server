@@ -21,7 +21,9 @@
  ******************************************************************************/
 
 #include <sup/oac-tree-server/ws_message.h>
-#include <sup/oac-tree-server/base/ws_message_json_helpers.h>
+
+#include "ws_message_json_helpers.h"
+
 #include <sup/oac-tree/job_info_utils.h>
 
 #include <sup/dto/anytype_helper.h>

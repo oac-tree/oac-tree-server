@@ -24,7 +24,4 @@ target_sources(oac-tree-server
   output_entry_helper.cpp
   output_entry_types.cpp
   server_job_info_io.cpp
-  ws_message_handler.cpp
-  ws_message_json_helpers.cpp
-  ws_message.cpp
 )

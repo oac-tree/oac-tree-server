@@ -3,6 +3,7 @@ add_library(oac-tree-server::oac-tree-server ALIAS oac-tree-server) # alias for 
 
 add_subdirectory(base)
 add_subdirectory(epics)
+add_subdirectory(websocket)
 
 set_target_properties(oac-tree-server PROPERTIES
   VERSION ${LIBVERSION}

@@ -20,7 +20,7 @@
  * of the distribution package.
  ******************************************************************************/
 
-#include <sup/oac-tree-server/base/ws_message_json_helpers.h>
+#include "ws_message_json_helpers.h"
 
 #include <rapidjson/stringbuffer.h>
 #include <rapidjson/writer.h>
