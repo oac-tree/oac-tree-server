@@ -22,6 +22,8 @@
 
 #include "ws_server_protocol_factory.h"
 
+#include "ws_main_server.h"
+
 #include <sup/oac-tree-server/oac_tree_protocol.h>
 #include <sup/oac-tree-server/server_job_info_io.h>
 
@@ -30,24 +32,21 @@ namespace sup
 namespace oac_tree_server
 {
 
-WSServerProtocolFactory::WSServerProtocolFactory()
+WSServerProtocolFactory::WSServerProtocolFactory(unsigned short port)
   : IServerProtocolFactory{}
+  , m_port{port}
 {}
 
 WSServerProtocolFactory::~WSServerProtocolFactory() = default;
 
-std::unique_ptr<IMainServer> WSServerProtocolFactory::CreateMainServer(
-  const std::string& service_name, IJobManager& job_manager)
+std::unique_ptr<IMainServer> WSServerProtocolFactory::CreateMainServer(IJobManager& job_manager)
 {
-  (void)service_name;
-  (void)job_manager;
-  return {};
+  return std::make_unique<WSMainServer>(m_port, job_manager);
 }
 
 std::unique_ptr<sup::oac_tree::IJobInfoIO> WSServerProtocolFactory::CreateJobInfoIO(
-  const std::string& server_prefix, sup::dto::uint32 job_idx, sup::dto::uint32 n_vars)
+  sup::dto::uint32 job_idx, sup::dto::uint32 n_vars)
 {
-  (void)server_prefix;
   (void)job_idx;
   (void)n_vars;
   return {};

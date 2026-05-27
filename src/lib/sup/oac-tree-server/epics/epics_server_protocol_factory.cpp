@@ -31,23 +31,24 @@ namespace sup
 namespace oac_tree_server
 {
 
-EPICSServerProtocolFactory::EPICSServerProtocolFactory(sup::dto::uint32 n_managers)
+EPICSServerProtocolFactory::EPICSServerProtocolFactory(const std::string& service_name,
+                                                       sup::dto::uint32 n_managers)
   : IServerProtocolFactory{}
+  , m_service_name(service_name)
   , m_av_mgr_registry(n_managers)
 {}
 
 EPICSServerProtocolFactory::~EPICSServerProtocolFactory() = default;
 
-std::unique_ptr<IMainServer> EPICSServerProtocolFactory::CreateMainServer(
-  const std::string& service_name, IJobManager& job_manager)
+std::unique_ptr<IMainServer> EPICSServerProtocolFactory::CreateMainServer(IJobManager& job_manager)
 {
-  return std::make_unique<EPICSMainServer>(service_name, job_manager);
+  return std::make_unique<EPICSMainServer>(m_service_name, job_manager);
 }
 
 std::unique_ptr<sup::oac_tree::IJobInfoIO> EPICSServerProtocolFactory::CreateJobInfoIO(
-  const std::string& server_prefix, sup::dto::uint32 job_idx, sup::dto::uint32 n_vars)
+  sup::dto::uint32 job_idx, sup::dto::uint32 n_vars)
 {
-  const auto job_prefix = CreateJobPrefix(server_prefix, job_idx);
+  const auto job_prefix = CreateJobPrefix(m_service_name, job_idx);
   return std::make_unique<ServerJobInfoIO>(job_prefix, n_vars,
                                            m_av_mgr_registry.GetAnyValueManager(job_idx));
 }

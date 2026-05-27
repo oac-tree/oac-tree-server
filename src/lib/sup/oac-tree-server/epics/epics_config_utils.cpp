@@ -56,9 +56,9 @@ std::unique_ptr<IJobManager> CreateEPICSJobManager(const std::string& server_nam
 }
 
 std::unique_ptr<IServerProtocolFactory> CreateEPICSServerProtocolFactory(
-  sup::dto::uint32 n_managers)
+  const std::string& service_name, sup::dto::uint32 n_managers)
 {
-  return std::make_unique<EPICSServerProtocolFactory>(n_managers);
+  return std::make_unique<EPICSServerProtocolFactory>(service_name, n_managers);
 }
 
 }  // namespace utils

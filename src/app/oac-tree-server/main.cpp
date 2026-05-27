@@ -61,7 +61,8 @@ int main(int argc, char* argv[])
 
   auto proc_list = utils::GetProcedureList(parser);
   auto service_name = parser.GetValue<std::string>("--service");
-  auto server_protocol_factory = utils::CreateEPICSServerProtocolFactory(proc_list.size());
+  auto server_protocol_factory = utils::CreateEPICSServerProtocolFactory(service_name,
+                                                                         proc_list.size());
 
   AutomationServer auto_server{service_name, *server_protocol_factory};
   for (auto& proc : proc_list)
@@ -69,7 +70,7 @@ int main(int argc, char* argv[])
     auto_server.AddJob(std::move(proc));
   }
   // Instantiate main server that will expose the automation server over the network
-  auto main_server = server_protocol_factory->CreateMainServer(service_name, auto_server);
+  auto main_server = server_protocol_factory->CreateMainServer(auto_server);
 
   while(true)
   {

@@ -51,7 +51,7 @@ void AutomationServer::AddJob(std::unique_ptr<sup::oac_tree::Procedure> proc)
   std::lock_guard<std::mutex> lk{m_mtx};
   auto idx = static_cast<dto::uint32>(m_jobs.size());
   auto n_vars = GetNumberOfVariables(*proc);
-  auto job_info_io = m_protocol_factory.CreateJobInfoIO(m_server_prefix, idx, n_vars);
+  auto job_info_io = m_protocol_factory.CreateJobInfoIO(idx, n_vars);
   (void)m_job_info_ios.emplace_back(std::move(job_info_io));
   (void)m_jobs.emplace_back(std::move(proc), *m_job_info_ios.back());
 }

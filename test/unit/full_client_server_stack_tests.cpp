@@ -207,14 +207,13 @@ std::unique_ptr<IMainServer> FullClientServerStackTest::m_main_server{};
 
 IServerProtocolFactory& FullClientServerStackTest::GetServerProtocolFactory()
 {
-  static auto factory = utils::CreateEPICSServerProtocolFactory(1);
+  static auto factory = utils::CreateEPICSServerProtocolFactory(kTestAutomationServiceName, 1);
   return *factory;
 }
 
 void FullClientServerStackTest::SetUpTestSuite()
 {
-  m_main_server =
-    GetServerProtocolFactory().CreateMainServer(kTestAutomationServiceName, m_automation_server);
+  m_main_server = GetServerProtocolFactory().CreateMainServer(m_automation_server);
 
   const auto procedure_string = UnitTestHelper::CreateProcedureString(kWorkspaceSequenceBody);
   auto proc = sup::oac_tree::ParseProcedureString(procedure_string);

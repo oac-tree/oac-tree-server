@@ -35,7 +35,7 @@ namespace oac_tree_server
 class WSServerProtocolFactory final : public IServerProtocolFactory
 {
 public:
-  WSServerProtocolFactory();
+  WSServerProtocolFactory(unsigned short port);
  ~WSServerProtocolFactory() override;
 
   // No copy or move
@@ -44,13 +44,13 @@ public:
   WSServerProtocolFactory& operator=(const WSServerProtocolFactory& other) = delete;
   WSServerProtocolFactory& operator=(WSServerProtocolFactory&& other) = delete;
 
-  std::unique_ptr<IMainServer> CreateMainServer(const std::string& service_name,
-                                                IJobManager& job_manager) override;
+  std::unique_ptr<IMainServer> CreateMainServer(IJobManager& job_manager) override;
 
-  std::unique_ptr<sup::oac_tree::IJobInfoIO> CreateJobInfoIO(
-    const std::string& server_prefix, sup::dto::uint32 job_idx, sup::dto::uint32 n_vars) override;
+  std::unique_ptr<sup::oac_tree::IJobInfoIO> CreateJobInfoIO(sup::dto::uint32 job_idx,
+                                                             sup::dto::uint32 n_vars) override;
 
 private:
+  unsigned short m_port;
 };
 
 }  // namespace oac_tree_server

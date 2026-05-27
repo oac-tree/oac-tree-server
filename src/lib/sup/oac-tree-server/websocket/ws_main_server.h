@@ -25,8 +25,11 @@
 
 #include <sup/oac-tree-server/i_server_protocol_factory.h>
 
+#include <simple-web/server_ws.hpp>
+
 #include <sup/protocol/protocol_factory.h>
 
+#include <future>
 #include <memory>
 
 namespace sup
@@ -41,7 +44,7 @@ namespace oac_tree_server
 class WSMainServer final : public IMainServer
 {
 public:
-  explicit WSMainServer(const std::string& service_name, IJobManager& job_manager);
+  explicit WSMainServer(unsigned short port, IJobManager& job_manager);
   ~WSMainServer();
 
   // No copy or move
@@ -51,6 +54,10 @@ public:
   WSMainServer& operator=(WSMainServer&& other) = delete;
 
 private:
+  using WsServer = SimpleWeb::SocketServer<SimpleWeb::WS>;
+  IJobManager& m_job_manager;
+  WsServer m_server;
+  std::future<void> m_server_thread;
 };
 
 }  // namespace oac_tree_server

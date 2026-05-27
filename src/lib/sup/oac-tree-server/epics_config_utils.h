@@ -42,7 +42,7 @@ std::unique_ptr<IAnyValueIO> CreateEPICSIOClient(IAnyValueManager& av_mgr);
 std::unique_ptr<IJobManager> CreateEPICSJobManager(const std::string& server_name);
 
 std::unique_ptr<IServerProtocolFactory> CreateEPICSServerProtocolFactory(
-  sup::dto::uint32 n_managers);
+  const std::string& service_name, sup::dto::uint32 n_managers);
 
 }  // namespace utils
 

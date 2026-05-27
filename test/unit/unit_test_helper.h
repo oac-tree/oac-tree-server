@@ -202,16 +202,16 @@ private:
 class TestServerProtocolFactory : public IServerProtocolFactory
 {
 public:
-  TestServerProtocolFactory();
+  TestServerProtocolFactory(const std::string& service_name);
   ~TestServerProtocolFactory();
 
-  std::unique_ptr<IMainServer> CreateMainServer(const std::string& service_name,
-                                                IJobManager& job_manager) override;
+  std::unique_ptr<IMainServer> CreateMainServer(IJobManager& job_manager) override;
 
-  std::unique_ptr<sup::oac_tree::IJobInfoIO> CreateJobInfoIO(
-      const std::string& server_prefix, sup::dto::uint32 job_idx, sup::dto::uint32 n_vars) override;
+  std::unique_ptr<sup::oac_tree::IJobInfoIO> CreateJobInfoIO(sup::dto::uint32 job_idx,
+                                                             sup::dto::uint32 n_vars) override;
 
 private:
+  std::string m_service_name;
   TestAnyValueManager m_av_mgr;
 };
 

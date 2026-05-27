@@ -20,7 +20,7 @@ target_include_directories(oac-tree-server SYSTEM PRIVATE
   ${CMAKE_CURRENT_LIST_DIR}/../../thirdparty
 )
 
-target_compile_definitions(oac-tree-server PRIVATE RAPIDJSON_HAS_STDSTRING)
+target_compile_definitions(oac-tree-server PRIVATE RAPIDJSON_HAS_STDSTRING ASIO_STANDALONE)
 
 target_link_libraries(oac-tree-server
   PUBLIC
@@ -29,6 +29,8 @@ target_link_libraries(oac-tree-server
     sup-protocol::sup-protocol
   PRIVATE
     sup-epics::sup-epics
+    Asio::Asio
+    OpenSSL::Crypto
 )
 
 # -- Installation --

@@ -64,16 +64,13 @@ public:
    * @brief Create a main server that exposes control and information requests for the given
    * job manager over the network.
    */
-  virtual std::unique_ptr<IMainServer> CreateMainServer(const std::string& service_name,
-                                                        IJobManager& job_manager) = 0;
+  virtual std::unique_ptr<IMainServer> CreateMainServer(IJobManager& job_manager) = 0;
 
   /**
-   * @brief Create a JobInfoIO object for the given job index and number of variables. The server
-   * prefix is provided to allow the created JobInfoIO to determine the appropriate network
-   * resources to use (e.g. topic names or service names).
+   * @brief Create a JobInfoIO object for the given job index and number of variables.
    */
-  virtual std::unique_ptr<sup::oac_tree::IJobInfoIO> CreateJobInfoIO(
-    const std::string& server_prefix, sup::dto::uint32 job_idx, sup::dto::uint32 n_vars) = 0;
+  virtual std::unique_ptr<sup::oac_tree::IJobInfoIO> CreateJobInfoIO(sup::dto::uint32 job_idx,
+                                                                     sup::dto::uint32 n_vars) = 0;
 
 protected:
   IServerProtocolFactory() = default;

@@ -333,21 +333,21 @@ std::ostream& operator<<(std::ostream& stream, const TestAnyValueManager& server
   return stream;
 }
 
-TestServerProtocolFactory::TestServerProtocolFactory()
+TestServerProtocolFactory::TestServerProtocolFactory(const std::string& service_name)
+    : m_service_name{service_name}
 {}
 
 TestServerProtocolFactory::~TestServerProtocolFactory() = default;
 
-std::unique_ptr<IMainServer> TestServerProtocolFactory::CreateMainServer(
-  const std::string& service_name, IJobManager& job_manager)
+std::unique_ptr<IMainServer> TestServerProtocolFactory::CreateMainServer(IJobManager& job_manager)
 {
   return {};
 }
 
 std::unique_ptr<sup::oac_tree::IJobInfoIO> TestServerProtocolFactory::CreateJobInfoIO(
-    const std::string& server_prefix, sup::dto::uint32 job_idx, sup::dto::uint32 n_vars)
+    sup::dto::uint32 job_idx, sup::dto::uint32 n_vars)
 {
-  const auto job_prefix = CreateJobPrefix(server_prefix, job_idx);
+  const auto job_prefix = CreateJobPrefix(m_service_name, job_idx);
   return std::make_unique<ServerJobInfoIO>(job_prefix, n_vars, m_av_mgr);
 }
 

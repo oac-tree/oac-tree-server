@@ -191,15 +191,13 @@ std::unique_ptr<IMainServer> JobManagerClientServerStackTest::m_main_server{};
 
 IServerProtocolFactory& JobManagerClientServerStackTest::GetServerProtocolFactory()
 {
-  static auto factory = utils::CreateEPICSServerProtocolFactory(1);
+  static auto factory = utils::CreateEPICSServerProtocolFactory(kTestAutomationServiceName, 1);
   return *factory;
 }
 
 void JobManagerClientServerStackTest::SetUpTestSuite()
 {
-  m_main_server =
-    GetServerProtocolFactory().CreateMainServer(kTestAutomationServiceName,
-                                                m_forwarding_job_manager);
+  m_main_server = GetServerProtocolFactory().CreateMainServer(m_forwarding_job_manager);
 }
 
 void JobManagerClientServerStackTest::TearDownTestSuite()
