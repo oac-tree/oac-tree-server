@@ -20,12 +20,9 @@
  * of the distribution package.
  ******************************************************************************/
 
-#include <sup/oac-tree-server/control_protocol_server.h>
 #include <sup/oac-tree-server/epics_config_utils.h>
-#include <sup/oac-tree-server/info_protocol_server.h>
 #include <sup/oac-tree-server/oac_tree_protocol.h>
 
-#include <sup/epics/epics_protocol_factory.h>
 #include <sup/oac-tree/instruction_map.h>
 #include <sup/oac-tree/job_info_utils.h>
 #include <sup/oac-tree/sequence_parser.h>
