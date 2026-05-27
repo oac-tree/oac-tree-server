@@ -23,8 +23,9 @@
 #ifndef SUP_OAC_TREE_SERVER_UNIT_TEST_HELPER_H_
 #define SUP_OAC_TREE_SERVER_UNIT_TEST_HELPER_H_
 
-#include <sup/oac-tree-server/i_anyvalue_manager_registry.h>
+#include <sup/oac-tree-server/i_anyvalue_manager.h>
 #include <sup/oac-tree-server/i_job_manager.h>
+#include <sup/oac-tree-server/i_server_protocol_factory.h>
 
 #include <sup/oac-tree/i_job_info_io.h>
 #include <sup/dto/anyvalue.h>
@@ -198,13 +199,15 @@ private:
   mutable std::condition_variable m_cv;
 };
 
-class TestAnyValueManagerRegistry : public IAnyValueManagerRegistry
+class TestServerProtocolFactory : public IServerProtocolFactory
 {
 public:
-  TestAnyValueManagerRegistry();
-  ~TestAnyValueManagerRegistry();
+  TestServerProtocolFactory();
+  ~TestServerProtocolFactory();
 
-  IAnyValueManager& GetAnyValueManager(sup::dto::uint32 idx) override;
+  std::unique_ptr<sup::oac_tree::IJobInfoIO> CreateJobInfoIO(
+      const std::string& server_prefix, sup::dto::uint32 job_idx, sup::dto::uint32 n_vars) override;
+
 private:
   TestAnyValueManager m_av_mgr;
 };

@@ -64,9 +64,9 @@ int main(int argc, char* argv[])
 
   auto proc_list = utils::GetProcedureList(parser);
   auto service_name = parser.GetValue<std::string>("--service");
-  auto anyvalue_manager_registry = utils::CreateEPICSAnyValueManagerRegistry(proc_list.size());
+  auto server_protocol_factory = utils::CreateEPICSServerProtocolFactory(proc_list.size());
 
-  AutomationServer auto_server{service_name, *anyvalue_manager_registry};
+  AutomationServer auto_server{service_name, *server_protocol_factory};
   for (auto& proc : proc_list)
   {
     auto_server.AddJob(std::move(proc));

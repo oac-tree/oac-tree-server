@@ -49,8 +49,6 @@ class AutomationClientTests : public ::testing::Test
 protected:
   AutomationClientTests() = default;
   virtual ~AutomationClientTests() = default;
-
-  UnitTestHelper::TestAnyValueManagerRegistry m_test_av_mgr_registry;
 };
 
 TEST_F(AutomationClientTests, AutomationClientStackFailure)

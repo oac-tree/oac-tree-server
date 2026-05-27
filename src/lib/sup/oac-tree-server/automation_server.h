@@ -23,7 +23,7 @@
 #ifndef SUP_OAC_TREE_SERVER_AUTOMATION_SERVER_H_
 #define SUP_OAC_TREE_SERVER_AUTOMATION_SERVER_H_
 
-#include <sup/oac-tree-server/i_anyvalue_manager_registry.h>
+#include <sup/oac-tree-server/i_server_protocol_factory.h>
 #include <sup/oac-tree-server/i_job_manager.h>
 
 #include <sup/oac-tree/local_job.h>
@@ -48,7 +48,7 @@ namespace oac_tree_server
 class AutomationServer : public IJobManager
 {
 public:
-  AutomationServer(const std::string& server_prefix, IAnyValueManagerRegistry& av_mgr_registry);
+  AutomationServer(const std::string& server_prefix, IServerProtocolFactory& protocol_factory);
   virtual ~AutomationServer();
 
   void AddJob(std::unique_ptr<sup::oac_tree::Procedure> proc);
@@ -66,7 +66,7 @@ private:
   sup::oac_tree::LocalJob& GetJob(sup::dto::uint32 job_idx);
   const sup::oac_tree::LocalJob& GetJob(sup::dto::uint32 job_idx) const;
   const std::string m_server_prefix;
-  IAnyValueManagerRegistry& m_av_mgr_registry;
+  IServerProtocolFactory& m_protocol_factory;
   std::vector<std::unique_ptr<sup::oac_tree::IJobInfoIO>> m_job_info_ios;
   std::vector<sup::oac_tree::LocalJob> m_jobs;
   mutable std::mutex m_mtx;

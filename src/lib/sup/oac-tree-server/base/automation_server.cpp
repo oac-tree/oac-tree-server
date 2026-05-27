@@ -36,9 +36,9 @@ namespace oac_tree_server
 using sup::oac_tree::LocalJob;
 
 AutomationServer::AutomationServer(const std::string& server_prefix,
-                                   IAnyValueManagerRegistry& av_mgr_registry)
+                                   IServerProtocolFactory& protocol_factory)
   : m_server_prefix{server_prefix}
-  , m_av_mgr_registry{av_mgr_registry}
+  , m_protocol_factory{protocol_factory}
   , m_job_info_ios{}
   , m_jobs{}
   , m_mtx{}
@@ -50,10 +50,8 @@ void AutomationServer::AddJob(std::unique_ptr<sup::oac_tree::Procedure> proc)
 {
   std::lock_guard<std::mutex> lk{m_mtx};
   auto idx = static_cast<dto::uint32>(m_jobs.size());
-  auto job_prefix = CreateJobPrefix(m_server_prefix, idx);
   auto n_vars = GetNumberOfVariables(*proc);
-  auto job_info_io = std::make_unique<ServerJobInfoIO>(job_prefix, n_vars,
-                                                       m_av_mgr_registry.GetAnyValueManager(idx));
+  auto job_info_io = m_protocol_factory.CreateJobInfoIO(m_server_prefix, idx, n_vars);
   (void)m_job_info_ios.emplace_back(std::move(job_info_io));
   (void)m_jobs.emplace_back(std::move(proc), *m_job_info_ios.back());
 }

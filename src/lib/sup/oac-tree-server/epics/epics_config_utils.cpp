@@ -55,13 +55,6 @@ std::unique_ptr<IJobManager> CreateEPICSJobManager(const std::string& server_nam
   return result;
 }
 
-std::unique_ptr<IAnyValueManagerRegistry> CreateEPICSAnyValueManagerRegistry(
-    sup::dto::uint32 n_managers)
-{
-  auto result = std::make_unique<EPICSAnyValueManagerRegistry>(n_managers);
-  return result;
-}
-
 std::unique_ptr<IServerProtocolFactory> CreateEPICSServerProtocolFactory(sup::dto::uint32 n_procs)
 {
   return std::make_unique<EPICSServerProtocolFactory>(n_procs);

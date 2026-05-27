@@ -22,6 +22,9 @@
 
 #include "unit_test_helper.h"
 
+#include <sup/oac-tree-server/oac_tree_protocol.h>
+#include <sup/oac-tree-server/server_job_info_io.h>
+
 #include <sup/dto/anyvalue_helper.h>
 #include <sup/oac-tree/sequence_parser.h>
 
@@ -330,16 +333,16 @@ std::ostream& operator<<(std::ostream& stream, const TestAnyValueManager& server
   return stream;
 }
 
-TestAnyValueManagerRegistry::TestAnyValueManagerRegistry()
-  : m_av_mgr{}
+TestServerProtocolFactory::TestServerProtocolFactory()
 {}
 
-TestAnyValueManagerRegistry::~TestAnyValueManagerRegistry() = default;
+TestServerProtocolFactory::~TestServerProtocolFactory() = default;
 
-IAnyValueManager& TestAnyValueManagerRegistry::GetAnyValueManager(sup::dto::uint32 idx)
+std::unique_ptr<sup::oac_tree::IJobInfoIO> TestServerProtocolFactory::CreateJobInfoIO(
+    const std::string& server_prefix, sup::dto::uint32 job_idx, sup::dto::uint32 n_vars)
 {
-  (void)idx;
-  return m_av_mgr;
+  const auto job_prefix = CreateJobPrefix(server_prefix, job_idx);
+  return std::make_unique<ServerJobInfoIO>(job_prefix, n_vars, m_av_mgr);
 }
 
 std::string CreateProcedureString(const std::string &body)

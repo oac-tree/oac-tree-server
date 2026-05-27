@@ -62,7 +62,7 @@ protected:
   static void SetUpTestSuite();
   static void TearDownTestSuite();
 
-  static IAnyValueManagerRegistry& GetAnyValueManagerRegistry();
+  static IServerProtocolFactory& GetServerProtocolFactory();
 
   static AutomationServer m_automation_server;
   static std::unique_ptr<InfoProtocolServer> m_info_server;
@@ -208,7 +208,7 @@ FullClientServerStackTest::~FullClientServerStackTest()
 }
 
 AutomationServer FullClientServerStackTest::m_automation_server{
-  kTestServerPrefix, FullClientServerStackTest::GetAnyValueManagerRegistry()};
+  kTestServerPrefix, FullClientServerStackTest::GetServerProtocolFactory()};
 std::unique_ptr<InfoProtocolServer> FullClientServerStackTest::m_info_server{
   std::make_unique<InfoProtocolServer>(m_automation_server)};
 std::unique_ptr<ControlProtocolServer> FullClientServerStackTest::m_control_server{
@@ -216,10 +216,10 @@ std::unique_ptr<ControlProtocolServer> FullClientServerStackTest::m_control_serv
 std::unique_ptr<sup::protocol::RPCServerInterface> FullClientServerStackTest::m_info_stack{};
 std::unique_ptr<sup::protocol::RPCServerInterface> FullClientServerStackTest::m_control_stack{};
 
-IAnyValueManagerRegistry& FullClientServerStackTest::GetAnyValueManagerRegistry()
+IServerProtocolFactory& FullClientServerStackTest::GetServerProtocolFactory()
 {
-  static auto registry = utils::CreateEPICSAnyValueManagerRegistry(1);
-  return *registry;
+  static auto factory = utils::CreateEPICSServerProtocolFactory(1);
+  return *factory;
 }
 
 void FullClientServerStackTest::SetUpTestSuite()

@@ -40,14 +40,14 @@ protected:
   AutomationServerTests() = default;
   virtual ~AutomationServerTests() = default;
 
-  UnitTestHelper::TestAnyValueManagerRegistry m_test_av_mgr_registry;
+  UnitTestHelper::TestServerProtocolFactory m_test_server_protocol_factory;
 };
 
 TEST_F(AutomationServerTests, ServerWithoutProcedures)
 {
   using sup::oac_tree::JobCommand;
   const std::string prefix = "AutomationServerTests:Empty";
-  AutomationServer auto_server{prefix, m_test_av_mgr_registry};
+  AutomationServer auto_server{prefix, m_test_server_protocol_factory};
   EXPECT_EQ(auto_server.GetServerPrefix(), prefix);
   EXPECT_EQ(auto_server.GetNumberOfJobs(), 0);
   try {
@@ -65,7 +65,7 @@ TEST_F(AutomationServerTests, ServerWithOneProcedure)
   const auto procedure_string = UnitTestHelper::CreateProcedureString(kLongWaitProcedureBody);
   auto proc = sup::oac_tree::ParseProcedureString(procedure_string);
   ASSERT_NE(proc.get(), nullptr);
-  AutomationServer auto_server{prefix, m_test_av_mgr_registry};
+  AutomationServer auto_server{prefix, m_test_server_protocol_factory};
   auto_server.AddJob(std::move(proc));
   EXPECT_EQ(auto_server.GetServerPrefix(), prefix);
   EXPECT_EQ(auto_server.GetNumberOfJobs(), 1);
@@ -86,7 +86,7 @@ TEST_F(AutomationServerTests, ServerWithTwoProcedures)
   ASSERT_NE(proc_1.get(), nullptr);
   auto proc_2 = sup::oac_tree::ParseProcedureString(procedure_string);
   ASSERT_NE(proc_2.get(), nullptr);
-  AutomationServer auto_server{prefix, m_test_av_mgr_registry};
+  AutomationServer auto_server{prefix, m_test_server_protocol_factory};
   auto_server.AddJob(std::move(proc_1));
   auto_server.AddJob(std::move(proc_2));
   EXPECT_EQ(auto_server.GetServerPrefix(), prefix);

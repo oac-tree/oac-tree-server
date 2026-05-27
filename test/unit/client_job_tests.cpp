@@ -63,7 +63,7 @@ protected:
   static void SetUpTestSuite();
   static void TearDownTestSuite();
 
-  static IAnyValueManagerRegistry& GetAnyValueManagerRegistry();
+  static IServerProtocolFactory& GetServerProtocolFactory();
 
   static AutomationServer m_automation_server;
   static std::unique_ptr<InfoProtocolServer> m_info_server;
@@ -122,7 +122,7 @@ ClientJobTests::~ClientJobTests()
 }
 
 AutomationServer ClientJobTests::m_automation_server{
-  kTestServerPrefix, ClientJobTests::GetAnyValueManagerRegistry()};
+  kTestServerPrefix, ClientJobTests::GetServerProtocolFactory()};
 std::unique_ptr<InfoProtocolServer> ClientJobTests::m_info_server{
   std::make_unique<InfoProtocolServer>(m_automation_server)};
 std::unique_ptr<ControlProtocolServer> ClientJobTests::m_control_server{
@@ -130,10 +130,10 @@ std::unique_ptr<ControlProtocolServer> ClientJobTests::m_control_server{
 std::unique_ptr<sup::protocol::RPCServerInterface> ClientJobTests::m_info_stack{};
 std::unique_ptr<sup::protocol::RPCServerInterface> ClientJobTests::m_control_stack{};
 
-IAnyValueManagerRegistry& ClientJobTests::GetAnyValueManagerRegistry()
+IServerProtocolFactory& ClientJobTests::GetServerProtocolFactory()
 {
-  static auto registry = utils::CreateEPICSAnyValueManagerRegistry(1);
-  return *registry;
+  static auto factory = utils::CreateEPICSServerProtocolFactory(1);
+  return *factory;
 }
 
 void ClientJobTests::SetUpTestSuite()
