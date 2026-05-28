@@ -1,5 +1,6 @@
 target_sources(oac-tree-server
   PRIVATE
+  ws_job_info_io.cpp
   ws_main_server.cpp
   ws_message_handler.cpp
   ws_message_json_helpers.cpp
