@@ -29,6 +29,8 @@ namespace sup
 {
 namespace oac_tree_server
 {
+class WSMainServer;
+
 /**
   * @brief Server protocol factory implementation that uses websockets as the network backend.
  */
@@ -52,9 +54,7 @@ public:
     sup::dto::uint32 job_idx, sup::dto::uint32 n_vars) override;
 
 private:
-  struct Endpoints;
-  unsigned short m_port;
-  std::unique_ptr<Endpoints> m_endpoints;
+  std::unique_ptr<WSMainServer> m_main_server;
 };
 
 }  // namespace oac_tree_server

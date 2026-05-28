@@ -24,6 +24,7 @@
 
 #include "ws_main_server.h"
 
+#include <sup/oac-tree-server/exceptions.h>
 #include <sup/oac-tree-server/oac_tree_protocol.h>
 
 #include <map>
@@ -33,20 +34,9 @@ namespace sup
 namespace oac_tree_server
 {
 
-struct WSServerProtocolFactory::Endpoints
-{
-public:
-  using Endpoint = WSMainServer::WsServer::Endpoint;
-
-  Endpoints() : m_endpoint_map{} {}
-
-  std::map<std::string, Endpoint> m_endpoint_map;
-};
-
 WSServerProtocolFactory::WSServerProtocolFactory(unsigned short port)
   : IServerProtocolFactory{}
-  , m_port{port}
-  , m_endpoints{std::make_unique<Endpoints>()}
+  , m_main_server{std::make_unique<WSMainServer>(port)}
 {}
 
 WSServerProtocolFactory::~WSServerProtocolFactory() = default;
@@ -54,12 +44,18 @@ WSServerProtocolFactory::~WSServerProtocolFactory() = default;
 std::string WSServerProtocolFactory::GetServerId() const
 {
   // TODO: this should return the host IP + the port used for the websocket server:
-  return "WS:";
+  return std::to_string(m_main_server->GetPort());
 }
 
 std::unique_ptr<IMainServer> WSServerProtocolFactory::CreateMainServer(IJobManager& job_manager)
 {
-  return std::make_unique<WSMainServer>(m_port, job_manager);
+  if (!m_main_server)
+  {
+    throw InvalidOperationException("Main server was already created");
+  }
+  m_main_server->AddJobManagerEndpoint(job_manager);
+  m_main_server->Start();
+  return std::move(m_main_server);
 }
 
 std::unique_ptr<sup::oac_tree::IJobInfoIO> WSServerProtocolFactory::CreateJobInfoIO(
@@ -69,6 +65,7 @@ std::unique_ptr<sup::oac_tree::IJobInfoIO> WSServerProtocolFactory::CreateJobInf
   // Then create a WSJobInfoIO that has a reference to this endpoint and can use it to send updates
   // Since it uses its connections to send updates, it doesn't need to be deactivated while the
   // server is not yet running.
+  // Throw when main server was already moved from
   (void)job_idx;
   (void)n_vars;
   return {};

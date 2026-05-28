@@ -27,8 +27,6 @@
 
 #include <simple-web/server_ws.hpp>
 
-#include <sup/protocol/protocol_factory.h>
-
 #include <future>
 #include <memory>
 
@@ -46,7 +44,7 @@ class WSMainServer final : public IMainServer
 public:
   using WsServer = SimpleWeb::SocketServer<SimpleWeb::WS>;
 
-  explicit WSMainServer(unsigned short port, IJobManager& job_manager);
+  explicit WSMainServer(unsigned short port);
   ~WSMainServer();
 
   // No copy or move
@@ -55,11 +53,21 @@ public:
   WSMainServer& operator=(const WSMainServer& other) = delete;
   WSMainServer& operator=(WSMainServer&& other) = delete;
 
+  unsigned short GetPort() const;
+
+  WsServer::Endpoint& AddJobEndpoint(sup::dto::uint32 job_idx);
+
+  void AddJobManagerEndpoint(IJobManager& job_manager);
+
+  void Start();
+
 private:
-  IJobManager& m_job_manager;
   WsServer m_server;
   std::future<void> m_server_thread;
 };
+
+std::string GetJobManagerRegex();
+std::string GetJobRegex(sup::dto::uint32 job_idx);
 
 }  // namespace oac_tree_server
 

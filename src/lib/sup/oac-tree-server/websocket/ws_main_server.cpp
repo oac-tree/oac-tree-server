@@ -22,6 +22,7 @@
 
 #include "ws_main_server.h"
 
+#include <sup/oac-tree-server/exceptions.h>
 #include <sup/oac-tree-server/ws_message_handler.h>
 
 namespace sup
@@ -29,33 +30,53 @@ namespace sup
 namespace oac_tree_server
 {
 
-WSMainServer::WSMainServer(unsigned short port, IJobManager& job_manager)
+WSMainServer::WSMainServer(unsigned short port)
   : IMainServer{}
-  , m_job_manager{job_manager}
   , m_server{}
   , m_server_thread{}
 {
   m_server.config.port = port;
-  auto &endpoint = m_server.endpoint["^/info/?$"];
+}
 
-  endpoint.on_message = [this](std::shared_ptr<WsServer::Connection> connection,
+WSMainServer::~WSMainServer() = default;
+
+unsigned short WSMainServer::GetPort() const
+{
+  return m_server.config.port;
+}
+
+WSMainServer::WsServer::Endpoint& WSMainServer::AddJobEndpoint(sup::dto::uint32 job_idx)
+{
+  auto job_regex = GetJobRegex(job_idx);
+  auto &endpoint = m_server.endpoint[job_regex];
+
+  // Can modify handshake response headers here if needed
+  endpoint.on_handshake = [](std::shared_ptr<WsServer::Connection> /*connection*/,
+                             SimpleWeb::CaseInsensitiveMultimap & /*response_header*/) {
+    return SimpleWeb::StatusCode::information_switching_protocols; // Upgrade to websocket
+  };
+
+  // See http://www.boost.org/doc/libs/1_55_0/doc/html/boost_asio/reference.html, Error Codes for error code meanings
+  endpoint.on_error = [](std::shared_ptr<WsServer::Connection> connection,
+                               const SimpleWeb::error_code &ec) {
+    std::cerr << "Server: Error in connection " << connection.get() << ". "
+              << "Error: " << ec << ", error message: " << ec.message() << std::endl;
+  };
+  return endpoint;
+}
+
+void WSMainServer::AddJobManagerEndpoint(IJobManager& job_manager)
+{
+  auto job_manager_regex = GetJobManagerRegex();
+  auto &endpoint = m_server.endpoint[job_manager_regex];
+
+  endpoint.on_message = [&job_manager](std::shared_ptr<WsServer::Connection> connection,
                                std::shared_ptr<WsServer::InMessage> in_message) {
-    auto out_message = HandleJobManagerMessage(in_message->string(), m_job_manager);
+    auto out_message = HandleJobManagerMessage(in_message->string(), job_manager);
     if (!out_message.empty())
     {
       connection->send(out_message);
     }
-  };
-
-  endpoint.on_open = [](std::shared_ptr<WsServer::Connection> connection) {
-    std::cout << "Server: Opened connection " << connection.get() << std::endl;
-  };
-
-  // See RFC 6455 7.4.1. for status codes
-  endpoint.on_close = [](std::shared_ptr<WsServer::Connection> connection, int status,
-                               const std::string & /*reason*/) {
-    std::cout << "Server: Closed connection " << connection.get() << " with status code "
-              << status << std::endl;
   };
 
   // Can modify handshake response headers here if needed
@@ -67,10 +88,17 @@ WSMainServer::WSMainServer(unsigned short port, IJobManager& job_manager)
   // See http://www.boost.org/doc/libs/1_55_0/doc/html/boost_asio/reference.html, Error Codes for error code meanings
   endpoint.on_error = [](std::shared_ptr<WsServer::Connection> connection,
                                const SimpleWeb::error_code &ec) {
-    std::cout << "Server: Error in connection " << connection.get() << ". "
+    std::cerr << "Server: Error in connection " << connection.get() << ". "
               << "Error: " << ec << ", error message: " << ec.message() << std::endl;
   };
+}
 
+void WSMainServer::Start()
+{
+  if (m_server_thread.valid())
+  {
+    throw InvalidOperationException("Server is already running");
+  }
   // Start server and receive assigned port when server is listening for requests
   std::promise<unsigned short> server_port;
   m_server_thread = std::async(std::launch::async, [this, &server_port]() {
@@ -83,7 +111,15 @@ WSMainServer::WSMainServer(unsigned short port, IJobManager& job_manager)
             << std::endl;
 }
 
-WSMainServer::~WSMainServer() = default;
+std::string GetJobManagerRegex()
+{
+  return "^/info/?$";
+}
+
+std::string GetJobRegex(sup::dto::uint32 job_idx)
+{
+  return "^/job/" + std::to_string(job_idx) + "/?$";
+}
 
 }  // namespace oac_tree_server
 
