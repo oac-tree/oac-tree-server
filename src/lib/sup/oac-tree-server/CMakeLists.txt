@@ -61,7 +61,6 @@ install(FILES
   oac_tree_protocol.h
   output_entry_helper.h
   output_entry_types.h
-  server_job_info_io.h
   ws_message_handler.h
   ws_message.h
   DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/sup/oac-tree-server

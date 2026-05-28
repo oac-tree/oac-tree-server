@@ -21,7 +21,7 @@
  ******************************************************************************/
 
 #include <sup/oac-tree-server/client_anyvalue_manager.h>
-#include <sup/oac-tree-server/server_job_info_io.h>
+#include <sup/oac-tree-server/base/server_job_info_io.h>
 
 #include "unit_test_helper.h"
 

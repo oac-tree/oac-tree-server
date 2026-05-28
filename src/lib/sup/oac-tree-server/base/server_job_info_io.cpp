@@ -20,7 +20,7 @@
  * of the distribution package.
  ******************************************************************************/
 
-#include <sup/oac-tree-server/server_job_info_io.h>
+#include "server_job_info_io.h"
 
 #include <sup/oac-tree-server/anyvalue_io_helper.h>
 #include <sup/oac-tree-server/input_request_helper.h>

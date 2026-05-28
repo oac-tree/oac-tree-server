@@ -37,8 +37,8 @@ namespace oac_tree_server
 {
 using sup::oac_tree::InstructionState;
 
-WSJobInfoIO::WSJobInfoIO(const std::string& job_prefix, sup::dto::uint32 n_vars)
-  : m_job_prefix{job_prefix}
+WSJobInfoIO::WSJobInfoIO(sup::dto::uint32 job_idx, sup::dto::uint32 n_vars)
+  : m_job_idx{job_idx}
   , m_n_vars{n_vars}
   , m_log_idx_gen{}
   , m_msg_idx_gen{}
