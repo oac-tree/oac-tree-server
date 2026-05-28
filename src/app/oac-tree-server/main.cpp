@@ -64,7 +64,7 @@ int main(int argc, char* argv[])
   auto server_protocol_factory = utils::CreateEPICSServerProtocolFactory(service_name,
                                                                          proc_list.size());
 
-  AutomationServer auto_server{service_name, *server_protocol_factory};
+  AutomationServer auto_server{*server_protocol_factory};
   for (auto& proc : proc_list)
   {
     auto_server.AddJob(std::move(proc));

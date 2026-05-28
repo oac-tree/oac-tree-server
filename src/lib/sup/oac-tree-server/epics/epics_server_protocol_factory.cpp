@@ -40,7 +40,13 @@ EPICSServerProtocolFactory::EPICSServerProtocolFactory(const std::string& servic
 
 EPICSServerProtocolFactory::~EPICSServerProtocolFactory() = default;
 
-std::unique_ptr<IMainServer> EPICSServerProtocolFactory::CreateMainServer(IJobManager& job_manager)
+std::string EPICSServerProtocolFactory::GetServerId() const
+{
+  return m_service_name;
+}
+
+std::unique_ptr<IMainServer> EPICSServerProtocolFactory::CreateMainServer(
+  IJobManager& job_manager)
 {
   return std::make_unique<EPICSMainServer>(m_service_name, job_manager);
 }

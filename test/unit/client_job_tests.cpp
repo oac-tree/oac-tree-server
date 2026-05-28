@@ -115,8 +115,7 @@ ClientJobTests::~ClientJobTests()
   m_client_job_manager->SendJobCommand(0, JobCommand::kReset);
 }
 
-AutomationServer ClientJobTests::m_automation_server{
-  kTestServerPrefix, ClientJobTests::GetServerProtocolFactory()};
+AutomationServer ClientJobTests::m_automation_server{ClientJobTests::GetServerProtocolFactory()};
 std::unique_ptr<IMainServer> ClientJobTests::m_main_server{};
 
 IServerProtocolFactory& ClientJobTests::GetServerProtocolFactory()

@@ -39,6 +39,12 @@ WSServerProtocolFactory::WSServerProtocolFactory(unsigned short port)
 
 WSServerProtocolFactory::~WSServerProtocolFactory() = default;
 
+std::string WSServerProtocolFactory::GetServerId() const
+{
+  // TODO: this should return the host IP + the port used for the websocket server:
+  return "WS:";
+}
+
 std::unique_ptr<IMainServer> WSServerProtocolFactory::CreateMainServer(IJobManager& job_manager)
 {
   return std::make_unique<WSMainServer>(m_port, job_manager);

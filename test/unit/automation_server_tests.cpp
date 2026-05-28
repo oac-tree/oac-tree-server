@@ -46,7 +46,7 @@ TEST_F(AutomationServerTests, ServerWithoutProcedures)
   using sup::oac_tree::JobCommand;
   const std::string prefix = "AutomationServerTests:Empty";
   UnitTestHelper::TestServerProtocolFactory test_server_protocol_factory{prefix};
-  AutomationServer auto_server{prefix, test_server_protocol_factory};
+  AutomationServer auto_server{test_server_protocol_factory};
   EXPECT_EQ(auto_server.GetServerPrefix(), prefix);
   EXPECT_EQ(auto_server.GetNumberOfJobs(), 0);
   try {
@@ -65,7 +65,7 @@ TEST_F(AutomationServerTests, ServerWithOneProcedure)
   auto proc = sup::oac_tree::ParseProcedureString(procedure_string);
   ASSERT_NE(proc.get(), nullptr);
   UnitTestHelper::TestServerProtocolFactory test_server_protocol_factory{prefix};
-  AutomationServer auto_server{prefix, test_server_protocol_factory};
+  AutomationServer auto_server{test_server_protocol_factory};
   auto_server.AddJob(std::move(proc));
   EXPECT_EQ(auto_server.GetServerPrefix(), prefix);
   EXPECT_EQ(auto_server.GetNumberOfJobs(), 1);
@@ -87,7 +87,7 @@ TEST_F(AutomationServerTests, ServerWithTwoProcedures)
   auto proc_2 = sup::oac_tree::ParseProcedureString(procedure_string);
   ASSERT_NE(proc_2.get(), nullptr);
   UnitTestHelper::TestServerProtocolFactory test_server_protocol_factory{prefix};
-  AutomationServer auto_server{prefix, test_server_protocol_factory};
+  AutomationServer auto_server{test_server_protocol_factory};
   auto_server.AddJob(std::move(proc_1));
   auto_server.AddJob(std::move(proc_2));
   EXPECT_EQ(auto_server.GetServerPrefix(), prefix);

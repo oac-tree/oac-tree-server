@@ -59,6 +59,11 @@ public:
   IServerProtocolFactory& operator=(const IServerProtocolFactory& other) = delete;
   IServerProtocolFactory& operator=(IServerProtocolFactory&& other) = delete;
 
+  /**
+   * @brief Get the server ID. This ID will uniquely determine how a client can connect to all job
+   * updates and info/control interfaces for a given network protocol.
+   */
+  virtual std::string GetServerId() const = 0;
 
   /**
    * @brief Create a main server that exposes control and information requests for the given
@@ -69,8 +74,8 @@ public:
   /**
    * @brief Create a JobInfoIO object for the given job index and number of variables.
    */
-  virtual std::unique_ptr<sup::oac_tree::IJobInfoIO> CreateJobInfoIO(sup::dto::uint32 job_idx,
-                                                                     sup::dto::uint32 n_vars) = 0;
+  virtual std::unique_ptr<sup::oac_tree::IJobInfoIO> CreateJobInfoIO(
+    sup::dto::uint32 job_idx, sup::dto::uint32 n_vars) = 0;
 
 protected:
   IServerProtocolFactory() = default;

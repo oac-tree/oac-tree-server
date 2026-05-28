@@ -35,10 +35,8 @@ namespace oac_tree_server
 {
 using sup::oac_tree::LocalJob;
 
-AutomationServer::AutomationServer(const std::string& server_prefix,
-                                   IServerProtocolFactory& protocol_factory)
-  : m_server_prefix{server_prefix}
-  , m_protocol_factory{protocol_factory}
+AutomationServer::AutomationServer(IServerProtocolFactory& protocol_factory)
+  : m_protocol_factory{protocol_factory}
   , m_job_info_ios{}
   , m_jobs{}
   , m_mtx{}
@@ -58,7 +56,7 @@ void AutomationServer::AddJob(std::unique_ptr<sup::oac_tree::Procedure> proc)
 
 std::string AutomationServer::GetServerPrefix() const
 {
-  return m_server_prefix;
+  return m_protocol_factory.GetServerId();
 }
 
 sup::dto::uint32 AutomationServer::GetNumberOfJobs() const

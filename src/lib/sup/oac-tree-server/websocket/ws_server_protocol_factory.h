@@ -44,10 +44,12 @@ public:
   WSServerProtocolFactory& operator=(const WSServerProtocolFactory& other) = delete;
   WSServerProtocolFactory& operator=(WSServerProtocolFactory&& other) = delete;
 
+  std::string GetServerId() const override;
+
   std::unique_ptr<IMainServer> CreateMainServer(IJobManager& job_manager) override;
 
-  std::unique_ptr<sup::oac_tree::IJobInfoIO> CreateJobInfoIO(sup::dto::uint32 job_idx,
-                                                             sup::dto::uint32 n_vars) override;
+  std::unique_ptr<sup::oac_tree::IJobInfoIO> CreateJobInfoIO(
+    sup::dto::uint32 job_idx, sup::dto::uint32 n_vars) override;
 
 private:
   unsigned short m_port;

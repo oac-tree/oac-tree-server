@@ -45,7 +45,6 @@ using sup::oac_tree::ExecutionStatus;
 using sup::oac_tree::JobCommand;
 
 const std::string kTestAutomationServiceName = "Test::FullClientServerStack";
-const std::string kTestServerPrefix = "FullStackServerPrefix";
 
 class FullClientServerStackTest : public ::testing::Test
 {
@@ -68,7 +67,7 @@ protected:
 TEST_F(FullClientServerStackTest, ServerInformation)
 {
   // Query information about the server and its job
-  EXPECT_EQ(m_client_job_manager->GetServerPrefix(), kTestServerPrefix);
+  EXPECT_EQ(m_client_job_manager->GetServerPrefix(), kTestAutomationServiceName);
   ASSERT_EQ(m_client_job_manager->GetNumberOfJobs(), 1u);
   sup::dto::uint32 job_id{0};
   auto job_info = m_client_job_manager->GetJobInfo(job_id);
@@ -202,7 +201,7 @@ FullClientServerStackTest::~FullClientServerStackTest()
 }
 
 AutomationServer FullClientServerStackTest::m_automation_server{
-  kTestServerPrefix, FullClientServerStackTest::GetServerProtocolFactory()};
+  FullClientServerStackTest::GetServerProtocolFactory()};
 std::unique_ptr<IMainServer> FullClientServerStackTest::m_main_server{};
 
 IServerProtocolFactory& FullClientServerStackTest::GetServerProtocolFactory()

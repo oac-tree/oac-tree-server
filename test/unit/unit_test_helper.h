@@ -205,6 +205,8 @@ public:
   TestServerProtocolFactory(const std::string& service_name);
   ~TestServerProtocolFactory();
 
+  std::string GetServerId() const override;
+
   std::unique_ptr<IMainServer> CreateMainServer(IJobManager& job_manager) override;
 
   std::unique_ptr<sup::oac_tree::IJobInfoIO> CreateJobInfoIO(sup::dto::uint32 job_idx,

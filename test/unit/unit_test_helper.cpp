@@ -339,6 +339,11 @@ TestServerProtocolFactory::TestServerProtocolFactory(const std::string& service_
 
 TestServerProtocolFactory::~TestServerProtocolFactory() = default;
 
+std::string TestServerProtocolFactory::GetServerId() const
+{
+  return m_service_name;
+}
+
 std::unique_ptr<IMainServer> TestServerProtocolFactory::CreateMainServer(IJobManager& job_manager)
 {
   return {};
