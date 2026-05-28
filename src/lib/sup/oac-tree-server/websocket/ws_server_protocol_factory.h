@@ -52,7 +52,9 @@ public:
     sup::dto::uint32 job_idx, sup::dto::uint32 n_vars) override;
 
 private:
+  struct Endpoints;
   unsigned short m_port;
+  std::unique_ptr<Endpoints> m_endpoints;
 };
 
 }  // namespace oac_tree_server

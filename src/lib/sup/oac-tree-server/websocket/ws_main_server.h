@@ -44,6 +44,8 @@ namespace oac_tree_server
 class WSMainServer final : public IMainServer
 {
 public:
+  using WsServer = SimpleWeb::SocketServer<SimpleWeb::WS>;
+
   explicit WSMainServer(unsigned short port, IJobManager& job_manager);
   ~WSMainServer();
 
@@ -54,7 +56,6 @@ public:
   WSMainServer& operator=(WSMainServer&& other) = delete;
 
 private:
-  using WsServer = SimpleWeb::SocketServer<SimpleWeb::WS>;
   IJobManager& m_job_manager;
   WsServer m_server;
   std::future<void> m_server_thread;
