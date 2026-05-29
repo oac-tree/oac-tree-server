@@ -69,7 +69,7 @@ TEST_F(UpdateMessageHandlerTest, HandleMessage_InstructionStateUpdate)
 {
   InstructionState state{true, ExecutionStatus::SUCCESS};
   EXPECT_CALL(m_mock_io, InstructionStateUpdated(8u, state)).Times(Exactly(1));
-  HandleUpdateMessage(CreateInstructionStateUpdateMessage(8u, true, state), m_mock_io);
+  HandleUpdateMessage(CreateInstructionStateUpdateMessage(8u, state), m_mock_io);
 }
 
 TEST_F(UpdateMessageHandlerTest, HandleMessage_VariableStateUpdate)

@@ -87,8 +87,8 @@ TEST(WsCreateJSONMessageTest, CreateBreakpointInstructionUpdateMessage)
 
 TEST(WsCreateJSONMessageTest, CreateInstructionStateUpdateMessage)
 {
-  sup::oac_tree::InstructionState state{false, sup::oac_tree::ExecutionStatus::SUCCESS};
-  auto json = CreateInstructionStateUpdateMessage(8u, true, state);
+  sup::oac_tree::InstructionState state{true, sup::oac_tree::ExecutionStatus::SUCCESS};
+  auto json = CreateInstructionStateUpdateMessage(8u, state);
   auto doc = ParseJson(json);
 
   ASSERT_FALSE(doc.HasParseError());

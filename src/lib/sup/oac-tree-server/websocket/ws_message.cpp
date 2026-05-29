@@ -77,7 +77,6 @@ std::string CreateBreakpointInstructionUpdateMessage(sup::dto::uint32 instructio
 }
 
 std::string CreateInstructionStateUpdateMessage(sup::dto::uint32 instruction_id,
-                                                bool breakpoint,
                                                 sup::oac_tree::InstructionState state)
 {
   rapidjson::Document doc;
@@ -88,7 +87,8 @@ std::string CreateInstructionStateUpdateMessage(sup::dto::uint32 instruction_id,
                 static_cast<sup::dto::uint32>(UpdateMessageType::kInstructionState),
                 allocator);
   doc.AddMember(rapidjson::StringRef(ws_message_json_keys::kId), instruction_id, allocator);
-  doc.AddMember(rapidjson::StringRef(ws_message_json_keys::kBreakpoint), breakpoint, allocator);
+  doc.AddMember(rapidjson::StringRef(ws_message_json_keys::kBreakpoint),
+                state.m_breakpoint_set, allocator);
   doc.AddMember(rapidjson::StringRef(ws_message_json_keys::kState),
                 static_cast<sup::dto::uint32>(state.m_execution_status),
                 allocator);

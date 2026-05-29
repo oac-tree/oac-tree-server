@@ -22,6 +22,7 @@
 
 #include "ws_server_protocol_factory.h"
 
+#include "ws_job_info_io.h"
 #include "ws_main_server.h"
 
 #include <sup/oac-tree-server/exceptions.h>
@@ -61,14 +62,21 @@ std::unique_ptr<IMainServer> WSServerProtocolFactory::CreateMainServer(IJobManag
 std::unique_ptr<sup::oac_tree::IJobInfoIO> WSServerProtocolFactory::CreateJobInfoIO(
   sup::dto::uint32 job_idx, sup::dto::uint32 n_vars)
 {
-  // TODO: create a WsServer::Endpoint for this job (with regex and currently no special handlers)
-  // Then create a WSJobInfoIO that has a reference to this endpoint and can use it to send updates
-  // Since it uses its connections to send updates, it doesn't need to be deactivated while the
-  // server is not yet running.
-  // Throw when main server was already moved from
-  (void)job_idx;
   (void)n_vars;
-  return {};
+  if (!m_main_server)
+  {
+    throw InvalidOperationException("Main server was already created");
+  }
+  auto& endpoint = m_main_server->AddJobEndpoint(job_idx);
+  auto publisher = [&endpoint](std::string message) {
+    // Send the message to all clients connected to this job's endpoint
+    // Before starting the server, there are no clients connected, so this will just do nothing.
+    for (auto& connection : endpoint.get_connections())
+    {
+      connection->send(message);
+    }
+  };
+  return std::make_unique<WSJobInfoIO>(publisher);
 }
 
 }  // namespace oac_tree_server

@@ -22,14 +22,7 @@
 
 #include "ws_job_info_io.h"
 
-#include <sup/oac-tree-server/anyvalue_io_helper.h>
-#include <sup/oac-tree-server/input_request_helper.h>
-#include <sup/oac-tree-server/output_entry_helper.h>
-#include <sup/oac-tree-server/output_entry_types.h>
-#include <sup/oac-tree-server/oac_tree_protocol.h>
-
-#include <sup/dto/anyvalue_helper.h>
-#include <sup/oac-tree/user_input_reply.h>
+#include <sup/oac-tree-server/ws_message.h>
 
 namespace sup
 {
@@ -37,9 +30,8 @@ namespace oac_tree_server
 {
 using sup::oac_tree::InstructionState;
 
-WSJobInfoIO::WSJobInfoIO(sup::dto::uint32 job_idx, sup::dto::uint32 n_vars)
-  : m_job_idx{job_idx}
-  , m_n_vars{n_vars}
+WSJobInfoIO::WSJobInfoIO(Publisher publisher)
+  : m_publisher{publisher}
   , m_log_idx_gen{}
   , m_msg_idx_gen{}
   , m_out_val_idx_gen{}
@@ -54,32 +46,28 @@ void WSJobInfoIO::InitNumberOfInstructions(sup::dto::uint32 n_instr)
 
 void WSJobInfoIO::InstructionStateUpdated(sup::dto::uint32 instr_idx, InstructionState state)
 {
-  (void)instr_idx;
-  (void)state;
+  m_publisher(CreateInstructionStateUpdateMessage(instr_idx, state));
 }
 
 void WSJobInfoIO::BreakpointInstructionUpdated(sup::dto::uint32 instr_idx)
 {
-  (void)instr_idx;
+  m_publisher(CreateBreakpointInstructionUpdateMessage(instr_idx));
 }
 
 void WSJobInfoIO::VariableUpdated(sup::dto::uint32 var_idx, const sup::dto::AnyValue& value,
-                                      bool connected)
+                                  bool connected)
 {
-  (void)var_idx;
-  (void)value;
-  (void)connected;
+  m_publisher(CreateVariableStateUpdateMessage(var_idx, connected, value));
 }
 
 void WSJobInfoIO::JobStateUpdated(sup::oac_tree::JobState state)
 {
-  (void)state;
+  m_publisher(CreateJobStateUpdateMessage(state));
 }
 
 void WSJobInfoIO::PutValue(const sup::dto::AnyValue& value, const std::string& description)
 {
-  (void)value;
-  (void)description;
+  m_publisher(CreatePutValueUpdateMessage(description, value));
 }
 
 bool WSJobInfoIO::GetUserValue(sup::dto::uint64 id, sup::dto::AnyValue& value,
@@ -107,13 +95,12 @@ void WSJobInfoIO::Interrupt(sup::dto::uint64 id)
 
 void WSJobInfoIO::Message(const std::string& message)
 {
-  (void)message;
+  m_publisher(CreateTextMessageUpdateMessage(message));
 }
 
 void WSJobInfoIO::Log(int severity, const std::string& message)
 {
-  (void)severity;
-  (void)message;
+  m_publisher(CreateLogUpdateMessage(severity, message));
 }
 
 // Procedure ticks are not forwarded over the network!

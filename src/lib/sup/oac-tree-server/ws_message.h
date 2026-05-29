@@ -84,7 +84,6 @@ constexpr auto kEmptyJson = "";
 std::string CreateJobStateUpdateMessage(sup::oac_tree::JobState state);
 std::string CreateBreakpointInstructionUpdateMessage(sup::dto::uint32 instruction_id);
 std::string CreateInstructionStateUpdateMessage(sup::dto::uint32 instruction_id,
-                                                bool breakpoint,
                                                 sup::oac_tree::InstructionState state);
 std::string CreateVariableStateUpdateMessage(sup::dto::uint32 variable_id,
                                              bool connected,

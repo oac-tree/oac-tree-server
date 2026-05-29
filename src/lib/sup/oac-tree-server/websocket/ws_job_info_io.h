@@ -37,7 +37,8 @@ namespace oac_tree_server
 class WSJobInfoIO : public sup::oac_tree::IJobInfoIO
 {
 public:
-  WSJobInfoIO(sup::dto::uint32 job_idx, sup::dto::uint32 n_vars);
+  using Publisher = std::function<void(std::string message)>;
+  WSJobInfoIO(Publisher publisher);
   virtual ~WSJobInfoIO();
 
   void InitNumberOfInstructions(sup::dto::uint32 n_instr) override;
@@ -69,8 +70,7 @@ public:
   void ProcedureTicked() override;
 
 private:
-  const sup::dto::uint32 m_job_idx;
-  const sup::dto::uint32 m_n_vars;
+  Publisher m_publisher;
   IndexGenerator m_log_idx_gen;
   IndexGenerator m_msg_idx_gen;
   IndexGenerator m_out_val_idx_gen;
