@@ -20,8 +20,8 @@
  * of the distribution package.
  ******************************************************************************/
 
-#include <sup/oac-tree-server/ws_message_handler.h>
-#include <sup/oac-tree-server/ws_message.h>
+#include <sup/oac-tree-server/websocket/ws_message_handler.h>
+#include <sup/oac-tree-server/websocket/ws_message.h>
 
 #include <sup/oac-tree/instruction_map.h>
 #include <sup/oac-tree/job_info_utils.h>

@@ -23,7 +23,7 @@
 #include "ws_main_server.h"
 
 #include <sup/oac-tree-server/exceptions.h>
-#include <sup/oac-tree-server/ws_message_handler.h>
+#include <sup/oac-tree-server/websocket/ws_message_handler.h>
 
 namespace sup
 {

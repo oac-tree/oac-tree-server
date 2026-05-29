@@ -20,7 +20,7 @@
  * of the distribution package.
  ******************************************************************************/
 
-#include <sup/oac-tree-server/ws_message.h>
+#include <sup/oac-tree-server/websocket/ws_message.h>
 
 #include "ws_message_json_helpers.h"
 

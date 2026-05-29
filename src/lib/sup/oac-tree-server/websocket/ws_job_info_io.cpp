@@ -22,7 +22,7 @@
 
 #include "ws_job_info_io.h"
 
-#include <sup/oac-tree-server/ws_message.h>
+#include <sup/oac-tree-server/websocket/ws_message.h>
 
 namespace sup
 {
