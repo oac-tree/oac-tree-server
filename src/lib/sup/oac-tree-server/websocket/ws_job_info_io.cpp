@@ -32,9 +32,6 @@ using sup::oac_tree::InstructionState;
 
 WSJobInfoIO::WSJobInfoIO(Publisher publisher)
   : m_publisher{publisher}
-  , m_log_idx_gen{}
-  , m_msg_idx_gen{}
-  , m_out_val_idx_gen{}
 {}
 
 WSJobInfoIO::~WSJobInfoIO() = default;

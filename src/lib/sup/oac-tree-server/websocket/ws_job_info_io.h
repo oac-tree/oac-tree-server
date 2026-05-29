@@ -71,9 +71,6 @@ public:
 
 private:
   Publisher m_publisher;
-  IndexGenerator m_log_idx_gen;
-  IndexGenerator m_msg_idx_gen;
-  IndexGenerator m_out_val_idx_gen;
 };
 
 }  // namespace oac_tree_server
