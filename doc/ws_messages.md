@@ -1,39 +1,21 @@
-# Websocket messages
+# Websocket API for oac-tree automation server
 
 ## General considerations
 
-JSON is probably the best way of encoding messages over websockets, as it is very well supported in Javascript and can also be easily handled in other programming languages.
+The websocket API for the automation server uses different endpoints. For a server, hosted at hostname `<HOST>` and port `<PORT>`, there will be:
 
-This has some implications:
+* A single endpoint `ws://<HOST>:<PORT>/info` that handles:
+  * information queries about the server: how many jobs are hosted at this server and what is the static structure of each job;
+  * messages that control the execution of jobs: start, stop, pause, resume, set breakpoint, etc.
+* For each job, there will be and enpoint `ws://<HOST>:<PORT>/job/<INDEX>`, where `<INDEX>` is the job index, which can be any value between 0 and N-1, with N the number of jobs on the server. This endpoint will be used to monitor the state of the job and clients connecting to this endpoint will receive update messages:
+  * Status updates of job, instructions or variables;
+  * Generic messages to be displayed to the user, e.g. for logging.
 
-Transmission of instruction state updates could be very simple JSON messages, for example:
+All messages passed over the websocket interface will be JSON encoded.
 
-```json
-{
-  "update": 2,
-  "id": 5,
-  "breakpoint": false,
-  "state": 3
-}
-```
+## Server side publishing of job updates
 
-where `"update": 2` denotes that this is an update of instruction status (see further), the `id` field encodes the numeric id of the instruction and `state` is the numeric value of the `ExecutionStatus` enumeration.
-
-Note that this breaks the current API for such updates in `IAnyValueManager`.
-
-The same logic applies for almost all messages that are sent to the client to notify some state update (breakpoint hit, job state, etc.) The only exceptions would be updates that explicitly need to encode an `AnyValue`, e.g. `VariableUpdated`.
-
-## Global server URL
-
-The automation server will be hosted on a URL: `ws://<HOST>:<PORT>`. This endpoint will only be used to get global information about the host, like the list of served procedures with their prefixes.
-
-For each specific procedure, the URL will be `ws://<HOST>:<PORT>/<PREFIX>`, where `<PREFIX>` is the prefix of the procedure.
-
-## Server side publishing of procedure updates
-
-The content for server side publishing of updates related to a single procedure is determined by the member functions in `ServerJobInfoIO`.
-
-All such update messages will be sent to all clients that are connected to the endpoint for the job in question.
+These updates are published on the job-specific endpoint and all update messages will be sent to all clients that are connected to this endpoint.
 
 The `update` field in the message structures will be the integer value of the following enumeration:
 
@@ -41,12 +23,12 @@ The `update` field in the message structures will be the integer value of the fo
 enum class UpdateMessageType
 {
   kJobState = 0,
-  kBreakPoint,
-  kInstructionState,
-  KVariableState,
-  kPutValue,
-  kMessage,
-  kLog,
+  kBreakPoint = 1,
+  kInstructionState = 2,
+  KVariableState = 3,
+  kPutValue = 4,
+  kMessage = 5,
+  kLog = 6,
 };
 ```
 
