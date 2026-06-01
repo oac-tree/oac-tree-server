@@ -147,27 +147,20 @@ where the `severity` field directly encodes the severity level, which closely fo
 
 ## Client side requests
 
-The client side requests correspond to the functionality exposed by the control and info protocol servers.
+Client side requests are handled on the `info` endpoint and are always one-to-one, i.e. the server will reply only to the client requesting that information.
 
-Client messages for getting information about the jobs served are always handled one-to-one, i.e. the server will reply only to the client requesting that information.
+Client messages will contain an integer `request` field that encodes the type of request:
 
-Client messages will contain a message type that encodes the type of request that is made and this will be the integer value of the following enumeration:
+| Value | Request type        |
+|-------|---------------------|
+| 0     | get number of jobs  |
+| 1     | get static job info |
+| 2     | edit breakpoint     |
+| 3     | send job command    |
 
-```c++
-enum class ClientMessageType
-{
-  kGetNumberOfJobs = 0,
-  kGetJobInfo,
-  kEditBreakPoint,
-  kSendCommand
-};
-```
+### Get number of jobs
 
-### GetServerPrefix
-
-This method is not needed for the websocket implementation, as the server URL is all that is needed. Job specific URL are built by adding a path to it.
-
-### GetNumberOfJobs
+This requests the number of jobs that the server is currently managing. This number can then be used to connect to specific endpoints for each of these jobs.
 
 Message to server:
 
@@ -186,7 +179,7 @@ Reply message from the server:
 }
 ```
 
-### GetJobInfo
+### Get static job information
 
 Message to server:
 
@@ -197,18 +190,20 @@ Message to server:
 }
 ```
 
+where `job_index` is the index of the job that is queried.
+
 Reply message from the server:
 
 ```json
 {
   "request": 1,
-  "job_index": 2
+  "job_index": 2,
   "value": <JSON value rep>,
   "type": <JSON type rep>
 }
 ```
 
-As an example, the following procedure
+The `value` and `type` fields are again encoded as in previous cases. However, the exact structure of the static job information is not as unconstrained as for example a variable's value. As an example, the following procedure (as XML)
 
 ```xml
 <?xml version="1.0" encoding="UTF-8"?>
@@ -310,7 +305,7 @@ would produce the following JSON string as its value representation (displayed h
 }
 ```
 
-### EditBreakPoint
+### Edit breakpoint
 
 Message to server:
 
@@ -323,11 +318,11 @@ Message to server:
 }
 ```
 
-where the `instr_id` field encodes the id of the instruction and `active` encodes if the breakpoint should be set (true) or cleared (false).
+where the `instr_id` field encodes the index of the instruction and `active` encodes if the breakpoint should be set (true) or cleared (false).
 
-There is no reply message from the server. The client will receive an update message of the breakpoint if this action was successful.
+There is no reply message from the server. The client will receive an update message of the breakpoint state if this action was successful.
 
-### SendJobCommand
+### Send job command
 
 Message to server:
 
@@ -339,19 +334,15 @@ Message to server:
 }
 ```
 
-where the `command` field is the integer representation of the job command enumeration:
+where the `command` field an integer representing the command:
 
-```c++
-enum class JobCommand
-{
-  kStart = 0,
-  kStep,
-  kPause,
-  kReset,
-  kHalt,
-  kTerminate
-};
-```
+| Value | Command   |
+|-------|-----------|
+| 0     | Start     |
+| 1     | Step      |
+| 2     | Pause     |
+| 3     | Reset     |
+| 4     | Halt      |
 
 Again, there is no reply message from the server. The client will receive an update message for the job status if this command was handled successfully.
 
