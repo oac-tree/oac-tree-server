@@ -13,138 +13,6 @@ The websocket API for the automation server uses different endpoints. For a serv
 
 All messages passed over the websocket interface will be JSON encoded.
 
-## Server side publishing of job updates
-
-These updates are published on the job-specific endpoint and all update messages will be sent to all clients that are connected to this endpoint.
-
-The `update` field in the message structures holds an integer value that describes the type of the update message:
-
-| Value | Message type             |
-|-------|--------------------------|
-| 0     | job state update         |
-| 1     | current breakpoint       |
-| 2     | instruction state update |
-| 3     | variable state update    |
-| 4     | display generic value    |
-| 5     | display message          |
-| 6     | log message              |
-
-The following subsections specify the fields in each of the different types of JSON messages.
-
-### Job state update
-
-```json
-{
-  "update": 0,
-  "state": 3
-}
-```
-
-where the `state` field encodes the updated job state as an integer:
-
-| Value | State     |
-|-------|-----------|
-| 0     | initial   |
-| 1     | paused    |
-| 2     | stepping  |
-| 3     | running   |
-| 4     | succeeded |
-| 5     | failed    |
-| 6     | halted    |
-
-Each job starts out in the `initial` state. When the job is executing only a single instruction (in 'step' mode), the state is `stepping` until that instruction is executed, when the state will be `paused`. `running` indicates the job is executing in continuous mode (so no stepping). The last three states indicate final states of a job, corresponding to successful execution, failure or a job that was halted before finishing.
-
-### Current breakpoint
-
-```json
-{
-  "update": 1,
-  "id": 8
-}
-```
-where the `id` field encodes the index of the instruction that currently hit a breakpoint, or an invalid id if no breakpoint is currently hit. The server uses the maximum value of a 32 bit unsigned integer as the invalid id.
-
-### Instruction state update
-
-```json
-{
-  "update": 2,
-  "id": 5,
-  "breakpoint": false,
-  "state": 3
-}
-```
-
-where the `id` field encodes the index of the instruction that has an updates state. The `breakpoint` field is a boolean that is `true` when there is an active breakpoint set on this instruction. Note that this does not mean that this breakpoint is currently hit, as that information is communicated via a `current breakpoint` message. Finally, the `state` field encodes the current execution state of the instruction as an integer:
-
-| Value | State                            |
-|-------|----------------------------------|
-| 0     | initial/not started              |
-| 1     | started and waiting to be ticked |
-| 2     | running asynchronously           |
-| 3     | finished with success            |
-| 4     | finished with failure            |
-| 5     | halted                           |
-
-### Variable updated
-
-```json
-{
-  "update": 3,
-  "id": 5,
-  "connected": true,
-  "value": <JSON rep>,
-  "type": <JSON rep>
-}
-```
-
-where `id` denotes the index of the variable. The `connected` field is mostly used for network variables to denote if it is currently connected, but can also be used to specify an error condition by setting it to `false`. The `value` field will hold the JSON representation of the updated value without type information. The `type` field is the JSON representation of its type and may be ignored for webapps that just need to show the updated value. Note that both `value` and `type` are just strings that hold a JSON representation.
-
-### Display generic value
-
-```json
-{
-  "update": 4,
-  "description": "Please note this value:",
-  "value": <JSON rep>,
-  "type": <JSON rep>
-}
-```
-
-The `value` and `type` fields are encoded in the same way as for `variable updated`.
-
-### Display message
-
-```json
-{
-  "update": 5,
-  "message": "Hello, there"
-}
-```
-### Log message
-
-```json
-{
-  "update": 6,
-  "severity": 2,
-  "message": "Something went wrong!"
-}
-```
-
-where the `severity` field directly encodes the severity level, which closely follows the syslog severity levels:
-
-| Value | Severity      |
-|-------|---------------|
-| 0     | Emergency     |
-| 1     | Alert         |
-| 2     | Critical      |
-| 3     | Error         |
-| 4     | Warning       |
-| 5     | Notification  |
-| 6     | Informational |
-| 7     | Debug         |
-| 8     | Trace         |
-
 ## Client side requests
 
 Client side requests are handled on the `info` endpoint and are always one-to-one, i.e. the server will reply only to the client requesting that information.
@@ -345,6 +213,138 @@ where the `command` field an integer representing the command:
 | 4     | Halt      |
 
 Again, there is no reply message from the server. The client will receive an update message for the job status if this command was handled successfully.
+
+## Server side publishing of job updates
+
+These updates are published on the job-specific endpoint and all update messages will be sent to all clients that are connected to this endpoint.
+
+The `update` field in the message structures holds an integer value that describes the type of the update message:
+
+| Value | Message type             |
+|-------|--------------------------|
+| 0     | job state update         |
+| 1     | current breakpoint       |
+| 2     | instruction state update |
+| 3     | variable state update    |
+| 4     | display generic value    |
+| 5     | display message          |
+| 6     | log message              |
+
+The following subsections specify the fields in each of the different types of JSON messages.
+
+### Job state update
+
+```json
+{
+  "update": 0,
+  "state": 3
+}
+```
+
+where the `state` field encodes the updated job state as an integer:
+
+| Value | State     |
+|-------|-----------|
+| 0     | initial   |
+| 1     | paused    |
+| 2     | stepping  |
+| 3     | running   |
+| 4     | succeeded |
+| 5     | failed    |
+| 6     | halted    |
+
+Each job starts out in the `initial` state. When the job is executing only a single instruction (in 'step' mode), the state is `stepping` until that instruction is executed, when the state will be `paused`. `running` indicates the job is executing in continuous mode (so no stepping). The last three states indicate final states of a job, corresponding to successful execution, failure or a job that was halted before finishing.
+
+### Current breakpoint
+
+```json
+{
+  "update": 1,
+  "id": 8
+}
+```
+where the `id` field encodes the index of the instruction that currently hit a breakpoint, or an invalid id if no breakpoint is currently hit. The server uses the maximum value of a 32 bit unsigned integer as the invalid id.
+
+### Instruction state update
+
+```json
+{
+  "update": 2,
+  "id": 5,
+  "breakpoint": false,
+  "state": 3
+}
+```
+
+where the `id` field encodes the index of the instruction that has an updates state. The `breakpoint` field is a boolean that is `true` when there is an active breakpoint set on this instruction. Note that this does not mean that this breakpoint is currently hit, as that information is communicated via a `current breakpoint` message. Finally, the `state` field encodes the current execution state of the instruction as an integer:
+
+| Value | State                            |
+|-------|----------------------------------|
+| 0     | initial/not started              |
+| 1     | started and waiting to be ticked |
+| 2     | running asynchronously           |
+| 3     | finished with success            |
+| 4     | finished with failure            |
+| 5     | halted                           |
+
+### Variable updated
+
+```json
+{
+  "update": 3,
+  "id": 5,
+  "connected": true,
+  "value": <JSON rep>,
+  "type": <JSON rep>
+}
+```
+
+where `id` denotes the index of the variable. The `connected` field is mostly used for network variables to denote if it is currently connected, but can also be used to specify an error condition by setting it to `false`. The `value` field will hold the JSON representation of the updated value without type information. The `type` field is the JSON representation of its type and may be ignored for webapps that just need to show the updated value. Note that both `value` and `type` are just strings that hold a JSON representation.
+
+### Display generic value
+
+```json
+{
+  "update": 4,
+  "description": "Please note this value:",
+  "value": <JSON rep>,
+  "type": <JSON rep>
+}
+```
+
+The `value` and `type` fields are encoded in the same way as for `variable updated`.
+
+### Display message
+
+```json
+{
+  "update": 5,
+  "message": "Hello, there"
+}
+```
+### Log message
+
+```json
+{
+  "update": 6,
+  "severity": 2,
+  "message": "Something went wrong!"
+}
+```
+
+where the `severity` field directly encodes the severity level, which closely follows the syslog severity levels:
+
+| Value | Severity      |
+|-------|---------------|
+| 0     | Emergency     |
+| 1     | Alert         |
+| 2     | Critical      |
+| 3     | Error         |
+| 4     | Warning       |
+| 5     | Notification  |
+| 6     | Informational |
+| 7     | Debug         |
+| 8     | Trace         |
 
 ## Open issues
 
