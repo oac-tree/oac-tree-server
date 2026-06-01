@@ -17,26 +17,21 @@ All messages passed over the websocket interface will be JSON encoded.
 
 These updates are published on the job-specific endpoint and all update messages will be sent to all clients that are connected to this endpoint.
 
-The `update` field in the message structures will be the integer value of the following enumeration:
+The `update` field in the message structures holds an integer value that describes the type of the update message:
 
-```c++
-enum class UpdateMessageType
-{
-  kJobState = 0,
-  kBreakPoint = 1,
-  kInstructionState = 2,
-  KVariableState = 3,
-  kPutValue = 4,
-  kMessage = 5,
-  kLog = 6,
-};
-```
+| Value | Message type             |
+|-------|--------------------------|
+| 0     | job state update         |
+| 1     | current breakpoint       |
+| 2     | instruction state update |
+| 3     | variable state update    |
+| 4     | display generic value    |
+| 5     | display message          |
+| 6     | log message              |
 
-The following subsections specify how each of the member functions of `ServerJobInfoIO` is encoded in a JSON message.
+The following subsections specify the fields in each of the different types of JSON messages.
 
-Note that `InitNumberOfInstructions` and `ProcedureTicked` do not need to send any messages to the client, so we can safely ignore these here.
-
-### JobStateUpdated
+### Job state update
 
 ```json
 {
@@ -45,9 +40,21 @@ Note that `InitNumberOfInstructions` and `ProcedureTicked` do not need to send a
 }
 ```
 
-where the `state` field encodes the `JobState` enumeration as an integer.
+where the `state` field encodes the updated job state as an integer:
 
-### BreakpointInstructionUpdated
+| Value | State     |
+|-------|-----------|
+| 0     | initial   |
+| 1     | paused    |
+| 2     | stepping  |
+| 3     | running   |
+| 4     | succeeded |
+| 5     | failed    |
+| 6     | halted    |
+
+Each job starts out in the `initial` state. When the job is executing only a single instruction (in 'step' mode), the state is `stepping` until that instruction is executed, when the state will be `paused`. `running` indicates the job is executing in continuous mode (so no stepping). The last three states indicate final states of a job, corresponding to successful execution, failure or a job that was halted before finishing.
+
+### Current breakpoint
 
 ```json
 {
@@ -55,11 +62,9 @@ where the `state` field encodes the `JobState` enumeration as an integer.
   "id": 8
 }
 ```
-where the `id` field encodes the index of the instruction that currently hit a breakpoint, or `std::numeric_limits<sup::dto::uint32>::max()` if no breakpoint is hit.
+where the `id` field encodes the index of the instruction that currently hit a breakpoint, or an invalid id if no breakpoint is currently hit. The server uses the maximum value of a 32 bit unsigned integer as the invalid id.
 
-### InstructionStateUpdated
-
-The message structure for instruction state updates was alread mentioned above, but is repeated here for convenience:
+### Instruction state update
 
 ```json
 {
@@ -70,7 +75,18 @@ The message structure for instruction state updates was alread mentioned above, 
 }
 ```
 
-### VariableUpdated
+where the `id` field encodes the index of the instruction that has an updates state. The `breakpoint` field is a boolean that is `true` when there is an active breakpoint set on this instruction. Note that this does not mean that this breakpoint is currently hit, as that information is communicated via a `current breakpoint` message. Finally, the `state` field encodes the current execution state of the instruction as an integer:
+
+| Value | State                            |
+|-------|----------------------------------|
+| 0     | initial/not started              |
+| 1     | started and waiting to be ticked |
+| 2     | running asynchronously           |
+| 3     | finished with success            |
+| 4     | finished with failure            |
+| 5     | halted                           |
+
+### Variable updated
 
 ```json
 {
@@ -82,9 +98,9 @@ The message structure for instruction state updates was alread mentioned above, 
 }
 ```
 
-where `id` denotes the numeric id of the variable. The `value` field will hold the JSON representation of the updated value without type information. The `type` field is the JSON representation of its type and may be ignored for webapps that just need to show the updated value.
+where `id` denotes the index of the variable. The `connected` field is mostly used for network variables to denote if it is currently connected, but can also be used to specify an error condition by setting it to `false`. The `value` field will hold the JSON representation of the updated value without type information. The `type` field is the JSON representation of its type and may be ignored for webapps that just need to show the updated value. Note that both `value` and `type` are just strings that hold a JSON representation.
 
-### PutValue
+### Display generic value
 
 ```json
 {
@@ -95,9 +111,9 @@ where `id` denotes the numeric id of the variable. The `value` field will hold t
 }
 ```
 
-The `value` and `type` fields are encoded in the same way as for `VariableUpdated`.
+The `value` and `type` fields are encoded in the same way as for `variable updated`.
 
-### Message
+### Display message
 
 ```json
 {
@@ -105,7 +121,7 @@ The `value` and `type` fields are encoded in the same way as for `VariableUpdate
   "message": "Hello, there"
 }
 ```
-### Log
+### Log message
 
 ```json
 {
@@ -115,11 +131,19 @@ The `value` and `type` fields are encoded in the same way as for `VariableUpdate
 }
 ```
 
-where the `severity` field directly encodes the integer severity level.
+where the `severity` field directly encodes the severity level, which closely follows the syslog severity levels:
 
-### User input
-
-`GetUserValue`, `GetUserChoice` and `Interrupt` are all related to providing a mechanism for user input. This will be delayed to a further stage of the implementation.
+| Value | Severity      |
+|-------|---------------|
+| 0     | Emergency     |
+| 1     | Alert         |
+| 2     | Critical      |
+| 3     | Error         |
+| 4     | Warning       |
+| 5     | Notification  |
+| 6     | Informational |
+| 7     | Debug         |
+| 8     | Trace         |
 
 ## Client side requests
 
