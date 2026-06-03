@@ -34,6 +34,27 @@ const std::string kAutoServerName = "CTRL-SUP-AUTO:TEST-SERVER";
 
 sup::oac_tree::IJobInfoIO& GetMyJobInfoIO();
 
+void alternative()
+{
+  // EPICS client manager
+  auto client_manager = utils::CreateEPICSClientProtocolManager(kAutoServerName);
+  auto n_jobs = GetNumberOfJobs(*client_manager);
+
+  // Create a client job.
+  auto& my_job_info_io = GetMyJobInfoIO();
+  auto job_0 = client_manager->CreateJob(0, my_job_info_io);
+
+  // Get instruction and variable info and start job 0.
+  const auto& job_info = job_0->GetInfo();
+  job_0->Start();
+
+  // wait 10s
+  std::this_thread::sleep_for(std::chrono::seconds(10));
+
+  // Halt job 0
+  job_0->Halt();
+}
+
 int main(int argc, char* argv[])
 {
   // EPICS automation job manager:

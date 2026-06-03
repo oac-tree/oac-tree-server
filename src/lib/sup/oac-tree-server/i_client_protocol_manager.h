@@ -60,6 +60,11 @@ protected:
   IClientProtocolManager() = default;
 };
 
+/**
+ * @brief Get the number of jobs managed by the IClientProtocolManager object.
+ */
+sup::dto::uint32 GetNumberOfJobs(IClientProtocolManager& client_manager);
+
 }  // namespace oac_tree_server
 
 }  // namespace sup

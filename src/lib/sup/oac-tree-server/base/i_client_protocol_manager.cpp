@@ -29,6 +29,11 @@ namespace oac_tree_server
 
 IClientProtocolManager::~IClientProtocolManager() = default;
 
+sup::dto::uint32 GetNumberOfJobs(IClientProtocolManager& client_manager)
+{
+  return client_manager.GetJobManager().GetNumberOfJobs();
+}
+
 }  // namespace oac_tree_server
 
 }  // namespace sup

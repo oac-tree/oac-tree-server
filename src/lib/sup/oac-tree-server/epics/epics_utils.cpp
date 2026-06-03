@@ -21,6 +21,7 @@
  ******************************************************************************/
 
 #include "epics_io_client.h"
+#include "epics_client_protocol_manager.h"
 #include "epics_server_protocol_factory.h"
 
 #include <sup/oac-tree-server/epics_utils.h>
@@ -59,6 +60,12 @@ std::unique_ptr<IServerProtocolFactory> CreateEPICSServerProtocolFactory(
   const std::string& service_name, sup::dto::uint32 n_managers)
 {
   return std::make_unique<EPICSServerProtocolFactory>(service_name, n_managers);
+}
+
+std::unique_ptr<IClientProtocolManager> CreateEPICSClientProtocolManager(
+  const std::string& service_name)
+{
+  return std::make_unique<EPICSClientProtocolManager>(service_name);
 }
 
 }  // namespace utils

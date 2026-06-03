@@ -22,7 +22,9 @@
 
 #include "epics_client_protocol_manager.h"
 
+#include <sup/oac-tree-server/client_job.h>
 #include <sup/oac-tree-server/epics_utils.h>
+#include <sup/oac-tree-server/exceptions.h>
 
 namespace sup
 {
@@ -45,9 +47,17 @@ IJobManager& EPICSClientProtocolManager::GetJobManager()
 std::unique_ptr<sup::oac_tree::IJob> EPICSClientProtocolManager::CreateJob(
   sup::dto::uint32 job_idx, sup::oac_tree::IJobInfoIO &job_info_io)
 {
-  (void)job_idx;
-  (void)job_info_io;
-  return {};
+  std::unique_ptr<sup::oac_tree::IJob> result{};
+  try
+  {
+    result = std::make_unique<ClientJob>(*m_job_manager, job_idx,
+                                         utils::CreateEPICSIOClient, job_info_io);
+  }
+  catch(const MessageException& e)
+  {
+    // ignore
+  }
+  return result;
 }
 
 }  // namespace oac_tree_server
