@@ -22,6 +22,9 @@
 
 #include "utils.h"
 
+#include <sup/oac-tree-server/epics_utils.h>
+#include <sup/oac-tree-server/ws_utils.h>
+
 #include <sup/oac-tree/sequence_parser.h>
 
 #include <filesystem>
@@ -73,6 +76,23 @@ ProcedureList GetProcedureList(sup::cli::CommandLineParser& parser)
     result.emplace_back(sup::oac_tree::ParseProcedureFile(filename));
   }
   return result;
+}
+
+std::unique_ptr<IServerProtocolFactory> CreateServerProtocolFactory(
+  sup::cli::CommandLineParser& parser, std::size_t n_jobs)
+{
+  if (parser.IsSet("--port")) {
+    auto port = parser.GetValue<unsigned short>("--port");
+    return utils::CreateWSServerProtocolFactory(port);
+  }
+  else if (parser.IsSet("--service")) {
+    auto service_name = parser.GetValue<std::string>("--service");
+    return utils::CreateEPICSServerProtocolFactory(service_name, n_jobs);
+  }
+  else
+  {
+    return{};
+  }
 }
 
 }  // namespace utils

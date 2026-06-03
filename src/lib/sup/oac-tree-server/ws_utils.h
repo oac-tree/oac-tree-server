@@ -23,12 +23,9 @@
 #ifndef SUP_OAC_TREE_SERVER_WS_UTILS_H_
 #define SUP_OAC_TREE_SERVER_WS_UTILS_H_
 
-#include <sup/oac-tree-server/i_anyvalue_io.h>
-#include <sup/oac-tree-server/i_job_manager.h>
 #include <sup/oac-tree-server/i_server_protocol_factory.h>
 
 #include <memory>
-#include <string>
 
 namespace sup
 {

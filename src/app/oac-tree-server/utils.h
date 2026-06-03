@@ -23,6 +23,8 @@
 #ifndef SUP_OAC_TREE_SERVER_SUP_AUTOMATION_SERVER_UTILS_H_
 #define SUP_OAC_TREE_SERVER_SUP_AUTOMATION_SERVER_UTILS_H_
 
+#include <sup/oac-tree-server/i_server_protocol_factory.h>
+
 #include <sup/cli/command_line_parser.h>
 #include <sup/oac-tree/procedure.h>
 
@@ -39,6 +41,9 @@ using ProcedureList = std::vector<std::unique_ptr<sup::oac_tree::Procedure>>;
 std::vector<std::string> GetProcedureFilenames(sup::cli::CommandLineParser& parser);
 
 ProcedureList GetProcedureList(sup::cli::CommandLineParser& parser);
+
+std::unique_ptr<IServerProtocolFactory> CreateServerProtocolFactory(
+  sup::cli::CommandLineParser& parser, std::size_t n_jobs);
 
 }  // namespace utils
 

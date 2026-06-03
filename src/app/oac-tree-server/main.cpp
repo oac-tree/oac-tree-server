@@ -23,8 +23,6 @@
 #include "utils.h"
 
 #include <sup/oac-tree-server/automation_server.h>
-#include <sup/oac-tree-server/oac_tree_protocol.h>
-#include <sup/oac-tree-server/epics_utils.h>
 
 #include <sup/cli/command_line_parser.h>
 
@@ -39,13 +37,18 @@ int main(int argc, char* argv[])
   sup::cli::CommandLineParser parser;
   parser.SetDescription(
       /*header*/ "",
-      "The program launches a oac-tree server with the provided procedures.");
+      "The program launches a oac-tree server with the provided procedures.\n\n"
+      "Users have to provide either a service name for the EPICS protocol or a\n"
+      "port number for the web socket protocol");
   parser.AddHelpOption();
 
-  parser.AddOption({"-s", "--service"}, "Name of the automation server")
+  parser.AddOption({"-s", "--service"}, "Service name for EPICS server")
       .SetParameter(true)
-      .SetValueName("service_name")
-      .SetRequired(true);
+      .SetValueName("service_name");
+
+  parser.AddOption({"-p", "--port"}, "Port to use for web socket server")
+      .SetParameter(true)
+      .SetValueName("port");
 
   parser.AddOption({"-d", "--dir"}, "Directory containing files with xml extension to be parsed and run")
       .SetParameter(true)
@@ -60,9 +63,12 @@ int main(int argc, char* argv[])
   }
 
   auto proc_list = utils::GetProcedureList(parser);
-  auto service_name = parser.GetValue<std::string>("--service");
-  auto server_protocol_factory = utils::CreateEPICSServerProtocolFactory(service_name,
-                                                                         proc_list.size());
+  auto server_protocol_factory = utils::CreateServerProtocolFactory(parser, proc_list.size());
+  if (!server_protocol_factory)
+  {
+    std::cout << parser.GetUsageString();
+    return 0;
+  }
 
   AutomationServer auto_server{*server_protocol_factory};
   for (auto& proc : proc_list)
