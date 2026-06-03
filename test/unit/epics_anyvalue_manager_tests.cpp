@@ -21,7 +21,7 @@
  ******************************************************************************/
 
 #include <sup/oac-tree-server/epics/epics_anyvalue_manager.h>
-#include <sup/oac-tree-server/oac_tree_protocol.h>
+#include <sup/oac-tree-server/base/oac_tree_protocol.h>
 
 #include <sup/epics/pv_access_client_pv.h>
 

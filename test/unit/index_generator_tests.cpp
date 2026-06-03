@@ -20,7 +20,7 @@
  * of the distribution package.
  ******************************************************************************/
 
-#include <sup/oac-tree-server/index_generator.h>
+#include <sup/oac-tree-server/base/index_generator.h>
 
 #include <gtest/gtest.h>
 

@@ -22,7 +22,7 @@
 
 #include "anyvalue_io_helper.h"
 
-#include <sup/oac-tree-server/oac_tree_protocol.h>
+#include "oac_tree_protocol.h"
 
 namespace sup
 {

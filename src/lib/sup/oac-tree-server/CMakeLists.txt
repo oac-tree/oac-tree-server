@@ -38,20 +38,15 @@ install(TARGETS oac-tree-server EXPORT oac-tree-server-targets LIBRARY DESTINATI
 
 install(FILES
   automation_server.h
-  client_reply_delegator.h
   epics_utils.h
   exceptions.h
   i_client_protocol_manager.h
   i_job_manager.h
   i_server_protocol_factory.h
-  index_generator.h
   input_protocol_client.h
   input_protocol_server.h
   input_reply_helper.h
   input_request_helper.h
   input_request_server.h
-  oac_tree_protocol.h
-  output_entry_helper.h
-  output_entry_types.h
   DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/sup/oac-tree-server
 )

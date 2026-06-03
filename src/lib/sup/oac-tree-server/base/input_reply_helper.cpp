@@ -23,7 +23,8 @@
 #include <sup/oac-tree-server/input_reply_helper.h>
 
 #include <sup/oac-tree-server/exceptions.h>
-#include <sup/oac-tree-server/oac_tree_protocol.h>
+#include "oac_tree_protocol.h"
+
 
 #include <sup/dto/anytype_helper.h>
 #include <sup/dto/anyvalue_helper.h>

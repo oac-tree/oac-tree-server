@@ -20,7 +20,7 @@
  * of the distribution package.
  ******************************************************************************/
 
-#include <sup/oac-tree-server/output_entry_types.h>
+#include "output_entry_types.h"
 
 namespace sup
 {

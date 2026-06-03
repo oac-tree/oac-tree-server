@@ -25,8 +25,8 @@
 #include "epics_input_client.h"
 
 #include <sup/oac-tree-server/base/i_anyvalue_manager.h>
-#include <sup/oac-tree-server/client_reply_delegator.h>
-#include <sup/oac-tree-server/oac_tree_protocol.h>
+#include <sup/oac-tree-server/base/client_reply_delegator.h>
+#include <sup/oac-tree-server/base/oac_tree_protocol.h>
 
 #include <sup/epics/pv_access_client_pv.h>
 #include <sup/oac-tree/user_input_request.h>

@@ -23,7 +23,7 @@
 #include <sup/oac-tree-server/automation_server.h>
 #include <sup/oac-tree-server/base/client_job.h>
 #include <sup/oac-tree-server/epics_utils.h>
-#include <sup/oac-tree-server/oac_tree_protocol.h>
+#include <sup/oac-tree-server/base/oac_tree_protocol.h>
 
 #include <sup/oac-tree/instruction_map.h>
 #include <sup/oac-tree/job_info_utils.h>

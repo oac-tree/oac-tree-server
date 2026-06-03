@@ -22,7 +22,7 @@
 
 #include "client_anyvalue_manager.h"
 
-#include <sup/oac-tree-server/output_entry_helper.h>
+#include "output_entry_helper.h"
 #include <sup/oac-tree-server/output_entry_types.h>
 
 #include <sup/oac-tree/anyvalue_utils.h>

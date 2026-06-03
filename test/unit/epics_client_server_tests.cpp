@@ -24,7 +24,7 @@
 
 #include <sup/oac-tree-server/base/anyvalue_io_helper.h>
 #include <sup/oac-tree-server/input_protocol_client.h>
-#include <sup/oac-tree-server/oac_tree_protocol.h>
+#include <sup/oac-tree-server/base/oac_tree_protocol.h>
 
 #include <sup/oac-tree-server/epics/epics_anyvalue_manager.h>
 #include <sup/oac-tree-server/epics/epics_io_client.h>

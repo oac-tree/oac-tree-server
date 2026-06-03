@@ -24,8 +24,7 @@
 #define SUP_OAC_TREE_SERVER_SERVER_JOB_INFO_IO_H_
 
 #include "i_anyvalue_manager.h"
-
-#include <sup/oac-tree-server/index_generator.h>
+#include "index_generator.h"
 
 #include <sup/oac-tree/i_job_info_io.h>
 

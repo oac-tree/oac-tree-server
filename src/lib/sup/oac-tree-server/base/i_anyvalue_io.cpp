@@ -22,7 +22,8 @@
 
 #include "i_anyvalue_io.h"
 
-#include <sup/oac-tree-server/oac_tree_protocol.h>
+#include "oac_tree_protocol.h"
+
 
 #include <sup/oac-tree/constants.h>
 #include <sup/oac-tree/i_job_info_io.h>

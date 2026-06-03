@@ -21,7 +21,7 @@
  ******************************************************************************/
 
 #include <sup/oac-tree-server/input_request_helper.h>
-#include <sup/oac-tree-server/oac_tree_protocol.h>
+#include <sup/oac-tree-server/base/oac_tree_protocol.h>
 
 #include <gtest/gtest.h>
 

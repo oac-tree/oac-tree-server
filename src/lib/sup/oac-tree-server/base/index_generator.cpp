@@ -20,7 +20,7 @@
  * of the distribution package.
  ******************************************************************************/
 
-#include <sup/oac-tree-server/index_generator.h>
+#include "index_generator.h"
 
 namespace sup
 {

@@ -26,7 +26,6 @@
 #include "ws_main_server.h"
 
 #include <sup/oac-tree-server/exceptions.h>
-#include <sup/oac-tree-server/oac_tree_protocol.h>
 
 #include <map>
 

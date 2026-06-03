@@ -23,7 +23,8 @@
 #include "unit_test_helper.h"
 
 #include <sup/oac-tree-server/base/control_protocol_server.h>
-#include <sup/oac-tree-server/oac_tree_protocol.h>
+#include <sup/oac-tree-server/base/oac_tree_protocol.h>
+
 #include <sup/oac-tree/instruction_map.h>
 #include <sup/oac-tree/job_info_utils.h>
 #include <sup/oac-tree/sequence_parser.h>

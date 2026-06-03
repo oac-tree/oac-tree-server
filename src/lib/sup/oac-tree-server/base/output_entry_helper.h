@@ -23,7 +23,7 @@
 #ifndef SUP_OAC_TREE_SERVER_OUTPUT_ENTRY_HELPER_H_
 #define SUP_OAC_TREE_SERVER_OUTPUT_ENTRY_HELPER_H_
 
-#include <sup/oac-tree-server/output_entry_types.h>
+#include "output_entry_types.h"
 
 #include <utility>
 

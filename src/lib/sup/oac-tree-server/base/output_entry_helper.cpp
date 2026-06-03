@@ -20,8 +20,10 @@
  * of the distribution package.
  ******************************************************************************/
 
-#include <sup/oac-tree-server/output_entry_helper.h>
-#include <sup/oac-tree-server/oac_tree_protocol.h>
+#include "output_entry_helper.h"
+
+#include "oac_tree_protocol.h"
+
 #include <sup/oac-tree-server/exceptions.h>
 
 #include <sup/oac-tree/anyvalue_utils.h>

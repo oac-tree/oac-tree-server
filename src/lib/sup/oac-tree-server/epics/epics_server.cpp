@@ -23,7 +23,7 @@
 #include "epics_server.h"
 
 #include <sup/oac-tree-server/exceptions.h>
-#include <sup/oac-tree-server/oac_tree_protocol.h>
+#include <sup/oac-tree-server/base/oac_tree_protocol.h>
 
 #include <sup/epics/pv_access_server.h>
 

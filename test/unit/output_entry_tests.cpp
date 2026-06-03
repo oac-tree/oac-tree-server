@@ -20,9 +20,9 @@
  * of the distribution package.
  ******************************************************************************/
 
-#include <sup/oac-tree-server/output_entry_helper.h>
-#include <sup/oac-tree-server/output_entry_types.h>
-#include <sup/oac-tree-server/oac_tree_protocol.h>
+#include <sup/oac-tree-server/base/output_entry_helper.h>
+#include <sup/oac-tree-server/base/output_entry_types.h>
+#include <sup/oac-tree-server/base/oac_tree_protocol.h>
 
 #include <gtest/gtest.h>
 

@@ -22,7 +22,8 @@
 
 #include "control_protocol_server.h"
 
-#include <sup/oac-tree-server/oac_tree_protocol.h>
+#include "oac_tree_protocol.h"
+
 
 #include <sup/protocol/function_protocol_extract.h>
 #include <sup/protocol/protocol_rpc.h>

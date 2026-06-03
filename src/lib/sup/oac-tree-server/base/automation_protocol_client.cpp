@@ -23,7 +23,8 @@
 #include "automation_protocol_client.h"
 
 #include <sup/oac-tree-server/exceptions.h>
-#include <sup/oac-tree-server/oac_tree_protocol.h>
+#include "oac_tree_protocol.h"
+
 
 #include <sup/protocol/function_protocol.h>
 #include <sup/protocol/function_protocol_extract.h>

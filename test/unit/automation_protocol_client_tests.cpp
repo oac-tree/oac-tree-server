@@ -22,7 +22,8 @@
 
 #include <sup/oac-tree-server/base/automation_protocol_client.h>
 #include <sup/oac-tree-server/exceptions.h>
-#include <sup/oac-tree-server/oac_tree_protocol.h>
+#include <sup/oac-tree-server/base/oac_tree_protocol.h>
+
 #include <sup/oac-tree/exceptions.h>
 #include <sup/protocol/function_protocol_pack.h>
 #include <sup/protocol/protocol.h>

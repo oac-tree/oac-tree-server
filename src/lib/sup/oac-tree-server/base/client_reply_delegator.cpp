@@ -20,7 +20,7 @@
  * of the distribution package.
  ******************************************************************************/
 
-#include <sup/oac-tree-server/client_reply_delegator.h>
+#include "client_reply_delegator.h"
 
 #include <algorithm>
 

@@ -24,7 +24,7 @@
 
 #include <sup/oac-tree-server/automation_server.h>
 #include <sup/oac-tree-server/exceptions.h>
-#include <sup/oac-tree-server/oac_tree_protocol.h>
+#include <sup/oac-tree-server/base/oac_tree_protocol.h>
 
 #include <sup/oac-tree/sequence_parser.h>
 
