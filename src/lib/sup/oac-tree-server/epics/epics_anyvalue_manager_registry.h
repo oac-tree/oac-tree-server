@@ -23,7 +23,7 @@
 #ifndef SUP_OAC_TREE_SERVER_EPICS_ANYVALUE_MANAGER_REGISTRY_H_
 #define SUP_OAC_TREE_SERVER_EPICS_ANYVALUE_MANAGER_REGISTRY_H_
 
-#include <sup/oac-tree-server/i_anyvalue_manager.h>
+#include <sup/oac-tree-server/base/i_anyvalue_manager.h>
 
 namespace sup
 {

@@ -20,7 +20,8 @@
  * of the distribution package.
  ******************************************************************************/
 
-#include <sup/oac-tree-server/i_anyvalue_io.h>
+#include "i_anyvalue_io.h"
+
 #include <sup/oac-tree-server/oac_tree_protocol.h>
 
 #include <sup/oac-tree/constants.h>

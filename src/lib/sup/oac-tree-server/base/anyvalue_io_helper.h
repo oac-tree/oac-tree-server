@@ -23,7 +23,7 @@
 #ifndef SUP_OAC_TREE_SERVER_ANYVALUE_IO_HELPER_H_
 #define SUP_OAC_TREE_SERVER_ANYVALUE_IO_HELPER_H_
 
-#include <sup/oac-tree-server/i_anyvalue_io.h>
+#include "i_anyvalue_io.h"
 
 namespace sup
 {

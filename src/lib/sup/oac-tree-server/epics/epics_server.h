@@ -25,7 +25,7 @@
 
 #include "anyvalue_update_queue.h"
 
-#include <sup/oac-tree-server/i_anyvalue_manager.h>
+#include <sup/oac-tree-server/base/i_anyvalue_manager.h>
 
 #include <future>
 

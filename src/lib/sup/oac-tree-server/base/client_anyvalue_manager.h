@@ -23,7 +23,8 @@
 #ifndef SUP_OAC_TREE_SERVER_CLIENT_ANYVALUE_MANAGER_H_
 #define SUP_OAC_TREE_SERVER_CLIENT_ANYVALUE_MANAGER_H_
 
-#include <sup/oac-tree-server/i_anyvalue_manager.h>
+#include "i_anyvalue_manager.h"
+
 #include <sup/oac-tree-server/oac_tree_protocol.h>
 
 #include <sup/oac-tree/i_job_info_io.h>

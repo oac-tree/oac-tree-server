@@ -22,7 +22,7 @@
 
 #include "epics_client_protocol_manager.h"
 
-#include <sup/oac-tree-server/client_job.h>
+#include <sup/oac-tree-server/base/client_job.h>
 #include <sup/oac-tree-server/epics_utils.h>
 #include <sup/oac-tree-server/exceptions.h>
 

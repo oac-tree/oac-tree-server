@@ -23,7 +23,8 @@
 #ifndef SUP_OAC_TREE_SERVER_I_CLIENT_JOB_H_
 #define SUP_OAC_TREE_SERVER_I_CLIENT_JOB_H_
 
-#include <sup/oac-tree-server/i_anyvalue_io.h>
+#include "i_anyvalue_io.h"
+
 #include <sup/oac-tree-server/i_job_manager.h>
 
 #include <sup/oac-tree/i_job.h>

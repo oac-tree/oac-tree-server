@@ -23,7 +23,7 @@
 #ifndef SUP_OAC_TREE_SERVER_UNIT_TEST_HELPER_H_
 #define SUP_OAC_TREE_SERVER_UNIT_TEST_HELPER_H_
 
-#include <sup/oac-tree-server/i_anyvalue_manager.h>
+#include <sup/oac-tree-server/base/i_anyvalue_manager.h>
 #include <sup/oac-tree-server/i_job_manager.h>
 #include <sup/oac-tree-server/i_server_protocol_factory.h>
 

@@ -38,13 +38,9 @@ install(TARGETS oac-tree-server EXPORT oac-tree-server-targets LIBRARY DESTINATI
 
 install(FILES
   automation_server.h
-  client_anyvalue_manager.h
-  client_job.h
   client_reply_delegator.h
   epics_utils.h
   exceptions.h
-  i_anyvalue_io.h
-  i_anyvalue_manager.h
   i_client_protocol_manager.h
   i_job_manager.h
   i_server_protocol_factory.h

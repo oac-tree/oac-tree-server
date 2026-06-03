@@ -20,7 +20,7 @@
  * of the distribution package.
  ******************************************************************************/
 
-#include <sup/oac-tree-server/client_anyvalue_manager.h>
+#include "client_anyvalue_manager.h"
 
 #include <sup/oac-tree-server/output_entry_helper.h>
 #include <sup/oac-tree-server/output_entry_types.h>

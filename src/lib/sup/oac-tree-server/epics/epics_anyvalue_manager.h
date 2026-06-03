@@ -23,7 +23,7 @@
 #ifndef SUP_OAC_TREE_SERVEREPICS_ANYVALUE_MANAGER_H_
 #define SUP_OAC_TREE_SERVEREPICS_ANYVALUE_MANAGER_H_
 
-#include <sup/oac-tree-server/i_anyvalue_manager.h>
+#include <sup/oac-tree-server/base/i_anyvalue_manager.h>
 
 #include <map>
 #include <memory>

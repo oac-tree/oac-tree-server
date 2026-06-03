@@ -20,7 +20,7 @@
  * of the distribution package.
  ******************************************************************************/
 
-#include <sup/oac-tree-server/i_anyvalue_manager.h>
+#include "i_anyvalue_manager.h"
 
 namespace sup
 {
