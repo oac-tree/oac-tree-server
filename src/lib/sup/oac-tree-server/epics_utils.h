@@ -20,8 +20,8 @@
  * of the distribution package.
  ******************************************************************************/
 
-#ifndef SUP_OAC_TREE_SERVER_EPICS_CLIENT_UTILS_H_
-#define SUP_OAC_TREE_SERVER_EPICS_CLIENT_UTILS_H_
+#ifndef SUP_OAC_TREE_SERVER_EPICS_UTILS_H_
+#define SUP_OAC_TREE_SERVER_EPICS_UTILS_H_
 
 #include <sup/oac-tree-server/i_anyvalue_io.h>
 #include <sup/oac-tree-server/i_job_manager.h>
@@ -50,4 +50,4 @@ std::unique_ptr<IServerProtocolFactory> CreateEPICSServerProtocolFactory(
 
 }  // namespace sup
 
-#endif  // SUP_OAC_TREE_SERVER_EPICS_CLIENT_UTILS_H_
+#endif  // SUP_OAC_TREE_SERVER_EPICS_UTILS_H_

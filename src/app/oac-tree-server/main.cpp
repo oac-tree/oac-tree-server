@@ -24,7 +24,7 @@
 
 #include <sup/oac-tree-server/automation_server.h>
 #include <sup/oac-tree-server/oac_tree_protocol.h>
-#include <sup/oac-tree-server/epics_config_utils.h>
+#include <sup/oac-tree-server/epics_utils.h>
 
 #include <sup/cli/command_line_parser.h>
 

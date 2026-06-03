@@ -21,7 +21,7 @@
  ******************************************************************************/
 
 #include <sup/oac-tree-server/client_job.h>
-#include <sup/oac-tree-server/epics_config_utils.h>
+#include <sup/oac-tree-server/epics_utils.h>
 
 #include <sup/protocol/protocol_rpc_client.h>
 

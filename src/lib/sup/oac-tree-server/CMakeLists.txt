@@ -45,7 +45,7 @@ install(FILES
   client_job.h
   client_reply_delegator.h
   control_protocol_server.h
-  epics_config_utils.h
+  epics_utils.h
   exceptions.h
   i_anyvalue_io.h
   i_anyvalue_manager.h

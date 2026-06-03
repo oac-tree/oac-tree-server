@@ -23,7 +23,7 @@
 #include "epics_io_client.h"
 #include "epics_server_protocol_factory.h"
 
-#include <sup/oac-tree-server/epics_config_utils.h>
+#include <sup/oac-tree-server/epics_utils.h>
 
 #include <sup/oac-tree-server/automation_client_stack.h>
 #include <sup/oac-tree-server/epics/epics_anyvalue_manager_registry.h>
