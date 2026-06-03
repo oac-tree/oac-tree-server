@@ -6,4 +6,5 @@ target_sources(oac-tree-server
   ws_message_json_helpers.cpp
   ws_message.cpp
   ws_server_protocol_factory.cpp
+  ws_utils.cpp
 )
