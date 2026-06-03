@@ -20,7 +20,7 @@
  * of the distribution package.
  ******************************************************************************/
 
-#include <sup/oac-tree-server/automation_protocol_client.h>
+#include "automation_protocol_client.h"
 
 #include <sup/oac-tree-server/exceptions.h>
 #include <sup/oac-tree-server/oac_tree_protocol.h>

@@ -22,7 +22,7 @@
 
 #include "unit_test_helper.h"
 
-#include <sup/oac-tree-server/anyvalue_io_helper.h>
+#include <sup/oac-tree-server/base/anyvalue_io_helper.h>
 #include <sup/oac-tree-server/input_protocol_client.h>
 #include <sup/oac-tree-server/oac_tree_protocol.h>
 

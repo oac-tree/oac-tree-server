@@ -22,7 +22,8 @@
 
 #include "server_job_info_io.h"
 
-#include <sup/oac-tree-server/anyvalue_io_helper.h>
+#include "anyvalue_io_helper.h"
+
 #include <sup/oac-tree-server/input_request_helper.h>
 #include <sup/oac-tree-server/output_entry_helper.h>
 #include <sup/oac-tree-server/output_entry_types.h>

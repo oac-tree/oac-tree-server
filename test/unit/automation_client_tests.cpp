@@ -22,12 +22,12 @@
 
 #include "unit_test_helper.h"
 
-#include <sup/oac-tree-server/automation_client_stack.h>
+#include <sup/oac-tree-server/base/automation_client_stack.h>
 #include <sup/oac-tree-server/exceptions.h>
 #include <sup/oac-tree-server/oac_tree_protocol.h>
-#include <sup/oac-tree-server/automation_protocol_client.h>
-#include <sup/oac-tree-server/control_protocol_server.h>
-#include <sup/oac-tree-server/info_protocol_server.h>
+#include <sup/oac-tree-server/base/automation_protocol_client.h>
+#include <sup/oac-tree-server/base/control_protocol_server.h>
+#include <sup/oac-tree-server/base/info_protocol_server.h>
 
 #include <sup/oac-tree/sequence_parser.h>
 

@@ -37,14 +37,10 @@ target_link_libraries(oac-tree-server
 install(TARGETS oac-tree-server EXPORT oac-tree-server-targets LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR})
 
 install(FILES
-  anyvalue_io_helper.h
-  automation_client_stack.h
-  automation_protocol_client.h
   automation_server.h
   client_anyvalue_manager.h
   client_job.h
   client_reply_delegator.h
-  control_protocol_server.h
   epics_utils.h
   exceptions.h
   i_anyvalue_io.h
@@ -53,7 +49,6 @@ install(FILES
   i_job_manager.h
   i_server_protocol_factory.h
   index_generator.h
-  info_protocol_server.h
   input_protocol_client.h
   input_protocol_server.h
   input_reply_helper.h

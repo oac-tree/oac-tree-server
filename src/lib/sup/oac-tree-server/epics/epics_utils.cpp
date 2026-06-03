@@ -26,7 +26,7 @@
 
 #include <sup/oac-tree-server/epics_utils.h>
 
-#include <sup/oac-tree-server/automation_client_stack.h>
+#include <sup/oac-tree-server/base/automation_client_stack.h>
 #include <sup/oac-tree-server/epics/epics_anyvalue_manager_registry.h>
 #include <sup/oac-tree-server/oac_tree_protocol.h>
 #include <sup/epics/epics_protocol_factory.h>

@@ -20,9 +20,10 @@
  * of the distribution package.
  ******************************************************************************/
 
-#include <sup/oac-tree-server/automation_client_stack.h>
+#include "automation_client_stack.h"
 
-#include <sup/oac-tree-server/automation_protocol_client.h>
+#include "automation_protocol_client.h"
+
 #include <sup/oac-tree-server/exceptions.h>
 
 #include <sup/protocol/protocol_rpc_client.h>

@@ -20,7 +20,7 @@
  * of the distribution package.
  ******************************************************************************/
 
-#include <sup/oac-tree-server/info_protocol_server.h>
+#include "info_protocol_server.h"
 
 #include <sup/oac-tree-server/oac_tree_protocol.h>
 

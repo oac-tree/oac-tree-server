@@ -22,8 +22,8 @@
 
 #include "epics_main_server.h"
 
-#include <sup/oac-tree-server/control_protocol_server.h>
-#include <sup/oac-tree-server/info_protocol_server.h>
+#include <sup/oac-tree-server/base/control_protocol_server.h>
+#include <sup/oac-tree-server/base/info_protocol_server.h>
 #include <sup/oac-tree-server/oac_tree_protocol.h>
 
 #include <sup/epics/epics_protocol_factory.h>
