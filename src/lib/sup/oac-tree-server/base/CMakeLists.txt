@@ -3,7 +3,6 @@ target_sources(oac-tree-server
   anyvalue_io_helper.cpp
   automation_client_stack.cpp
   automation_protocol_client.cpp
-  info_protocol_server.cpp
   automation_server.cpp
   client_anyvalue_manager.cpp
   client_job.cpp
@@ -12,9 +11,11 @@ target_sources(oac-tree-server
   exceptions.cpp
   i_anyvalue_io.cpp
   i_anyvalue_manager.cpp
+  i_client_protocol_manager.cpp
   i_job_manager.cpp
   i_server_protocol_factory.cpp
   index_generator.cpp
+  info_protocol_server.cpp
   input_protocol_client.cpp
   input_protocol_server.cpp
   input_reply_helper.cpp

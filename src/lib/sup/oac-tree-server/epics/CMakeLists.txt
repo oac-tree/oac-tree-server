@@ -2,13 +2,14 @@ target_sources(oac-tree-server
   PRIVATE
   anyvalue_update_command.cpp
   anyvalue_update_queue.cpp
-  epics_utils.cpp
+  epics_anyvalue_manager_registry.cpp
+  epics_anyvalue_manager.cpp
+  epics_client_protocol_manager.cpp
+  epics_input_client.cpp
+  epics_input_server.cpp
   epics_io_client.cpp
   epics_main_server.cpp
   epics_server_protocol_factory.cpp
-  epics_anyvalue_manager_registry.cpp
-  epics_anyvalue_manager.cpp
-  epics_input_client.cpp
-  epics_input_server.cpp
   epics_server.cpp
+  epics_utils.cpp
 )

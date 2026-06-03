@@ -49,6 +49,7 @@ install(FILES
   exceptions.h
   i_anyvalue_io.h
   i_anyvalue_manager.h
+  i_client_protocol_manager.h
   i_job_manager.h
   i_server_protocol_factory.h
   index_generator.h
