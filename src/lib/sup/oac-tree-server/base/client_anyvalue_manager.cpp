@@ -23,7 +23,7 @@
 #include "client_anyvalue_manager.h"
 
 #include "output_entry_helper.h"
-#include <sup/oac-tree-server/output_entry_types.h>
+#include "output_entry_types.h"
 
 #include <sup/oac-tree/anyvalue_utils.h>
 #include <sup/oac-tree/user_input_reply.h>
