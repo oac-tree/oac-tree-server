@@ -21,6 +21,7 @@
  ******************************************************************************/
 
 #include "ws_client_job_manager.h"
+#include "ws_job_manager.h"
 
 #include <sup/oac-tree-server/exceptions.h>
 
@@ -76,10 +77,7 @@ std::unique_ptr<sup::oac_tree::IJob> WSClientJobManager::CreateJob(
 
 std::unique_ptr<IJobManager> CreateWSJobManager(const std::string& host_name, unsigned short port)
 {
-  // TODO: implement
-  (void)host_name;
-  (void)port;
-  return {};
+  return std::make_unique<WSJobManager>(host_name, port);
 }
 
 }  // namespace oac_tree_server

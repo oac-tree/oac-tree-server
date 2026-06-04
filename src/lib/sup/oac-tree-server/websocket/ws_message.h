@@ -80,6 +80,12 @@ constexpr auto kEmptyJson = "";
 
 }  // namespace ws_message_json_keys
 
+namespace endpoints
+{
+constexpr auto kJobManagerEndpoint = "/info";
+constexpr auto kJobEndpointPrefix = "/job/";
+}
+
 // Factory functions for creating JSON messages for job specific updates from server to client.
 std::string CreateJobStateUpdateMessage(sup::oac_tree::JobState state);
 std::string CreateBreakpointInstructionUpdateMessage(sup::dto::uint32 instruction_id);

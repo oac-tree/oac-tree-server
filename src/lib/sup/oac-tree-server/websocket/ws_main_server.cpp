@@ -22,6 +22,8 @@
 
 #include "ws_main_server.h"
 
+#include "ws_message.h"
+
 #include <sup/oac-tree-server/exceptions.h>
 #include <sup/oac-tree-server/websocket/ws_message_handler.h>
 
@@ -29,6 +31,10 @@ namespace sup
 {
 namespace oac_tree_server
 {
+namespace
+{
+std::string CreateEndpointRegex(const std::string& endpoint);
+}  // unnamed namespace
 
 WSMainServer::WSMainServer(unsigned short port)
   : IMainServer{}
@@ -113,13 +119,21 @@ void WSMainServer::Start()
 
 std::string GetJobManagerRegex()
 {
-  return "^/info/?$";
+  return CreateEndpointRegex(endpoints::kJobManagerEndpoint);
 }
 
 std::string GetJobRegex(sup::dto::uint32 job_idx)
 {
-  return "^/job/" + std::to_string(job_idx) + "/?$";
+  return CreateEndpointRegex(std::string(endpoints::kJobEndpointPrefix) + std::to_string(job_idx));
 }
+
+namespace
+{
+std::string CreateEndpointRegex(const std::string& endpoint)
+{
+  return "^" + endpoint + "/?$";
+}
+}  // unnamed namespace
 
 }  // namespace oac_tree_server
 

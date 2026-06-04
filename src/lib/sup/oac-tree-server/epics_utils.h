@@ -23,8 +23,8 @@
 #ifndef SUP_OAC_TREE_SERVER_EPICS_UTILS_H_
 #define SUP_OAC_TREE_SERVER_EPICS_UTILS_H_
 
-#include <sup/oac-tree-server/i_server_protocol_factory.h>
 #include <sup/oac-tree-server/i_client_job_manager.h>
+#include <sup/oac-tree-server/i_server_protocol_factory.h>
 
 #include <memory>
 #include <string>

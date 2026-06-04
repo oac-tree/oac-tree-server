@@ -20,6 +20,7 @@
  * of the distribution package.
  ******************************************************************************/
 
+#include "ws_client_job_manager.h"
 #include "ws_server_protocol_factory.h"
 
 #include <sup/oac-tree-server/ws_utils.h>
@@ -34,6 +35,12 @@ namespace utils
 std::unique_ptr<IServerProtocolFactory> CreateWSServerProtocolFactory(unsigned short port)
 {
   return std::make_unique<WSServerProtocolFactory>(port);
+}
+
+std::unique_ptr<IClientJobManager> CreateWSClientProtocolManager(
+  const std::string& host_name, unsigned short port)
+{
+  return std::make_unique<WSClientJobManager>(host_name, port);
 }
 
 }  // namespace utils

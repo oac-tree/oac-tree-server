@@ -23,9 +23,11 @@
 #ifndef SUP_OAC_TREE_SERVER_WS_UTILS_H_
 #define SUP_OAC_TREE_SERVER_WS_UTILS_H_
 
+#include <sup/oac-tree-server/i_client_job_manager.h>
 #include <sup/oac-tree-server/i_server_protocol_factory.h>
 
 #include <memory>
+#include <string>
 
 namespace sup
 {
@@ -35,6 +37,9 @@ namespace utils
 {
 
 std::unique_ptr<IServerProtocolFactory> CreateWSServerProtocolFactory(unsigned short port);
+
+std::unique_ptr<IClientJobManager> CreateWSClientProtocolManager(
+  const std::string& host_name, unsigned short port);
 
 }  // namespace utils
 
