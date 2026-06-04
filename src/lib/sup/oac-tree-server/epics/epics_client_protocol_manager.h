@@ -25,6 +25,9 @@
 
 #include <sup/oac-tree-server/i_client_protocol_manager.h>
 
+#include <sup/oac-tree-server/base/i_anyvalue_io.h>
+#include <sup/oac-tree-server/base/i_anyvalue_manager.h>
+
 #include <memory>
 
 namespace sup
@@ -55,6 +58,10 @@ private:
   std::string m_service_name;
   std::unique_ptr<IJobManager> m_job_manager;
 };
+
+std::unique_ptr<IJobManager> CreateEPICSJobManager(const std::string& server_name);
+
+std::unique_ptr<IAnyValueIO> CreateEPICSIOClient(IAnyValueManager& av_mgr);
 
 }  // namespace oac_tree_server
 

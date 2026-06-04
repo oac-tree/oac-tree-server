@@ -93,7 +93,8 @@ protected:
 
   using StrictMockJobManager = ::testing::StrictMock<UnitTestHelper::MockJobManager>;
   StrictMockJobManager m_job_manager;
-  std::unique_ptr<IJobManager> m_client_job_manager;
+  std::unique_ptr<IClientProtocolManager> m_client_mgr;
+  IJobManager* m_client_job_manager;
 
   static void SetUpTestSuite();
   static void TearDownTestSuite();
@@ -176,7 +177,8 @@ TEST_F(JobManagerClientServerStackTest, SendJobCommand)
 
 JobManagerClientServerStackTest::JobManagerClientServerStackTest()
   : m_job_manager{}
-  , m_client_job_manager{utils::CreateEPICSJobManager(kTestAutomationServiceName)}
+  , m_client_mgr{utils::CreateEPICSClientProtocolManager(kTestAutomationServiceName)}
+  , m_client_job_manager{std::addressof(m_client_mgr->GetJobManager())}
 {
   m_forwarding_job_manager.SetJobManager(std::addressof(m_job_manager));
 }

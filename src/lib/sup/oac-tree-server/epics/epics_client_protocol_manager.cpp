@@ -22,9 +22,15 @@
 
 #include "epics_client_protocol_manager.h"
 
-#include <sup/oac-tree-server/base/client_job.h>
-#include <sup/oac-tree-server/epics_utils.h>
+#include "epics_io_client.h"
+
 #include <sup/oac-tree-server/exceptions.h>
+
+#include <sup/oac-tree-server/base/automation_client_stack.h>
+#include <sup/oac-tree-server/base/client_job.h>
+#include <sup/oac-tree-server/base/oac_tree_protocol.h>
+
+#include <sup/epics/epics_protocol_factory.h>
 
 namespace sup
 {
@@ -34,7 +40,7 @@ namespace oac_tree_server
 EPICSClientProtocolManager::EPICSClientProtocolManager(const std::string& service_name)
   : IClientProtocolManager{}
   , m_service_name(service_name)
-  , m_job_manager{utils::CreateEPICSJobManager(service_name)}
+  , m_job_manager{CreateEPICSJobManager(service_name)}
 {}
 
 EPICSClientProtocolManager::~EPICSClientProtocolManager() = default;
@@ -51,13 +57,31 @@ std::unique_ptr<sup::oac_tree::IJob> EPICSClientProtocolManager::CreateJob(
   try
   {
     result = std::make_unique<ClientJob>(*m_job_manager, job_idx,
-                                         utils::CreateEPICSIOClient, job_info_io);
+                                         CreateEPICSIOClient, job_info_io);
   }
   catch(const MessageException& e)
   {
     // ignore
   }
   return result;
+}
+
+std::unique_ptr<IJobManager> CreateEPICSJobManager(const std::string& server_name)
+{
+  sup::protocol::ProtocolRPCClientConfig protocol_config{};
+  auto info_config = sup::epics::GetDefaultRPCClientConfig(server_name);
+  auto info_protocol = sup::epics::CreateEPICSRPCClientStack(info_config, protocol_config);
+  auto control_server_name = GetControlServerName(server_name);
+  auto control_config = sup::epics::GetDefaultRPCClientConfig(control_server_name);
+  auto control_protocol = sup::epics::CreateEPICSRPCClientStack(control_config, protocol_config);
+  auto result = std::make_unique<AutomationClientStack>(std::move(info_protocol),
+                                                        std::move(control_protocol));
+  return result;
+}
+
+std::unique_ptr<IAnyValueIO> CreateEPICSIOClient(IAnyValueManager& av_mgr)
+{
+  return std::make_unique<EPICSIOClient>(av_mgr);
 }
 
 }  // namespace oac_tree_server

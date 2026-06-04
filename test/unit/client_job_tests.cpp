@@ -23,7 +23,6 @@
 #include <sup/oac-tree-server/automation_server.h>
 #include <sup/oac-tree-server/base/client_job.h>
 #include <sup/oac-tree-server/epics_utils.h>
-#include <sup/oac-tree-server/base/oac_tree_protocol.h>
 
 #include <sup/oac-tree-server/exceptions.h>
 
@@ -56,7 +55,7 @@ protected:
   virtual ~ClientJobTests();
 
   UnitTestHelper::TestJobInfoIO m_job_info_io;
-  std::unique_ptr<IJobManager> m_client_job_manager;
+  std::unique_ptr<IClientProtocolManager> m_client_mgr;
 
   static void SetUpTestSuite();
   static void TearDownTestSuite();
@@ -69,17 +68,16 @@ protected:
 
 TEST_F(ClientJobTests, ConstructorError)
 {
-  EXPECT_THROW(ClientJob job_0(*m_client_job_manager, 999, utils::CreateEPICSIOClient,
-                               m_job_info_io), InvalidOperationException);
+  auto job = m_client_mgr->CreateJob(999, m_job_info_io);
+  EXPECT_EQ(job.get(), nullptr);
 }
 
 TEST_F(ClientJobTests, JobCommands)
 {
   // Query information about the server and its job
-  ASSERT_EQ(m_client_job_manager->GetNumberOfJobs(), 1u);
+  ASSERT_EQ(GetNumberOfJobs(*m_client_mgr), 1u);
   sup::dto::uint32 job_id{0};
-  auto job_0 = CreateClientJob(*m_client_job_manager, job_id, utils::CreateEPICSIOClient,
-                               m_job_info_io);
+  auto job_0 = m_client_mgr->CreateJob(job_id, m_job_info_io);
 
   EXPECT_EQ(job_0->GetInfo().GetNumberOfVariables(), 3);
   EXPECT_EQ(job_0->GetInfo().GetNumberOfInstructions(), 5);
@@ -95,25 +93,16 @@ TEST_F(ClientJobTests, JobCommands)
   EXPECT_NO_THROW(job_0->Reset());
 }
 
-TEST_F(ClientJobTests, MoveConstructor)
-{
-  sup::dto::uint32 job_id{0};
-  ClientJob job_0{*m_client_job_manager, job_id, utils::CreateEPICSIOClient,
-                               m_job_info_io};
-
-  EXPECT_NO_THROW(ClientJob moved_job = std::move(job_0));
-}
-
 ClientJobTests::ClientJobTests()
   : m_job_info_io{}
-  , m_client_job_manager{utils::CreateEPICSJobManager(kTestAutomationServiceName)}
+  , m_client_mgr{utils::CreateEPICSClientProtocolManager(kTestAutomationServiceName)}
 {}
 
 ClientJobTests::~ClientJobTests()
 {
   // Ensure each test starts in an initial state of the job
-  m_client_job_manager->SendJobCommand(0, JobCommand::kHalt);
-  m_client_job_manager->SendJobCommand(0, JobCommand::kReset);
+  m_client_mgr->GetJobManager().SendJobCommand(0, JobCommand::kHalt);
+  m_client_mgr->GetJobManager().SendJobCommand(0, JobCommand::kReset);
 }
 
 AutomationServer ClientJobTests::m_automation_server{ClientJobTests::GetServerProtocolFactory()};
@@ -127,11 +116,11 @@ IServerProtocolFactory& ClientJobTests::GetServerProtocolFactory()
 
 void ClientJobTests::SetUpTestSuite()
 {
-  m_main_server = GetServerProtocolFactory().CreateMainServer(m_automation_server);
-
   const auto procedure_string = UnitTestHelper::CreateProcedureString(kWorkspaceSequenceBody);
   auto proc = sup::oac_tree::ParseProcedureString(procedure_string);
   m_automation_server.AddJob(std::move(proc));
+
+  m_main_server = GetServerProtocolFactory().CreateMainServer(m_automation_server);
 }
 
 void ClientJobTests::TearDownTestSuite()

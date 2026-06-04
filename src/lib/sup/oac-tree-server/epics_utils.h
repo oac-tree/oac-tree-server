@@ -23,7 +23,6 @@
 #ifndef SUP_OAC_TREE_SERVER_EPICS_UTILS_H_
 #define SUP_OAC_TREE_SERVER_EPICS_UTILS_H_
 
-#include <sup/oac-tree-server/i_job_manager.h>
 #include <sup/oac-tree-server/i_server_protocol_factory.h>
 #include <sup/oac-tree-server/i_client_protocol_manager.h>
 
@@ -34,19 +33,10 @@ namespace sup
 {
 namespace oac_tree_server
 {
-
-class IAnyValueIO;
-class IAnyValueManager;
-
 namespace utils
 {
 
 // TODO: remove this (or move to client manager)
-std::unique_ptr<IAnyValueIO> CreateEPICSIOClient(IAnyValueManager& av_mgr);
-
-// TODO: remove this (or move to client manager)
-std::unique_ptr<IJobManager> CreateEPICSJobManager(const std::string& server_name);
-
 std::unique_ptr<IServerProtocolFactory> CreateEPICSServerProtocolFactory(
   const std::string& service_name, sup::dto::uint32 n_managers);
 
