@@ -166,15 +166,19 @@ Message to server:
 
 ```json
 {
-  "request": 0
+  "request": 0,
+  "req_id": 42
 }
 ```
+
+where the request id `req_id` is used to associate a reply to a specific request. This numberic id will be unique for each request/reply pair.
 
 Reply message from the server:
 
 ```json
 {
   "request": 0,
+  "req_id": 42,
   "n_jobs": 3
 }
 ```
@@ -186,17 +190,19 @@ Message to server:
 ```json
 {
   "request": 1,
+  "req_id": 42,
   "job_index": 2
 }
 ```
 
-where `job_index` is the index of the job that is queried.
+where `job_index` is the index of the job that is queried and `req_id` is as above.
 
 Reply message from the server:
 
 ```json
 {
   "request": 1,
+  "req_id": 42,
   "job_index": 2,
   "value": <JSON value rep>,
   "type": <JSON type rep>

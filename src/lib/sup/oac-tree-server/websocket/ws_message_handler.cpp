@@ -84,13 +84,13 @@ void HandleUpdateMessage(const std::string& msg, sup::oac_tree::IJobInfoIO& job_
   {
     return;
   }
-  auto update_idx = doc[kUpdate].GetUint();
+  auto update_type = doc[kUpdate].GetUint();
   const auto& concrete_handlers = GetConcreteUpdateHandlers();
-  if (update_idx >= concrete_handlers.size())
+  if (update_type >= concrete_handlers.size())
   {
     return;
   }
-  concrete_handlers[update_idx](doc, job_info_io);
+  concrete_handlers[update_type](doc, job_info_io);
 }
 
 std::string HandleJobManagerMessage(const std::string& msg, IJobManager& job_manager)
@@ -106,13 +106,13 @@ std::string HandleJobManagerMessage(const std::string& msg, IJobManager& job_man
   {
     return {};
   }
-  auto request_idx = doc[kRequest].GetUint();
+  auto request_type = doc[kRequest].GetUint();
   const auto& concrete_handlers = GetConcreteRequestHandlers();
-  if (request_idx >= concrete_handlers.size())
+  if (request_type >= concrete_handlers.size())
   {
     return {};
   }
-  return concrete_handlers[request_idx](doc, job_manager);
+  return concrete_handlers[request_type](doc, job_manager);
 }
 
 namespace
@@ -271,8 +271,13 @@ const std::vector<ConcreteRequestHandler>& GetConcreteRequestHandlers()
 std::string HandleGetNumberOfJobsRequest(const rapidjson::Document& doc, IJobManager& job_manager)
 {
   (void)doc;  // Unused parameter
+  if (!doc.HasMember(kRequestId) || !doc[kRequestId].IsUint64())
+  {
+    return {};
+  }
+  auto request_id = doc[kRequestId].GetUint64();
   auto number_of_jobs = job_manager.GetNumberOfJobs();
-  return CreateGetNumberOfJobsReplyMessage(number_of_jobs);
+  return CreateGetNumberOfJobsReplyMessage(request_id, number_of_jobs);
 }
 
 std::string HandleGetJobInfoRequest(const rapidjson::Document& doc, IJobManager& job_manager)
@@ -281,9 +286,14 @@ std::string HandleGetJobInfoRequest(const rapidjson::Document& doc, IJobManager&
   {
     return {};
   }
+  if (!doc.HasMember(kRequestId) || !doc[kRequestId].IsUint64())
+  {
+    return {};
+  }
+  auto request_id = doc[kRequestId].GetUint64();
   auto job_index = doc[kJobIndex].GetUint();
   auto job_info = job_manager.GetJobInfo(job_index);
-  return CreateGetJobInfoReplyMessage(job_index, job_info);
+  return CreateGetJobInfoReplyMessage(request_id, job_index, job_info);
 }
 
 std::string HandleEditBreakpointRequest(const rapidjson::Document& doc, IJobManager& job_manager)

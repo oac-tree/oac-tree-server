@@ -168,25 +168,29 @@ TEST(WsCreateJSONMessageTest, CreateLogUpdateMessage)
 
 TEST(WsCreateJSONMessageTest, CreateGetNumberOfJobsRequestMessage)
 {
-  auto json = CreateGetNumberOfJobsRequestMessage();
+  auto json = CreateGetNumberOfJobsRequestMessage(42u);
   auto doc = ParseJson(json);
 
   ASSERT_FALSE(doc.HasParseError());
   ASSERT_TRUE(doc.HasMember(ws_message_json_keys::kRequest));
   EXPECT_EQ(doc[ws_message_json_keys::kRequest].GetUint(),
             static_cast<sup::dto::uint32>(ClientMessageType::kGetNumberOfJobs));
+  ASSERT_TRUE(doc.HasMember(ws_message_json_keys::kRequestId));
+  EXPECT_EQ(doc[ws_message_json_keys::kRequestId].GetUint64(), 42u);
 }
 
 TEST(WsCreateJSONMessageTest, CreateGetJobInfoRequestMessage)
 {
-  auto json = CreateGetJobInfoRequestMessage(3u);
+  auto json = CreateGetJobInfoRequestMessage(42u, 3u);
   auto doc = ParseJson(json);
 
   ASSERT_FALSE(doc.HasParseError());
   ASSERT_TRUE(doc.HasMember(ws_message_json_keys::kRequest));
+  ASSERT_TRUE(doc.HasMember(ws_message_json_keys::kRequestId));
   ASSERT_TRUE(doc.HasMember(ws_message_json_keys::kJobIndex));
   EXPECT_EQ(doc[ws_message_json_keys::kRequest].GetUint(),
             static_cast<sup::dto::uint32>(ClientMessageType::kGetJobInfo));
+  EXPECT_EQ(doc[ws_message_json_keys::kRequestId].GetUint64(), 42u);
   EXPECT_EQ(doc[ws_message_json_keys::kJobIndex].GetUint(), 3u);
 }
 
@@ -225,28 +229,32 @@ TEST(WsCreateJSONMessageTest, CreateSendJobCommandRequestMessage)
 
 TEST(WsCreateJSONMessageTest, CreateGetNumberOfJobsReplyMessage)
 {
-  auto json = CreateGetNumberOfJobsReplyMessage(11u);
+  auto json = CreateGetNumberOfJobsReplyMessage(42u, 11u);
   auto doc = ParseJson(json);
 
   ASSERT_FALSE(doc.HasParseError());
   ASSERT_TRUE(doc.HasMember(ws_message_json_keys::kRequest));
+  ASSERT_TRUE(doc.HasMember(ws_message_json_keys::kRequestId));
   ASSERT_TRUE(doc.HasMember(ws_message_json_keys::kNumberOfJobs));
   EXPECT_EQ(doc[ws_message_json_keys::kRequest].GetUint(),
             static_cast<sup::dto::uint32>(ClientMessageType::kGetNumberOfJobs));
+  EXPECT_EQ(doc[ws_message_json_keys::kRequestId].GetUint64(), 42u);
   EXPECT_EQ(doc[ws_message_json_keys::kNumberOfJobs].GetUint(), 11u);
 }
 
 TEST(WsCreateJSONMessageTest, CreateGetJobInfoReplyMessage)
 {
   const auto job_info = BuildTestJobInfo();
-  auto json = CreateGetJobInfoReplyMessage(5u, job_info);
+  auto json = CreateGetJobInfoReplyMessage(42u, 5u, job_info);
   auto doc = ParseJson(json);
 
   ASSERT_FALSE(doc.HasParseError());
   ASSERT_TRUE(doc.HasMember(ws_message_json_keys::kRequest));
+  ASSERT_TRUE(doc.HasMember(ws_message_json_keys::kRequestId));
   ASSERT_TRUE(doc.HasMember(ws_message_json_keys::kJobIndex));
   ASSERT_TRUE(doc.HasMember(ws_message_json_keys::kValue));
   ASSERT_TRUE(doc.HasMember(ws_message_json_keys::kType));
   EXPECT_EQ(doc[ws_message_json_keys::kRequest].GetUint(),
             static_cast<sup::dto::uint32>(ClientMessageType::kGetJobInfo));
+  EXPECT_EQ(doc[ws_message_json_keys::kRequestId].GetUint64(), 42u);
 }

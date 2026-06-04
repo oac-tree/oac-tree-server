@@ -158,16 +158,16 @@ protected:
 TEST_F(JobManagerMessageHandlerTest, HandleMessage_GetNumberOfJobs)
 {
   EXPECT_CALL(m_mock_manager, GetNumberOfJobs()).Times(Exactly(1)).WillOnce(Return(3u));
-  auto reply = HandleJobManagerMessage(CreateGetNumberOfJobsRequestMessage(), m_mock_manager);
-  EXPECT_EQ(reply, CreateGetNumberOfJobsReplyMessage(3u));
+  auto reply = HandleJobManagerMessage(CreateGetNumberOfJobsRequestMessage(42u), m_mock_manager);
+  EXPECT_EQ(reply, CreateGetNumberOfJobsReplyMessage(42u, 3u));
 }
 
 TEST_F(JobManagerMessageHandlerTest, HandleMessage_GetJobInfo)
 {
   const auto job_info = BuildJobInfo();
   EXPECT_CALL(m_mock_manager, GetJobInfo(1u)).Times(Exactly(1)).WillOnce(Return(job_info));
-  auto reply = HandleJobManagerMessage(CreateGetJobInfoRequestMessage(1u), m_mock_manager);
-  EXPECT_EQ(reply, CreateGetJobInfoReplyMessage(1u, job_info));
+  auto reply = HandleJobManagerMessage(CreateGetJobInfoRequestMessage(42u, 1u), m_mock_manager);
+  EXPECT_EQ(reply, CreateGetJobInfoReplyMessage(42u, 1u, job_info));
 }
 
 TEST_F(JobManagerMessageHandlerTest, HandleMessage_EditBreakpoint)

@@ -168,7 +168,7 @@ std::string CreateLogUpdateMessage(sup::dto::int32 severity,
   return ws_message_json_helpers::SerializeDocumentToJSON(doc);
 }
 
-std::string CreateGetNumberOfJobsRequestMessage()
+std::string CreateGetNumberOfJobsRequestMessage(sup::dto::uint64 request_id)
 {
   rapidjson::Document doc;
   doc.SetObject();
@@ -177,10 +177,11 @@ std::string CreateGetNumberOfJobsRequestMessage()
   doc.AddMember(rapidjson::StringRef(ws_message_json_keys::kRequest),
                 static_cast<sup::dto::uint32>(ClientMessageType::kGetNumberOfJobs),
                 allocator);
+  doc.AddMember(rapidjson::StringRef(ws_message_json_keys::kRequestId), request_id, allocator);
   return ws_message_json_helpers::SerializeDocumentToJSON(doc);
 }
 
-std::string CreateGetJobInfoRequestMessage(sup::dto::uint32 job_index)
+std::string CreateGetJobInfoRequestMessage(sup::dto::uint64 request_id, sup::dto::uint32 job_index)
 {
   rapidjson::Document doc;
   doc.SetObject();
@@ -189,6 +190,7 @@ std::string CreateGetJobInfoRequestMessage(sup::dto::uint32 job_index)
   doc.AddMember(rapidjson::StringRef(ws_message_json_keys::kRequest),
                 static_cast<sup::dto::uint32>(ClientMessageType::kGetJobInfo),
                 allocator);
+  doc.AddMember(rapidjson::StringRef(ws_message_json_keys::kRequestId), request_id, allocator);
   doc.AddMember(rapidjson::StringRef(ws_message_json_keys::kJobIndex), job_index, allocator);
   return ws_message_json_helpers::SerializeDocumentToJSON(doc);
 }
@@ -227,7 +229,8 @@ std::string CreateSendJobCommandRequestMessage(sup::dto::uint32 job_index,
   return ws_message_json_helpers::SerializeDocumentToJSON(doc);
 }
 
-std::string CreateGetNumberOfJobsReplyMessage(sup::dto::uint32 number_of_jobs)
+std::string CreateGetNumberOfJobsReplyMessage(sup::dto::uint64 request_id,
+                                              sup::dto::uint32 number_of_jobs)
 {
   rapidjson::Document doc;
   doc.SetObject();
@@ -236,11 +239,12 @@ std::string CreateGetNumberOfJobsReplyMessage(sup::dto::uint32 number_of_jobs)
   doc.AddMember(rapidjson::StringRef(ws_message_json_keys::kRequest),
                 static_cast<sup::dto::uint32>(ClientMessageType::kGetNumberOfJobs),
                 allocator);
+  doc.AddMember(rapidjson::StringRef(ws_message_json_keys::kRequestId), request_id, allocator);
   doc.AddMember(rapidjson::StringRef(ws_message_json_keys::kNumberOfJobs), number_of_jobs, allocator);
   return ws_message_json_helpers::SerializeDocumentToJSON(doc);
 }
 
-std::string CreateGetJobInfoReplyMessage(sup::dto::uint32 job_index,
+std::string CreateGetJobInfoReplyMessage(sup::dto::uint64 request_id, sup::dto::uint32 job_index,
                                          const sup::oac_tree::JobInfo& job_info)
 {
   rapidjson::Document doc;
@@ -253,6 +257,7 @@ std::string CreateGetJobInfoReplyMessage(sup::dto::uint32 job_index,
   doc.AddMember(rapidjson::StringRef(ws_message_json_keys::kRequest),
                 static_cast<sup::dto::uint32>(ClientMessageType::kGetJobInfo),
                 allocator);
+  doc.AddMember(rapidjson::StringRef(ws_message_json_keys::kRequestId), request_id, allocator);
   doc.AddMember(rapidjson::StringRef(ws_message_json_keys::kJobIndex), job_index, allocator);
   doc.AddMember(rapidjson::StringRef(ws_message_json_keys::kValue),
                 JSONStringValue(job_info_val_str), allocator);

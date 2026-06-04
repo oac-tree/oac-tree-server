@@ -71,6 +71,7 @@ constexpr auto kDescription = "description";
 constexpr auto kMessage = "message";
 constexpr auto kSeverity = "severity";
 constexpr auto kRequest = "request";
+constexpr auto kRequestId = "req_id";
 constexpr auto kJobIndex = "job_index";
 constexpr auto kInstructionId = "instr_id";
 constexpr auto kActive = "active";
@@ -101,8 +102,8 @@ std::string CreateLogUpdateMessage(sup::dto::int32 severity,
                                    const std::string& message);
 
 // Factory functions for creating JSON messages for global requests from client to server.
-std::string CreateGetNumberOfJobsRequestMessage();
-std::string CreateGetJobInfoRequestMessage(sup::dto::uint32 job_index);
+std::string CreateGetNumberOfJobsRequestMessage(sup::dto::uint64 request_id);
+std::string CreateGetJobInfoRequestMessage(sup::dto::uint64 request_id, sup::dto::uint32 job_index);
 std::string CreateEditBreakpointRequestMessage(sup::dto::uint32 job_index,
                                                sup::dto::uint32 instruction_id,
                                                bool active);
@@ -110,8 +111,9 @@ std::string CreateSendJobCommandRequestMessage(sup::dto::uint32 job_index,
                                                sup::oac_tree::JobCommand command);
 
 // Factory functions for creating JSON messages for global replies from server to client.
-std::string CreateGetNumberOfJobsReplyMessage(sup::dto::uint32 number_of_jobs);
-std::string CreateGetJobInfoReplyMessage(sup::dto::uint32 job_index,
+std::string CreateGetNumberOfJobsReplyMessage(sup::dto::uint64 request_id,
+                                              sup::dto::uint32 number_of_jobs);
+std::string CreateGetJobInfoReplyMessage(sup::dto::uint64 request_id, sup::dto::uint32 job_index,
                                          const sup::oac_tree::JobInfo& job_info);
 
 }  // namespace oac_tree_server
