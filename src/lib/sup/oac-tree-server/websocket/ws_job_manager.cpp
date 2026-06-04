@@ -107,8 +107,12 @@ sup::dto::uint32 WSJobManager::GetNumberOfJobs() const
   {
     throw NetworkException("No response from job manager");
   }
-  //TODO: parse and return correct value
-  return 0;
+  auto number_of_jobs = ParseNumberOfJobsReply(response.value());
+  if (!number_of_jobs)
+  {
+    throw NetworkException("Failed to parse number of jobs from job manager response");
+  }
+  return number_of_jobs.value();
 }
 
 sup::oac_tree::JobInfo WSJobManager::GetJobInfo(sup::dto::uint32 job_idx) const
@@ -131,8 +135,12 @@ sup::oac_tree::JobInfo WSJobManager::GetJobInfo(sup::dto::uint32 job_idx) const
   if (!response)  {
     throw NetworkException("No response from job manager");
   }
-  // TODO: parse and return correct value
-  throw InvalidOperationException("GetJobInfo is not fully implemented yet");
+  auto job_info = ParseJobInfoReply(response.value());
+  if (!job_info)
+  {
+    throw NetworkException("Failed to parse job info from job manager response");
+  }
+  return job_info.value();
 }
 
 void WSJobManager::EditBreakpoint(sup::dto::uint32 job_idx, sup::dto::uint32 instr_idx,

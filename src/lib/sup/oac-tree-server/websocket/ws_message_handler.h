@@ -29,6 +29,8 @@
 
 #include <sup/oac-tree/i_job_info_io.h>
 
+#include <optional>
+
 namespace sup
 {
 namespace oac_tree_server
@@ -50,6 +52,16 @@ std::string HandleJobManagerMessage(const std::string& msg, IJobManager& job_man
  * MessageReplyHandler if appropriate.
  */
 void HandleJobManagerReply(const std::string& msg, MessageReplyHandler& reply_handler);
+
+/**
+ * @brief Parses the JSON reply message for the number of jobs and returns the value.
+ */
+std::optional<sup::dto::uint32> ParseNumberOfJobsReply(const std::string& reply);
+
+/**
+ * @brief Parses the JSON reply message for job information and returns the value.
+ */
+std::optional<sup::oac_tree::JobInfo> ParseJobInfoReply(const std::string& reply);
 
 }  // namespace oac_tree_server
 

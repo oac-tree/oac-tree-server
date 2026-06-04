@@ -23,10 +23,13 @@
 #include <sup/oac-tree-server/websocket/ws_message_handler.h>
 #include <sup/oac-tree-server/websocket/ws_message.h>
 
+#include <sup/oac-tree-server/exceptions.h>
+
 #include <sup/dto/anytype_helper.h>
 #include <sup/dto/anyvalue_helper.h>
 #include <sup/dto/json_type_parser.h>
 #include <sup/dto/json_value_parser.h>
+#include <sup/oac-tree/job_info_utils.h>
 
 #include <rapidjson/document.h>
 
@@ -130,6 +133,47 @@ void HandleJobManagerReply(const std::string& msg, MessageReplyHandler& reply_ha
   }
   auto request_id = doc[kRequestId].GetUint64();
   reply_handler.HandleReply(request_id, msg);
+}
+
+std::optional<sup::dto::uint32> ParseNumberOfJobsReply(const std::string& reply)
+{
+  rapidjson::Document doc;
+  doc.Parse(reply.c_str());
+
+  if (doc.HasParseError() || !doc.IsObject())
+  {
+    return std::nullopt;
+  }
+  if (!doc.HasMember(kNumberOfJobs) || !doc[kNumberOfJobs].IsUint())
+  {
+    return std::nullopt;
+  }
+  return doc[kNumberOfJobs].GetUint();
+}
+
+std::optional<sup::oac_tree::JobInfo> ParseJobInfoReply(const std::string& reply)
+{
+  rapidjson::Document doc;
+  doc.Parse(reply.c_str());
+
+  if (doc.HasParseError() || !doc.IsObject()
+      || !doc.HasMember(kValue) || !doc.HasMember(kType))
+  {
+    return std::nullopt;
+  }
+  sup::dto::AnyValue value{};
+  if (!ParseAnyValue(doc[kValue], doc[kType], value))
+  {
+    return std::nullopt;
+  }
+  try
+  {
+    return sup::oac_tree::utils::ToJobInfo(value);
+  }
+  catch(const MessageException& e)
+  {
+    return std::nullopt;
+  }
 }
 
 namespace
