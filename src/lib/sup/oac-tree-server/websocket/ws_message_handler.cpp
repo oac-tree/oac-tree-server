@@ -115,6 +115,23 @@ std::string HandleJobManagerMessage(const std::string& msg, IJobManager& job_man
   return concrete_handlers[request_type](doc, job_manager);
 }
 
+void HandleJobManagerReply(const std::string& msg, MessageReplyHandler& reply_handler)
+{
+  rapidjson::Document doc;
+  doc.Parse(msg.c_str());
+
+  if (doc.HasParseError() || !doc.IsObject())
+  {
+    return;
+  }
+  if (!doc.HasMember(kRequestId) || !doc[kRequestId].IsUint64())
+  {
+    return;
+  }
+  auto request_id = doc[kRequestId].GetUint64();
+  reply_handler.HandleReply(request_id, msg);
+}
+
 namespace
 {
 bool ParseAnyValue(const rapidjson::Value& value_entry,

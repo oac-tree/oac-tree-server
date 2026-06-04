@@ -23,6 +23,8 @@
 #ifndef SUP_OAC_TREE_SERVER_WS_MESSAGE_HANDLER_H_
 #define SUP_OAC_TREE_SERVER_WS_MESSAGE_HANDLER_H_
 
+#include <sup/oac-tree-server/base/message_reply_handler.h>
+
 #include <sup/oac-tree-server/i_job_manager.h>
 
 #include <sup/oac-tree/i_job_info_io.h>
@@ -42,6 +44,12 @@ void HandleUpdateMessage(const std::string& msg, sup::oac_tree::IJobInfoIO& job_
  * of the IJobManager and construct the corresponding JSON reply message.
  */
 std::string HandleJobManagerMessage(const std::string& msg, IJobManager& job_manager);
+
+/**
+ * @brief Parses JSON reply messages from a remote job manager and delegates these to a
+ * MessageReplyHandler if appropriate.
+ */
+void HandleJobManagerReply(const std::string& msg, MessageReplyHandler& reply_handler);
 
 }  // namespace oac_tree_server
 

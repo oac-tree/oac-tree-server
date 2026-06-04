@@ -23,6 +23,7 @@
 #ifndef SUP_OAC_TREE_SERVER_WS_JOB_MANAGER_H_
 #define SUP_OAC_TREE_SERVER_WS_JOB_MANAGER_H_
 
+#include <sup/oac-tree-server/base/message_reply_handler.h>
 #include <sup/oac-tree-server/i_job_manager.h>
 
 #include <simple-web/client_ws.hpp>
@@ -58,10 +59,12 @@ public:
   void SendJobCommand(sup::dto::uint32 job_idx, sup::oac_tree::JobCommand command) override;
 
 private:
+  std::string m_server_prefix;
   WsClient m_client;
   std::shared_ptr<WsClient::Connection> m_connection;
   mutable std::mutex m_connection_mutex; // To protect access to m_connection
   std::future<void> m_client_thread;
+  mutable MessageReplyHandler m_reply_handler;
 };
 
 }  // namespace oac_tree_server

@@ -58,6 +58,15 @@ public:
   explicit InvalidOperationException(const std::string& message);
 };
 
+/**
+ * @brief Exception thrown because of a network issue..
+ */
+class NetworkException : public MessageException
+{
+public:
+  explicit NetworkException(const std::string& message);
+};
+
 }  // namespace oac_tree_server
 
 }  // namespace sup

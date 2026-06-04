@@ -40,6 +40,10 @@ InvalidOperationException::InvalidOperationException(const std::string& message)
   : MessageException{message}
 {}
 
+NetworkException::NetworkException(const std::string& message)
+  : MessageException{message}
+{}
+
 }  // namespace oac_tree_server
 
 }  // namespace sup

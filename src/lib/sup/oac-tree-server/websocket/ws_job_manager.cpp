@@ -23,8 +23,14 @@
 #include "ws_job_manager.h"
 
 #include "ws_message.h"
+#include "ws_message_handler.h"
 
 #include <sup/oac-tree-server/exceptions.h>
+
+namespace
+{
+constexpr sup::dto::int64 kReplyTimeoutMs = 5000u;
+}
 
 namespace sup
 {
@@ -32,10 +38,12 @@ namespace oac_tree_server
 {
 
 WSJobManager::WSJobManager(const std::string& host_name, unsigned short port)
-  : m_client{"ws://" + host_name + ":" + std::to_string(port) + endpoints::kJobManagerEndpoint}
+  : m_server_prefix{host_name + ":" + std::to_string(port)}
+  , m_client{"ws://" + m_server_prefix + endpoints::kJobManagerEndpoint}
   , m_connection{nullptr}
   , m_connection_mutex{}
   , m_client_thread{}
+  , m_reply_handler{}
 {
   m_client.on_open = [this](std::shared_ptr<WsClient::Connection> connection) {
     std::lock_guard<std::mutex> lk{m_connection_mutex};
@@ -52,7 +60,9 @@ WSJobManager::WSJobManager(const std::string& host_name, unsigned short port)
   m_client.on_message = [this](std::shared_ptr<WsClient::Connection> connection,
                                std::shared_ptr<WsClient::InMessage> in_message) {
     (void)connection;
-    (void)in_message;
+    // TODO: don't decode the message here, but post it to the reply handler where it will sit
+    // in a queue until someone waits for it.
+    HandleJobManagerReply(in_message->string(), m_reply_handler);
   };
   m_client.on_error = [](std::shared_ptr<WsClient::Connection> connection,
                          const SimpleWeb::error_code &ec) {
@@ -73,23 +83,56 @@ WSJobManager::~WSJobManager()
 
 std::string WSJobManager::GetServerPrefix() const
 {
-  // auto id = helper.GetNextMessageId();  id should be RAII and cleanup helper records on destruction
-  // auto message = CreateGetServerPrefixRequestMessage(id);
-  // send message
-  // auto response = helper.WaitForResponse(id, timeout);
-  // parse response and return prefix
-  throw InvalidOperationException("GetServerPrefix is not implemented yet");
+  return m_server_prefix;
 }
 
 sup::dto::uint32 WSJobManager::GetNumberOfJobs() const
 {
-  throw InvalidOperationException("GetNumberOfJobs is not implemented yet");
+  auto id_guard = m_reply_handler.CreateNewMessageId();
+  auto message = CreateGetNumberOfJobsRequestMessage(id_guard.GetId());
+  {
+    std::lock_guard<std::mutex> lk{m_connection_mutex};
+    if (m_connection)
+    {
+      m_connection->send(message);
+    }
+    else
+    {
+      throw NetworkException("No connection to job manager");
+    }
+  }
+  auto response = m_reply_handler.WaitForReply(id_guard.GetId(),
+                                               std::chrono::milliseconds(kReplyTimeoutMs));
+  if (!response)
+  {
+    throw NetworkException("No response from job manager");
+  }
+  //TODO: parse and return correct value
+  return 0;
 }
 
 sup::oac_tree::JobInfo WSJobManager::GetJobInfo(sup::dto::uint32 job_idx) const
 {
-  (void)job_idx;
-  throw InvalidOperationException("GetJobInfo is not implemented yet");
+  auto id_guard = m_reply_handler.CreateNewMessageId();
+  auto message = CreateGetJobInfoRequestMessage(id_guard.GetId(), job_idx);
+  {
+    std::lock_guard<std::mutex> lk{m_connection_mutex};
+    if (m_connection)
+    {
+      m_connection->send(message);
+    }
+    else
+    {
+      throw NetworkException("No connection to job manager");
+    }
+  }
+  auto response = m_reply_handler.WaitForReply(id_guard.GetId(),
+                                               std::chrono::milliseconds(kReplyTimeoutMs));
+  if (!response)  {
+    throw NetworkException("No response from job manager");
+  }
+  // TODO: parse and return correct value
+  throw InvalidOperationException("GetJobInfo is not fully implemented yet");
 }
 
 void WSJobManager::EditBreakpoint(sup::dto::uint32 job_idx, sup::dto::uint32 instr_idx,
