@@ -49,7 +49,7 @@ public:
    * @brief Create a client job that will forward all updates and user IO to the passed IJobInfoIO.
    */
   virtual std::unique_ptr<sup::oac_tree::IJob> CreateJob(
-    sup::dto::uint32 job_idx, sup::oac_tree::IJobInfoIO &job_info_io) = 0;
+    sup::dto::uint32 job_idx, sup::oac_tree::IJobInfoIO& job_info_io) = 0;
 
 protected:
   IClientJobManager() = default;

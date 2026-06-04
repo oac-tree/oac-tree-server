@@ -67,7 +67,8 @@ public:
 
   /**
    * @brief Create a main server that exposes control and information requests for the given
-   * job manager over the network.
+   * job manager over the network. This member function should be called after adding jobs to the
+   * job manager.
    */
   virtual std::unique_ptr<IMainServer> CreateMainServer(IJobManager& job_manager) = 0;
 
