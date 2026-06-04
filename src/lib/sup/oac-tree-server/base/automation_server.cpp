@@ -20,12 +20,12 @@
  * of the distribution package.
  ******************************************************************************/
 
-#include <sup/dto/basic_scalar_types.h>
-#include <sup/oac-tree-server/automation_server.h>
-#include <sup/oac-tree-server/exceptions.h>
 #include "oac_tree_protocol.h"
 
+#include <sup/oac-tree-server/automation_server.h>
+#include <sup/oac-tree-server/exceptions.h>
 
+#include <sup/dto/basic_scalar_types.h>
 #include <sup/oac-tree/procedure.h>
 #include <sup/oac-tree/workspace.h>
 

@@ -22,7 +22,6 @@
 
 #include "oac_tree_protocol.h"
 
-
 #include <sup/oac-tree-server/exceptions.h>
 
 #include <sup/dto/basic_scalar_types.h>

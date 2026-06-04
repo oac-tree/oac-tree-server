@@ -20,7 +20,7 @@
  * of the distribution package.
  ******************************************************************************/
 
-#include <sup/oac-tree-server/input_request_server.h>
+#include <sup/oac-tree-server/base/input_request_server.h>
 
 #include <future>
 

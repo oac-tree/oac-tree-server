@@ -20,11 +20,11 @@
  * of the distribution package.
  ******************************************************************************/
 
-#include <sup/oac-tree-server/input_reply_helper.h>
+#include "input_reply_helper.h"
 
-#include <sup/oac-tree-server/exceptions.h>
 #include "oac_tree_protocol.h"
 
+#include <sup/oac-tree-server/exceptions.h>
 
 #include <sup/dto/anytype_helper.h>
 #include <sup/dto/anyvalue_helper.h>

@@ -20,7 +20,7 @@
  * of the distribution package.
  ******************************************************************************/
 
-#include <sup/oac-tree-server/input_request_server.h>
+#include "input_request_server.h"
 
 namespace
 {

@@ -23,12 +23,10 @@
 #include "server_job_info_io.h"
 
 #include "anyvalue_io_helper.h"
-#include "output_entry_helper.h"
-
-#include <sup/oac-tree-server/input_request_helper.h>
-#include <sup/oac-tree-server/base/output_entry_types.h>
+#include "input_request_helper.h"
 #include "oac_tree_protocol.h"
-
+#include "output_entry_helper.h"
+#include "output_entry_types.h"
 
 #include <sup/dto/anyvalue_helper.h>
 #include <sup/oac-tree/user_input_reply.h>

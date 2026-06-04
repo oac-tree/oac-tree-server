@@ -23,7 +23,7 @@
 #ifndef SUP_OAC_TREE_SERVER_EPICS_INPUT_CLIENT_H_
 #define SUP_OAC_TREE_SERVER_EPICS_INPUT_CLIENT_H_
 
-#include <sup/oac-tree-server/input_protocol_client.h>
+#include <sup/oac-tree-server/base/input_protocol_client.h>
 
 #include <sup/protocol/protocol_factory.h>
 

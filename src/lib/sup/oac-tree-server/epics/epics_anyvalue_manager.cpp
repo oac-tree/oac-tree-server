@@ -25,7 +25,7 @@
 #include "epics_input_server.h"
 #include "epics_server.h"
 
-#include <sup/oac-tree-server/input_request_helper.h>
+#include <sup/oac-tree-server/base/input_request_helper.h>
 #include <sup/oac-tree-server/base/oac_tree_protocol.h>
 
 

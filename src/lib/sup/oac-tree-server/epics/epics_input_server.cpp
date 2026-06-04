@@ -22,7 +22,7 @@
 
 #include "epics_input_server.h"
 
-#include <sup/oac-tree-server/input_protocol_server.h>
+#include <sup/oac-tree-server/base/input_protocol_server.h>
 
 #include <sup/epics/epics_protocol_factory.h>
 

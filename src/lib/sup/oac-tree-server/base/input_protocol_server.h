@@ -23,7 +23,7 @@
 #ifndef SUP_OAC_TREE_SERVER_INPUT_PROTOCOL_SERVER_H_
 #define SUP_OAC_TREE_SERVER_INPUT_PROTOCOL_SERVER_H_
 
-#include <sup/oac-tree-server/input_request_server.h>
+#include "input_request_server.h"
 
 #include <sup/protocol/function_protocol.h>
 #include <sup/protocol/protocol.h>

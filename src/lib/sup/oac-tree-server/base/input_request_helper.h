@@ -23,9 +23,8 @@
 #ifndef SUP_OAC_TREE_SERVER_INPUT_REQUEST_HELPER_H_
 #define SUP_OAC_TREE_SERVER_INPUT_REQUEST_HELPER_H_
 
-#include <sup/oac-tree/user_input_request.h>
-
 #include <sup/dto/anyvalue.h>
+#include <sup/oac-tree/user_input_request.h>
 
 #include <tuple>
 

@@ -43,10 +43,5 @@ install(FILES
   i_client_protocol_manager.h
   i_job_manager.h
   i_server_protocol_factory.h
-  input_protocol_client.h
-  input_protocol_server.h
-  input_reply_helper.h
-  input_request_helper.h
-  input_request_server.h
   DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/sup/oac-tree-server
 )

@@ -23,8 +23,8 @@
 #ifndef SUP_OAC_TREE_SERVER_I_ANYVALUE_MANAGER_H_
 #define SUP_OAC_TREE_SERVER_I_ANYVALUE_MANAGER_H_
 
-#include <sup/oac-tree-server/base/i_anyvalue_io.h>
-#include <sup/oac-tree-server/input_request_helper.h>
+#include "i_anyvalue_io.h"
+#include "input_request_helper.h"
 
 #include <sup/oac-tree/user_input_reply.h>
 #include <sup/oac-tree/user_input_request.h>

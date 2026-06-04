@@ -27,7 +27,6 @@
 
 #include "oac_tree_protocol.h"
 
-
 #include <sup/oac-tree/i_job_info_io.h>
 
 #include <functional>

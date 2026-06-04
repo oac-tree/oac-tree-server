@@ -24,9 +24,8 @@
 #define SUP_OAC_TREE_SERVER_SUP_OAC_TREE_PROTOCOL_H_
 
 #include <sup/dto/anyvalue.h>
-#include <sup/oac-tree/job_states.h>
-
 #include <sup/dto/basic_scalar_types.h>
+#include <sup/oac-tree/job_states.h>
 #include <sup/protocol/protocol_result.h>
 
 #include <string>

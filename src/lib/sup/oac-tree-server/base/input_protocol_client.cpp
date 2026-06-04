@@ -20,11 +20,10 @@
  * of the distribution package.
  ******************************************************************************/
 
-#include <sup/oac-tree-server/input_protocol_client.h>
+#include "input_protocol_client.h"
 
-#include <sup/oac-tree-server/input_reply_helper.h>
+#include "input_reply_helper.h"
 #include "oac_tree_protocol.h"
-
 
 #include <sup/protocol/function_protocol.h>
 #include <sup/protocol/function_protocol_pack.h>
