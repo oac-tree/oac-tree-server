@@ -93,8 +93,7 @@ protected:
 
   using StrictMockJobManager = ::testing::StrictMock<UnitTestHelper::MockJobManager>;
   StrictMockJobManager m_job_manager;
-  std::unique_ptr<IClientProtocolManager> m_client_mgr;
-  IJobManager* m_client_job_manager;
+  std::unique_ptr<IClientJobManager> m_client_mgr;
 
   static void SetUpTestSuite();
   static void TearDownTestSuite();
@@ -110,7 +109,7 @@ TEST_F(JobManagerClientServerStackTest, GetServerPrefix)
   // Test GetServerPrefix over the whole EPICS stack
   const std::string server_prefix = "StackTestServerPrefix";
   EXPECT_CALL(m_job_manager, GetServerPrefix()).Times(Exactly(1)).WillOnce(Return(server_prefix));
-  auto prefix_reply = m_client_job_manager->GetServerPrefix();
+  auto prefix_reply = m_client_mgr->GetServerPrefix();
   EXPECT_EQ(prefix_reply, server_prefix);
 }
 
@@ -119,7 +118,7 @@ TEST_F(JobManagerClientServerStackTest, GetNumberOfJobs)
   // Test GetNumberOfJobs over the whole EPICS stack
   const sup::dto::uint32 n_jobs = 42u;
   EXPECT_CALL(m_job_manager, GetNumberOfJobs()).Times(Exactly(1)).WillOnce(Return(n_jobs));
-  auto n_jobs_reply = m_client_job_manager->GetNumberOfJobs();
+  auto n_jobs_reply = m_client_mgr->GetNumberOfJobs();
   EXPECT_EQ(n_jobs_reply, n_jobs);
 }
 
@@ -140,7 +139,7 @@ TEST_F(JobManagerClientServerStackTest, GetJobInfo)
   const sup::dto::uint32 job_id = 32u;
   EXPECT_CALL(m_job_manager, GetNumberOfJobs()).Times(Exactly(1)).WillOnce(Return(n_jobs));
   EXPECT_CALL(m_job_manager, GetJobInfo(job_id)).Times(Exactly(1)).WillOnce(Return(job_info));
-  auto job_info_reply = m_client_job_manager->GetJobInfo(job_id);
+  auto job_info_reply = m_client_mgr->GetJobInfo(job_id);
   EXPECT_EQ(job_info_reply, job_info);
 }
 
@@ -161,7 +160,7 @@ TEST_F(JobManagerClientServerStackTest, EditBreakpoint)
   EXPECT_CALL(m_job_manager, GetNumberOfJobs()).Times(Exactly(1)).WillOnce(Return(n_jobs));
   EXPECT_CALL(m_job_manager, GetJobInfo(job_id)).Times(Exactly(1)).WillOnce(Return(job_info));
   EXPECT_CALL(m_job_manager, EditBreakpoint(job_id, instr_id, true)).Times(Exactly(1));
-  m_client_job_manager->EditBreakpoint(job_id, instr_id, true);
+  m_client_mgr->EditBreakpoint(job_id, instr_id, true);
 }
 
 TEST_F(JobManagerClientServerStackTest, SendJobCommand)
@@ -172,13 +171,12 @@ TEST_F(JobManagerClientServerStackTest, SendJobCommand)
   auto command = sup::oac_tree::JobCommand::kStart;
   EXPECT_CALL(m_job_manager, GetNumberOfJobs()).Times(Exactly(1)).WillOnce(Return(n_jobs));
   EXPECT_CALL(m_job_manager, SendJobCommand(job_id, command)).Times(Exactly(1));
-  m_client_job_manager->SendJobCommand(job_id, command);
+  m_client_mgr->SendJobCommand(job_id, command);
 }
 
 JobManagerClientServerStackTest::JobManagerClientServerStackTest()
   : m_job_manager{}
   , m_client_mgr{utils::CreateEPICSClientProtocolManager(kTestAutomationServiceName)}
-  , m_client_job_manager{std::addressof(m_client_mgr->GetJobManager())}
 {
   m_forwarding_job_manager.SetJobManager(std::addressof(m_job_manager));
 }

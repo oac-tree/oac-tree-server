@@ -20,19 +20,14 @@
  * of the distribution package.
  ******************************************************************************/
 
-#include <sup/oac-tree-server/i_client_protocol_manager.h>
+#include <sup/oac-tree-server/i_client_job_manager.h>
 
 namespace sup
 {
 namespace oac_tree_server
 {
 
-IClientProtocolManager::~IClientProtocolManager() = default;
-
-sup::dto::uint32 GetNumberOfJobs(IClientProtocolManager& client_manager)
-{
-  return client_manager.GetJobManager().GetNumberOfJobs();
-}
+IClientJobManager::~IClientJobManager() = default;
 
 }  // namespace oac_tree_server
 

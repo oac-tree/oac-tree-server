@@ -53,7 +53,7 @@ protected:
   virtual ~FullClientServerStackTest();
 
   UnitTestHelper::TestJobInfoIO m_job_info_io;
-  std::unique_ptr<IClientProtocolManager> m_client_mgr;
+  std::unique_ptr<IClientJobManager> m_client_mgr;
 
   static void SetUpTestSuite();
   static void TearDownTestSuite();
@@ -67,10 +67,10 @@ protected:
 TEST_F(FullClientServerStackTest, ServerInformation)
 {
   // Query information about the server and its job
-  EXPECT_EQ(m_client_mgr->GetJobManager().GetServerPrefix(), kTestAutomationServiceName);
-  ASSERT_EQ(GetNumberOfJobs(*m_client_mgr), 1u);
+  EXPECT_EQ(m_client_mgr->GetServerPrefix(), kTestAutomationServiceName);
+  ASSERT_EQ(m_client_mgr->GetNumberOfJobs(), 1u);
   sup::dto::uint32 job_id{0};
-  auto job_info = m_client_mgr->GetJobManager().GetJobInfo(job_id);
+  auto job_info = m_client_mgr->GetJobInfo(job_id);
   auto job_0 = m_client_mgr->CreateJob(job_id, m_job_info_io);
   EXPECT_TRUE(m_job_info_io.WaitForJobState(JobState::kInitial, 1.0));
   InstructionState initial{ false, ExecutionStatus::NOT_STARTED };
@@ -87,12 +87,12 @@ TEST_F(FullClientServerStackTest, ServerInformation)
 TEST_F(FullClientServerStackTest, JobCommands)
 {
   // Query information about the server and its job
-  ASSERT_EQ(GetNumberOfJobs(*m_client_mgr), 1u);
+  ASSERT_EQ(m_client_mgr->GetNumberOfJobs(), 1u);
   sup::dto::uint32 job_id{0};
   auto job_0 = m_client_mgr->CreateJob(job_id, m_job_info_io);
 
   EXPECT_TRUE(m_job_info_io.WaitForJobState(JobState::kInitial, 1.0));
-  m_client_mgr->GetJobManager().SendJobCommand(job_id, JobCommand::kStart);
+  m_client_mgr->SendJobCommand(job_id, JobCommand::kStart);
   EXPECT_TRUE(m_job_info_io.WaitForJobState(JobState::kSucceeded, 1.0));
 
   InstructionState success{ false, ExecutionStatus::SUCCESS };
@@ -109,17 +109,17 @@ TEST_F(FullClientServerStackTest, JobCommands)
 TEST_F(FullClientServerStackTest, BreakpointHit)
 {
   // Query information about the server and its job
-  ASSERT_EQ(GetNumberOfJobs(*m_client_mgr), 1u);
+  ASSERT_EQ(m_client_mgr->GetNumberOfJobs(), 1u);
   sup::dto::uint32 job_id{0};
   auto job_0 = m_client_mgr->CreateJob(job_id, m_job_info_io);
 
   EXPECT_TRUE(m_job_info_io.WaitForJobState(JobState::kInitial, 1.0));
-  m_client_mgr->GetJobManager().EditBreakpoint(job_id, 1, true);
-  m_client_mgr->GetJobManager().SendJobCommand(job_id, JobCommand::kStart);
+  m_client_mgr->EditBreakpoint(job_id, 1, true);
+  m_client_mgr->SendJobCommand(job_id, JobCommand::kStart);
   EXPECT_TRUE(m_job_info_io.WaitForJobState(JobState::kPaused, 1.0));
   EXPECT_TRUE(m_job_info_io.WaitForBreakpointInstruction(1, 1.0));
 
-  m_client_mgr->GetJobManager().SendJobCommand(job_id, JobCommand::kStart);
+  m_client_mgr->SendJobCommand(job_id, JobCommand::kStart);
   EXPECT_TRUE(m_job_info_io.WaitForJobState(JobState::kSucceeded, 1.0));
   EXPECT_TRUE(m_job_info_io.WaitForBreakpointInstruction(
     sup::oac_tree::kInvalidInstructionIndex, 1.0));
@@ -136,14 +136,14 @@ TEST_F(FullClientServerStackTest, BreakpointHit)
   EXPECT_TRUE(m_job_info_io.WaitForVariableValue(2, one_av, 1.0));
 
   // Reset breakpoint
-  m_client_mgr->GetJobManager().EditBreakpoint(job_id, 1, false);
+  m_client_mgr->EditBreakpoint(job_id, 1, false);
   EXPECT_TRUE(m_job_info_io.WaitForInstructionState(1, success, 1.0));
 }
 
 TEST_F(FullClientServerStackTest, JobReset)
 {
   // Test resetting a job and running it again
-  ASSERT_EQ(GetNumberOfJobs(*m_client_mgr), 1u);
+  ASSERT_EQ(m_client_mgr->GetNumberOfJobs(), 1u);
   sup::dto::uint32 job_id{0};
   auto job_0 = m_client_mgr->CreateJob(job_id, m_job_info_io);
 
@@ -154,7 +154,7 @@ TEST_F(FullClientServerStackTest, JobReset)
   sup::dto::AnyValue one_av{ sup::dto::UnsignedInteger32Type, 1 };
 
   // First run
-  m_client_mgr->GetJobManager().SendJobCommand(job_id, JobCommand::kStart);
+  m_client_mgr->SendJobCommand(job_id, JobCommand::kStart);
   EXPECT_TRUE(m_job_info_io.WaitForJobState(JobState::kSucceeded, 1.0));
   EXPECT_TRUE(m_job_info_io.WaitForInstructionState(0, success, 1.0));
   EXPECT_TRUE(m_job_info_io.WaitForInstructionState(1, success, 1.0));
@@ -164,7 +164,7 @@ TEST_F(FullClientServerStackTest, JobReset)
   EXPECT_TRUE(m_job_info_io.WaitForVariableValue(2, one_av, 1.0));
 
   // Reset
-  m_client_mgr->GetJobManager().SendJobCommand(job_id, JobCommand::kReset);
+  m_client_mgr->SendJobCommand(job_id, JobCommand::kReset);
   EXPECT_TRUE(m_job_info_io.WaitForJobState(JobState::kInitial, 1.0));
   EXPECT_TRUE(m_job_info_io.WaitForInstructionState(0, initial, 1.0));
   EXPECT_TRUE(m_job_info_io.WaitForInstructionState(1, initial, 1.0));
@@ -174,7 +174,7 @@ TEST_F(FullClientServerStackTest, JobReset)
   EXPECT_TRUE(m_job_info_io.WaitForVariableValue(2, zero_av, 1.0));
 
   // Run again
-  m_client_mgr->GetJobManager().SendJobCommand(job_id, JobCommand::kStart);
+  m_client_mgr->SendJobCommand(job_id, JobCommand::kStart);
   EXPECT_TRUE(m_job_info_io.WaitForJobState(JobState::kSucceeded, 1.0));
   EXPECT_TRUE(m_job_info_io.WaitForInstructionState(0, success, 1.0));
   EXPECT_TRUE(m_job_info_io.WaitForInstructionState(1, success, 1.0));
@@ -192,8 +192,8 @@ FullClientServerStackTest::FullClientServerStackTest()
 FullClientServerStackTest::~FullClientServerStackTest()
 {
   // Ensure each test starts in an initial state of the job
-  m_client_mgr->GetJobManager().SendJobCommand(0, JobCommand::kHalt);
-  m_client_mgr->GetJobManager().SendJobCommand(0, JobCommand::kReset);
+  m_client_mgr->SendJobCommand(0, JobCommand::kHalt);
+  m_client_mgr->SendJobCommand(0, JobCommand::kReset);
 }
 
 AutomationServer FullClientServerStackTest::m_automation_server{

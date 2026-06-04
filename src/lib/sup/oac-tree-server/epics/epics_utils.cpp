@@ -20,7 +20,7 @@
  * of the distribution package.
  ******************************************************************************/
 
-#include "epics_client_protocol_manager.h"
+#include "epics_client_job_manager.h"
 #include "epics_server_protocol_factory.h"
 
 #include <sup/oac-tree-server/epics_utils.h>
@@ -40,10 +40,10 @@ std::unique_ptr<IServerProtocolFactory> CreateEPICSServerProtocolFactory(
   return std::make_unique<EPICSServerProtocolFactory>(service_name, n_managers);
 }
 
-std::unique_ptr<IClientProtocolManager> CreateEPICSClientProtocolManager(
+std::unique_ptr<IClientJobManager> CreateEPICSClientProtocolManager(
   const std::string& service_name)
 {
-  return std::make_unique<EPICSClientProtocolManager>(service_name);
+  return std::make_unique<EPICSClientJobManager>(service_name);
 }
 
 }  // namespace utils

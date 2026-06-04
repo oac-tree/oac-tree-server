@@ -20,10 +20,10 @@
  * of the distribution package.
  ******************************************************************************/
 
-#ifndef SUP_OAC_TREE_SERVER_EPICS_CLIENT_PROTOCOL_MANAGER_H_
-#define SUP_OAC_TREE_SERVER_EPICS_CLIENT_PROTOCOL_MANAGER_H_
+#ifndef SUP_OAC_TREE_SERVER_EPICS_CLIENT_JOB_MANAGER_H_
+#define SUP_OAC_TREE_SERVER_EPICS_CLIENT_JOB_MANAGER_H_
 
-#include <sup/oac-tree-server/i_client_protocol_manager.h>
+#include <sup/oac-tree-server/i_client_job_manager.h>
 
 #include <sup/oac-tree-server/base/i_anyvalue_io.h>
 #include <sup/oac-tree-server/base/i_anyvalue_manager.h>
@@ -35,21 +35,30 @@ namespace sup
 namespace oac_tree_server
 {
 /**
-  * @brief Client protocol manager implementation that uses EPICS as the network backend.
+  * @brief Client job manager implementation that uses EPICS as the network backend.
  */
-class EPICSClientProtocolManager final : public IClientProtocolManager
+class EPICSClientJobManager final : public IClientJobManager
 {
 public:
-  EPICSClientProtocolManager(const std::string& service_name);
- ~EPICSClientProtocolManager() override;
+  EPICSClientJobManager(const std::string& service_name);
+ ~EPICSClientJobManager() override;
 
   // No copy or move
-  EPICSClientProtocolManager(const EPICSClientProtocolManager& other) = delete;
-  EPICSClientProtocolManager(EPICSClientProtocolManager&& other) = delete;
-  EPICSClientProtocolManager& operator=(const EPICSClientProtocolManager& other) = delete;
-  EPICSClientProtocolManager& operator=(EPICSClientProtocolManager&& other) = delete;
+  EPICSClientJobManager(const EPICSClientJobManager& other) = delete;
+  EPICSClientJobManager(EPICSClientJobManager&& other) = delete;
+  EPICSClientJobManager& operator=(const EPICSClientJobManager& other) = delete;
+  EPICSClientJobManager& operator=(EPICSClientJobManager&& other) = delete;
 
-  IJobManager& GetJobManager() override;
+  std::string GetServerPrefix() const override;
+
+  sup::dto::uint32 GetNumberOfJobs() const override;
+
+  sup::oac_tree::JobInfo GetJobInfo(sup::dto::uint32 job_idx) const override;
+
+  void EditBreakpoint(sup::dto::uint32 job_idx, sup::dto::uint32 instr_idx,
+                              bool breakpoint_active) override;
+
+  void SendJobCommand(sup::dto::uint32 job_idx, sup::oac_tree::JobCommand command) override;
 
   std::unique_ptr<sup::oac_tree::IJob> CreateJob(
     sup::dto::uint32 job_idx, sup::oac_tree::IJobInfoIO &job_info_io) override;
@@ -67,4 +76,4 @@ std::unique_ptr<IAnyValueIO> CreateEPICSIOClient(IAnyValueManager& av_mgr);
 
 }  // namespace sup
 
-#endif  // SUP_OAC_TREE_SERVER_EPICS_CLIENT_PROTOCOL_MANAGER_H_
+#endif  // SUP_OAC_TREE_SERVER_EPICS_CLIENT_JOB_MANAGER_H_

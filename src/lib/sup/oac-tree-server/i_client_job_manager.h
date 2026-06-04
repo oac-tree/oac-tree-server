@@ -20,8 +20,8 @@
  * of the distribution package.
  ******************************************************************************/
 
-#ifndef SUP_OAC_TREE_SERVER_I_CLIENT_PROTOCOL_MANAGER_H_
-#define SUP_OAC_TREE_SERVER_I_CLIENT_PROTOCOL_MANAGER_H_
+#ifndef SUP_OAC_TREE_SERVER_I_CLIENT_JOB_MANAGER_H_
+#define SUP_OAC_TREE_SERVER_I_CLIENT_JOB_MANAGER_H_
 
 #include <sup/oac-tree-server/i_job_manager.h>
 
@@ -33,22 +33,17 @@ namespace sup
 namespace oac_tree_server
 {
 /**
-  * @brief Interface for client protocol manager.
+  * @brief Interface for a client job manager.
  */
-class IClientProtocolManager
+class IClientJobManager : public IJobManager
 {
 public:
-  virtual ~IClientProtocolManager();
+  virtual ~IClientJobManager();
 
-  IClientProtocolManager(const IClientProtocolManager& other) = delete;
-  IClientProtocolManager(IClientProtocolManager&& other) = delete;
-  IClientProtocolManager& operator=(const IClientProtocolManager& other) = delete;
-  IClientProtocolManager& operator=(IClientProtocolManager&& other) = delete;
-
-  /**
-   * @brief Get a reference to an IJobManager object.
-   */
-  virtual IJobManager& GetJobManager() = 0;
+  IClientJobManager(const IClientJobManager& other) = delete;
+  IClientJobManager(IClientJobManager&& other) = delete;
+  IClientJobManager& operator=(const IClientJobManager& other) = delete;
+  IClientJobManager& operator=(IClientJobManager&& other) = delete;
 
   /**
    * @brief Create a client job that will forward all updates and user IO to the passed IJobInfoIO.
@@ -57,16 +52,11 @@ public:
     sup::dto::uint32 job_idx, sup::oac_tree::IJobInfoIO &job_info_io) = 0;
 
 protected:
-  IClientProtocolManager() = default;
+  IClientJobManager() = default;
 };
-
-/**
- * @brief Get the number of jobs managed by the IClientProtocolManager object.
- */
-sup::dto::uint32 GetNumberOfJobs(IClientProtocolManager& client_manager);
 
 }  // namespace oac_tree_server
 
 }  // namespace sup
 
-#endif  // SUP_OAC_TREE_SERVER_I_CLIENT_PROTOCOL_MANAGER_H_
+#endif  // SUP_OAC_TREE_SERVER_I_CLIENT_JOB_MANAGER_H_

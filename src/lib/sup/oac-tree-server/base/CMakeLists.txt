@@ -11,7 +11,7 @@ target_sources(oac-tree-server
   exceptions.cpp
   i_anyvalue_io.cpp
   i_anyvalue_manager.cpp
-  i_client_protocol_manager.cpp
+  i_client_job_manager.cpp
   i_job_manager.cpp
   i_server_protocol_factory.cpp
   index_generator.cpp

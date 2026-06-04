@@ -55,7 +55,7 @@ protected:
   virtual ~ClientJobTests();
 
   UnitTestHelper::TestJobInfoIO m_job_info_io;
-  std::unique_ptr<IClientProtocolManager> m_client_mgr;
+  std::unique_ptr<IClientJobManager> m_client_mgr;
 
   static void SetUpTestSuite();
   static void TearDownTestSuite();
@@ -75,7 +75,7 @@ TEST_F(ClientJobTests, ConstructorError)
 TEST_F(ClientJobTests, JobCommands)
 {
   // Query information about the server and its job
-  ASSERT_EQ(GetNumberOfJobs(*m_client_mgr), 1u);
+  ASSERT_EQ(m_client_mgr->GetNumberOfJobs(), 1u);
   sup::dto::uint32 job_id{0};
   auto job_0 = m_client_mgr->CreateJob(job_id, m_job_info_io);
 
@@ -101,8 +101,8 @@ ClientJobTests::ClientJobTests()
 ClientJobTests::~ClientJobTests()
 {
   // Ensure each test starts in an initial state of the job
-  m_client_mgr->GetJobManager().SendJobCommand(0, JobCommand::kHalt);
-  m_client_mgr->GetJobManager().SendJobCommand(0, JobCommand::kReset);
+  m_client_mgr->SendJobCommand(0, JobCommand::kHalt);
+  m_client_mgr->SendJobCommand(0, JobCommand::kReset);
 }
 
 AutomationServer ClientJobTests::m_automation_server{ClientJobTests::GetServerProtocolFactory()};

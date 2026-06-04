@@ -40,7 +40,7 @@ install(FILES
   automation_server.h
   epics_utils.h
   exceptions.h
-  i_client_protocol_manager.h
+  i_client_job_manager.h
   i_job_manager.h
   i_server_protocol_factory.h
   DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/sup/oac-tree-server

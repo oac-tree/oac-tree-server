@@ -20,7 +20,7 @@
  * of the distribution package.
  ******************************************************************************/
 
-#include "epics_client_protocol_manager.h"
+#include "epics_client_job_manager.h"
 
 #include "epics_io_client.h"
 
@@ -37,20 +37,42 @@ namespace sup
 namespace oac_tree_server
 {
 
-EPICSClientProtocolManager::EPICSClientProtocolManager(const std::string& service_name)
-  : IClientProtocolManager{}
+EPICSClientJobManager::EPICSClientJobManager(const std::string& service_name)
+  : IClientJobManager{}
   , m_service_name(service_name)
   , m_job_manager{CreateEPICSJobManager(service_name)}
 {}
 
-EPICSClientProtocolManager::~EPICSClientProtocolManager() = default;
+EPICSClientJobManager::~EPICSClientJobManager() = default;
 
-IJobManager& EPICSClientProtocolManager::GetJobManager()
+std::string EPICSClientJobManager::GetServerPrefix() const
 {
-  return *m_job_manager;
+  return m_job_manager->GetServerPrefix();
 }
 
-std::unique_ptr<sup::oac_tree::IJob> EPICSClientProtocolManager::CreateJob(
+sup::dto::uint32 EPICSClientJobManager::GetNumberOfJobs() const
+{
+  return m_job_manager->GetNumberOfJobs();
+}
+
+sup::oac_tree::JobInfo EPICSClientJobManager::GetJobInfo(sup::dto::uint32 job_idx) const
+{
+  return m_job_manager->GetJobInfo(job_idx);
+}
+
+void EPICSClientJobManager::EditBreakpoint(
+  sup::dto::uint32 job_idx, sup::dto::uint32 instr_idx, bool breakpoint_active)
+{
+  m_job_manager->EditBreakpoint(job_idx, instr_idx, breakpoint_active);
+}
+
+void EPICSClientJobManager::SendJobCommand(sup::dto::uint32 job_idx,
+                                                sup::oac_tree::JobCommand command)
+{
+  m_job_manager->SendJobCommand(job_idx, command);
+}
+
+std::unique_ptr<sup::oac_tree::IJob> EPICSClientJobManager::CreateJob(
   sup::dto::uint32 job_idx, sup::oac_tree::IJobInfoIO &job_info_io)
 {
   std::unique_ptr<sup::oac_tree::IJob> result{};
