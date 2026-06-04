@@ -73,6 +73,11 @@ WSJobManager::~WSJobManager()
 
 std::string WSJobManager::GetServerPrefix() const
 {
+  // auto id = helper.GetNextMessageId();  id should be RAII and cleanup helper records on destruction
+  // auto message = CreateGetServerPrefixRequestMessage(id);
+  // send message
+  // auto response = helper.WaitForResponse(id, timeout);
+  // parse response and return prefix
   throw InvalidOperationException("GetServerPrefix is not implemented yet");
 }
 

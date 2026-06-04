@@ -21,6 +21,7 @@ target_sources(oac-tree-server
   input_reply_helper.cpp
   input_request_helper.cpp
   input_request_server.cpp
+  message_reply_handler.cpp
   oac_tree_protocol.cpp
   output_entry_helper.cpp
   output_entry_types.cpp
