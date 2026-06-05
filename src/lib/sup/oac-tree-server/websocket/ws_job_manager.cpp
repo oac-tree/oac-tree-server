@@ -29,6 +29,7 @@
 
 namespace
 {
+// TODO: is there a better way than this hardcoded timeout?
 constexpr sup::dto::int64 kReplyTimeoutMs = 5000u;
 }
 
@@ -70,6 +71,8 @@ WSJobManager::WSJobManager(const std::string& host_name, unsigned short port)
     (void)ec;
     connection->close();
   };
+  // TODO: use a common io_context for the whole WSClientJobManager instead of starting new threads
+  // for each WS client.
   m_client_thread = std::async(std::launch::async, [this]() {
     m_client.start();
   });
