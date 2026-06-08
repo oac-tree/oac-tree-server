@@ -38,7 +38,7 @@ int main(int argc, char* argv[])
 {
   // EPICS client manager
   auto client_manager = utils::CreateEPICSClientProtocolManager(kAutoServerName);
-  auto n_jobs = GetNumberOfJobs(*client_manager);
+  auto n_jobs = client_manager->GetNumberOfJobs();
 
   // Create a client job.
   auto& my_job_info_io = GetMyJobInfoIO();
