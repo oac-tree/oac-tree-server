@@ -22,12 +22,20 @@
 
 #include "ws_client_job.h"
 
+#include "ws_message.h"
+#include "ws_message_handler.h"
+
 #include <sup/oac-tree-server/exceptions.h>
+
+#include <simple-web/client_ws.hpp>
+
+#include <future>
 
 namespace sup
 {
 namespace oac_tree_server
 {
+using WsClient = SimpleWeb::SocketClient<SimpleWeb::WS>;
 
 class WSClientJobImpl
 {
@@ -35,6 +43,7 @@ public:
   WSClientJobImpl(IJobManager& job_manager, sup::dto::uint32 job_idx,
                  const std::string& host_name, unsigned short port,
                  sup::oac_tree::IJobInfoIO& job_info_io);
+  ~WSClientJobImpl();
 
   IJobManager& GetJobManager();
   sup::dto::uint32 GetJobIndex() const;
@@ -45,6 +54,8 @@ private:
   sup::dto::uint32 m_job_idx;
   std::unique_ptr<sup::oac_tree::JobInfo> m_job_info;
   sup::oac_tree::IJobInfoIO& m_job_info_io;
+  WsClient m_client;
+  std::future<void> m_client_thread;
 };
 
 WSClientJobImpl::WSClientJobImpl(IJobManager &job_manager, sup::dto::uint32 job_idx,
@@ -54,6 +65,9 @@ WSClientJobImpl::WSClientJobImpl(IJobManager &job_manager, sup::dto::uint32 job_
   , m_job_idx{job_idx}
   , m_job_info{}
   , m_job_info_io{job_info_io}
+  // TODO: extract function
+  , m_client{"ws://" + host_name + ":" + std::to_string(port) + "/job/" + std::to_string(job_idx)}
+  , m_client_thread{}
 {
   auto n_jobs = m_job_manager.GetNumberOfJobs();
   if (job_idx >= n_jobs)
@@ -63,8 +77,40 @@ WSClientJobImpl::WSClientJobImpl(IJobManager &job_manager, sup::dto::uint32 job_
     throw InvalidOperationException(error);
   }
   m_job_info = std::make_unique<sup::oac_tree::JobInfo>(m_job_manager.GetJobInfo(job_idx));
-  (void)host_name;
-  (void)port;
+
+  m_client.on_open = [this](std::shared_ptr<WsClient::Connection> connection) {
+    (void)connection;
+  };
+  m_client.on_close = [this](std::shared_ptr<WsClient::Connection> connection,
+                             int status, const std::string& reason) {
+    (void)connection;
+    (void)status;
+    (void)reason;
+  };
+  m_client.on_message = [this](std::shared_ptr<WsClient::Connection> connection,
+                               std::shared_ptr<WsClient::InMessage> in_message) {
+    (void)connection;
+    // TODO: don't decode the message here, but post it to the reply handler where it will sit
+    // in a queue until someone waits for it.
+    HandleUpdateMessage(in_message->string(), m_job_info_io);
+  };
+  m_client.on_error = [](std::shared_ptr<WsClient::Connection> connection,
+                         const SimpleWeb::error_code &ec) {
+    // TODO: handle error appropriately (e.g., log it, attempt reconnection, etc.)
+    (void)ec;
+    connection->close();
+  };
+  // TODO: use a common io_context for the whole WSClientJobManager instead of starting new threads
+  // for each WS client.
+  m_client_thread = std::async(std::launch::async, [this]() {
+    m_client.start();
+  });
+}
+
+WSClientJobImpl::~WSClientJobImpl()
+{
+  m_client.stop();
+  // m_client_thread will be joined automatically when it goes out of scope
 }
 
 IJobManager& WSClientJobImpl::GetJobManager()
