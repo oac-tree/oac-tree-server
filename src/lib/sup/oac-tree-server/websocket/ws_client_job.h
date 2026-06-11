@@ -43,7 +43,6 @@ class WSClientJob final : public sup::oac_tree::IJob
 {
 public:
   WSClientJob(IJobManager& job_manager, sup::dto::uint32 job_idx,
-              const std::string& host_name, unsigned short port,
               sup::oac_tree::IJobInfoIO& job_info_io);
  ~WSClientJob() override;
 

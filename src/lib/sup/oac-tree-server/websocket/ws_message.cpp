@@ -48,6 +48,22 @@ namespace sup
 namespace oac_tree_server
 {
 
+std::string CreateServerPrefix(const std::string& host_name, unsigned short port)
+{
+  return host_name + ":" + std::to_string(port);
+}
+
+std::string CreateInfoEndpoint(const std::string& server_prefix)
+{
+  return endpoints::kWebSocketScheme + server_prefix + endpoints::kJobManagerEndpoint;
+}
+
+std::string CreateJobEndpoint(const std::string& server_prefix, sup::dto::uint32 job_idx)
+{
+  return endpoints::kWebSocketScheme + server_prefix + endpoints::kJobEndpointPrefix
+                                     + std::to_string(job_idx);
+}
+
 std::string CreateJobStateUpdateMessage(sup::oac_tree::JobState state)
 {
   rapidjson::Document doc;

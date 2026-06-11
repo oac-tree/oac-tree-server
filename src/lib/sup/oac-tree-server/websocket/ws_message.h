@@ -83,9 +83,14 @@ constexpr auto kEmptyJson = "";
 
 namespace endpoints
 {
+constexpr auto kWebSocketScheme = "ws://";
 constexpr auto kJobManagerEndpoint = "/info";
 constexpr auto kJobEndpointPrefix = "/job/";
 }
+
+std::string CreateServerPrefix(const std::string& host_name, unsigned short port);
+std::string CreateInfoEndpoint(const std::string& server_prefix);
+std::string CreateJobEndpoint(const std::string& server_prefix, sup::dto::uint32 job_idx);
 
 // Factory functions for creating JSON messages for job specific updates from server to client.
 std::string CreateJobStateUpdateMessage(sup::oac_tree::JobState state);

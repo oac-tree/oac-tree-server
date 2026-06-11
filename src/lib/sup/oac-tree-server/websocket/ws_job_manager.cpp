@@ -39,8 +39,8 @@ namespace oac_tree_server
 {
 
 WSJobManager::WSJobManager(const std::string& host_name, unsigned short port)
-  : m_server_prefix{host_name + ":" + std::to_string(port)}
-  , m_client{"ws://" + m_server_prefix + endpoints::kJobManagerEndpoint}
+  : m_server_prefix{CreateServerPrefix(host_name, port)}
+  , m_client{CreateInfoEndpoint(m_server_prefix)}
   , m_connection{nullptr}
   , m_connection_mutex{}
   , m_client_thread{}

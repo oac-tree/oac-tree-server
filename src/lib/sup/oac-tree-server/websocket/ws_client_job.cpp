@@ -41,7 +41,6 @@ class WSClientJobImpl
 {
 public:
   WSClientJobImpl(IJobManager& job_manager, sup::dto::uint32 job_idx,
-                 const std::string& host_name, unsigned short port,
                  sup::oac_tree::IJobInfoIO& job_info_io);
   ~WSClientJobImpl();
 
@@ -59,14 +58,12 @@ private:
 };
 
 WSClientJobImpl::WSClientJobImpl(IJobManager &job_manager, sup::dto::uint32 job_idx,
-                                const std::string& host_name, unsigned short port,
                                 sup::oac_tree::IJobInfoIO& job_info_io)
   : m_job_manager{job_manager}
   , m_job_idx{job_idx}
   , m_job_info{}
   , m_job_info_io{job_info_io}
-  // TODO: extract function
-  , m_client{"ws://" + host_name + ":" + std::to_string(port) + "/job/" + std::to_string(job_idx)}
+  , m_client{CreateJobEndpoint(m_job_manager.GetServerPrefix(), job_idx)}
   , m_client_thread{}
 {
   auto n_jobs = m_job_manager.GetNumberOfJobs();
@@ -129,10 +126,9 @@ const sup::oac_tree::JobInfo& WSClientJobImpl::GetInfo() const
 }
 
 WSClientJob::WSClientJob(IJobManager &job_manager, sup::dto::uint32 job_idx,
-                         const std::string& host_name, unsigned short port,
                          sup::oac_tree::IJobInfoIO& job_info_io)
   : IJob{}
-  , m_impl{std::make_unique<WSClientJobImpl>(job_manager, job_idx, host_name, port, job_info_io)}
+  , m_impl{std::make_unique<WSClientJobImpl>(job_manager, job_idx, job_info_io)}
 {}
 
 WSClientJob::~WSClientJob() = default;
