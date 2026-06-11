@@ -33,7 +33,8 @@ class WSClientJobImpl
 {
 public:
   WSClientJobImpl(IJobManager& job_manager, sup::dto::uint32 job_idx,
-                 const std::string& host_name, unsigned short port);
+                 const std::string& host_name, unsigned short port,
+                 sup::oac_tree::IJobInfoIO& job_info_io);
 
   IJobManager& GetJobManager();
   sup::dto::uint32 GetJobIndex() const;
@@ -43,13 +44,16 @@ private:
   IJobManager& m_job_manager;
   sup::dto::uint32 m_job_idx;
   std::unique_ptr<sup::oac_tree::JobInfo> m_job_info;
+  sup::oac_tree::IJobInfoIO& m_job_info_io;
 };
 
 WSClientJobImpl::WSClientJobImpl(IJobManager &job_manager, sup::dto::uint32 job_idx,
-                                const std::string& host_name, unsigned short port)
+                                const std::string& host_name, unsigned short port,
+                                sup::oac_tree::IJobInfoIO& job_info_io)
   : m_job_manager{job_manager}
   , m_job_idx{job_idx}
   , m_job_info{}
+  , m_job_info_io{job_info_io}
 {
   auto n_jobs = m_job_manager.GetNumberOfJobs();
   if (job_idx >= n_jobs)
@@ -79,9 +83,10 @@ const sup::oac_tree::JobInfo& WSClientJobImpl::GetInfo() const
 }
 
 WSClientJob::WSClientJob(IJobManager &job_manager, sup::dto::uint32 job_idx,
-                         const std::string& host_name, unsigned short port)
+                         const std::string& host_name, unsigned short port,
+                         sup::oac_tree::IJobInfoIO& job_info_io)
   : IJob{}
-  , m_impl{std::make_unique<WSClientJobImpl>(job_manager, job_idx, host_name, port)}
+  , m_impl{std::make_unique<WSClientJobImpl>(job_manager, job_idx, host_name, port, job_info_io)}
 {}
 
 WSClientJob::~WSClientJob() = default;
