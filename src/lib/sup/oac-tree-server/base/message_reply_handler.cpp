@@ -52,6 +52,10 @@ MessageReplyHandler::~MessageReplyHandler() = default;
 MessageReplyHandler::IdGuard MessageReplyHandler::CreateNewMessageId()
 {
   sup::dto::uint64 id = m_idx_generator.NewIndex();
+  {
+    std::lock_guard<std::mutex> lk{m_mtx};
+    m_replies[id] = std::nullopt;
+  }
   return IdGuard(*this, id);
 }
 
@@ -81,7 +85,9 @@ std::optional<std::string> MessageReplyHandler::WaitForReply(sup::dto::uint64 me
     }
     if (m_cv.wait_for(lk, timeout, [&]{ return iter->second.has_value(); }))
     {
-      return iter->second;
+      std::optional<std::string> reply = std::move(iter->second);
+      m_replies.erase(iter);
+      return reply;
     }
   }
   return std::nullopt;
