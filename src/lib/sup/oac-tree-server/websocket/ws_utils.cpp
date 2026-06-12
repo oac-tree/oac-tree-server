@@ -37,7 +37,7 @@ std::unique_ptr<IServerProtocolFactory> CreateWSServerProtocolFactory(unsigned s
   return std::make_unique<WSServerProtocolFactory>(port);
 }
 
-std::unique_ptr<IClientJobManager> CreateWSClientProtocolManager(
+std::unique_ptr<IClientJobManager> CreateWSClientJobManager(
   const std::string& host_name, unsigned short port)
 {
   return std::make_unique<WSClientJobManager>(host_name, port);

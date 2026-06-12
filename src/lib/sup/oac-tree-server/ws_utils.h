@@ -38,7 +38,7 @@ namespace utils
 
 std::unique_ptr<IServerProtocolFactory> CreateWSServerProtocolFactory(unsigned short port);
 
-std::unique_ptr<IClientJobManager> CreateWSClientProtocolManager(
+std::unique_ptr<IClientJobManager> CreateWSClientJobManager(
   const std::string& host_name, unsigned short port);
 
 }  // namespace utils

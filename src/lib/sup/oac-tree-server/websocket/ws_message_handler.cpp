@@ -331,7 +331,6 @@ const std::vector<ConcreteRequestHandler>& GetConcreteRequestHandlers()
 
 std::string HandleGetNumberOfJobsRequest(const rapidjson::Document& doc, IJobManager& job_manager)
 {
-  (void)doc;  // Unused parameter
   if (!doc.HasMember(kRequestId) || !doc[kRequestId].IsUint64())
   {
     return {};

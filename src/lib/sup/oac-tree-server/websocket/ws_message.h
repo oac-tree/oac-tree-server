@@ -83,7 +83,6 @@ constexpr auto kEmptyJson = "";
 
 namespace endpoints
 {
-constexpr auto kWebSocketScheme = "ws://";
 constexpr auto kJobManagerEndpoint = "/info";
 constexpr auto kJobEndpointPrefix = "/job/";
 }
