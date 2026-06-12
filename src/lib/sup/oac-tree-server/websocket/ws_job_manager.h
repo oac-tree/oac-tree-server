@@ -28,6 +28,7 @@
 
 #include <simple-web/client_ws.hpp>
 
+#include <condition_variable>
 #include <future>
 #include <memory>
 #include <mutex>
@@ -58,11 +59,14 @@ public:
 
   void SendJobCommand(sup::dto::uint32 job_idx, sup::oac_tree::JobCommand command) override;
 
+  bool WaitForConnection(std::chrono::milliseconds timeout);
+
 private:
   std::string m_server_prefix;
   WsClient m_client;
   std::shared_ptr<WsClient::Connection> m_connection;
   mutable std::mutex m_connection_mutex; // To protect access to m_connection
+  std::condition_variable m_connection_cv; // To signal changes to m_connection
   std::future<void> m_client_thread;
   mutable MessageReplyHandler m_reply_handler;
 };

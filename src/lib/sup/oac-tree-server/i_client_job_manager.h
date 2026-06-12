@@ -28,6 +28,8 @@
 #include <sup/oac-tree/i_job_info_io.h>
 #include <sup/oac-tree/i_job.h>
 
+#include <chrono>
+
 namespace sup
 {
 namespace oac_tree_server
@@ -47,9 +49,20 @@ public:
 
   /**
    * @brief Create a client job that will forward all updates and user IO to the passed IJobInfoIO.
+   * @param job_idx Index that identifies a single job.
+   * @param job_info_io IJobInfoIO instance to which the created client job will forward all
+   * updates and user IO.
+   * @return A unique pointer to the created client job.
    */
   virtual std::unique_ptr<sup::oac_tree::IJob> CreateJob(
     sup::dto::uint32 job_idx, sup::oac_tree::IJobInfoIO& job_info_io) = 0;
+
+  /**
+   * @brief Wait for a connection to be established within the specified timeout.
+   * @param timeout The maximum duration in milliseconds to wait for a connection.
+   * @return true if the connection was established within the timeout, false otherwise.
+   */
+  virtual bool WaitForConnection(std::chrono::milliseconds timeout) = 0;
 
 protected:
   IClientJobManager() = default;

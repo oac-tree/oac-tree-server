@@ -36,6 +36,8 @@
 #include <functional>
 #include <vector>
 
+#include <iostream>
+
 namespace sup
 {
 namespace oac_tree_server

@@ -63,6 +63,8 @@ public:
   std::unique_ptr<sup::oac_tree::IJob> CreateJob(
     sup::dto::uint32 job_idx, sup::oac_tree::IJobInfoIO &job_info_io) override;
 
+  bool WaitForConnection(std::chrono::milliseconds timeout) override;
+
 private:
   std::string m_service_name;
   std::unique_ptr<IJobManager> m_job_manager;

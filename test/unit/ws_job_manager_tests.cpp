@@ -55,29 +55,6 @@ protected:
 
   using StrictMockJobManager = ::testing::StrictMock<UnitTestHelper::MockJobManager>;
 
-  template <typename TCallable>
-  auto RetryUntilConnected(const TCallable& callable)
-  {
-    constexpr int kMaxRetries = 200;
-    constexpr auto kRetryDelay = std::chrono::milliseconds(50);
-    for (int attempt = 0; attempt < kMaxRetries; ++attempt)
-    {
-      try
-      {
-        return callable();
-      }
-      catch (const NetworkException& ex)
-      {
-        if (std::string(ex.what()) != "No connection to job manager")
-        {
-          throw;
-        }
-        std::this_thread::sleep_for(kRetryDelay);
-      }
-    }
-    return callable();
-  }
-
   StrictMockJobManager m_job_manager;
   unsigned short m_test_port;
   std::unique_ptr<IServerProtocolFactory> m_server_factory;
@@ -85,86 +62,86 @@ protected:
   std::unique_ptr<IClientJobManager> m_client_mgr;
 };
 
-// TEST_F(WSJobManagerTest, GetServerPrefix)
-// {
-//   auto prefix_reply = m_client_mgr->GetServerPrefix();
-//   EXPECT_EQ(prefix_reply, kTestHost + ":" + std::to_string(m_test_port));
-// }
+TEST_F(WSJobManagerTest, GetServerPrefix)
+{
+  auto prefix_reply = m_client_mgr->GetServerPrefix();
+  EXPECT_EQ(prefix_reply, kTestHost + ":" + std::to_string(m_test_port));
+}
 
 TEST_F(WSJobManagerTest, GetNumberOfJobs)
 {
   const sup::dto::uint32 n_jobs = 42u;
+
   EXPECT_CALL(m_job_manager, GetNumberOfJobs()).Times(Exactly(1)).WillOnce(Return(n_jobs));
-  std::this_thread::sleep_for(std::chrono::milliseconds(1000)); // Give the server some time to start and be ready to accept connections.
+  EXPECT_TRUE(m_client_mgr->WaitForConnection(std::chrono::milliseconds(1000)));
   EXPECT_EQ(m_client_mgr->GetNumberOfJobs(), n_jobs);
 }
 
-// TEST_F(WSJobManagerTest, GetJobInfo)
-// {
-//   const auto procedure_string = UnitTestHelper::CreateProcedureString(kWorkspaceSequenceBody);
-//   auto proc = sup::oac_tree::ParseProcedureString(procedure_string);
-//   ASSERT_NE(proc.get(), nullptr);
-//   auto root = proc->RootInstruction();
-//   sup::oac_tree::InstructionMap instr_map{root};
-//   auto job_info = sup::oac_tree::utils::CreateJobInfo(*proc, instr_map);
+TEST_F(WSJobManagerTest, GetJobInfo)
+{
+  const auto procedure_string = UnitTestHelper::CreateProcedureString(kWorkspaceSequenceBody);
+  auto proc = sup::oac_tree::ParseProcedureString(procedure_string);
+  ASSERT_NE(proc.get(), nullptr);
+  auto root = proc->RootInstruction();
+  sup::oac_tree::InstructionMap instr_map{root};
+  auto job_info = sup::oac_tree::utils::CreateJobInfo(*proc, instr_map);
+  const sup::dto::uint32 job_id = 32u;
 
-//   const sup::dto::uint32 job_id = 32u;
-//   EXPECT_CALL(m_job_manager, GetJobInfo(job_id)).Times(Exactly(1)).WillOnce(Return(job_info));
-//   auto job_info_reply = RetryUntilConnected([this, job_id]() {
-//     return m_client_mgr->GetJobInfo(job_id);
-//   });
-//   EXPECT_EQ(job_info_reply, job_info);
-// }
+  EXPECT_CALL(m_job_manager, GetJobInfo(job_id)).Times(Exactly(1)).WillOnce(Return(job_info));
+  EXPECT_TRUE(m_client_mgr->WaitForConnection(std::chrono::milliseconds(1000)));
+  EXPECT_EQ(m_client_mgr->GetJobInfo(job_id), job_info);
+}
 
-// TEST_F(WSJobManagerTest, EditBreakpoint)
-// {
-//   const sup::dto::uint32 n_jobs = 42u;
-//   const sup::dto::uint32 job_id = 32u;
-//   const sup::dto::uint32 instr_id = 1u;
+TEST_F(WSJobManagerTest, EditBreakpoint)
+{
+  const sup::dto::uint32 n_jobs = 42u;
+  const sup::dto::uint32 job_id = 32u;
+  const sup::dto::uint32 instr_id = 1u;
 
-//   EXPECT_CALL(m_job_manager, GetNumberOfJobs()).Times(Exactly(1)).WillOnce(Return(n_jobs));
-//   EXPECT_EQ(RetryUntilConnected([this]() {
-//     return m_client_mgr->GetNumberOfJobs();
-//   }), n_jobs);
+  using ::testing::InSequence;
+  {
+    InSequence s;
+    EXPECT_CALL(m_job_manager, EditBreakpoint(job_id, instr_id, true)).Times(Exactly(1));
+    EXPECT_CALL(m_job_manager, GetNumberOfJobs()).Times(Exactly(1)).WillOnce(Return(n_jobs));
+  }
+  EXPECT_TRUE(m_client_mgr->WaitForConnection(std::chrono::milliseconds(1000)));
+  m_client_mgr->EditBreakpoint(job_id, instr_id, true);
+  EXPECT_EQ(m_client_mgr->GetNumberOfJobs(), n_jobs);
+}
 
-//   EXPECT_CALL(m_job_manager, EditBreakpoint(job_id, instr_id, true)).Times(Exactly(1));
-//   m_client_mgr->EditBreakpoint(job_id, instr_id, true);
-// }
+TEST_F(WSJobManagerTest, SendJobCommand)
+{
+  const sup::dto::uint32 n_jobs = 42u;
+  const sup::dto::uint32 job_id = 32u;
+  auto command = sup::oac_tree::JobCommand::kStart;
 
-// TEST_F(WSJobManagerTest, SendJobCommand)
-// {
-//   const sup::dto::uint32 n_jobs = 42u;
-//   const sup::dto::uint32 job_id = 32u;
-//   auto command = sup::oac_tree::JobCommand::kStart;
+  using ::testing::InSequence;
+  {
+    InSequence s;
+    EXPECT_CALL(m_job_manager, SendJobCommand(job_id, command)).Times(Exactly(1));
+    EXPECT_CALL(m_job_manager, GetNumberOfJobs()).Times(Exactly(1)).WillOnce(Return(n_jobs));
+  }
+  EXPECT_TRUE(m_client_mgr->WaitForConnection(std::chrono::milliseconds(1000)));
+  m_client_mgr->SendJobCommand(job_id, command);
+  EXPECT_EQ(m_client_mgr->GetNumberOfJobs(), n_jobs);
+}
 
-//   EXPECT_CALL(m_job_manager, GetNumberOfJobs()).Times(Exactly(1)).WillOnce(Return(n_jobs));
-//   EXPECT_EQ(RetryUntilConnected([this]() {
-//     return m_client_mgr->GetNumberOfJobs();
-//   }), n_jobs);
+TEST_F(WSJobManagerTest, TwoClients)
+{
+  const sup::dto::uint32 n_jobs = 8u;
 
-//   EXPECT_CALL(m_job_manager, SendJobCommand(job_id, command)).Times(Exactly(1));
-//   m_client_mgr->SendJobCommand(job_id, command);
-// }
+  EXPECT_CALL(m_job_manager, GetNumberOfJobs()).Times(Exactly(3)).WillRepeatedly(Return(n_jobs));
+  EXPECT_TRUE(m_client_mgr->WaitForConnection(std::chrono::milliseconds(1000)));
+  EXPECT_EQ(m_client_mgr->GetNumberOfJobs(), n_jobs);
 
-// TEST_F(WSJobManagerTest, CreateDestroyAndReuseClient)
-// {
-//   const sup::dto::uint32 n_jobs = 8u;
-//   EXPECT_CALL(m_job_manager, GetNumberOfJobs()).Times(Exactly(2)).WillRepeatedly(Return(n_jobs));
+  auto new_client_mgr = utils::CreateWSClientJobManager(kTestHost, m_test_port);
+  EXPECT_TRUE(new_client_mgr->WaitForConnection(std::chrono::milliseconds(1000)));
+  EXPECT_EQ(new_client_mgr->GetNumberOfJobs(), n_jobs);
 
-//   auto first_reply = RetryUntilConnected([this]() {
-//     return m_client_mgr->GetNumberOfJobs();
-//   });
-//   EXPECT_EQ(first_reply, n_jobs);
-
-//   auto old_client = std::move(m_client_mgr);
-//   m_client_mgr = utils::CreateWSClientProtocolManager(kTestHost, m_test_port);
-//   old_client.release();
-
-//   auto second_reply = RetryUntilConnected([this]() {
-//     return m_client_mgr->GetNumberOfJobs();
-//   });
-//   EXPECT_EQ(second_reply, n_jobs);
-// }
+  // after destroying the first client, the second one should still be able to get the number of jobs
+  m_client_mgr.release();
+  EXPECT_EQ(new_client_mgr->GetNumberOfJobs(), n_jobs);
+}
 
 WSJobManagerTest::WSJobManagerTest()
   : m_job_manager{}

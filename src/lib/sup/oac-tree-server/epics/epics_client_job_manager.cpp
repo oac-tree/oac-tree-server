@@ -88,6 +88,12 @@ std::unique_ptr<sup::oac_tree::IJob> EPICSClientJobManager::CreateJob(
   return result;
 }
 
+bool EPICSClientJobManager::WaitForConnection(std::chrono::milliseconds timeout)
+{
+  (void)timeout;
+  return true; // TODO: implement this in a correct way.
+}
+
 std::unique_ptr<IJobManager> CreateEPICSJobManager(const std::string& server_name)
 {
   sup::protocol::ProtocolRPCClientConfig protocol_config{};

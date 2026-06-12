@@ -31,6 +31,8 @@ namespace sup
 {
 namespace oac_tree_server
 {
+class WSJobManager;
+
 /**
   * @brief Client job manager implementation that uses WebSocket as the network backend.
  */
@@ -60,13 +62,15 @@ public:
   std::unique_ptr<sup::oac_tree::IJob> CreateJob(
     sup::dto::uint32 job_idx, sup::oac_tree::IJobInfoIO &job_info_io) override;
 
+  bool WaitForConnection(std::chrono::milliseconds timeout) override;
+
 private:
   std::string m_host_name;
   unsigned short m_port;
-  std::unique_ptr<IJobManager> m_job_manager;
+  std::unique_ptr<WSJobManager> m_job_manager;
 };
 
-std::unique_ptr<IJobManager> CreateWSJobManager(const std::string& host_name, unsigned short port);
+std::unique_ptr<WSJobManager> CreateWSJobManager(const std::string& host_name, unsigned short port);
 
 }  // namespace oac_tree_server
 

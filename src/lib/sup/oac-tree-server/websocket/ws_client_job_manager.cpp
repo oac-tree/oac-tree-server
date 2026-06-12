@@ -74,7 +74,12 @@ std::unique_ptr<sup::oac_tree::IJob> WSClientJobManager::CreateJob(
   return std::make_unique<WSClientJob>(*m_job_manager, job_idx, job_info_io);
 }
 
-std::unique_ptr<IJobManager> CreateWSJobManager(const std::string& host_name, unsigned short port)
+bool WSClientJobManager::WaitForConnection(std::chrono::milliseconds timeout)
+{
+  return m_job_manager->WaitForConnection(timeout);
+}
+
+std::unique_ptr<WSJobManager> CreateWSJobManager(const std::string& host_name, unsigned short port)
 {
   return std::make_unique<WSJobManager>(host_name, port);
 }

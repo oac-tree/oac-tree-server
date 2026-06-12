@@ -43,20 +43,27 @@ WSJobManager::WSJobManager(const std::string& host_name, unsigned short port)
   , m_client{CreateInfoEndpoint(m_server_prefix)}
   , m_connection{nullptr}
   , m_connection_mutex{}
+  , m_connection_cv{}
   , m_client_thread{}
   , m_reply_handler{}
 {
   m_client.on_open = [this](std::shared_ptr<WsClient::Connection> connection) {
-    std::lock_guard<std::mutex> lk{m_connection_mutex};
-    m_connection = connection;
+    {
+      std::lock_guard<std::mutex> lk{m_connection_mutex};
+      m_connection = connection;
+    }
+    m_connection_cv.notify_all();
   };
   m_client.on_close = [this](std::shared_ptr<WsClient::Connection> connection,
                              int status, const std::string& reason) {
     (void)connection;
     (void)status;
     (void)reason;
-    std::lock_guard<std::mutex> lk{m_connection_mutex};
-    m_connection = nullptr;
+    {
+      std::lock_guard<std::mutex> lk{m_connection_mutex};
+      m_connection = nullptr;
+    }
+    m_connection_cv.notify_all();
   };
   m_client.on_message = [this](std::shared_ptr<WsClient::Connection> connection,
                                std::shared_ptr<WsClient::InMessage> in_message) {
@@ -165,6 +172,12 @@ void WSJobManager::SendJobCommand(sup::dto::uint32 job_idx, sup::oac_tree::JobCo
   {
     m_connection->send(message);
   }
+}
+
+bool WSJobManager::WaitForConnection(std::chrono::milliseconds timeout)
+{
+  std::unique_lock<std::mutex> lk{m_connection_mutex};
+  return m_connection_cv.wait_for(lk, timeout, [this] { return m_connection != nullptr; });
 }
 
 }  // namespace oac_tree_server
