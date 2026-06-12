@@ -1,1 +1,2 @@
 add_subdirectory(oac-tree-server)
+add_subdirectory(ws_local_test_client)

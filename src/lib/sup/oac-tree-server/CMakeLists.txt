@@ -43,5 +43,6 @@ install(FILES
   i_client_job_manager.h
   i_job_manager.h
   i_server_protocol_factory.h
+  ws_utils.h
   DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/sup/oac-tree-server
 )

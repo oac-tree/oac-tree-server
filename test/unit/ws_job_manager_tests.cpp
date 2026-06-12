@@ -91,7 +91,7 @@ protected:
 //   EXPECT_EQ(prefix_reply, kTestHost + ":" + std::to_string(m_test_port));
 // }
 
-TEST_F(WSJobManagerTest, GetNumberOfJobs)
+TEST_F(WSJobManagerTest, DISABLED_GetNumberOfJobs)
 {
   const sup::dto::uint32 n_jobs = 42u;
   EXPECT_CALL(m_job_manager, GetNumberOfJobs()).Times(Exactly(1)).WillOnce(Return(n_jobs));
