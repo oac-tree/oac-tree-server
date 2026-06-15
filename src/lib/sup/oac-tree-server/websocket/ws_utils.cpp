@@ -25,6 +25,11 @@
 
 #include <sup/oac-tree-server/ws_utils.h>
 
+namespace
+{
+constexpr std::chrono::milliseconds kDefaultReplyTimeout{5000};
+}
+
 namespace sup
 {
 namespace oac_tree_server
@@ -40,7 +45,13 @@ std::unique_ptr<IServerProtocolFactory> CreateWSServerProtocolFactory(unsigned s
 std::unique_ptr<IClientJobManager> CreateWSClientJobManager(
   const std::string& host_name, unsigned short port)
 {
-  return std::make_unique<WSClientJobManager>(host_name, port);
+  return std::make_unique<WSClientJobManager>(host_name, port, kDefaultReplyTimeout);
+}
+
+std::unique_ptr<IClientJobManager> CreateWSClientJobManager(
+  const std::string& host_name, unsigned short port, std::chrono::milliseconds reply_timeout)
+{
+  return std::make_unique<WSClientJobManager>(host_name, port, reply_timeout);
 }
 
 }  // namespace utils

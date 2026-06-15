@@ -28,18 +28,13 @@
 
 #include <sup/oac-tree-server/exceptions.h>
 
-namespace
-{
-// TODO: is there a better way than this hardcoded timeout?
-constexpr sup::dto::int64 kReplyTimeoutMs = 5000u;
-}
-
 namespace sup
 {
 namespace oac_tree_server
 {
 
-WSJobManager::WSJobManager(const std::string& host_name, unsigned short port)
+WSJobManager::WSJobManager(const std::string& host_name, unsigned short port,
+                           std::chrono::milliseconds reply_timeout)
   : m_server_prefix{CreateServerPrefix(host_name, port)}
   , m_context{std::make_shared<WSClientContext>()}
   , m_client{CreateInfoEndpoint(m_server_prefix)}
@@ -47,6 +42,7 @@ WSJobManager::WSJobManager(const std::string& host_name, unsigned short port)
   , m_connection_mutex{}
   , m_connection_cv{}
   , m_reply_handler{}
+  , m_reply_timeout{reply_timeout}
 {
   m_client.on_open = [this](std::shared_ptr<WsClient::Connection> connection) {
     {
@@ -107,8 +103,7 @@ sup::dto::uint32 WSJobManager::GetNumberOfJobs() const
     throw NetworkException("No connection to job manager");
   }
   connection->send(message);
-  auto response = m_reply_handler.WaitForReply(id_guard.GetId(),
-                                               std::chrono::milliseconds(kReplyTimeoutMs));
+  auto response = m_reply_handler.WaitForReply(id_guard.GetId(), m_reply_timeout);
   if (!response)
   {
     throw NetworkException("No response from job manager");
@@ -131,8 +126,7 @@ sup::oac_tree::JobInfo WSJobManager::GetJobInfo(sup::dto::uint32 job_idx) const
     throw NetworkException("No connection to job manager");
   }
   connection->send(message);
-  auto response = m_reply_handler.WaitForReply(id_guard.GetId(),
-                                               std::chrono::milliseconds(kReplyTimeoutMs));
+  auto response = m_reply_handler.WaitForReply(id_guard.GetId(), m_reply_timeout);
   if (!response)  {
     throw NetworkException("No response from job manager");
   }

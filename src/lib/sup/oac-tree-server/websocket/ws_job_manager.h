@@ -28,6 +28,7 @@
 
 #include <simple-web/client_ws.hpp>
 
+#include <chrono>
 #include <condition_variable>
 #include <memory>
 #include <mutex>
@@ -47,7 +48,15 @@ using WsClient = SimpleWeb::SocketClient<SimpleWeb::WS>;
 class WSJobManager : public IJobManager
 {
 public:
-  WSJobManager(const std::string& host_name, unsigned short port);
+  /**
+   * @brief Construct a WSJobManager with a configurable timeout for waiting on server replies.
+   * @param host_name Host name of the server.
+   * @param port Port of the server.
+   * @param reply_timeout Maximum duration to wait for a reply to a request before failing.
+   */
+  WSJobManager(const std::string& host_name, unsigned short port,
+               std::chrono::milliseconds reply_timeout);
+
   virtual ~WSJobManager();
 
   std::string GetServerPrefix() const override;
@@ -82,6 +91,7 @@ private:
   mutable std::mutex m_connection_mutex; // To protect access to m_connection
   std::condition_variable m_connection_cv; // To signal changes to m_connection
   mutable MessageReplyHandler m_reply_handler;
+  std::chrono::milliseconds m_reply_timeout;
 };
 
 }  // namespace oac_tree_server

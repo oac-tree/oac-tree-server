@@ -25,6 +25,7 @@
 
 #include <sup/oac-tree-server/i_client_job_manager.h>
 
+#include <chrono>
 #include <memory>
 
 namespace sup
@@ -39,7 +40,15 @@ class WSJobManager;
 class WSClientJobManager final : public IClientJobManager
 {
 public:
-  WSClientJobManager(const std::string& host_name, unsigned short port);
+  /**
+   * @brief Construct a WSClientJobManager with a configurable timeout for waiting on server replies.
+   * @param host_name Host name of the server.
+   * @param port Port of the server.
+   * @param reply_timeout Maximum duration to wait for a reply to a request before failing.
+   */
+  WSClientJobManager(const std::string& host_name, unsigned short port,
+                     std::chrono::milliseconds reply_timeout);
+
  ~WSClientJobManager() override;
 
   // No copy or move
@@ -70,7 +79,8 @@ private:
   std::unique_ptr<WSJobManager> m_job_manager;
 };
 
-std::unique_ptr<WSJobManager> CreateWSJobManager(const std::string& host_name, unsigned short port);
+std::unique_ptr<WSJobManager> CreateWSJobManager(const std::string& host_name, unsigned short port,
+                                                 std::chrono::milliseconds reply_timeout);
 
 }  // namespace oac_tree_server
 

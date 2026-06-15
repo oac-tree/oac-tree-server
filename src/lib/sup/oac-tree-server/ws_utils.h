@@ -26,6 +26,7 @@
 #include <sup/oac-tree-server/i_client_job_manager.h>
 #include <sup/oac-tree-server/i_server_protocol_factory.h>
 
+#include <chrono>
 #include <memory>
 #include <string>
 
@@ -40,6 +41,9 @@ std::unique_ptr<IServerProtocolFactory> CreateWSServerProtocolFactory(unsigned s
 
 std::unique_ptr<IClientJobManager> CreateWSClientJobManager(
   const std::string& host_name, unsigned short port);
+
+std::unique_ptr<IClientJobManager> CreateWSClientJobManager(
+  const std::string& host_name, unsigned short port, std::chrono::milliseconds reply_timeout);
 
 }  // namespace utils
 

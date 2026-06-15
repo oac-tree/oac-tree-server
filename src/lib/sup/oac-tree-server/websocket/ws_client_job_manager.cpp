@@ -32,11 +32,12 @@ namespace sup
 namespace oac_tree_server
 {
 
-WSClientJobManager::WSClientJobManager(const std::string& host_name, unsigned short port)
+WSClientJobManager::WSClientJobManager(const std::string& host_name, unsigned short port,
+                                       std::chrono::milliseconds reply_timeout)
   : IClientJobManager{}
   , m_host_name(host_name)
   , m_port(port)
-  , m_job_manager{CreateWSJobManager(host_name, port)}
+  , m_job_manager{CreateWSJobManager(host_name, port, reply_timeout)}
 {}
 
 WSClientJobManager::~WSClientJobManager() = default;
@@ -80,9 +81,10 @@ bool WSClientJobManager::WaitForConnection(std::chrono::milliseconds timeout)
   return m_job_manager->WaitForConnection(timeout);
 }
 
-std::unique_ptr<WSJobManager> CreateWSJobManager(const std::string& host_name, unsigned short port)
+std::unique_ptr<WSJobManager> CreateWSJobManager(const std::string& host_name, unsigned short port,
+                                                 std::chrono::milliseconds reply_timeout)
 {
-  return std::make_unique<WSJobManager>(host_name, port);
+  return std::make_unique<WSJobManager>(host_name, port, reply_timeout);
 }
 
 }  // namespace oac_tree_server
