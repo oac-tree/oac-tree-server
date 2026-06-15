@@ -5,7 +5,6 @@ target_sources(oac-tree-server
   automation_protocol_client.cpp
   automation_server.cpp
   client_anyvalue_manager.cpp
-  client_job.cpp
   client_reply_delegator.cpp
   control_protocol_server.cpp
   exceptions.cpp

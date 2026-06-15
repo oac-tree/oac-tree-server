@@ -4,6 +4,7 @@ target_sources(oac-tree-server
   anyvalue_update_queue.cpp
   epics_anyvalue_manager_registry.cpp
   epics_anyvalue_manager.cpp
+  epics_client_job.cpp
   epics_client_job_manager.cpp
   epics_input_client.cpp
   epics_input_server.cpp

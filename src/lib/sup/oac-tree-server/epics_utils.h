@@ -36,7 +36,6 @@ namespace oac_tree_server
 namespace utils
 {
 
-// TODO: remove this (or move to client manager)
 std::unique_ptr<IServerProtocolFactory> CreateEPICSServerProtocolFactory(
   const std::string& service_name, sup::dto::uint32 n_managers);
 

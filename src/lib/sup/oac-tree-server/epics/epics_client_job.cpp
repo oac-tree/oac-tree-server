@@ -20,10 +20,10 @@
  * of the distribution package.
  ******************************************************************************/
 
-#include "client_job.h"
+#include "epics_client_job.h"
 
-#include "anyvalue_io_helper.h"
-#include "client_anyvalue_manager.h"
+#include <sup/oac-tree-server/base/anyvalue_io_helper.h>
+#include <sup/oac-tree-server/base/client_anyvalue_manager.h>
 
 #include <sup/oac-tree-server/exceptions.h>
 
@@ -31,13 +31,13 @@ namespace sup
 {
 namespace oac_tree_server
 {
-class ClientJobImpl
+class EPICSClientJobImpl
 {
 public:
-  ClientJobImpl(IJobManager& job_manager, sup::dto::uint32 job_idx,
-                const AnyValueIOFactoryFunction& factory_func,
-                sup::oac_tree::IJobInfoIO& job_info_io);
-  ~ClientJobImpl();
+  EPICSClientJobImpl(IJobManager& job_manager, sup::dto::uint32 job_idx,
+                     const AnyValueIOFactoryFunction& factory_func,
+                     sup::oac_tree::IJobInfoIO& job_info_io);
+  ~EPICSClientJobImpl();
 
   IJobManager& GetJobManager();
 
@@ -53,47 +53,47 @@ private:
   std::unique_ptr<sup::oac_tree::JobInfo> m_job_info;
 };
 
-ClientJob::ClientJob(IJobManager& job_manager, sup::dto::uint32 job_idx,
-                     const AnyValueIOFactoryFunction& factory_func,
-                     sup::oac_tree::IJobInfoIO& job_info_io)
+EPICSClientJob::EPICSClientJob(IJobManager& job_manager, sup::dto::uint32 job_idx,
+                               const AnyValueIOFactoryFunction& factory_func,
+                               sup::oac_tree::IJobInfoIO& job_info_io)
   : IClientJob{}
-  , m_impl{std::make_unique<ClientJobImpl>(job_manager, job_idx, factory_func, job_info_io)}
+  , m_impl{std::make_unique<EPICSClientJobImpl>(job_manager, job_idx, factory_func, job_info_io)}
 {}
 
-ClientJob::~ClientJob() = default;
+EPICSClientJob::~EPICSClientJob() = default;
 
-ClientJob::ClientJob(ClientJob&& other) noexcept
+EPICSClientJob::EPICSClientJob(EPICSClientJob&& other) noexcept
   : IClientJob{}
   , m_impl{std::move(other.m_impl)}
 {}
 
-ClientJob& ClientJob::operator=(ClientJob&& other) noexcept
+EPICSClientJob& EPICSClientJob::operator=(EPICSClientJob&& other) noexcept
 {
-  ClientJob moved{std::move(other)};
+  EPICSClientJob moved{std::move(other)};
   std::swap(m_impl, moved.m_impl);
   return *this;
 }
 
-const sup::oac_tree::JobInfo& ClientJob::GetInfo() const
+const sup::oac_tree::JobInfo& EPICSClientJob::GetInfo() const
 {
   return m_impl->GetInfo();
 }
 
-void ClientJob::SetBreakpoint(sup::dto::uint32 instr_idx)
+void EPICSClientJob::SetBreakpoint(sup::dto::uint32 instr_idx)
 {
   auto& job_manager = m_impl->GetJobManager();
   auto job_idx = m_impl->GetJobIndex();
   job_manager.EditBreakpoint(job_idx, instr_idx, true);
 }
 
-void ClientJob::RemoveBreakpoint(sup::dto::uint32 instr_idx)
+void EPICSClientJob::RemoveBreakpoint(sup::dto::uint32 instr_idx)
 {
   auto& job_manager = m_impl->GetJobManager();
   auto job_idx = m_impl->GetJobIndex();
   job_manager.EditBreakpoint(job_idx, instr_idx, false);
 }
 
-void ClientJob::Start()
+void EPICSClientJob::Start()
 {
   using sup::oac_tree::JobCommand;
   auto& job_manager = m_impl->GetJobManager();
@@ -101,7 +101,7 @@ void ClientJob::Start()
   job_manager.SendJobCommand(job_idx, JobCommand::kStart);
 }
 
-void ClientJob::Step()
+void EPICSClientJob::Step()
 {
   using sup::oac_tree::JobCommand;
   auto& job_manager = m_impl->GetJobManager();
@@ -109,7 +109,7 @@ void ClientJob::Step()
   job_manager.SendJobCommand(job_idx, JobCommand::kStep);
 }
 
-void ClientJob::Pause()
+void EPICSClientJob::Pause()
 {
   using sup::oac_tree::JobCommand;
   auto& job_manager = m_impl->GetJobManager();
@@ -117,7 +117,7 @@ void ClientJob::Pause()
   job_manager.SendJobCommand(job_idx, JobCommand::kPause);
 }
 
-void ClientJob::Reset()
+void EPICSClientJob::Reset()
 {
   using sup::oac_tree::JobCommand;
   auto& job_manager = m_impl->GetJobManager();
@@ -125,7 +125,7 @@ void ClientJob::Reset()
   job_manager.SendJobCommand(job_idx, JobCommand::kReset);
 }
 
-void ClientJob::Halt()
+void EPICSClientJob::Halt()
 {
   using sup::oac_tree::JobCommand;
   auto& job_manager = m_impl->GetJobManager();
@@ -133,20 +133,20 @@ void ClientJob::Halt()
   job_manager.SendJobCommand(job_idx, JobCommand::kHalt);
 }
 
-bool ClientJob::WaitForConnection(std::chrono::milliseconds timeout)
+bool EPICSClientJob::WaitForConnection(std::chrono::milliseconds timeout)
 {
   (void)timeout;
   return true; // TODO: implement this in a correct way.
 }
 
-std::unique_ptr<IClientJob> CreateClientJob(
+std::unique_ptr<IClientJob> CreateEPICSClientJob(
     IJobManager &job_manager, sup::dto::uint32 job_idx,
     const AnyValueIOFactoryFunction &factory_func, sup::oac_tree::IJobInfoIO &job_info_io)
 {
   std::unique_ptr<IClientJob> result{};
   try
   {
-    result = std::make_unique<ClientJob>(job_manager, job_idx, factory_func, job_info_io);
+    result = std::make_unique<EPICSClientJob>(job_manager, job_idx, factory_func, job_info_io);
   }
   catch(const MessageException& e)
   {
@@ -155,9 +155,9 @@ std::unique_ptr<IClientJob> CreateClientJob(
   return result;
 }
 
-ClientJobImpl::ClientJobImpl(IJobManager& job_manager, sup::dto::uint32 job_idx,
-                             const AnyValueIOFactoryFunction& factory_func,
-                             sup::oac_tree::IJobInfoIO& job_info_io)
+EPICSClientJobImpl::EPICSClientJobImpl(IJobManager& job_manager, sup::dto::uint32 job_idx,
+                                       const AnyValueIOFactoryFunction& factory_func,
+                                       sup::oac_tree::IJobInfoIO& job_info_io)
   : m_job_manager{job_manager}
   , m_job_idx{job_idx}
   , m_av_mgr{job_info_io}
@@ -167,7 +167,7 @@ ClientJobImpl::ClientJobImpl(IJobManager& job_manager, sup::dto::uint32 job_idx,
   auto n_jobs = m_job_manager.GetNumberOfJobs();
   if (job_idx >= n_jobs)
   {
-    const std::string error = "ClientJob ctor: trying to create job with index ["
+    const std::string error = "EPICSClientJob ctor: trying to create job with index ["
       + std::to_string(job_idx) + "] out of [" + std::to_string(n_jobs) + "] jobs";
     throw InvalidOperationException(error);
   }
@@ -178,19 +178,19 @@ ClientJobImpl::ClientJobImpl(IJobManager& job_manager, sup::dto::uint32 job_idx,
   InitializeInstructions(*m_anyvalue_io, job_prefix, m_job_info->GetNumberOfInstructions());
 }
 
-ClientJobImpl::~ClientJobImpl() = default;
+EPICSClientJobImpl::~EPICSClientJobImpl() = default;
 
-IJobManager& ClientJobImpl::GetJobManager()
+IJobManager& EPICSClientJobImpl::GetJobManager()
 {
   return m_job_manager;
 }
 
-sup::dto::uint32 ClientJobImpl::GetJobIndex() const
+sup::dto::uint32 EPICSClientJobImpl::GetJobIndex() const
 {
   return m_job_idx;
 }
 
-const sup::oac_tree::JobInfo& ClientJobImpl::GetInfo() const
+const sup::oac_tree::JobInfo& EPICSClientJobImpl::GetInfo() const
 {
   return *m_job_info;
 }

@@ -20,7 +20,6 @@
  * of the distribution package.
  ******************************************************************************/
 
-#include <sup/oac-tree-server/base/client_job.h>
 #include <sup/oac-tree-server/epics_utils.h>
 
 #include <sup/protocol/protocol_rpc_client.h>

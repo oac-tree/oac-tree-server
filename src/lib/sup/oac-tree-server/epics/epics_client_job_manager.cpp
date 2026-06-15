@@ -26,8 +26,9 @@
 
 #include <sup/oac-tree-server/exceptions.h>
 
+#include "epics_client_job.h"
+
 #include <sup/oac-tree-server/base/automation_client_stack.h>
-#include <sup/oac-tree-server/base/client_job.h>
 #include <sup/oac-tree-server/base/oac_tree_protocol.h>
 
 #include <sup/epics/epics_protocol_factory.h>
@@ -78,8 +79,8 @@ std::unique_ptr<IClientJob> EPICSClientJobManager::CreateJob(
   std::unique_ptr<IClientJob> result{};
   try
   {
-    result = std::make_unique<ClientJob>(*m_job_manager, job_idx,
-                                         CreateEPICSIOClient, job_info_io);
+    result = std::make_unique<EPICSClientJob>(*m_job_manager, job_idx,
+                                              CreateEPICSIOClient, job_info_io);
   }
   catch(const MessageException& e)
   {

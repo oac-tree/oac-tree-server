@@ -20,11 +20,10 @@
  * of the distribution package.
  ******************************************************************************/
 
-#ifndef SUP_OAC_TREE_SERVER_CLIENT_JOB_H_
-#define SUP_OAC_TREE_SERVER_CLIENT_JOB_H_
+#ifndef SUP_OAC_TREE_SERVER_EPICS_CLIENT_JOB_H_
+#define SUP_OAC_TREE_SERVER_EPICS_CLIENT_JOB_H_
 
-#include "i_anyvalue_io.h"
-
+#include <sup/oac-tree-server/base/i_anyvalue_io.h>
 #include <sup/oac-tree-server/i_client_job.h>
 #include <sup/oac-tree-server/i_job_manager.h>
 
@@ -36,23 +35,24 @@ namespace sup
 {
 namespace oac_tree_server
 {
-class ClientJobImpl;
+class EPICSClientJobImpl;
 /**
- * @brief ClientJob creates and manages the different components required to monitor and interact
- * with a job on the client side. It uses a provided IJobInfoIO object to handle all updates and
- * input/output requests.
+ * @brief EPICSClientJob creates and manages the different components required to monitor and
+ * interact with a job on the client side. It uses a provided IJobInfoIO object to handle all
+ * updates and input/output requests.
  */
-class ClientJob : public IClientJob
+class EPICSClientJob : public IClientJob
 {
 public:
-  ClientJob(IJobManager& job_manager, sup::dto::uint32 job_idx,
-            const AnyValueIOFactoryFunction& factory_func, sup::oac_tree::IJobInfoIO& job_info_io);
-  ClientJob(const ClientJob&) = delete;
-  ClientJob& operator=(const ClientJob&) = delete;
-  ~ClientJob() override;
+  EPICSClientJob(IJobManager& job_manager, sup::dto::uint32 job_idx,
+                 const AnyValueIOFactoryFunction& factory_func,
+                 sup::oac_tree::IJobInfoIO& job_info_io);
+  EPICSClientJob(const EPICSClientJob&) = delete;
+  EPICSClientJob& operator=(const EPICSClientJob&) = delete;
+  ~EPICSClientJob() override;
 
-  ClientJob(ClientJob&& other) noexcept;
-  ClientJob& operator=(ClientJob&& other) noexcept;
+  EPICSClientJob(EPICSClientJob&& other) noexcept;
+  EPICSClientJob& operator=(EPICSClientJob&& other) noexcept;
 
   const sup::oac_tree::JobInfo& GetInfo() const override;
   void SetBreakpoint(sup::dto::uint32 instr_idx) override;
@@ -66,7 +66,7 @@ public:
   bool WaitForConnection(std::chrono::milliseconds timeout) override;
 
 private:
-  std::unique_ptr<ClientJobImpl> m_impl;
+  std::unique_ptr<EPICSClientJobImpl> m_impl;
 };
 
 /**
@@ -79,7 +79,7 @@ private:
  * @param job_info_io User provided IJobInfoIO object that will receive all updates and user IO.
  * @return An IJob object on success. An empty unique_ptr on failure.
  */
-std::unique_ptr<IClientJob> CreateClientJob(
+std::unique_ptr<IClientJob> CreateEPICSClientJob(
     IJobManager &job_manager, sup::dto::uint32 job_idx,
     const AnyValueIOFactoryFunction &factory_func, sup::oac_tree::IJobInfoIO &job_info_io);
 
@@ -87,4 +87,4 @@ std::unique_ptr<IClientJob> CreateClientJob(
 
 }  // namespace sup
 
-#endif  // SUP_OAC_TREE_SERVER_I_CLIENT_JOB_H_
+#endif  // SUP_OAC_TREE_SERVER_EPICS_CLIENT_JOB_H_
