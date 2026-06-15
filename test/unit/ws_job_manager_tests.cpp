@@ -143,6 +143,41 @@ TEST_F(WSJobManagerTest, TwoClients)
   EXPECT_EQ(new_client_mgr->GetNumberOfJobs(), n_jobs);
 }
 
+TEST_F(WSJobManagerTest, CreateJobReturnsClientJob)
+{
+  const auto procedure_string = UnitTestHelper::CreateProcedureString(kWorkspaceSequenceBody);
+  auto proc = sup::oac_tree::ParseProcedureString(procedure_string);
+  ASSERT_NE(proc.get(), nullptr);
+  auto root = proc->RootInstruction();
+  sup::oac_tree::InstructionMap instr_map{root};
+  const auto job_info = sup::oac_tree::utils::CreateJobInfo(*proc, instr_map);
+
+  EXPECT_CALL(m_job_manager, GetNumberOfJobs()).Times(Exactly(1)).WillOnce(Return(1u));
+  EXPECT_CALL(m_job_manager, GetJobInfo(0u)).Times(Exactly(1)).WillOnce(Return(job_info));
+  EXPECT_TRUE(m_client_mgr->WaitForConnection(std::chrono::milliseconds(1000)));
+
+  UnitTestHelper::TestJobInfoIO job_info_io;
+  auto job = m_client_mgr->CreateJob(0u, job_info_io);
+  ASSERT_NE(job.get(), nullptr);
+  EXPECT_EQ(job->GetInfo().GetNumberOfVariables(), job_info.GetNumberOfVariables());
+  EXPECT_EQ(job->GetInfo().GetNumberOfInstructions(), job_info.GetNumberOfInstructions());
+}
+
+TEST_F(WSJobManagerTest, ServerFactoryRejectsReuse)
+{
+  // The fixture already obtained the main server from the factory in its constructor, so the
+  // factory is now empty and any further use must throw.
+  EXPECT_THROW(m_server_factory->CreateMainServer(m_job_manager), InvalidOperationException);
+  EXPECT_THROW(m_server_factory->CreateJobInfoIO(0u, 0u), InvalidOperationException);
+}
+
+TEST(WSServerProtocolFactoryTest, GetServerIdReportsLocalhostAndPort)
+{
+  const auto port = g_next_test_port.fetch_add(1u);
+  auto factory = utils::CreateWSServerProtocolFactory(port);
+  EXPECT_EQ(factory->GetServerId(), kTestHost + ":" + std::to_string(port));
+}
+
 TEST(WSJobManagerErrorTest, RequestsThrowWhenNotConnected)
 {
   const auto port = g_next_test_port.fetch_add(1u);

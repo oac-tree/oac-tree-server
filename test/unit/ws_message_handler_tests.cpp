@@ -31,6 +31,8 @@
 
 #include <gtest/gtest.h>
 
+#include <chrono>
+
 using ::testing::Exactly;
 using ::testing::Return;
 
@@ -230,4 +232,125 @@ TEST_F(JobManagerMessageHandlerTest, HandleMessage_SendJobCommand_MissingFields)
 {
   auto reply = HandleJobManagerMessage(R"({"request": 3, "job_index": 0})", m_mock_manager);
   EXPECT_TRUE(reply.empty());
+}
+
+// ---------------------------------------------------------------------------
+// Robustness: each update handler rejects a message that is missing its fields
+// (StrictMock ensures the corresponding IJobInfoIO method is not called)
+// ---------------------------------------------------------------------------
+
+TEST_F(UpdateMessageHandlerTest, HandleMessage_Breakpoint_MissingId)
+{
+  HandleUpdateMessage(R"({"update": 1})", m_mock_io);
+}
+
+TEST_F(UpdateMessageHandlerTest, HandleMessage_InstructionState_MissingFields)
+{
+  HandleUpdateMessage(R"({"update": 2})", m_mock_io);
+}
+
+TEST_F(UpdateMessageHandlerTest, HandleMessage_VariableState_MissingFields)
+{
+  HandleUpdateMessage(R"({"update": 3})", m_mock_io);
+}
+
+TEST_F(UpdateMessageHandlerTest, HandleMessage_VariableState_UnparsableValue)
+{
+  HandleUpdateMessage(
+      R"({"update": 3, "id": 1, "connected": true, "value": "x", "type": "not-a-type"})",
+      m_mock_io);
+}
+
+TEST_F(UpdateMessageHandlerTest, HandleMessage_PutValue_MissingFields)
+{
+  HandleUpdateMessage(R"({"update": 4})", m_mock_io);
+}
+
+TEST_F(UpdateMessageHandlerTest, HandleMessage_TextMessage_MissingMessage)
+{
+  HandleUpdateMessage(R"({"update": 5})", m_mock_io);
+}
+
+TEST_F(UpdateMessageHandlerTest, HandleMessage_Log_MissingFields)
+{
+  HandleUpdateMessage(R"({"update": 6})", m_mock_io);
+}
+
+TEST_F(JobManagerMessageHandlerTest, HandleMessage_GetNumberOfJobs_MissingRequestId)
+{
+  auto reply = HandleJobManagerMessage(R"({"request": 0})", m_mock_manager);
+  EXPECT_TRUE(reply.empty());
+}
+
+TEST_F(JobManagerMessageHandlerTest, HandleMessage_GetJobInfo_MissingRequestId)
+{
+  auto reply = HandleJobManagerMessage(R"({"request": 1, "job_index": 0})", m_mock_manager);
+  EXPECT_TRUE(reply.empty());
+}
+
+// ===========================================================================
+// Reply-parsing free functions
+// ===========================================================================
+
+TEST(ReplyParsingTest, ParseNumberOfJobs_Valid)
+{
+  auto result = ParseNumberOfJobsReply(CreateGetNumberOfJobsReplyMessage(7u, 5u));
+  ASSERT_TRUE(result.has_value());
+  EXPECT_EQ(result.value(), 5u);
+}
+
+TEST(ReplyParsingTest, ParseNumberOfJobs_InvalidJson)
+{
+  EXPECT_FALSE(ParseNumberOfJobsReply("not json").has_value());
+}
+
+TEST(ReplyParsingTest, ParseNumberOfJobs_MissingField)
+{
+  EXPECT_FALSE(ParseNumberOfJobsReply(R"({"other": 1})").has_value());
+}
+
+TEST(ReplyParsingTest, ParseJobInfo_Valid)
+{
+  const auto job_info = BuildJobInfo();
+  auto result = ParseJobInfoReply(CreateGetJobInfoReplyMessage(7u, 0u, job_info));
+  ASSERT_TRUE(result.has_value());
+  EXPECT_EQ(result.value(), job_info);
+}
+
+TEST(ReplyParsingTest, ParseJobInfo_InvalidJson)
+{
+  EXPECT_FALSE(ParseJobInfoReply("not json").has_value());
+}
+
+TEST(ReplyParsingTest, ParseJobInfo_MissingFields)
+{
+  EXPECT_FALSE(ParseJobInfoReply(R"({"other": 1})").has_value());
+}
+
+TEST(ReplyParsingTest, ParseJobInfo_UnparsableValue)
+{
+  EXPECT_FALSE(ParseJobInfoReply(R"({"value": "x", "type": "not-a-type"})").has_value());
+}
+
+TEST(JobManagerReplyHandlerTest, ValidReplyIsDelegated)
+{
+  MessageReplyHandler handler;
+  auto id_guard = handler.CreateNewMessageId();
+  HandleJobManagerReply(CreateGetNumberOfJobsReplyMessage(id_guard.GetId(), 3u), handler);
+  auto reply = handler.WaitForReply(id_guard.GetId(), std::chrono::milliseconds(100));
+  EXPECT_TRUE(reply.has_value());
+}
+
+TEST(JobManagerReplyHandlerTest, InvalidJsonIgnored)
+{
+  MessageReplyHandler handler;
+  HandleJobManagerReply("not json", handler);  // must not throw
+  SUCCEED();
+}
+
+TEST(JobManagerReplyHandlerTest, MissingRequestIdIgnored)
+{
+  MessageReplyHandler handler;
+  HandleJobManagerReply(R"({"other": 1})", handler);
+  SUCCEED();
 }
