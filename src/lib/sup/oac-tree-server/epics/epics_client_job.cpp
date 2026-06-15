@@ -27,6 +27,9 @@
 
 #include <sup/oac-tree-server/exceptions.h>
 
+#include <chrono>
+#include <thread>
+
 namespace sup
 {
 namespace oac_tree_server
@@ -135,8 +138,7 @@ void EPICSClientJob::Halt()
 
 bool EPICSClientJob::WaitForConnection(std::chrono::milliseconds timeout)
 {
-  (void)timeout;
-  return true; // TODO: implement this in a correct way.
+  return WaitForServerConnection(m_impl->GetJobManager(), timeout);
 }
 
 std::unique_ptr<IClientJob> CreateEPICSClientJob(
@@ -153,6 +155,26 @@ std::unique_ptr<IClientJob> CreateEPICSClientJob(
     // ignore
   }
   return result;
+}
+
+bool WaitForServerConnection(IJobManager& job_manager, std::chrono::milliseconds timeout)
+{
+  const auto deadline = std::chrono::steady_clock::now() + timeout;
+  do
+  {
+    try
+    {
+      (void)job_manager.GetServerPrefix();
+      return true;
+    }
+    catch (const MessageException&)
+    {
+      // Server not reachable (yet); keep probing until the deadline.
+    }
+    // Guard against busy-looping in case a probe ever fails quickly.
+    std::this_thread::sleep_for(std::chrono::milliseconds(100));
+  } while (std::chrono::steady_clock::now() < deadline);
+  return false;
 }
 
 EPICSClientJobImpl::EPICSClientJobImpl(IJobManager& job_manager, sup::dto::uint32 job_idx,

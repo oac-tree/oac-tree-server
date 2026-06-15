@@ -91,8 +91,7 @@ std::unique_ptr<IClientJob> EPICSClientJobManager::CreateJob(
 
 bool EPICSClientJobManager::WaitForConnection(std::chrono::milliseconds timeout)
 {
-  (void)timeout;
-  return true; // TODO: implement this in a correct way.
+  return WaitForServerConnection(*m_job_manager, timeout);
 }
 
 std::unique_ptr<IJobManager> CreateEPICSJobManager(const std::string& server_name)

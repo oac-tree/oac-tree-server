@@ -83,6 +83,24 @@ std::unique_ptr<IClientJob> CreateEPICSClientJob(
     IJobManager &job_manager, sup::dto::uint32 job_idx,
     const AnyValueIOFactoryFunction &factory_func, sup::oac_tree::IJobInfoIO &job_info_io);
 
+/**
+ * @brief Wait until the server backing the given job manager is reachable.
+ *
+ * The underlying sup::protocol RPC stack exposes no persistent-connection concept, so connectivity
+ * is detected by probing the server with a lightweight, read-only request and treating a successful
+ * reply as "connected". The probe is retried until the timeout expires, which also allows the server
+ * to come up after this call has started.
+ *
+ * @note A single probe that cannot reach the server blocks for the configured RPC timeout (5 s by
+ * default) before failing, so when the server is unreachable this call may return somewhat later
+ * than the requested timeout.
+ *
+ * @param job_manager Job manager whose server connection is probed.
+ * @param timeout Maximum duration to wait for the connection.
+ * @return true if the server replied within the timeout, false otherwise.
+ */
+bool WaitForServerConnection(IJobManager& job_manager, std::chrono::milliseconds timeout);
+
 }  // namespace oac_tree_server
 
 }  // namespace sup
