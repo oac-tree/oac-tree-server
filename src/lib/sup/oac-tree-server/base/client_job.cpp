@@ -56,14 +56,14 @@ private:
 ClientJob::ClientJob(IJobManager& job_manager, sup::dto::uint32 job_idx,
                      const AnyValueIOFactoryFunction& factory_func,
                      sup::oac_tree::IJobInfoIO& job_info_io)
-  : IJob{}
+  : IClientJob{}
   , m_impl{std::make_unique<ClientJobImpl>(job_manager, job_idx, factory_func, job_info_io)}
 {}
 
 ClientJob::~ClientJob() = default;
 
 ClientJob::ClientJob(ClientJob&& other) noexcept
-  : IJob{}
+  : IClientJob{}
   , m_impl{std::move(other.m_impl)}
 {}
 
@@ -133,11 +133,17 @@ void ClientJob::Halt()
   job_manager.SendJobCommand(job_idx, JobCommand::kHalt);
 }
 
-std::unique_ptr<sup::oac_tree::IJob> CreateClientJob(
+bool ClientJob::WaitForConnection(std::chrono::milliseconds timeout)
+{
+  (void)timeout;
+  return true; // TODO: implement this in a correct way.
+}
+
+std::unique_ptr<IClientJob> CreateClientJob(
     IJobManager &job_manager, sup::dto::uint32 job_idx,
     const AnyValueIOFactoryFunction &factory_func, sup::oac_tree::IJobInfoIO &job_info_io)
 {
-  std::unique_ptr<sup::oac_tree::IJob> result{};
+  std::unique_ptr<IClientJob> result{};
   try
   {
     result = std::make_unique<ClientJob>(job_manager, job_idx, factory_func, job_info_io);

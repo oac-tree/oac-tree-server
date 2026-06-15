@@ -23,10 +23,10 @@
 #ifndef SUP_OAC_TREE_SERVER_I_CLIENT_JOB_MANAGER_H_
 #define SUP_OAC_TREE_SERVER_I_CLIENT_JOB_MANAGER_H_
 
+#include <sup/oac-tree-server/i_client_job.h>
 #include <sup/oac-tree-server/i_job_manager.h>
 
 #include <sup/oac-tree/i_job_info_io.h>
-#include <sup/oac-tree/i_job.h>
 
 #include <chrono>
 
@@ -54,7 +54,7 @@ public:
    * updates and user IO.
    * @return A unique pointer to the created client job.
    */
-  virtual std::unique_ptr<sup::oac_tree::IJob> CreateJob(
+  virtual std::unique_ptr<IClientJob> CreateJob(
     sup::dto::uint32 job_idx, sup::oac_tree::IJobInfoIO& job_info_io) = 0;
 
   /**

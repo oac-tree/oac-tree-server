@@ -68,7 +68,7 @@ void WSClientJobManager::SendJobCommand(sup::dto::uint32 job_idx,
   m_job_manager->SendJobCommand(job_idx, command);
 }
 
-std::unique_ptr<sup::oac_tree::IJob> WSClientJobManager::CreateJob(
+std::unique_ptr<IClientJob> WSClientJobManager::CreateJob(
   sup::dto::uint32 job_idx, sup::oac_tree::IJobInfoIO &job_info_io)
 {
   return std::make_unique<WSClientJob>(*m_job_manager, job_idx, job_info_io);

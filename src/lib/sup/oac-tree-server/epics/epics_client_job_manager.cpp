@@ -72,10 +72,10 @@ void EPICSClientJobManager::SendJobCommand(sup::dto::uint32 job_idx,
   m_job_manager->SendJobCommand(job_idx, command);
 }
 
-std::unique_ptr<sup::oac_tree::IJob> EPICSClientJobManager::CreateJob(
+std::unique_ptr<IClientJob> EPICSClientJobManager::CreateJob(
   sup::dto::uint32 job_idx, sup::oac_tree::IJobInfoIO &job_info_io)
 {
-  std::unique_ptr<sup::oac_tree::IJob> result{};
+  std::unique_ptr<IClientJob> result{};
   try
   {
     result = std::make_unique<ClientJob>(*m_job_manager, job_idx,

@@ -20,14 +20,14 @@
  * of the distribution package.
  ******************************************************************************/
 
-#ifndef SUP_OAC_TREE_SERVER_I_CLIENT_JOB_H_
-#define SUP_OAC_TREE_SERVER_I_CLIENT_JOB_H_
+#ifndef SUP_OAC_TREE_SERVER_CLIENT_JOB_H_
+#define SUP_OAC_TREE_SERVER_CLIENT_JOB_H_
 
 #include "i_anyvalue_io.h"
 
+#include <sup/oac-tree-server/i_client_job.h>
 #include <sup/oac-tree-server/i_job_manager.h>
 
-#include <sup/oac-tree/i_job.h>
 #include <sup/oac-tree/i_job_info_io.h>
 
 #include <memory>
@@ -42,7 +42,7 @@ class ClientJobImpl;
  * with a job on the client side. It uses a provided IJobInfoIO object to handle all updates and
  * input/output requests.
  */
-class ClientJob : public sup::oac_tree::IJob
+class ClientJob : public IClientJob
 {
 public:
   ClientJob(IJobManager& job_manager, sup::dto::uint32 job_idx,
@@ -63,6 +63,8 @@ public:
   void Reset() override;
   void Halt() override;
 
+  bool WaitForConnection(std::chrono::milliseconds timeout) override;
+
 private:
   std::unique_ptr<ClientJobImpl> m_impl;
 };
@@ -77,7 +79,7 @@ private:
  * @param job_info_io User provided IJobInfoIO object that will receive all updates and user IO.
  * @return An IJob object on success. An empty unique_ptr on failure.
  */
-std::unique_ptr<sup::oac_tree::IJob> CreateClientJob(
+std::unique_ptr<IClientJob> CreateClientJob(
     IJobManager &job_manager, sup::dto::uint32 job_idx,
     const AnyValueIOFactoryFunction &factory_func, sup::oac_tree::IJobInfoIO &job_info_io);
 

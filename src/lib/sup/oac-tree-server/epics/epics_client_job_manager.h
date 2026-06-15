@@ -60,7 +60,7 @@ public:
 
   void SendJobCommand(sup::dto::uint32 job_idx, sup::oac_tree::JobCommand command) override;
 
-  std::unique_ptr<sup::oac_tree::IJob> CreateJob(
+  std::unique_ptr<IClientJob> CreateJob(
     sup::dto::uint32 job_idx, sup::oac_tree::IJobInfoIO &job_info_io) override;
 
   bool WaitForConnection(std::chrono::milliseconds timeout) override;
