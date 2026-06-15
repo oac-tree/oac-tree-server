@@ -69,10 +69,17 @@ WSJobManager::WSJobManager(const std::string& host_name, unsigned short port,
     // in a queue until someone waits for it.
     HandleJobManagerReply(in_message->string(), m_reply_handler);
   };
-  m_client.on_error = [](std::shared_ptr<WsClient::Connection> connection,
-                         const SimpleWeb::error_code &ec) {
-    // TODO: handle error appropriately (e.g., log it, attempt reconnection, etc.)
+  m_client.on_error = [this](std::shared_ptr<WsClient::Connection> connection,
+                             const SimpleWeb::error_code &ec) {
+    // SimpleWeb only reports terminal errors here, and a force close() does not trigger on_close,
+    // so reset the connection state to reflect the dropped connection (otherwise it would stay
+    // stale after a network error) and close the dead socket.
     (void)ec;
+    {
+      std::lock_guard<std::mutex> lk{m_connection_mutex};
+      m_connection = nullptr;
+    }
+    m_connection_cv.notify_all();
     connection->close();
   };
   // Share the manager's io_context so all clients are serviced by a single worker thread. With an

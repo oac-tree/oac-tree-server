@@ -116,15 +116,21 @@ WSClientJobImpl::WSClientJobImpl(IJobManager &job_manager, sup::dto::uint32 job_
   m_client.on_error = [this](std::shared_ptr<WsClient::Connection> connection,
                              const SimpleWeb::error_code &ec) {
     // SimpleWeb only reports terminal errors here (the read loop has already stopped), so the
-    // connection cannot recover. Report the error via the job's IJobInfoIO and close the dead
-    // socket. operation_aborted is expected when the client is stopped (e.g. on destruction), so
-    // it is not reported as an error.
+    // connection cannot recover. Report the error via the job's IJobInfoIO, reset the connection
+    // state (a force close() does not trigger on_close) and close the dead socket.
+    // operation_aborted is expected when the client is stopped (e.g. on destruction), so it is not
+    // reported as an error.
     if (ec != SimpleWeb::error::operation_aborted)
     {
       m_job_info_io.Log(sup::oac_tree::log::SUP_SEQ_LOG_ERR,
                         "WebSocket error on job [" + std::to_string(m_job_idx) + "]: "
                           + ec.message());
     }
+    {
+      std::lock_guard<std::mutex> lk{m_connected_mutex};
+      m_connected = false;
+    }
+    m_connected_cv.notify_all();
     connection->close();
   };
   // Share the manager's io_context so all clients are serviced by a single worker thread. With an
