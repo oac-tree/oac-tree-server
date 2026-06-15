@@ -22,6 +22,7 @@
 
 #include "ws_job_manager.h"
 
+#include "ws_client_context.h"
 #include "ws_message.h"
 #include "ws_message_handler.h"
 
@@ -40,11 +41,11 @@ namespace oac_tree_server
 
 WSJobManager::WSJobManager(const std::string& host_name, unsigned short port)
   : m_server_prefix{CreateServerPrefix(host_name, port)}
+  , m_context{std::make_shared<WSClientContext>()}
   , m_client{CreateInfoEndpoint(m_server_prefix)}
   , m_connection{nullptr}
   , m_connection_mutex{}
   , m_connection_cv{}
-  , m_client_thread{}
   , m_reply_handler{}
 {
   m_client.on_open = [this](std::shared_ptr<WsClient::Connection> connection) {
@@ -78,11 +79,11 @@ WSJobManager::WSJobManager(const std::string& host_name, unsigned short port)
     (void)ec;
     connection->close();
   };
-  // TODO: use a common io_context for the whole WSClientJobManager instead of starting new threads
-  // for each WS client.
-  m_client_thread = std::async(std::launch::async, [this]() {
-    m_client.start();
-  });
+  // Share the manager's io_context so all clients are serviced by a single worker thread. With an
+  // external io_context, start() only queues the connection and returns immediately instead of
+  // running the context itself.
+  m_client.io_service = m_context->GetIoContext();
+  m_client.start();
 }
 
 WSJobManager::~WSJobManager()
@@ -178,6 +179,11 @@ bool WSJobManager::WaitForConnection(std::chrono::milliseconds timeout)
 {
   std::unique_lock<std::mutex> lk{m_connection_mutex};
   return m_connection_cv.wait_for(lk, timeout, [this] { return m_connection != nullptr; });
+}
+
+std::shared_ptr<WSClientContext> WSJobManager::GetClientContext() const
+{
+  return m_context;
 }
 
 }  // namespace oac_tree_server

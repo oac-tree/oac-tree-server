@@ -36,6 +36,7 @@ namespace sup
 namespace oac_tree_server
 {
 class WSClientJobImpl;
+class WSClientContext;
 
 /**
   * @brief Client job that uses WebSocket as the backend.
@@ -44,7 +45,7 @@ class WSClientJob final : public IClientJob
 {
 public:
   WSClientJob(IJobManager& job_manager, sup::dto::uint32 job_idx,
-              sup::oac_tree::IJobInfoIO& job_info_io);
+              sup::oac_tree::IJobInfoIO& job_info_io, std::shared_ptr<WSClientContext> context);
  ~WSClientJob() override;
 
   // Only move

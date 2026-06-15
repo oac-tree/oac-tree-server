@@ -29,7 +29,6 @@
 #include <simple-web/client_ws.hpp>
 
 #include <condition_variable>
-#include <future>
 #include <memory>
 #include <mutex>
 
@@ -37,6 +36,8 @@ namespace sup
 {
 namespace oac_tree_server
 {
+
+class WSClientContext;
 
 using WsClient = SimpleWeb::SocketClient<SimpleWeb::WS>;
 
@@ -61,13 +62,19 @@ public:
 
   bool WaitForConnection(std::chrono::milliseconds timeout);
 
+  /**
+   * @brief Returns the shared client context (io_context and its worker thread) used by this job
+   * manager, so that client jobs created against the same server can share it.
+   */
+  std::shared_ptr<WSClientContext> GetClientContext() const;
+
 private:
   std::string m_server_prefix;
+  std::shared_ptr<WSClientContext> m_context;
   WsClient m_client;
   std::shared_ptr<WsClient::Connection> m_connection;
   mutable std::mutex m_connection_mutex; // To protect access to m_connection
   std::condition_variable m_connection_cv; // To signal changes to m_connection
-  std::future<void> m_client_thread;
   mutable MessageReplyHandler m_reply_handler;
 };
 

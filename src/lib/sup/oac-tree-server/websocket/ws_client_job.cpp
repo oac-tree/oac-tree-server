@@ -22,6 +22,7 @@
 
 #include "ws_client_job.h"
 
+#include "ws_client_context.h"
 #include "ws_message.h"
 #include "ws_message_handler.h"
 
@@ -30,7 +31,6 @@
 #include <simple-web/client_ws.hpp>
 
 #include <condition_variable>
-#include <future>
 #include <mutex>
 
 namespace sup
@@ -43,7 +43,7 @@ class WSClientJobImpl
 {
 public:
   WSClientJobImpl(IJobManager& job_manager, sup::dto::uint32 job_idx,
-                 sup::oac_tree::IJobInfoIO& job_info_io);
+                 sup::oac_tree::IJobInfoIO& job_info_io, std::shared_ptr<WSClientContext> context);
   ~WSClientJobImpl();
 
   IJobManager& GetJobManager();
@@ -56,24 +56,25 @@ private:
   sup::dto::uint32 m_job_idx;
   std::unique_ptr<sup::oac_tree::JobInfo> m_job_info;
   sup::oac_tree::IJobInfoIO& m_job_info_io;
+  std::shared_ptr<WSClientContext> m_context;
   WsClient m_client;
   bool m_connected;
   std::mutex m_connected_mutex;
   std::condition_variable m_connected_cv;
-  std::future<void> m_client_thread;
 };
 
 WSClientJobImpl::WSClientJobImpl(IJobManager &job_manager, sup::dto::uint32 job_idx,
-                                 sup::oac_tree::IJobInfoIO& job_info_io)
+                                 sup::oac_tree::IJobInfoIO& job_info_io,
+                                 std::shared_ptr<WSClientContext> context)
   : m_job_manager{job_manager}
   , m_job_idx{job_idx}
   , m_job_info{}
   , m_job_info_io{job_info_io}
+  , m_context{std::move(context)}
   , m_client{CreateJobEndpoint(m_job_manager.GetServerPrefix(), job_idx)}
   , m_connected{false}
   , m_connected_mutex{}
   , m_connected_cv{}
-  , m_client_thread{}
 {
   auto n_jobs = m_job_manager.GetNumberOfJobs();
   if (job_idx >= n_jobs)
@@ -116,11 +117,11 @@ WSClientJobImpl::WSClientJobImpl(IJobManager &job_manager, sup::dto::uint32 job_
     (void)ec;
     connection->close();
   };
-  // TODO: use a common io_context for the whole WSClientJobManager instead of starting new threads
-  // for each WS client.
-  m_client_thread = std::async(std::launch::async, [this]() {
-    m_client.start();
-  });
+  // Share the manager's io_context so all clients are serviced by a single worker thread. With an
+  // external io_context, start() only queues the connection and returns immediately instead of
+  // running the context itself.
+  m_client.io_service = m_context->GetIoContext();
+  m_client.start();
 }
 
 WSClientJobImpl::~WSClientJobImpl()
@@ -151,9 +152,10 @@ bool WSClientJobImpl::WaitForConnection(std::chrono::milliseconds timeout)
 }
 
 WSClientJob::WSClientJob(IJobManager &job_manager, sup::dto::uint32 job_idx,
-                         sup::oac_tree::IJobInfoIO& job_info_io)
+                         sup::oac_tree::IJobInfoIO& job_info_io,
+                         std::shared_ptr<WSClientContext> context)
   : IClientJob{}
-  , m_impl{std::make_unique<WSClientJobImpl>(job_manager, job_idx, job_info_io)}
+  , m_impl{std::make_unique<WSClientJobImpl>(job_manager, job_idx, job_info_io, std::move(context))}
 {}
 
 WSClientJob::~WSClientJob() = default;

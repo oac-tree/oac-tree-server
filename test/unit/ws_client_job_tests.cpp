@@ -21,6 +21,7 @@
  ******************************************************************************/
 
 #include <sup/oac-tree-server/exceptions.h>
+#include <sup/oac-tree-server/websocket/ws_client_context.h>
 #include <sup/oac-tree-server/websocket/ws_client_job.h>
 #include <sup/oac-tree-server/ws_utils.h>
 
@@ -277,6 +278,7 @@ protected:
 
   StrictMockJobManager m_job_manager;
   UnitTestHelper::TestJobInfoIO m_job_info_io;
+  std::shared_ptr<WSClientContext> m_context{std::make_shared<WSClientContext>()};
 };
 
 TEST_F(WSClientJobConstructorTest, ConstructorThrowsWhenJobIndexOutOfRange)
@@ -291,7 +293,7 @@ TEST_F(WSClientJobConstructorTest, ConstructorThrowsWhenJobIndexOutOfRange)
 
   EXPECT_THROW(
       {
-        WSClientJob job(m_job_manager, invalid_job_idx, m_job_info_io);
+        WSClientJob job(m_job_manager, invalid_job_idx, m_job_info_io, m_context);
       },
       InvalidOperationException);
 }
@@ -308,7 +310,7 @@ TEST_F(WSClientJobConstructorTest, ConstructorThrowsWhenJobIndexEqualToNumberOfJ
 
   EXPECT_THROW(
       {
-        WSClientJob job(m_job_manager, invalid_job_idx, m_job_info_io);
+        WSClientJob job(m_job_manager, invalid_job_idx, m_job_info_io, m_context);
       },
       InvalidOperationException);
 }
@@ -328,6 +330,7 @@ protected:
   std::unique_ptr<IServerProtocolFactory> m_server_factory;
   std::unique_ptr<sup::oac_tree::IJobInfoIO> m_server_job_info_io;
   std::unique_ptr<IMainServer> m_main_server;
+  std::shared_ptr<WSClientContext> m_context;
   std::unique_ptr<WSClientJob> m_client_job;
 };
 
@@ -416,6 +419,7 @@ WSClientJobWebSocketTest::WSClientJobWebSocketTest()
   , m_server_factory{utils::CreateWSServerProtocolFactory(m_test_port)}
   , m_server_job_info_io{m_server_factory->CreateJobInfoIO(0u, m_job_info.GetNumberOfVariables())}
   , m_main_server{}
+  , m_context{std::make_shared<WSClientContext>()}
   , m_client_job{}
 {
   m_main_server = m_server_factory->CreateMainServer(m_job_manager);
@@ -426,7 +430,7 @@ WSClientJobWebSocketTest::WSClientJobWebSocketTest()
   EXPECT_CALL(m_job_manager, GetNumberOfJobs()).Times(Exactly(1)).WillOnce(Return(1u));
   EXPECT_CALL(m_job_manager, GetJobInfo(0u)).Times(Exactly(1)).WillOnce(Return(m_job_info));
 
-  m_client_job = std::make_unique<WSClientJob>(m_job_manager, 0u, m_client_job_info_io);
+  m_client_job = std::make_unique<WSClientJob>(m_job_manager, 0u, m_client_job_info_io, m_context);
   EXPECT_TRUE(m_client_job->WaitForConnection(std::chrono::milliseconds(1000)));
 }
 

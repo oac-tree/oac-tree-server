@@ -71,7 +71,8 @@ void WSClientJobManager::SendJobCommand(sup::dto::uint32 job_idx,
 std::unique_ptr<IClientJob> WSClientJobManager::CreateJob(
   sup::dto::uint32 job_idx, sup::oac_tree::IJobInfoIO &job_info_io)
 {
-  return std::make_unique<WSClientJob>(*m_job_manager, job_idx, job_info_io);
+  return std::make_unique<WSClientJob>(*m_job_manager, job_idx, job_info_io,
+                                       m_job_manager->GetClientContext());
 }
 
 bool WSClientJobManager::WaitForConnection(std::chrono::milliseconds timeout)
