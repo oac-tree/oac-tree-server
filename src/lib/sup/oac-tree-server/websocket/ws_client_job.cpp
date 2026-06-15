@@ -29,7 +29,9 @@
 
 #include <simple-web/client_ws.hpp>
 
+#include <condition_variable>
 #include <future>
+#include <mutex>
 
 namespace sup
 {
@@ -47,6 +49,7 @@ public:
   IJobManager& GetJobManager();
   sup::dto::uint32 GetJobIndex() const;
   const sup::oac_tree::JobInfo& GetInfo() const;
+  bool WaitForConnection(std::chrono::milliseconds timeout);
 
 private:
   IJobManager& m_job_manager;
@@ -54,16 +57,22 @@ private:
   std::unique_ptr<sup::oac_tree::JobInfo> m_job_info;
   sup::oac_tree::IJobInfoIO& m_job_info_io;
   WsClient m_client;
+  bool m_connected;
+  std::mutex m_connected_mutex;
+  std::condition_variable m_connected_cv;
   std::future<void> m_client_thread;
 };
 
 WSClientJobImpl::WSClientJobImpl(IJobManager &job_manager, sup::dto::uint32 job_idx,
-                                sup::oac_tree::IJobInfoIO& job_info_io)
+                                 sup::oac_tree::IJobInfoIO& job_info_io)
   : m_job_manager{job_manager}
   , m_job_idx{job_idx}
   , m_job_info{}
   , m_job_info_io{job_info_io}
   , m_client{CreateJobEndpoint(m_job_manager.GetServerPrefix(), job_idx)}
+  , m_connected{false}
+  , m_connected_mutex{}
+  , m_connected_cv{}
   , m_client_thread{}
 {
   auto n_jobs = m_job_manager.GetNumberOfJobs();
@@ -77,12 +86,22 @@ WSClientJobImpl::WSClientJobImpl(IJobManager &job_manager, sup::dto::uint32 job_
 
   m_client.on_open = [this](std::shared_ptr<WsClient::Connection> connection) {
     (void)connection;
+    {
+      std::lock_guard<std::mutex> lk{m_connected_mutex};
+      m_connected = true;
+    }
+    m_connected_cv.notify_all();
   };
   m_client.on_close = [this](std::shared_ptr<WsClient::Connection> connection,
                              int status, const std::string& reason) {
     (void)connection;
     (void)status;
     (void)reason;
+    {
+      std::lock_guard<std::mutex> lk{m_connected_mutex};
+      m_connected = false;
+    }
+    m_connected_cv.notify_all();
   };
   m_client.on_message = [this](std::shared_ptr<WsClient::Connection> connection,
                                std::shared_ptr<WsClient::InMessage> in_message) {
@@ -123,6 +142,12 @@ sup::dto::uint32 WSClientJobImpl::GetJobIndex() const
 const sup::oac_tree::JobInfo& WSClientJobImpl::GetInfo() const
 {
   return *m_job_info;
+}
+
+bool WSClientJobImpl::WaitForConnection(std::chrono::milliseconds timeout)
+{
+  std::unique_lock<std::mutex> lk{m_connected_mutex};
+  return m_connected_cv.wait_for(lk, timeout, [this] { return m_connected; });
 }
 
 WSClientJob::WSClientJob(IJobManager &job_manager, sup::dto::uint32 job_idx,
@@ -190,6 +215,11 @@ void WSClientJob::Halt()
 {
   using sup::oac_tree::JobCommand;
   m_impl->GetJobManager().SendJobCommand(m_impl->GetJobIndex(), JobCommand::kHalt);
+}
+
+bool WSClientJob::WaitForConnection(std::chrono::milliseconds timeout)
+{
+  return m_impl->WaitForConnection(timeout);
 }
 
 }  // namespace oac_tree_server

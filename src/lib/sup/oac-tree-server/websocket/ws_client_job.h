@@ -28,6 +28,7 @@
 #include <sup/oac-tree/i_job.h>
 #include <sup/oac-tree/i_job_info_io.h>
 
+#include <chrono>
 #include <memory>
 
 namespace sup
@@ -61,6 +62,8 @@ public:
   void Pause() override;
   void Reset() override;
   void Halt() override;
+
+  bool WaitForConnection(std::chrono::milliseconds timeout);
 
 private:
   std::unique_ptr<WSClientJobImpl> m_impl;

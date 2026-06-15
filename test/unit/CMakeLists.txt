@@ -32,6 +32,7 @@ target_sources(${unit-tests}
     output_entry_tests.cpp
     protocol_client_server_tests.cpp
     unit_test_helper.cpp
+    ws_client_job_tests.cpp
     ws_job_info_io_tests.cpp
     ws_job_manager_tests.cpp
     ws_message_handler_tests.cpp
