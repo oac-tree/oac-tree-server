@@ -24,6 +24,7 @@
 
 #include "ws_job_info_io.h"
 #include "ws_main_server.h"
+#include "ws_message.h"
 
 #include <sup/oac-tree-server/exceptions.h>
 
@@ -43,8 +44,9 @@ WSServerProtocolFactory::~WSServerProtocolFactory() = default;
 
 std::string WSServerProtocolFactory::GetServerId() const
 {
-  // TODO: this should return the host IP + the port used for the websocket server:
-  return std::to_string(m_main_server->GetPort());
+  // WebSocket clients connect using the host:port they were configured with and do not rely on this
+  // value to locate the job endpoints, so reporting localhost together with the port is sufficient.
+  return CreateServerPrefix("localhost", m_main_server->GetPort());
 }
 
 std::unique_ptr<IMainServer> WSServerProtocolFactory::CreateMainServer(IJobManager& job_manager)
