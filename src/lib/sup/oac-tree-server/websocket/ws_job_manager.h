@@ -69,6 +69,12 @@ public:
   std::shared_ptr<WSClientContext> GetClientContext() const;
 
 private:
+  /**
+   * @brief Return the current connection (or nullptr) under the connection mutex, so callers can
+   * send without holding the mutex across the (non-blocking) send call.
+   */
+  std::shared_ptr<WsClient::Connection> GetConnection() const;
+
   std::string m_server_prefix;
   std::shared_ptr<WSClientContext> m_context;
   WsClient m_client;

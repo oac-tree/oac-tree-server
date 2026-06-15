@@ -101,17 +101,12 @@ sup::dto::uint32 WSJobManager::GetNumberOfJobs() const
 {
   auto id_guard = m_reply_handler.CreateNewMessageId();
   auto message = CreateGetNumberOfJobsRequestMessage(id_guard.GetId());
+  auto connection = GetConnection();
+  if (!connection)
   {
-    std::lock_guard<std::mutex> lk{m_connection_mutex};
-    if (m_connection)
-    {
-      m_connection->send(message);
-    }
-    else
-    {
-      throw NetworkException("No connection to job manager");
-    }
+    throw NetworkException("No connection to job manager");
   }
+  connection->send(message);
   auto response = m_reply_handler.WaitForReply(id_guard.GetId(),
                                                std::chrono::milliseconds(kReplyTimeoutMs));
   if (!response)
@@ -130,17 +125,12 @@ sup::oac_tree::JobInfo WSJobManager::GetJobInfo(sup::dto::uint32 job_idx) const
 {
   auto id_guard = m_reply_handler.CreateNewMessageId();
   auto message = CreateGetJobInfoRequestMessage(id_guard.GetId(), job_idx);
+  auto connection = GetConnection();
+  if (!connection)
   {
-    std::lock_guard<std::mutex> lk{m_connection_mutex};
-    if (m_connection)
-    {
-      m_connection->send(message);
-    }
-    else
-    {
-      throw NetworkException("No connection to job manager");
-    }
+    throw NetworkException("No connection to job manager");
   }
+  connection->send(message);
   auto response = m_reply_handler.WaitForReply(id_guard.GetId(),
                                                std::chrono::milliseconds(kReplyTimeoutMs));
   if (!response)  {
@@ -158,20 +148,18 @@ void WSJobManager::EditBreakpoint(sup::dto::uint32 job_idx, sup::dto::uint32 ins
                                   bool breakpoint_active)
 {
   auto message = CreateEditBreakpointRequestMessage(job_idx, instr_idx, breakpoint_active);
-  std::lock_guard<std::mutex> lk{m_connection_mutex};
-  if (m_connection)
+  if (auto connection = GetConnection())
   {
-    m_connection->send(message);
+    connection->send(message);
   }
 }
 
 void WSJobManager::SendJobCommand(sup::dto::uint32 job_idx, sup::oac_tree::JobCommand command)
 {
   auto message = CreateSendJobCommandRequestMessage(job_idx, command);
-  std::lock_guard<std::mutex> lk{m_connection_mutex};
-  if (m_connection)
+  if (auto connection = GetConnection())
   {
-    m_connection->send(message);
+    connection->send(message);
   }
 }
 
@@ -184,6 +172,12 @@ bool WSJobManager::WaitForConnection(std::chrono::milliseconds timeout)
 std::shared_ptr<WSClientContext> WSJobManager::GetClientContext() const
 {
   return m_context;
+}
+
+std::shared_ptr<WsClient::Connection> WSJobManager::GetConnection() const
+{
+  std::lock_guard<std::mutex> lk{m_connection_mutex};
+  return m_connection;
 }
 
 }  // namespace oac_tree_server
