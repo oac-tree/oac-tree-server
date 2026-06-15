@@ -12,6 +12,7 @@ target_link_libraries(${target_name}
 target_sources(${target_name}
   PRIVATE
   main.cpp
+  test_job_info_io.cpp
   utils.cpp
 )
 

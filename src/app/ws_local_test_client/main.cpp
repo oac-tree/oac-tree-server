@@ -20,6 +20,7 @@
  * of the distribution package.
  ******************************************************************************/
 
+#include "test_job_info_io.h"
 #include "utils.h"
 
 #include <sup/cli/command_line_parser.h>
@@ -41,7 +42,7 @@ int main(int argc, char* argv[])
   parser.AddOption({"-p", "--port"}, "Port to use for web socket server")
       .SetParameter(true)
       .SetValueName("port")
-      .IsRequired();
+      .SetRequired(true);
 
   if (!parser.Parse(argc, argv))
   {
@@ -56,10 +57,27 @@ int main(int argc, char* argv[])
     return 0;
   }
 
-  std::this_thread::sleep_for(std::chrono::seconds(1));
+  if (!client_mgr->WaitForConnection(std::chrono::seconds(1)))
+  {
+    std::cerr << "Failed to connect to server." << std::endl;
+    return 1;
+  }
 
-  std::cout << "Connected to server with " << client_mgr->GetNumberOfJobs()
-            << " jobs." << std::endl;
+  auto num_jobs = client_mgr->GetNumberOfJobs();
+  std::cout << "Connected to server with " << num_jobs << " jobs." << std::endl;
+
+  if (num_jobs > 0)
+  {
+    utils::TestJobInfoIO job_info_io;
+    auto client_job = client_mgr->CreateJob(0, job_info_io);
+    if (!client_job)
+    {
+      std::cerr << "Failed to create client job." << std::endl;
+      return 1;
+    }
+    client_job->Start();
+    std::this_thread::sleep_for(std::chrono::seconds(5));
+  }
 
   return 0;
 }
