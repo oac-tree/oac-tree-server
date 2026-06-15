@@ -78,11 +78,11 @@ TEST(WaitForServerConnectionTest, ReturnsFalseWhenServerUnreachable)
 
 //! Tests for the EPICS client job exercised against a real EPICS automation server.
 
-class ClientJobTests : public ::testing::Test
+class EPICSClientJobTests : public ::testing::Test
 {
 protected:
-  ClientJobTests();
-  virtual ~ClientJobTests();
+  EPICSClientJobTests();
+  virtual ~EPICSClientJobTests();
 
   UnitTestHelper::TestJobInfoIO m_job_info_io;
   std::unique_ptr<IClientJobManager> m_client_mgr;
@@ -95,13 +95,13 @@ protected:
   static std::unique_ptr<IMainServer> m_main_server;
 };
 
-TEST_F(ClientJobTests, ConstructorError)
+TEST_F(EPICSClientJobTests, ConstructorError)
 {
   auto job = m_client_mgr->CreateJob(999, m_job_info_io);
   EXPECT_EQ(job.get(), nullptr);
 }
 
-TEST_F(ClientJobTests, JobCommands)
+TEST_F(EPICSClientJobTests, JobCommands)
 {
   // Query information about the server and its job
   ASSERT_EQ(m_client_mgr->GetNumberOfJobs(), 1u);
@@ -124,23 +124,23 @@ TEST_F(ClientJobTests, JobCommands)
   EXPECT_NO_THROW(job_0->Reset());
 }
 
-ClientJobTests::ClientJobTests()
+EPICSClientJobTests::EPICSClientJobTests()
   : m_job_info_io{}
   , m_client_mgr{utils::CreateEPICSClientProtocolManager(kTestAutomationServiceName)}
 {}
 
-ClientJobTests::~ClientJobTests()
+EPICSClientJobTests::~EPICSClientJobTests()
 {
   // Ensure each test starts in an initial state of the job
   m_client_mgr->SendJobCommand(0, JobCommand::kHalt);
   m_client_mgr->SendJobCommand(0, JobCommand::kReset);
 }
 
-std::unique_ptr<IServerProtocolFactory> ClientJobTests::m_server_factory{};
-std::unique_ptr<AutomationServer> ClientJobTests::m_automation_server{};
-std::unique_ptr<IMainServer> ClientJobTests::m_main_server{};
+std::unique_ptr<IServerProtocolFactory> EPICSClientJobTests::m_server_factory{};
+std::unique_ptr<AutomationServer> EPICSClientJobTests::m_automation_server{};
+std::unique_ptr<IMainServer> EPICSClientJobTests::m_main_server{};
 
-void ClientJobTests::SetUpTestSuite()
+void EPICSClientJobTests::SetUpTestSuite()
 {
   m_server_factory = utils::CreateEPICSServerProtocolFactory(kTestAutomationServiceName, 1);
   m_automation_server = std::make_unique<AutomationServer>(*m_server_factory);
@@ -152,7 +152,7 @@ void ClientJobTests::SetUpTestSuite()
   m_main_server = m_server_factory->CreateMainServer(*m_automation_server);
 }
 
-void ClientJobTests::TearDownTestSuite()
+void EPICSClientJobTests::TearDownTestSuite()
 {
   // Tear down the entire server stack so that no EPICS server keeps running in the background
   // after this suite, where it would interfere with subsequent EPICS tests. Order matters: the

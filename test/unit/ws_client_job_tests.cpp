@@ -476,6 +476,22 @@ WSClientJobWebSocketTest::WSClientJobWebSocketTest()
 
   m_client_job = std::make_unique<WSClientJob>(m_job_manager, 0u, m_client_job_info_io, m_context);
   EXPECT_TRUE(m_client_job->WaitForConnection(std::chrono::milliseconds(1000)));
+
+  // The client reports "connected" as soon as it receives the WebSocket handshake response, but the
+  // server only registers the connection on its job endpoint when that response's write completes
+  // (SimpleWeb runs connection_open from the async_write completion handler). Job updates published
+  // in that window are broadcast to zero connections and silently dropped. Synchronise by
+  // repeatedly publishing a sentinel job state until the client observes it: once any update is
+  // received, the connection is registered and every later single publish is guaranteed to arrive.
+  const auto sentinel_state = JobState::kPaused;
+  bool updates_flow = false;
+  const auto sync_deadline = std::chrono::steady_clock::now() + std::chrono::seconds(2);
+  while (!updates_flow && std::chrono::steady_clock::now() < sync_deadline)
+  {
+    m_server_job_info_io->JobStateUpdated(sentinel_state);
+    updates_flow = m_client_job_info_io.WaitForJobState(sentinel_state, 0.05);
+  }
+  EXPECT_TRUE(updates_flow);
 }
 
 WSClientJobWebSocketTest::~WSClientJobWebSocketTest()
