@@ -23,9 +23,9 @@
 #ifndef SUP_OAC_TREE_SERVER_WS_CLIENT_JOB_H_
 #define SUP_OAC_TREE_SERVER_WS_CLIENT_JOB_H_
 
+#include <sup/oac-tree-server/i_client_job.h>
 #include <sup/oac-tree-server/i_job_manager.h>
 
-#include <sup/oac-tree/i_job.h>
 #include <sup/oac-tree/i_job_info_io.h>
 
 #include <chrono>
@@ -40,7 +40,7 @@ class WSClientJobImpl;
 /**
   * @brief Client job that uses WebSocket as the backend.
  */
-class WSClientJob final : public sup::oac_tree::IJob
+class WSClientJob final : public IClientJob
 {
 public:
   WSClientJob(IJobManager& job_manager, sup::dto::uint32 job_idx,
@@ -63,7 +63,7 @@ public:
   void Reset() override;
   void Halt() override;
 
-  bool WaitForConnection(std::chrono::milliseconds timeout);
+  bool WaitForConnection(std::chrono::milliseconds timeout) override;
 
 private:
   std::unique_ptr<WSClientJobImpl> m_impl;

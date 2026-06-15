@@ -152,14 +152,14 @@ bool WSClientJobImpl::WaitForConnection(std::chrono::milliseconds timeout)
 
 WSClientJob::WSClientJob(IJobManager &job_manager, sup::dto::uint32 job_idx,
                          sup::oac_tree::IJobInfoIO& job_info_io)
-  : IJob{}
+  : IClientJob{}
   , m_impl{std::make_unique<WSClientJobImpl>(job_manager, job_idx, job_info_io)}
 {}
 
 WSClientJob::~WSClientJob() = default;
 
 WSClientJob::WSClientJob(WSClientJob&& other) noexcept
-  : IJob{}
+  : IClientJob{}
   , m_impl{std::move(other.m_impl)}
 {}
 
