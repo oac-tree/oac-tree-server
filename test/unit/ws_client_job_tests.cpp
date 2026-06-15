@@ -315,6 +315,28 @@ TEST_F(WSClientJobConstructorTest, ConstructorThrowsWhenJobIndexEqualToNumberOfJ
       InvalidOperationException);
 }
 
+TEST_F(WSClientJobConstructorTest, MoveConstructionAndAssignment)
+{
+  const sup::dto::uint32 n_jobs = 2u;
+  auto job_info = BuildJobInfo();
+  const auto n_vars = job_info.GetNumberOfVariables();
+
+  EXPECT_CALL(m_job_manager, GetServerPrefix()).WillRepeatedly(Return(kTestHost + ":1"));
+  EXPECT_CALL(m_job_manager, GetNumberOfJobs()).WillRepeatedly(Return(n_jobs));
+  EXPECT_CALL(m_job_manager, GetJobInfo(::testing::_)).WillRepeatedly(Return(job_info));
+
+  WSClientJob job1(m_job_manager, 0u, m_job_info_io, m_context);
+
+  // Move construction transfers the implementation; the target stays usable.
+  WSClientJob job2(std::move(job1));
+  EXPECT_EQ(job2.GetInfo().GetNumberOfVariables(), n_vars);
+
+  // Move assignment transfers the implementation into an existing job.
+  WSClientJob job3(m_job_manager, 1u, m_job_info_io, m_context);
+  job3 = std::move(job2);
+  EXPECT_EQ(job3.GetInfo().GetNumberOfVariables(), n_vars);
+}
+
 class WSClientJobWebSocketTest : public ::testing::Test
 {
 protected:
@@ -409,6 +431,28 @@ TEST_F(WSClientJobWebSocketTest, ReceivesLogUpdateOverWebSocket)
   ASSERT_TRUE(m_client_job_info_io.WaitForAnyLog(1.0));
   EXPECT_EQ(m_client_job_info_io.GetLastLogSeverity(), severity);
   EXPECT_EQ(m_client_job_info_io.GetLastLogMessage(), message);
+}
+
+TEST_F(WSClientJobWebSocketTest, JobCommandsForwardedToJobManager)
+{
+  using sup::oac_tree::JobCommand;
+  const sup::dto::uint32 instr_idx = 0u;
+
+  EXPECT_CALL(m_job_manager, EditBreakpoint(0u, instr_idx, true)).Times(Exactly(1));
+  EXPECT_CALL(m_job_manager, EditBreakpoint(0u, instr_idx, false)).Times(Exactly(1));
+  EXPECT_CALL(m_job_manager, SendJobCommand(0u, JobCommand::kStart)).Times(Exactly(1));
+  EXPECT_CALL(m_job_manager, SendJobCommand(0u, JobCommand::kStep)).Times(Exactly(1));
+  EXPECT_CALL(m_job_manager, SendJobCommand(0u, JobCommand::kPause)).Times(Exactly(1));
+  EXPECT_CALL(m_job_manager, SendJobCommand(0u, JobCommand::kReset)).Times(Exactly(1));
+  EXPECT_CALL(m_job_manager, SendJobCommand(0u, JobCommand::kHalt)).Times(Exactly(1));
+
+  m_client_job->SetBreakpoint(instr_idx);
+  m_client_job->RemoveBreakpoint(instr_idx);
+  m_client_job->Start();
+  m_client_job->Step();
+  m_client_job->Pause();
+  m_client_job->Reset();
+  m_client_job->Halt();
 }
 
 WSClientJobWebSocketTest::WSClientJobWebSocketTest()

@@ -35,6 +35,10 @@
 
 #include <gtest/gtest.h>
 
+#include <atomic>
+#include <random>
+#include <string>
+
 using ::testing::Exactly;
 
 using namespace sup::oac_tree_server;
@@ -45,10 +49,21 @@ const sup::dto::AnyValue scalar = {{
   { "value", {sup::dto::SignedInteger32Type, 0}}
 }};
 
-IAnyValueIO::NameAnyValueSet value_set_1 = {
-  { "val0", scalar},
-  { "val1", scalar}
-};
+// A value that is, with very high probability, unique to this process. It is used to keep EPICS
+// PVA channel and RPC service names from clashing with other test processes on the same host,
+// without relying on platform-specific APIs such as getpid().
+const std::string g_run_id = std::to_string(std::random_device{}());
+std::atomic<unsigned int> g_channel_counter{0};
+
+// EPICS PVA channel and service names are visible host-wide, so derive unique names per test
+// invocation. This avoids a name being served by a stale/duplicate server left over from another
+// test (or an earlier, possibly interrupted, test process), which would for instance make a
+// monitored value's updates appear to never arrive.
+std::string UniqueName(const std::string& base)
+{
+  return "EPICSClientServerTest_" + g_run_id + "_"
+       + std::to_string(g_channel_counter.fetch_add(1u)) + "_" + base;
+}
 }  // unnamed namespace
 
 class EPICSClientServerTest : public ::testing::Test
@@ -91,31 +106,39 @@ TEST_F(EPICSClientServerTest, InitializeInstructions)
 
 TEST_F(EPICSClientServerTest, AddValuesAndUpdate)
 {
+  const std::string name0 = UniqueName("val0");
+  const std::string name1 = UniqueName("val1");
+  const std::string missing = UniqueName("does_not_exist");
+  const IAnyValueIO::NameAnyValueSet value_set = {
+    { name0, scalar },
+    { name1, scalar }
+  };
+
   // Add values and wait for first value (must be immediate)
-  ASSERT_TRUE(m_epics_av_manager.AddAnyValues(value_set_1));
-  ASSERT_TRUE(m_epics_client.AddAnyValues(value_set_1));
-  EXPECT_TRUE(m_test_av_manager.WaitForValue("val0", scalar, 0.0));
-  EXPECT_TRUE(m_test_av_manager.WaitForValue("val1", scalar, 0.0));
+  ASSERT_TRUE(m_epics_av_manager.AddAnyValues(value_set));
+  ASSERT_TRUE(m_epics_client.AddAnyValues(value_set));
+  EXPECT_TRUE(m_test_av_manager.WaitForValue(name0, scalar, 0.0));
+  EXPECT_TRUE(m_test_av_manager.WaitForValue(name1, scalar, 0.0));
 
   // Update values on manager side and wait for the updates to arrive at the client side
   const sup::dto::AnyValue update = {{
     { "value", {sup::dto::SignedInteger32Type, 42}}
   }};
-  EXPECT_TRUE(m_epics_av_manager.UpdateAnyValue("val0", update));
-  EXPECT_TRUE(m_test_av_manager.WaitForValue("val0", update, 5.0));
-  EXPECT_TRUE(m_epics_av_manager.UpdateAnyValue("val1", update));
-  EXPECT_TRUE(m_test_av_manager.WaitForValue("val1", update, 5.0));
+  EXPECT_TRUE(m_epics_av_manager.UpdateAnyValue(name0, update));
+  EXPECT_TRUE(m_test_av_manager.WaitForValue(name0, update, 5.0));
+  EXPECT_TRUE(m_epics_av_manager.UpdateAnyValue(name1, update));
+  EXPECT_TRUE(m_test_av_manager.WaitForValue(name1, update, 5.0));
   EXPECT_EQ(m_test_av_manager.GetNbrInputRequests(), 0);
 
   // Trying to update of wait for a value that doesn't exist fails
-  EXPECT_FALSE(m_epics_av_manager.UpdateAnyValue("does_not_exist", update));
-  EXPECT_FALSE(m_test_av_manager.WaitForValue("does_not_exist", update, 0.1));
+  EXPECT_FALSE(m_epics_av_manager.UpdateAnyValue(missing, update));
+  EXPECT_FALSE(m_test_av_manager.WaitForValue(missing, update, 0.1));
 }
 
 TEST_F(EPICSClientServerTest, ProtocolInformation)
 {
   // Add input server
-  const std::string input_server_name = "TestInputServer01";
+  const std::string input_server_name = UniqueName("TestInputServer01");
   ASSERT_TRUE(m_epics_av_manager.AddInputHandler(input_server_name));
 
   // Query application protocol information
@@ -130,7 +153,7 @@ TEST_F(EPICSClientServerTest, ProtocolInformation)
 TEST_F(EPICSClientServerTest, GetUserInput)
 {
   // Add input servers
-  const std::string input_server_name = "TestInputServer03";
+  const std::string input_server_name = UniqueName("TestInputServer03");
   ASSERT_TRUE(m_epics_av_manager.AddInputHandler(input_server_name));
   ASSERT_TRUE(m_epics_client.AddInputHandler(input_server_name));
   EXPECT_EQ(m_test_av_manager.GetNbrInputRequests(), 0);

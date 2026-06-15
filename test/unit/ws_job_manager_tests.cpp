@@ -143,6 +143,17 @@ TEST_F(WSJobManagerTest, TwoClients)
   EXPECT_EQ(new_client_mgr->GetNumberOfJobs(), n_jobs);
 }
 
+TEST(WSJobManagerErrorTest, RequestsThrowWhenNotConnected)
+{
+  const auto port = g_next_test_port.fetch_add(1u);
+  // No server is listening on this port; use a short reply timeout to keep the test fast.
+  auto client = utils::CreateWSClientJobManager(kTestHost, port, std::chrono::milliseconds(200));
+
+  EXPECT_FALSE(client->WaitForConnection(std::chrono::milliseconds(200)));
+  EXPECT_THROW(client->GetNumberOfJobs(), NetworkException);
+  EXPECT_THROW(client->GetJobInfo(0u), NetworkException);
+}
+
 WSJobManagerTest::WSJobManagerTest()
   : m_job_manager{}
   , m_test_port{g_next_test_port.fetch_add(1u)}

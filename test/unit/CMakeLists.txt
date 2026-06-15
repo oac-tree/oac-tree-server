@@ -14,10 +14,10 @@ target_sources(${unit-tests}
     automation_protocol_client_tests.cpp
     automation_server_tests.cpp
     client_anyvalue_manager_tests.cpp
-    client_job_tests.cpp
     client_reply_delegator_tests.cpp
     control_protocol_server_tests.cpp
     epics_anyvalue_manager_tests.cpp
+    epics_client_job_tests.cpp
     epics_client_server_tests.cpp
     epics_input_client_server_tests.cpp
     full_client_server_stack_tests.cpp
