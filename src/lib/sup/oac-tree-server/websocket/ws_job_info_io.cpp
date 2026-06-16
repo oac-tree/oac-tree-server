@@ -68,7 +68,7 @@ void WSJobInfoIO::PutValue(const sup::dto::AnyValue& value, const std::string& d
 }
 
 bool WSJobInfoIO::GetUserValue(sup::dto::uint64 id, sup::dto::AnyValue& value,
-                                   const std::string& description)
+                               const std::string& description)
 {
   (void)id;
   (void)value;

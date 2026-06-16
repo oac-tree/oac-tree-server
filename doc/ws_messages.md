@@ -15,7 +15,7 @@ All messages passed over the websocket interface will be JSON encoded.
 
 ## Server side publishing of job updates
 
-These updates are published on the job-specific endpoint and all update messages will be sent to all clients that are connected to this endpoint.
+These updates are published on the job-specific endpoint and all update messages will be sent to all clients that are connected to this endpoint. Requests for user input are handled in the same way, except that the client is expected to send a reply back. The web socket server is not blocked while waiting for this reply.
 
 The `update` field in the message structures holds an integer value that describes the type of the update message:
 
@@ -28,6 +28,8 @@ The `update` field in the message structures holds an integer value that describ
 | 4     | display generic value    |
 | 5     | display message          |
 | 6     | log message              |
+| 7     | get user value           |
+| 8     | get user choice          |
 
 The following subsections specify the fields in each of the different types of JSON messages.
 
@@ -144,6 +146,64 @@ where the `severity` field directly encodes the severity level, which closely fo
 | 6     | Informational |
 | 7     | Debug         |
 | 8     | Trace         |
+
+### Get user value
+
+Message to client:
+
+```json
+{
+  "update": 7,
+  "req_id": 33,
+  "description": "Please provide your name",
+  "value": <JSON rep>,
+  "type": <JSON rep>
+}
+```
+
+where `value` and `type` encode the default value for the user.
+
+Reply from client:
+
+```json
+{
+  "update": 7,
+  "req_id": 33,
+  "ok": true,
+  "value": <JSON rep>,
+  "type": <JSON rep>
+}
+```
+
+where the `ok` field encodes if the user input was successful. User can cancel such a request, which will lead to this field to be `false`. Note that this is still considered a valid response and that the user input request will be considered finished afterwards.
+
+### Get user choice
+
+Message to client:
+
+```json
+{
+  "update": 8,
+  "req_id": 34,
+  "choices": ["normal", "degraded", "fault"],
+  "value": <JSON rep>,
+  "type": <JSON rep>
+}
+```
+
+where `value` and `type` encode metadata that allows user interfaces to customize the display, e.g. for simple `OK - Cancel` dialogs.
+
+Reply from client:
+
+```json
+{
+  "update": 8,
+  "req_id": 34,
+  "choice": 1
+}
+```
+
+where the `choice` field encodes the index of the choice made by the user, or `-1` if the user cancelled the request.
 
 ## Client side requests
 
