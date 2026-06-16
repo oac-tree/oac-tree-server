@@ -17,6 +17,8 @@ All messages passed over the websocket interface will be JSON encoded.
 
 These updates are published on the job-specific endpoint and all update messages will be sent to all clients that are connected to this endpoint. Requests for user input are handled in the same way, except that the client is expected to send a reply back. The web socket server is not blocked while waiting for this reply.
 
+An outstanding request for user input is re-published periodically (at a server-configurable interval) until it is answered or interrupted, so that clients connecting after the initial broadcast still receive it. Every re-publication carries the same `req_id`, so clients must treat a repeated `req_id` as the same request. Once a request has been answered (or otherwise finished), the server ignores any further replies for that `req_id`.
+
 The `update` field in the message structures holds an integer value that describes the type of the update message:
 
 | Value | Message type             |

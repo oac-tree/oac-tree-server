@@ -32,6 +32,7 @@
 #include <memory>
 #include <string>
 #include <utility>
+#include <vector>
 
 namespace sup
 {
@@ -47,6 +48,8 @@ enum class UpdateMessageType : sup::dto::uint32
   kPutValue,
   kMessage,
   kLog,
+  kGetUserValue,
+  kGetUserChoice,
 };
 
 enum class ClientMessageType : sup::dto::uint32
@@ -77,6 +80,9 @@ constexpr auto kInstructionId = "instr_id";
 constexpr auto kActive = "active";
 constexpr auto kCommand = "command";
 constexpr auto kNumberOfJobs = "n_jobs";
+constexpr auto kChoices = "choices";
+constexpr auto kChoice = "choice";
+constexpr auto kOk = "ok";
 constexpr auto kEmptyJson = "";
 
 }  // namespace ws_message_json_keys
@@ -104,6 +110,12 @@ std::string CreatePutValueUpdateMessage(const std::string& description,
 std::string CreateTextMessageUpdateMessage(const std::string& message);
 std::string CreateLogUpdateMessage(sup::dto::int32 severity,
                                    const std::string& message);
+std::string CreateGetUserValueUpdateMessage(sup::dto::uint64 request_id,
+                                            const std::string& description,
+                                            const sup::dto::AnyValue& value);
+std::string CreateGetUserChoiceUpdateMessage(sup::dto::uint64 request_id,
+                                             const std::vector<std::string>& choices,
+                                             const sup::dto::AnyValue& metadata);
 
 // Factory functions for creating JSON messages for global requests from client to server.
 std::string CreateGetNumberOfJobsRequestMessage(sup::dto::uint64 request_id);

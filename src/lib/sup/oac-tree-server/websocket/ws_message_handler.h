@@ -23,6 +23,7 @@
 #ifndef SUP_OAC_TREE_SERVER_WS_MESSAGE_HANDLER_H_
 #define SUP_OAC_TREE_SERVER_WS_MESSAGE_HANDLER_H_
 
+#include <sup/oac-tree-server/base/input_request_server.h>
 #include <sup/oac-tree-server/base/message_reply_handler.h>
 
 #include <sup/oac-tree-server/i_job_manager.h>
@@ -52,6 +53,12 @@ std::string HandleJobManagerMessage(const std::string& msg, IJobManager& job_man
  * MessageReplyHandler if appropriate.
  */
 void HandleJobManagerReply(const std::string& msg, MessageReplyHandler& reply_handler);
+
+/**
+ * @brief Parses a JSON user input reply message (get user value / get user choice) and forwards the
+ * reply to the given InputRequestServer. Malformed messages are silently ignored.
+ */
+void HandleUserInputReply(const std::string& msg, InputRequestServer& request_server);
 
 /**
  * @brief Parses the JSON reply message for the number of jobs and returns the value.

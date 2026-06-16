@@ -30,6 +30,7 @@
 #include <sup/dto/json_type_parser.h>
 #include <sup/dto/json_value_parser.h>
 #include <sup/oac-tree/job_info_utils.h>
+#include <sup/oac-tree/user_input_reply.h>
 
 #include <rapidjson/document.h>
 
@@ -135,6 +136,49 @@ void HandleJobManagerReply(const std::string& msg, MessageReplyHandler& reply_ha
   }
   auto request_id = doc[kRequestId].GetUint64();
   reply_handler.HandleReply(request_id, msg);
+}
+
+void HandleUserInputReply(const std::string& msg, InputRequestServer& request_server)
+{
+  rapidjson::Document doc;
+  doc.Parse(msg.c_str());
+
+  if (doc.HasParseError() || !doc.IsObject())
+  {
+    return;
+  }
+  if (!doc.HasMember(kUpdate) || !doc[kUpdate].IsUint()
+      || !doc.HasMember(kRequestId) || !doc[kRequestId].IsUint64())
+  {
+    return;
+  }
+  auto update_type = static_cast<UpdateMessageType>(doc[kUpdate].GetUint());
+  auto request_id = doc[kRequestId].GetUint64();
+  if (update_type == UpdateMessageType::kGetUserValue)
+  {
+    if (!doc.HasMember(kOk) || !doc[kOk].IsBool()
+        || !doc.HasMember(kValue) || !doc.HasMember(kType))
+    {
+      return;
+    }
+    sup::dto::AnyValue value{};
+    if (!ParseAnyValue(doc[kValue], doc[kType], value))
+    {
+      return;
+    }
+    auto reply = sup::oac_tree::CreateUserValueReply(doc[kOk].GetBool(), value);
+    request_server.SetClientReply(request_id, reply);
+  }
+  else if (update_type == UpdateMessageType::kGetUserChoice)
+  {
+    if (!doc.HasMember(kChoice) || !doc[kChoice].IsInt())
+    {
+      return;
+    }
+    auto choice = doc[kChoice].GetInt();
+    auto reply = sup::oac_tree::CreateUserChoiceReply(choice >= 0, choice);
+    request_server.SetClientReply(request_id, reply);
+  }
 }
 
 std::optional<sup::dto::uint32> ParseNumberOfJobsReply(const std::string& reply)

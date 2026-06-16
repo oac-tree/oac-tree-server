@@ -22,14 +22,23 @@
 
 #include <sup/oac-tree-server/websocket/ws_message_handler.h>
 #include <sup/oac-tree-server/websocket/ws_message.h>
+#include <sup/oac-tree-server/websocket/ws_message_json_helpers.h>
+
+#include <sup/oac-tree-server/base/input_request_server.h>
 
 #include <sup/oac-tree/instruction_map.h>
 #include <sup/oac-tree/job_info_utils.h>
 #include <sup/oac-tree/sequence_parser.h>
+#include <sup/oac-tree/user_input_reply.h>
+
+#include <sup/dto/anytype_helper.h>
+#include <sup/dto/anyvalue_helper.h>
 
 #include "unit_test_helper.h"
 
 #include <gtest/gtest.h>
+
+#include <rapidjson/document.h>
 
 #include <chrono>
 
@@ -353,4 +362,114 @@ TEST(JobManagerReplyHandlerTest, MissingRequestIdIgnored)
   MessageReplyHandler handler;
   HandleJobManagerReply(R"({"other": 1})", handler);
   SUCCEED();
+}
+
+// ===========================================================================
+// HandleUserInputReply tests
+// ===========================================================================
+
+namespace
+{
+// Build a "get user value" reply message, as a client would send it back to the server.
+std::string CreateUserValueReplyMessage(sup::dto::uint64 req_id, bool ok,
+                                        const sup::dto::AnyValue& value)
+{
+  rapidjson::Document doc;
+  doc.SetObject();
+  auto& alloc = doc.GetAllocator();
+  const auto value_str = sup::dto::ValuesToJSONString(value);
+  const auto type_str = sup::dto::AnyTypeToJSONString(value.GetType());
+  doc.AddMember("update", static_cast<sup::dto::uint32>(UpdateMessageType::kGetUserValue), alloc);
+  doc.AddMember("req_id", req_id, alloc);
+  doc.AddMember("ok", ok, alloc);
+  rapidjson::Value value_member;
+  value_member.SetString(value_str.c_str(), alloc);
+  rapidjson::Value type_member;
+  type_member.SetString(type_str.c_str(), alloc);
+  doc.AddMember("value", value_member, alloc);
+  doc.AddMember("type", type_member, alloc);
+  return ws_message_json_helpers::SerializeDocumentToJSON(doc);
+}
+
+// Build a "get user choice" reply message, as a client would send it back to the server.
+std::string CreateUserChoiceReplyMessage(sup::dto::uint64 req_id, int choice)
+{
+  rapidjson::Document doc;
+  doc.SetObject();
+  auto& alloc = doc.GetAllocator();
+  doc.AddMember("update", static_cast<sup::dto::uint32>(UpdateMessageType::kGetUserChoice), alloc);
+  doc.AddMember("req_id", req_id, alloc);
+  doc.AddMember("choice", choice, alloc);
+  return ws_message_json_helpers::SerializeDocumentToJSON(doc);
+}
+}  // namespace
+
+TEST(UserInputReplyHandlerTest, ValueReplyDelivered)
+{
+  InputRequestServer server;
+  const sup::dto::uint64 id{33u};
+  server.InitNewRequest(id);
+  const sup::dto::AnyValue provided{sup::dto::SignedInteger32Type, 7};
+
+  HandleUserInputReply(CreateUserValueReplyMessage(id, true, provided), server);
+
+  auto [retrieved, reply] = server.WaitForReply(id);
+  ASSERT_TRUE(retrieved);
+  auto [parsed, value] = sup::oac_tree::ParseUserValueReply(reply);
+  ASSERT_TRUE(parsed);
+  EXPECT_EQ(value, provided);
+}
+
+TEST(UserInputReplyHandlerTest, ChoiceReplyDelivered)
+{
+  InputRequestServer server;
+  const sup::dto::uint64 id{34u};
+  server.InitNewRequest(id);
+
+  HandleUserInputReply(CreateUserChoiceReplyMessage(id, 1), server);
+
+  auto [retrieved, reply] = server.WaitForReply(id);
+  ASSERT_TRUE(retrieved);
+  auto [parsed, choice] = sup::oac_tree::ParseUserChoiceReply(reply);
+  ASSERT_TRUE(parsed);
+  EXPECT_EQ(choice, 1);
+}
+
+TEST(UserInputReplyHandlerTest, ChoiceCancelDelivered)
+{
+  InputRequestServer server;
+  const sup::dto::uint64 id{35u};
+  server.InitNewRequest(id);
+
+  // A cancel (choice == -1) is still a valid, finished reply.
+  HandleUserInputReply(CreateUserChoiceReplyMessage(id, -1), server);
+
+  auto [retrieved, reply] = server.WaitForReply(id);
+  ASSERT_TRUE(retrieved);
+  auto [parsed, choice] = sup::oac_tree::ParseUserChoiceReply(reply);
+  EXPECT_FALSE(parsed);
+}
+
+TEST(UserInputReplyHandlerTest, InvalidJsonIgnored)
+{
+  InputRequestServer server;
+  HandleUserInputReply("not json", server);  // must not throw
+  SUCCEED();
+}
+
+TEST(UserInputReplyHandlerTest, MalformedRepliesIgnored)
+{
+  InputRequestServer server;
+  const sup::dto::uint64 id{36u};
+  server.InitNewRequest(id);
+
+  // Value reply missing ok/value/type, choice reply missing choice, and a non-user-input update.
+  HandleUserInputReply(R"({"update": 7, "req_id": 36})", server);
+  HandleUserInputReply(R"({"update": 8, "req_id": 36})", server);
+  HandleUserInputReply(R"({"update": 4, "req_id": 36})", server);
+
+  // None of the above set a reply, so the only way out of the wait is an interrupt.
+  server.Interrupt(id);
+  auto result = server.WaitForReply(id);
+  EXPECT_FALSE(result.first);
 }

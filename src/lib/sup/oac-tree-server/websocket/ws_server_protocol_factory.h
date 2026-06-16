@@ -25,6 +25,8 @@
 
 #include <sup/oac-tree-server/i_server_protocol_factory.h>
 
+#include <chrono>
+
 namespace sup
 {
 namespace oac_tree_server
@@ -37,7 +39,7 @@ class WSMainServer;
 class WSServerProtocolFactory final : public IServerProtocolFactory
 {
 public:
-  WSServerProtocolFactory(unsigned short port);
+  WSServerProtocolFactory(unsigned short port, std::chrono::milliseconds resend_interval);
  ~WSServerProtocolFactory() override;
 
   // No copy or move
@@ -55,6 +57,7 @@ public:
 
 private:
   std::unique_ptr<WSMainServer> m_main_server;
+  std::chrono::milliseconds m_resend_interval;
 };
 
 }  // namespace oac_tree_server

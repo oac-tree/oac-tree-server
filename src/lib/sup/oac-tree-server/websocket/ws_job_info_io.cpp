@@ -22,7 +22,15 @@
 
 #include "ws_job_info_io.h"
 
+#include "periodic_resender.h"
+
 #include <sup/oac-tree-server/websocket/ws_message.h>
+
+#include <sup/oac-tree/user_input_reply.h>
+
+#include <sup/dto/anyvalue_helper.h>
+
+#include <utility>
 
 namespace sup
 {
@@ -30,8 +38,11 @@ namespace oac_tree_server
 {
 using sup::oac_tree::InstructionState;
 
-WSJobInfoIO::WSJobInfoIO(Publisher publisher)
-  : m_publisher{publisher}
+WSJobInfoIO::WSJobInfoIO(Publisher publisher, std::shared_ptr<InputRequestServer> request_server,
+                         std::chrono::milliseconds resend_interval)
+  : m_publisher{std::move(publisher)}
+  , m_request_server{std::move(request_server)}
+  , m_resend_interval{resend_interval}
 {}
 
 WSJobInfoIO::~WSJobInfoIO() = default;
@@ -70,24 +81,45 @@ void WSJobInfoIO::PutValue(const sup::dto::AnyValue& value, const std::string& d
 bool WSJobInfoIO::GetUserValue(sup::dto::uint64 id, sup::dto::AnyValue& value,
                                const std::string& description)
 {
-  (void)id;
-  (void)value;
-  (void)description;
-  return false;
+  m_request_server->InitNewRequest(id);
+  auto message = CreateGetUserValueUpdateMessage(id, description, value);
+  m_publisher(message);
+  auto [retrieved, reply] = WaitForReplyWithResend(id, message);
+  if (!retrieved)
+  {
+    return false;
+  }
+  auto [parsed, user_value] = sup::oac_tree::ParseUserValueReply(reply);
+  if (!parsed)
+  {
+    return false;
+  }
+  // Use TryAssign, since it is up to concrete Instructions to handle possible type mismatches:
+  return sup::dto::TryAssign(value, user_value);
 }
 
 int WSJobInfoIO::GetUserChoice(sup::dto::uint64 id, const std::vector<std::string>& options,
                                const sup::dto::AnyValue& metadata)
 {
-  (void)id;
-  (void)options;
-  (void)metadata;
-  return -1;
+  m_request_server->InitNewRequest(id);
+  auto message = CreateGetUserChoiceUpdateMessage(id, options, metadata);
+  m_publisher(message);
+  auto [retrieved, reply] = WaitForReplyWithResend(id, message);
+  if (!retrieved)
+  {
+    return -1;
+  }
+  auto [parsed, choice] = sup::oac_tree::ParseUserChoiceReply(reply);
+  if (!parsed)
+  {
+    return -1;
+  }
+  return choice;
 }
 
 void WSJobInfoIO::Interrupt(sup::dto::uint64 id)
 {
-  (void)id;
+  m_request_server->Interrupt(id);
 }
 
 void WSJobInfoIO::Message(const std::string& message)
@@ -103,6 +135,15 @@ void WSJobInfoIO::Log(int severity, const std::string& message)
 // Procedure ticks are not forwarded over the network!
 void WSJobInfoIO::ProcedureTicked()
 {}
+
+std::pair<bool, UserInputReply> WSJobInfoIO::WaitForReplyWithResend(sup::dto::uint64 id,
+                                                                   const std::string& message)
+{
+  // Re-publish the request periodically so that clients connecting after the initial broadcast
+  // still receive it. The resender is stopped (and its thread joined) as soon as we return.
+  PeriodicResender resender{[this, message]() { m_publisher(message); }, m_resend_interval};
+  return m_request_server->WaitForReply(id);
+}
 
 }  // namespace oac_tree_server
 

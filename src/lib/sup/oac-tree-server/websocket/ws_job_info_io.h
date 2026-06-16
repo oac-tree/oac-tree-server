@@ -23,7 +23,15 @@
 #ifndef SUP_OAC_TREE_SERVER_WS_JOB_INFO_IO_H_
 #define SUP_OAC_TREE_SERVER_WS_JOB_INFO_IO_H_
 
+#include <sup/oac-tree-server/base/input_request_server.h>
+
 #include <sup/oac-tree/i_job_info_io.h>
+
+#include <chrono>
+#include <functional>
+#include <memory>
+#include <string>
+#include <utility>
 
 namespace sup
 {
@@ -36,7 +44,8 @@ class WSJobInfoIO : public sup::oac_tree::IJobInfoIO
 {
 public:
   using Publisher = std::function<void(std::string message)>;
-  WSJobInfoIO(Publisher publisher);
+  WSJobInfoIO(Publisher publisher, std::shared_ptr<InputRequestServer> request_server,
+              std::chrono::milliseconds resend_interval);
   virtual ~WSJobInfoIO();
 
   void InitNumberOfInstructions(sup::dto::uint32 n_instr) override;
@@ -68,7 +77,16 @@ public:
   void ProcedureTicked() override;
 
 private:
+  /**
+   * @brief Block until a reply for the given request id arrives or the request is interrupted,
+   * periodically re-publishing the request message so that late-joining clients still receive it.
+   */
+  std::pair<bool, UserInputReply> WaitForReplyWithResend(sup::dto::uint64 id,
+                                                         const std::string& message);
+
   Publisher m_publisher;
+  std::shared_ptr<InputRequestServer> m_request_server;
+  std::chrono::milliseconds m_resend_interval;
 };
 
 }  // namespace oac_tree_server

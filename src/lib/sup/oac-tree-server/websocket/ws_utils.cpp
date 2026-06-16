@@ -28,6 +28,7 @@
 namespace
 {
 constexpr std::chrono::milliseconds kDefaultReplyTimeout{5000};
+constexpr std::chrono::milliseconds kDefaultResendInterval{5000};
 }
 
 namespace sup
@@ -39,7 +40,13 @@ namespace utils
 
 std::unique_ptr<IServerProtocolFactory> CreateWSServerProtocolFactory(unsigned short port)
 {
-  return std::make_unique<WSServerProtocolFactory>(port);
+  return std::make_unique<WSServerProtocolFactory>(port, kDefaultResendInterval);
+}
+
+std::unique_ptr<IServerProtocolFactory> CreateWSServerProtocolFactory(
+  unsigned short port, std::chrono::milliseconds resend_interval)
+{
+  return std::make_unique<WSServerProtocolFactory>(port, resend_interval);
 }
 
 std::unique_ptr<IClientJobManager> CreateWSClientJobManager(

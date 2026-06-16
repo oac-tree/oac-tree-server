@@ -25,20 +25,31 @@
 #include "ws_job_info_io.h"
 #include "ws_main_server.h"
 #include "ws_message.h"
+#include "ws_message_handler.h"
+
+#include <sup/oac-tree-server/base/input_request_server.h>
 
 #include <sup/oac-tree-server/exceptions.h>
 
 #include <map>
+#include <memory>
 
 namespace sup
 {
 namespace oac_tree_server
 {
 
-WSServerProtocolFactory::WSServerProtocolFactory(unsigned short port)
+WSServerProtocolFactory::WSServerProtocolFactory(unsigned short port,
+                                                 std::chrono::milliseconds resend_interval)
   : IServerProtocolFactory{}
   , m_main_server{std::make_unique<WSMainServer>(port)}
-{}
+  , m_resend_interval{resend_interval}
+{
+  if (m_resend_interval.count() <= 0)
+  {
+    throw InvalidOperationException("WSServerProtocolFactory requires a positive resend interval");
+  }
+}
 
 WSServerProtocolFactory::~WSServerProtocolFactory() = default;
 
@@ -77,7 +88,16 @@ std::unique_ptr<sup::oac_tree::IJobInfoIO> WSServerProtocolFactory::CreateJobInf
       connection->send(message);
     }
   };
-  return std::make_unique<WSJobInfoIO>(publisher);
+  // The request server is shared between the WSJobInfoIO (which waits for replies on the job
+  // execution thread) and the endpoint's message handler (which delivers client replies from the
+  // server's io_service thread), so it must outlive both.
+  auto request_server = std::make_shared<InputRequestServer>();
+  endpoint.on_message =
+    [request_server](std::shared_ptr<WSMainServer::WsServer::Connection> /*connection*/,
+                     std::shared_ptr<WSMainServer::WsServer::InMessage> in_message) {
+      HandleUserInputReply(in_message->string(), *request_server);
+    };
+  return std::make_unique<WSJobInfoIO>(publisher, request_server, m_resend_interval);
 }
 
 }  // namespace oac_tree_server

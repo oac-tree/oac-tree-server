@@ -166,6 +166,48 @@ TEST(WsCreateJSONMessageTest, CreateLogUpdateMessage)
   EXPECT_STREQ(doc[ws_message_json_keys::kMessage].GetString(), "warn");
 }
 
+TEST(WsCreateJSONMessageTest, CreateGetUserValueUpdateMessage)
+{
+  const sup::dto::AnyValue value{sup::dto::SignedInteger32Type, 5};
+  auto json = CreateGetUserValueUpdateMessage(33u, "Please provide your name", value);
+  auto doc = ParseJson(json);
+
+  ASSERT_FALSE(doc.HasParseError());
+  ASSERT_TRUE(doc.HasMember(ws_message_json_keys::kUpdate));
+  ASSERT_TRUE(doc.HasMember(ws_message_json_keys::kRequestId));
+  ASSERT_TRUE(doc.HasMember(ws_message_json_keys::kDescription));
+  ASSERT_TRUE(doc.HasMember(ws_message_json_keys::kValue));
+  ASSERT_TRUE(doc.HasMember(ws_message_json_keys::kType));
+  EXPECT_EQ(doc[ws_message_json_keys::kUpdate].GetUint(),
+            static_cast<sup::dto::uint32>(UpdateMessageType::kGetUserValue));
+  EXPECT_EQ(doc[ws_message_json_keys::kRequestId].GetUint64(), 33u);
+  EXPECT_STREQ(doc[ws_message_json_keys::kDescription].GetString(), "Please provide your name");
+}
+
+TEST(WsCreateJSONMessageTest, CreateGetUserChoiceUpdateMessage)
+{
+  const std::vector<std::string> choices{"normal", "degraded", "fault"};
+  const sup::dto::AnyValue metadata{sup::dto::BooleanType, true};
+  auto json = CreateGetUserChoiceUpdateMessage(34u, choices, metadata);
+  auto doc = ParseJson(json);
+
+  ASSERT_FALSE(doc.HasParseError());
+  ASSERT_TRUE(doc.HasMember(ws_message_json_keys::kUpdate));
+  ASSERT_TRUE(doc.HasMember(ws_message_json_keys::kRequestId));
+  ASSERT_TRUE(doc.HasMember(ws_message_json_keys::kChoices));
+  ASSERT_TRUE(doc.HasMember(ws_message_json_keys::kValue));
+  ASSERT_TRUE(doc.HasMember(ws_message_json_keys::kType));
+  EXPECT_EQ(doc[ws_message_json_keys::kUpdate].GetUint(),
+            static_cast<sup::dto::uint32>(UpdateMessageType::kGetUserChoice));
+  EXPECT_EQ(doc[ws_message_json_keys::kRequestId].GetUint64(), 34u);
+  const auto& choices_array = doc[ws_message_json_keys::kChoices];
+  ASSERT_TRUE(choices_array.IsArray());
+  ASSERT_EQ(choices_array.Size(), 3u);
+  EXPECT_STREQ(choices_array[0].GetString(), "normal");
+  EXPECT_STREQ(choices_array[1].GetString(), "degraded");
+  EXPECT_STREQ(choices_array[2].GetString(), "fault");
+}
+
 TEST(WsCreateJSONMessageTest, CreateGetNumberOfJobsRequestMessage)
 {
   auto json = CreateGetNumberOfJobsRequestMessage(42u);

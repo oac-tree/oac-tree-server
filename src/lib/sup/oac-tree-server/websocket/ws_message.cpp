@@ -183,6 +183,56 @@ std::string CreateLogUpdateMessage(sup::dto::int32 severity,
   return ws_message_json_helpers::SerializeDocumentToJSON(doc);
 }
 
+std::string CreateGetUserValueUpdateMessage(sup::dto::uint64 request_id,
+                                            const std::string& description,
+                                            const sup::dto::AnyValue& value)
+{
+  rapidjson::Document doc;
+  doc.SetObject();
+  auto& allocator = doc.GetAllocator();
+  const auto value_str = sup::dto::ValuesToJSONString(value);
+  const auto type_str = sup::dto::AnyTypeToJSONString(value.GetType());
+
+  doc.AddMember(rapidjson::StringRef(ws_message_json_keys::kUpdate),
+                static_cast<sup::dto::uint32>(UpdateMessageType::kGetUserValue),
+                allocator);
+  doc.AddMember(rapidjson::StringRef(ws_message_json_keys::kRequestId), request_id, allocator);
+  doc.AddMember(rapidjson::StringRef(ws_message_json_keys::kDescription),
+                JSONStringValue(description), allocator);
+  doc.AddMember(rapidjson::StringRef(ws_message_json_keys::kValue),
+                JSONStringValue(value_str), allocator);
+  doc.AddMember(rapidjson::StringRef(ws_message_json_keys::kType),
+                JSONStringValue(type_str), allocator);
+  return ws_message_json_helpers::SerializeDocumentToJSON(doc);
+}
+
+std::string CreateGetUserChoiceUpdateMessage(sup::dto::uint64 request_id,
+                                             const std::vector<std::string>& choices,
+                                             const sup::dto::AnyValue& metadata)
+{
+  rapidjson::Document doc;
+  doc.SetObject();
+  auto& allocator = doc.GetAllocator();
+  const auto value_str = sup::dto::ValuesToJSONString(metadata);
+  const auto type_str = sup::dto::AnyTypeToJSONString(metadata.GetType());
+
+  doc.AddMember(rapidjson::StringRef(ws_message_json_keys::kUpdate),
+                static_cast<sup::dto::uint32>(UpdateMessageType::kGetUserChoice),
+                allocator);
+  doc.AddMember(rapidjson::StringRef(ws_message_json_keys::kRequestId), request_id, allocator);
+  rapidjson::Value choices_array{rapidjson::kArrayType};
+  for (const auto& choice : choices)
+  {
+    choices_array.PushBack(JSONStringValue(choice), allocator);
+  }
+  doc.AddMember(rapidjson::StringRef(ws_message_json_keys::kChoices), choices_array, allocator);
+  doc.AddMember(rapidjson::StringRef(ws_message_json_keys::kValue),
+                JSONStringValue(value_str), allocator);
+  doc.AddMember(rapidjson::StringRef(ws_message_json_keys::kType),
+                JSONStringValue(type_str), allocator);
+  return ws_message_json_helpers::SerializeDocumentToJSON(doc);
+}
+
 std::string CreateGetNumberOfJobsRequestMessage(sup::dto::uint64 request_id)
 {
   rapidjson::Document doc;

@@ -6,6 +6,7 @@ target_sources(oac-tree-server
   ws_job_info_io.cpp
   ws_job_manager.cpp
   ws_main_server.cpp
+  periodic_resender.cpp
   ws_message_handler.cpp
   ws_message_json_helpers.cpp
   ws_message.cpp
