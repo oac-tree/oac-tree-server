@@ -99,6 +99,95 @@ void HandleUpdateMessage(const std::string& msg, sup::oac_tree::IJobInfoIO& job_
   concrete_handlers[update_type](doc, job_info_io);
 }
 
+void HandleClientJobMessage(const std::string& msg, sup::oac_tree::IJobInfoIO& job_info_io,
+                            const ClientInputCallbacks& callbacks)
+{
+  rapidjson::Document doc;
+  doc.Parse(msg.c_str());
+
+  if (doc.HasParseError() || !doc.IsObject())
+  {
+    return;
+  }
+  if (!doc.HasMember(kUpdate) || !doc[kUpdate].IsUint())
+  {
+    return;
+  }
+  auto update_type = doc[kUpdate].GetUint();
+  switch (static_cast<UpdateMessageType>(update_type))
+  {
+  case UpdateMessageType::kGetUserValue:
+  {
+    if (!doc.HasMember(kRequestId) || !doc[kRequestId].IsUint64()
+        || !doc.HasMember(kDescription) || !doc[kDescription].IsString()
+        || !doc.HasMember(kValue) || !doc.HasMember(kType))
+    {
+      return;
+    }
+    sup::dto::AnyValue value{};
+    if (!ParseAnyValue(doc[kValue], doc[kType], value))
+    {
+      return;
+    }
+    if (callbacks.on_value_request)
+    {
+      callbacks.on_value_request(doc[kRequestId].GetUint64(), value, doc[kDescription].GetString());
+    }
+    break;
+  }
+  case UpdateMessageType::kGetUserChoice:
+  {
+    if (!doc.HasMember(kRequestId) || !doc[kRequestId].IsUint64()
+        || !doc.HasMember(kChoices) || !doc[kChoices].IsArray()
+        || !doc.HasMember(kValue) || !doc.HasMember(kType))
+    {
+      return;
+    }
+    std::vector<std::string> options;
+    for (const auto& choice : doc[kChoices].GetArray())
+    {
+      if (!choice.IsString())
+      {
+        return;
+      }
+      options.emplace_back(choice.GetString());
+    }
+    sup::dto::AnyValue metadata{};
+    if (!ParseAnyValue(doc[kValue], doc[kType], metadata))
+    {
+      return;
+    }
+    if (callbacks.on_choice_request)
+    {
+      callbacks.on_choice_request(doc[kRequestId].GetUint64(), options, metadata);
+    }
+    break;
+  }
+  case UpdateMessageType::kUserInputCancelled:
+  {
+    if (!doc.HasMember(kRequestId) || !doc[kRequestId].IsUint64())
+    {
+      return;
+    }
+    if (callbacks.on_cancelled)
+    {
+      callbacks.on_cancelled(doc[kRequestId].GetUint64());
+    }
+    break;
+  }
+  default:
+  {
+    // Any other (one-way) update is forwarded to the IJobInfoIO, just like HandleUpdateMessage.
+    const auto& concrete_handlers = GetConcreteUpdateHandlers();
+    if (update_type < concrete_handlers.size())
+    {
+      concrete_handlers[update_type](doc, job_info_io);
+    }
+    break;
+  }
+  }
+}
+
 std::string HandleJobManagerMessage(const std::string& msg, IJobManager& job_manager)
 {
   rapidjson::Document doc;

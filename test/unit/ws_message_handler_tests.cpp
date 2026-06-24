@@ -473,3 +473,83 @@ TEST(UserInputReplyHandlerTest, MalformedRepliesIgnored)
   auto result = server.WaitForReply(id);
   EXPECT_FALSE(result.first);
 }
+
+// ===========================================================================
+// HandleClientJobMessage tests (client-side dispatch)
+// ===========================================================================
+
+TEST_F(UpdateMessageHandlerTest, HandleClientJobMessage_ValueRequestDispatched)
+{
+  const sup::dto::AnyValue value{sup::dto::SignedInteger32Type, 5};
+  sup::dto::uint64 seen_id{0};
+  sup::dto::AnyValue seen_value{};
+  std::string seen_description;
+
+  ClientInputCallbacks callbacks;
+  callbacks.on_value_request = [&](sup::dto::uint64 id, const sup::dto::AnyValue& v,
+                                   const std::string& description) {
+    seen_id = id;
+    seen_value = v;
+    seen_description = description;
+  };
+  // StrictMock m_mock_io ensures the request is NOT forwarded as a one-way update.
+  HandleClientJobMessage(CreateGetUserValueUpdateMessage(33u, "name", value), m_mock_io, callbacks);
+
+  EXPECT_EQ(seen_id, 33u);
+  EXPECT_EQ(seen_value, value);
+  EXPECT_EQ(seen_description, "name");
+}
+
+TEST_F(UpdateMessageHandlerTest, HandleClientJobMessage_ChoiceRequestDispatched)
+{
+  const std::vector<std::string> choices{"normal", "degraded", "fault"};
+  sup::dto::uint64 seen_id{0};
+  std::vector<std::string> seen_options;
+
+  ClientInputCallbacks callbacks;
+  callbacks.on_choice_request = [&](sup::dto::uint64 id, const std::vector<std::string>& options,
+                                    const sup::dto::AnyValue&) {
+    seen_id = id;
+    seen_options = options;
+  };
+  HandleClientJobMessage(CreateGetUserChoiceUpdateMessage(34u, choices, sup::dto::AnyValue{}),
+                         m_mock_io, callbacks);
+
+  EXPECT_EQ(seen_id, 34u);
+  EXPECT_EQ(seen_options, choices);
+}
+
+TEST_F(UpdateMessageHandlerTest, HandleClientJobMessage_CancelledDispatched)
+{
+  sup::dto::uint64 seen_id{0};
+  ClientInputCallbacks callbacks;
+  callbacks.on_cancelled = [&](sup::dto::uint64 id) { seen_id = id; };
+
+  HandleClientJobMessage(CreateUserInputCancelledMessage(34u), m_mock_io, callbacks);
+
+  EXPECT_EQ(seen_id, 34u);
+}
+
+TEST_F(UpdateMessageHandlerTest, HandleClientJobMessage_OneWayUpdateForwarded)
+{
+  // A non-user-input update is forwarded to the IJobInfoIO, just like HandleUpdateMessage.
+  EXPECT_CALL(m_mock_io, Log(5, std::string("warn"))).Times(Exactly(1));
+  HandleClientJobMessage(CreateLogUpdateMessage(5, "warn"), m_mock_io, ClientInputCallbacks{});
+}
+
+TEST_F(UpdateMessageHandlerTest, HandleClientJobMessage_MalformedIgnored)
+{
+  ClientInputCallbacks callbacks;
+  bool any_called = false;
+  callbacks.on_value_request = [&](sup::dto::uint64, const sup::dto::AnyValue&,
+                                   const std::string&) { any_called = true; };
+  callbacks.on_choice_request = [&](sup::dto::uint64, const std::vector<std::string>&,
+                                    const sup::dto::AnyValue&) { any_called = true; };
+  callbacks.on_cancelled = [&](sup::dto::uint64) { any_called = true; };
+
+  HandleClientJobMessage("not json", m_mock_io, callbacks);
+  HandleClientJobMessage(R"({"update": 7, "req_id": 1})", m_mock_io, callbacks);  // missing fields
+  HandleClientJobMessage(R"({"update": 8, "req_id": 1})", m_mock_io, callbacks);  // missing choices
+
+  EXPECT_FALSE(any_called);
+}

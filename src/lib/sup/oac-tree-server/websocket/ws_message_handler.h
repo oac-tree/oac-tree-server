@@ -30,7 +30,12 @@
 
 #include <sup/oac-tree/i_job_info_io.h>
 
+#include <sup/dto/anyvalue.h>
+
+#include <functional>
 #include <optional>
+#include <string>
+#include <vector>
 
 namespace sup
 {
@@ -41,6 +46,28 @@ namespace oac_tree_server
  * @brief Parses JSON update messages and triggers the corresponding methods in IJobInfoIO.
  */
 void HandleUpdateMessage(const std::string& msg, sup::oac_tree::IJobInfoIO& job_info_io);
+
+/**
+ * @brief Callbacks invoked by HandleClientJobMessage for the user input messages that a client
+ * receives on a job endpoint. Each is optional (may be empty).
+ */
+struct ClientInputCallbacks
+{
+  std::function<void(sup::dto::uint64 id, const sup::dto::AnyValue& value,
+                     const std::string& description)> on_value_request;
+  std::function<void(sup::dto::uint64 id, const std::vector<std::string>& options,
+                     const sup::dto::AnyValue& metadata)> on_choice_request;
+  std::function<void(sup::dto::uint64 id)> on_cancelled;
+};
+
+/**
+ * @brief Parses a JSON message received by a client on a job endpoint. User input request messages
+ * (get user value / get user choice) and user input cancellation are dispatched to the matching
+ * callback; all other (one-way) update messages are forwarded to the IJobInfoIO. Malformed messages
+ * are silently ignored.
+ */
+void HandleClientJobMessage(const std::string& msg, sup::oac_tree::IJobInfoIO& job_info_io,
+                            const ClientInputCallbacks& callbacks);
 
 /**
  * @brief Parses JSON messages intented for a job manager, delegate these to the appropriate methods

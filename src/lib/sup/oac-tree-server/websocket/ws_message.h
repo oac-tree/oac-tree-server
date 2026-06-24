@@ -119,6 +119,11 @@ std::string CreateGetUserChoiceUpdateMessage(sup::dto::uint64 request_id,
                                              const sup::dto::AnyValue& metadata);
 std::string CreateUserInputCancelledMessage(sup::dto::uint64 request_id);
 
+// Factory functions for user input replies sent from client back to server.
+std::string CreateGetUserValueReplyMessage(sup::dto::uint64 request_id, bool ok,
+                                           const sup::dto::AnyValue& value);
+std::string CreateGetUserChoiceReplyMessage(sup::dto::uint64 request_id, int choice);
+
 // Factory functions for creating JSON messages for global requests from client to server.
 std::string CreateGetNumberOfJobsRequestMessage(sup::dto::uint64 request_id);
 std::string CreateGetJobInfoRequestMessage(sup::dto::uint64 request_id, sup::dto::uint32 job_index);

@@ -23,6 +23,7 @@
 #include "ws_client_job.h"
 
 #include "ws_client_context.h"
+#include "ws_client_input_delegator.h"
 #include "ws_message.h"
 #include "ws_message_handler.h"
 
@@ -30,10 +31,14 @@
 
 #include <sup/oac-tree/log_severity.h>
 
+#include <sup/dto/anyvalue.h>
+
 #include <simple-web/client_ws.hpp>
 
 #include <condition_variable>
 #include <mutex>
+#include <string>
+#include <vector>
 
 namespace sup
 {
@@ -58,6 +63,7 @@ private:
   sup::dto::uint32 m_job_idx;
   std::unique_ptr<sup::oac_tree::JobInfo> m_job_info;
   sup::oac_tree::IJobInfoIO& m_job_info_io;
+  WSClientInputDelegator m_input_delegator;
   std::shared_ptr<WSClientContext> m_context;
   WsClient m_client;
   bool m_connected;
@@ -72,6 +78,7 @@ WSClientJobImpl::WSClientJobImpl(IJobManager &job_manager, sup::dto::uint32 job_
   , m_job_idx{job_idx}
   , m_job_info{}
   , m_job_info_io{job_info_io}
+  , m_input_delegator{job_info_io}
   , m_context{std::move(context)}
   , m_client{CreateJobEndpoint(m_job_manager.GetServerPrefix(), job_idx)}
   , m_connected{false}
@@ -108,10 +115,24 @@ WSClientJobImpl::WSClientJobImpl(IJobManager &job_manager, sup::dto::uint32 job_
   };
   m_client.on_message = [this](std::shared_ptr<WsClient::Connection> connection,
                                std::shared_ptr<WsClient::InMessage> in_message) {
-    (void)connection;
-    // TODO: don't decode the message here, but post it to the reply handler where it will sit
-    // in a queue until someone waits for it.
-    HandleUpdateMessage(in_message->string(), m_job_info_io);
+    // User input requests are delegated to a worker thread (the prompt blocks), with the reply sent
+    // back on the connection the request arrived on. All other updates go straight to the
+    // IJobInfoIO.
+    auto send = [connection](const std::string& reply) { connection->send(reply); };
+    ClientInputCallbacks callbacks;
+    callbacks.on_value_request =
+      [this, send](sup::dto::uint64 id, const sup::dto::AnyValue& value,
+                   const std::string& description) {
+        m_input_delegator.QueueUserValueRequest(id, value, description, send);
+      };
+    callbacks.on_choice_request =
+      [this, send](sup::dto::uint64 id, const std::vector<std::string>& options,
+                   const sup::dto::AnyValue& metadata) {
+        m_input_delegator.QueueUserChoiceRequest(id, options, metadata, send);
+      };
+    callbacks.on_cancelled =
+      [this](sup::dto::uint64 id) { m_input_delegator.Cancel(id); };
+    HandleClientJobMessage(in_message->string(), m_job_info_io, callbacks);
   };
   m_client.on_error = [this](std::shared_ptr<WsClient::Connection> connection,
                              const SimpleWeb::error_code &ec) {

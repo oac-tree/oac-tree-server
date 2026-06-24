@@ -221,6 +221,39 @@ TEST(WsCreateJSONMessageTest, CreateUserInputCancelledMessage)
   EXPECT_EQ(doc[ws_message_json_keys::kRequestId].GetUint64(), 34u);
 }
 
+TEST(WsCreateJSONMessageTest, CreateGetUserValueReplyMessage)
+{
+  const sup::dto::AnyValue value{sup::dto::SignedInteger32Type, 7};
+  auto json = CreateGetUserValueReplyMessage(33u, true, value);
+  auto doc = ParseJson(json);
+
+  ASSERT_FALSE(doc.HasParseError());
+  ASSERT_TRUE(doc.HasMember(ws_message_json_keys::kUpdate));
+  ASSERT_TRUE(doc.HasMember(ws_message_json_keys::kRequestId));
+  ASSERT_TRUE(doc.HasMember(ws_message_json_keys::kOk));
+  ASSERT_TRUE(doc.HasMember(ws_message_json_keys::kValue));
+  ASSERT_TRUE(doc.HasMember(ws_message_json_keys::kType));
+  EXPECT_EQ(doc[ws_message_json_keys::kUpdate].GetUint(),
+            static_cast<sup::dto::uint32>(UpdateMessageType::kGetUserValue));
+  EXPECT_EQ(doc[ws_message_json_keys::kRequestId].GetUint64(), 33u);
+  EXPECT_TRUE(doc[ws_message_json_keys::kOk].GetBool());
+}
+
+TEST(WsCreateJSONMessageTest, CreateGetUserChoiceReplyMessage)
+{
+  auto json = CreateGetUserChoiceReplyMessage(34u, 1);
+  auto doc = ParseJson(json);
+
+  ASSERT_FALSE(doc.HasParseError());
+  ASSERT_TRUE(doc.HasMember(ws_message_json_keys::kUpdate));
+  ASSERT_TRUE(doc.HasMember(ws_message_json_keys::kRequestId));
+  ASSERT_TRUE(doc.HasMember(ws_message_json_keys::kChoice));
+  EXPECT_EQ(doc[ws_message_json_keys::kUpdate].GetUint(),
+            static_cast<sup::dto::uint32>(UpdateMessageType::kGetUserChoice));
+  EXPECT_EQ(doc[ws_message_json_keys::kRequestId].GetUint64(), 34u);
+  EXPECT_EQ(doc[ws_message_json_keys::kChoice].GetInt(), 1);
+}
+
 TEST(WsCreateJSONMessageTest, CreateGetNumberOfJobsRequestMessage)
 {
   auto json = CreateGetNumberOfJobsRequestMessage(42u);
