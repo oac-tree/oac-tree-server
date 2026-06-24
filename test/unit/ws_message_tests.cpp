@@ -208,6 +208,19 @@ TEST(WsCreateJSONMessageTest, CreateGetUserChoiceUpdateMessage)
   EXPECT_STREQ(choices_array[2].GetString(), "fault");
 }
 
+TEST(WsCreateJSONMessageTest, CreateUserInputCancelledMessage)
+{
+  auto json = CreateUserInputCancelledMessage(34u);
+  auto doc = ParseJson(json);
+
+  ASSERT_FALSE(doc.HasParseError());
+  ASSERT_TRUE(doc.HasMember(ws_message_json_keys::kUpdate));
+  ASSERT_TRUE(doc.HasMember(ws_message_json_keys::kRequestId));
+  EXPECT_EQ(doc[ws_message_json_keys::kUpdate].GetUint(),
+            static_cast<sup::dto::uint32>(UpdateMessageType::kUserInputCancelled));
+  EXPECT_EQ(doc[ws_message_json_keys::kRequestId].GetUint64(), 34u);
+}
+
 TEST(WsCreateJSONMessageTest, CreateGetNumberOfJobsRequestMessage)
 {
   auto json = CreateGetNumberOfJobsRequestMessage(42u);

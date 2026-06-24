@@ -50,6 +50,7 @@ enum class UpdateMessageType : sup::dto::uint32
   kLog,
   kGetUserValue,
   kGetUserChoice,
+  kUserInputCancelled,
 };
 
 enum class ClientMessageType : sup::dto::uint32
@@ -116,6 +117,7 @@ std::string CreateGetUserValueUpdateMessage(sup::dto::uint64 request_id,
 std::string CreateGetUserChoiceUpdateMessage(sup::dto::uint64 request_id,
                                              const std::vector<std::string>& choices,
                                              const sup::dto::AnyValue& metadata);
+std::string CreateUserInputCancelledMessage(sup::dto::uint64 request_id);
 
 // Factory functions for creating JSON messages for global requests from client to server.
 std::string CreateGetNumberOfJobsRequestMessage(sup::dto::uint64 request_id);

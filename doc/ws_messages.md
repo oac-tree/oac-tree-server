@@ -17,7 +17,7 @@ All messages passed over the websocket interface will be JSON encoded.
 
 These updates are published on the job-specific endpoint and all update messages will be sent to all clients that are connected to this endpoint. Requests for user input are handled in the same way, except that the client is expected to send a reply back. The web socket server is not blocked while waiting for this reply.
 
-An outstanding request for user input is re-published periodically (at a server-configurable interval) until it is answered or interrupted, so that clients connecting after the initial broadcast still receive it. Every re-publication carries the same `req_id`, so clients must treat a repeated `req_id` as the same request. Once a request has been answered (or otherwise finished), the server ignores any further replies for that `req_id`.
+An outstanding request for user input is re-published periodically (at a server-configurable interval) until it is answered or interrupted, so that clients connecting after the initial broadcast still receive it. Every re-publication carries the same `req_id`, so clients must treat a repeated `req_id` as the same request. Once a request has been answered (or otherwise cancelled), the server ignores any further replies for that `req_id`.
 
 The `update` field in the message structures holds an integer value that describes the type of the update message:
 
@@ -32,6 +32,7 @@ The `update` field in the message structures holds an integer value that describ
 | 6     | log message              |
 | 7     | get user value           |
 | 8     | get user choice          |
+| 9     | user input cancelled     |
 
 The following subsections specify the fields in each of the different types of JSON messages.
 
@@ -206,6 +207,19 @@ Reply from client:
 ```
 
 where the `choice` field encodes the index of the choice made by the user, or `-1` if the user cancelled the request.
+
+### User input cancelled
+
+Message to client:
+
+```json
+{
+  "update": 9,
+  "req_id": 34
+}
+```
+
+This message signals that the user input request with the given `req_id` is cancelled and no longer expects a reply. It is published when the request was answered (by any client) or when the request was interrupted on the server side. Clients that are still showing a dialog for this `req_id` should dismiss it. There is no reply to this message.
 
 ## Client side requests
 

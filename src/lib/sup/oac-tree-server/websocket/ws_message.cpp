@@ -233,6 +233,19 @@ std::string CreateGetUserChoiceUpdateMessage(sup::dto::uint64 request_id,
   return ws_message_json_helpers::SerializeDocumentToJSON(doc);
 }
 
+std::string CreateUserInputCancelledMessage(sup::dto::uint64 request_id)
+{
+  rapidjson::Document doc;
+  doc.SetObject();
+  auto& allocator = doc.GetAllocator();
+
+  doc.AddMember(rapidjson::StringRef(ws_message_json_keys::kUpdate),
+                static_cast<sup::dto::uint32>(UpdateMessageType::kUserInputCancelled),
+                allocator);
+  doc.AddMember(rapidjson::StringRef(ws_message_json_keys::kRequestId), request_id, allocator);
+  return ws_message_json_helpers::SerializeDocumentToJSON(doc);
+}
+
 std::string CreateGetNumberOfJobsRequestMessage(sup::dto::uint64 request_id)
 {
   rapidjson::Document doc;

@@ -174,6 +174,8 @@ TEST_F(WSJobInfoIOTest, GetUserValueSuccess)
   EXPECT_TRUE(m_request_server->SetClientReply(id, sup::oac_tree::CreateUserValueReply(true, provided)));
   EXPECT_TRUE(future.get());
   EXPECT_EQ(value, provided);
+  // When finished, all clients are notified so they can dismiss any open dialog.
+  EXPECT_EQ(GetMessages().back(), CreateUserInputCancelledMessage(id));
 }
 
 TEST_F(WSJobInfoIOTest, GetUserValueInterrupted)
@@ -188,6 +190,8 @@ TEST_F(WSJobInfoIOTest, GetUserValueInterrupted)
 
   m_job_info_io.Interrupt(id);
   EXPECT_FALSE(future.get());
+  // A finished notification is sent even when the request was interrupted.
+  EXPECT_EQ(GetMessages().back(), CreateUserInputCancelledMessage(id));
 }
 
 TEST_F(WSJobInfoIOTest, GetUserChoiceSuccess)
@@ -203,6 +207,7 @@ TEST_F(WSJobInfoIOTest, GetUserChoiceSuccess)
 
   EXPECT_TRUE(m_request_server->SetClientReply(id, sup::oac_tree::CreateUserChoiceReply(true, 2)));
   EXPECT_EQ(future.get(), 2);
+  EXPECT_EQ(GetMessages().back(), CreateUserInputCancelledMessage(id));
 }
 
 TEST_F(WSJobInfoIOTest, GetUserChoiceInterrupted)
@@ -218,6 +223,7 @@ TEST_F(WSJobInfoIOTest, GetUserChoiceInterrupted)
 
   m_job_info_io.Interrupt(id);
   EXPECT_EQ(future.get(), -1);
+  EXPECT_EQ(GetMessages().back(), CreateUserInputCancelledMessage(id));
 }
 
 TEST_F(WSJobInfoIOTest, GetUserValueResendsRequest)

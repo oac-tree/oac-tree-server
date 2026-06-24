@@ -85,6 +85,9 @@ bool WSJobInfoIO::GetUserValue(sup::dto::uint64 id, sup::dto::AnyValue& value,
   auto message = CreateGetUserValueUpdateMessage(id, description, value);
   m_publisher(message);
   auto [retrieved, reply] = WaitForReplyWithResend(id, message);
+  // Notify all clients that the request is cancelled, so any client still showing a dialog for it
+  // (e.g. one that did not provide the reply) can dismiss it.
+  m_publisher(CreateUserInputCancelledMessage(id));
   if (!retrieved)
   {
     return false;
@@ -105,6 +108,9 @@ int WSJobInfoIO::GetUserChoice(sup::dto::uint64 id, const std::vector<std::strin
   auto message = CreateGetUserChoiceUpdateMessage(id, options, metadata);
   m_publisher(message);
   auto [retrieved, reply] = WaitForReplyWithResend(id, message);
+  // Notify all clients that the request is cancelled, so any client still showing a dialog for it
+  // (e.g. one that did not provide the reply) can dismiss it.
+  m_publisher(CreateUserInputCancelledMessage(id));
   if (!retrieved)
   {
     return -1;
