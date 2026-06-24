@@ -38,6 +38,7 @@ target_sources(${unit-tests}
     ws_job_manager_tests.cpp
     ws_message_handler_tests.cpp
     ws_message_tests.cpp
+    ws_user_input_e2e_tests.cpp
     ../../src/app/oac-tree-server/utils.cpp
 )
 
