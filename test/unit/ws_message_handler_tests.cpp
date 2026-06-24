@@ -463,8 +463,12 @@ TEST(UserInputReplyHandlerTest, MalformedRepliesIgnored)
   const sup::dto::uint64 id{36u};
   server.InitNewRequest(id);
 
-  // Value reply missing ok/value/type, choice reply missing choice, and a non-user-input update.
+  // Object without update/req_id, value reply missing ok/value/type, value reply with unparsable
+  // value/type, choice reply missing choice, and a non-user-input update.
+  HandleUserInputReply(R"({"foo": 1})", server);
   HandleUserInputReply(R"({"update": 7, "req_id": 36})", server);
+  HandleUserInputReply(R"({"update": 7, "req_id": 36, "ok": true, "value": "x", "type": "bad"})",
+                       server);
   HandleUserInputReply(R"({"update": 8, "req_id": 36})", server);
   HandleUserInputReply(R"({"update": 4, "req_id": 36})", server);
 
@@ -548,8 +552,22 @@ TEST_F(UpdateMessageHandlerTest, HandleClientJobMessage_MalformedIgnored)
   callbacks.on_cancelled = [&](sup::dto::uint64) { any_called = true; };
 
   HandleClientJobMessage("not json", m_mock_io, callbacks);
+  HandleClientJobMessage(R"({"req_id": 1})", m_mock_io, callbacks);               // missing update
   HandleClientJobMessage(R"({"update": 7, "req_id": 1})", m_mock_io, callbacks);  // missing fields
+  // Value request with unparsable value/type.
+  HandleClientJobMessage(
+      R"({"update": 7, "req_id": 1, "description": "d", "value": "x", "type": "bad"})", m_mock_io,
+      callbacks);
   HandleClientJobMessage(R"({"update": 8, "req_id": 1})", m_mock_io, callbacks);  // missing choices
+  // Choice request with a non-string choices entry.
+  HandleClientJobMessage(
+      R"({"update": 8, "req_id": 1, "choices": [1], "value": "x", "type": "bad"})", m_mock_io,
+      callbacks);
+  // Choice request with unparsable metadata value/type.
+  HandleClientJobMessage(
+      R"({"update": 8, "req_id": 1, "choices": ["a"], "value": "x", "type": "bad"})", m_mock_io,
+      callbacks);
+  HandleClientJobMessage(R"({"update": 9})", m_mock_io, callbacks);  // cancelled missing req_id
 
   EXPECT_FALSE(any_called);
 }

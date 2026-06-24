@@ -301,3 +301,44 @@ TEST(WSClientInputDelegatorTest, CancelInterruptsAndSuppressesReply)
   ASSERT_EQ(messages.size(), 1u);
   EXPECT_EQ(messages[0], CreateGetUserValueReplyMessage(next_id, true, provided));
 }
+
+TEST(WSClientInputDelegatorTest, DestructionInterruptsActivePrompt)
+{
+  FakeInputUI ui;
+  SendRecorder recorder;
+  {
+    WSClientInputDelegator delegator{ui};
+    const sup::dto::AnyValue def{sup::dto::SignedInteger32Type, 0};
+    delegator.QueueUserValueRequest(7u, def, "description", recorder.Function());
+    ui.WaitForPrompt(1);
+    // Leaving this scope destroys the delegator while the prompt is still blocked: the destructor
+    // must interrupt it so the worker thread can be joined.
+  }
+  EXPECT_TRUE(ui.InterruptCalled());
+  EXPECT_EQ(recorder.Size(), 0u);  // an interrupted prompt sends no reply
+}
+
+TEST(WSClientInputDelegatorTest, CancelStillQueuedRequestIsDropped)
+{
+  FakeInputUI ui;
+  SendRecorder recorder;
+  WSClientInputDelegator delegator{ui};
+
+  const sup::dto::AnyValue def{sup::dto::SignedInteger32Type, 0};
+  // The first request keeps the (single) worker busy while it is prompted.
+  delegator.QueueUserValueRequest(1u, def, "description", recorder.Function());
+  ui.WaitForPrompt(1);
+
+  // The second request stays queued (worker is busy); cancel it before it is ever prompted.
+  delegator.QueueUserValueRequest(2u, def, "description", recorder.Function());
+  delegator.Cancel(2u);
+
+  // Release the first request.
+  const sup::dto::AnyValue provided{sup::dto::SignedInteger32Type, 5};
+  ui.ProvideValue(provided);
+
+  auto messages = recorder.WaitFor(1);
+  ASSERT_EQ(messages.size(), 1u);
+  EXPECT_EQ(messages[0], CreateGetUserValueReplyMessage(1u, true, provided));
+  EXPECT_EQ(ui.ValueCalls(), 1);  // the cancelled, still-queued request was never prompted
+}
