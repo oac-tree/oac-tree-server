@@ -38,7 +38,7 @@ namespace
 rapidjson::Value JSONStringValue(const std::string& str)
 {
   rapidjson::Value result;
-  result.SetString(rapidjson::StringRef(str));
+  (void)result.SetString(rapidjson::StringRef(str));
   return result;
 }
 }  // unnamed namespace
@@ -66,13 +66,13 @@ std::string CreateJobEndpoint(const std::string& server_prefix, sup::dto::uint32
 std::string CreateJobStateUpdateMessage(sup::oac_tree::JobState state)
 {
   rapidjson::Document doc;
-  doc.SetObject();
+  (void)doc.SetObject();
   auto& allocator = doc.GetAllocator();
 
-  doc.AddMember(rapidjson::StringRef(ws_message_json_keys::kUpdate),
+  (void)doc.AddMember(rapidjson::StringRef(ws_message_json_keys::kUpdate),
                 static_cast<sup::dto::uint32>(UpdateMessageType::kJobState),
                 allocator);
-  doc.AddMember(rapidjson::StringRef(ws_message_json_keys::kState),
+  (void)doc.AddMember(rapidjson::StringRef(ws_message_json_keys::kState),
                 static_cast<sup::dto::uint32>(state),
                 allocator);
   return ws_message_json_helpers::SerializeDocumentToJSON(doc);
@@ -81,13 +81,13 @@ std::string CreateJobStateUpdateMessage(sup::oac_tree::JobState state)
 std::string CreateBreakpointInstructionUpdateMessage(sup::dto::uint32 instruction_id)
 {
   rapidjson::Document doc;
-  doc.SetObject();
+  (void)doc.SetObject();
   auto& allocator = doc.GetAllocator();
 
-  doc.AddMember(rapidjson::StringRef(ws_message_json_keys::kUpdate),
+  (void)doc.AddMember(rapidjson::StringRef(ws_message_json_keys::kUpdate),
                 static_cast<sup::dto::uint32>(UpdateMessageType::kBreakPoint),
                 allocator);
-  doc.AddMember(rapidjson::StringRef(ws_message_json_keys::kId), instruction_id, allocator);
+  (void)doc.AddMember(rapidjson::StringRef(ws_message_json_keys::kId), instruction_id, allocator);
   return ws_message_json_helpers::SerializeDocumentToJSON(doc);
 }
 
@@ -95,16 +95,16 @@ std::string CreateInstructionStateUpdateMessage(sup::dto::uint32 instruction_id,
                                                 sup::oac_tree::InstructionState state)
 {
   rapidjson::Document doc;
-  doc.SetObject();
+  (void)doc.SetObject();
   auto& allocator = doc.GetAllocator();
 
-  doc.AddMember(rapidjson::StringRef(ws_message_json_keys::kUpdate),
+  (void)doc.AddMember(rapidjson::StringRef(ws_message_json_keys::kUpdate),
                 static_cast<sup::dto::uint32>(UpdateMessageType::kInstructionState),
                 allocator);
-  doc.AddMember(rapidjson::StringRef(ws_message_json_keys::kId), instruction_id, allocator);
-  doc.AddMember(rapidjson::StringRef(ws_message_json_keys::kBreakpoint),
+  (void)doc.AddMember(rapidjson::StringRef(ws_message_json_keys::kId), instruction_id, allocator);
+  (void)doc.AddMember(rapidjson::StringRef(ws_message_json_keys::kBreakpoint),
                 state.m_breakpoint_set, allocator);
-  doc.AddMember(rapidjson::StringRef(ws_message_json_keys::kState),
+  (void)doc.AddMember(rapidjson::StringRef(ws_message_json_keys::kState),
                 static_cast<sup::dto::uint32>(state.m_execution_status),
                 allocator);
   return ws_message_json_helpers::SerializeDocumentToJSON(doc);
@@ -115,19 +115,19 @@ std::string CreateVariableStateUpdateMessage(sup::dto::uint32 variable_id,
                                              const sup::dto::AnyValue& value)
 {
   rapidjson::Document doc;
-  doc.SetObject();
+  (void)doc.SetObject();
   auto& allocator = doc.GetAllocator();
   const auto value_str = sup::dto::ValuesToJSONString(value);
   const auto type_str = sup::dto::AnyTypeToJSONString(value.GetType());
 
-  doc.AddMember(rapidjson::StringRef(ws_message_json_keys::kUpdate),
+  (void)doc.AddMember(rapidjson::StringRef(ws_message_json_keys::kUpdate),
                 static_cast<sup::dto::uint32>(UpdateMessageType::kVariableState),
                 allocator);
-  doc.AddMember(rapidjson::StringRef(ws_message_json_keys::kId), variable_id, allocator);
-  doc.AddMember(rapidjson::StringRef(ws_message_json_keys::kConnected), connected, allocator);
-  doc.AddMember(rapidjson::StringRef(ws_message_json_keys::kValue),
+  (void)doc.AddMember(rapidjson::StringRef(ws_message_json_keys::kId), variable_id, allocator);
+  (void)doc.AddMember(rapidjson::StringRef(ws_message_json_keys::kConnected), connected, allocator);
+  (void)doc.AddMember(rapidjson::StringRef(ws_message_json_keys::kValue),
                 JSONStringValue(value_str), allocator);
-  doc.AddMember(rapidjson::StringRef(ws_message_json_keys::kType),
+  (void)doc.AddMember(rapidjson::StringRef(ws_message_json_keys::kType),
                 JSONStringValue(type_str), allocator);
   return ws_message_json_helpers::SerializeDocumentToJSON(doc);
 }
@@ -136,19 +136,19 @@ std::string CreatePutValueUpdateMessage(const std::string& description,
                                         const sup::dto::AnyValue& value)
 {
   rapidjson::Document doc;
-  doc.SetObject();
+  (void)doc.SetObject();
   auto& allocator = doc.GetAllocator();
   const auto value_str = sup::dto::ValuesToJSONString(value);
   const auto type_str = sup::dto::AnyTypeToJSONString(value.GetType());
 
-  doc.AddMember(rapidjson::StringRef(ws_message_json_keys::kUpdate),
+  (void)doc.AddMember(rapidjson::StringRef(ws_message_json_keys::kUpdate),
                 static_cast<sup::dto::uint32>(UpdateMessageType::kPutValue),
                 allocator);
-  doc.AddMember(rapidjson::StringRef(ws_message_json_keys::kDescription),
+  (void)doc.AddMember(rapidjson::StringRef(ws_message_json_keys::kDescription),
                 JSONStringValue(description), allocator);
-  doc.AddMember(rapidjson::StringRef(ws_message_json_keys::kValue),
+  (void)doc.AddMember(rapidjson::StringRef(ws_message_json_keys::kValue),
                 JSONStringValue(value_str), allocator);
-  doc.AddMember(rapidjson::StringRef(ws_message_json_keys::kType),
+  (void)doc.AddMember(rapidjson::StringRef(ws_message_json_keys::kType),
                 JSONStringValue(type_str), allocator);
   return ws_message_json_helpers::SerializeDocumentToJSON(doc);
 }
@@ -156,13 +156,13 @@ std::string CreatePutValueUpdateMessage(const std::string& description,
 std::string CreateTextMessageUpdateMessage(const std::string& message)
 {
   rapidjson::Document doc;
-  doc.SetObject();
+  (void)doc.SetObject();
   auto& allocator = doc.GetAllocator();
 
-  doc.AddMember(rapidjson::StringRef(ws_message_json_keys::kUpdate),
+  (void)doc.AddMember(rapidjson::StringRef(ws_message_json_keys::kUpdate),
                 static_cast<sup::dto::uint32>(UpdateMessageType::kMessage),
                 allocator);
-  doc.AddMember(rapidjson::StringRef(ws_message_json_keys::kMessage),
+  (void)doc.AddMember(rapidjson::StringRef(ws_message_json_keys::kMessage),
                 JSONStringValue(message), allocator);
   return ws_message_json_helpers::SerializeDocumentToJSON(doc);
 }
@@ -171,14 +171,14 @@ std::string CreateLogUpdateMessage(sup::dto::int32 severity,
                                    const std::string& message)
 {
   rapidjson::Document doc;
-  doc.SetObject();
+  (void)doc.SetObject();
   auto& allocator = doc.GetAllocator();
 
-  doc.AddMember(rapidjson::StringRef(ws_message_json_keys::kUpdate),
+  (void)doc.AddMember(rapidjson::StringRef(ws_message_json_keys::kUpdate),
                 static_cast<sup::dto::uint32>(UpdateMessageType::kLog),
                 allocator);
-  doc.AddMember(rapidjson::StringRef(ws_message_json_keys::kSeverity), severity, allocator);
-  doc.AddMember(rapidjson::StringRef(ws_message_json_keys::kMessage),
+  (void)doc.AddMember(rapidjson::StringRef(ws_message_json_keys::kSeverity), severity, allocator);
+  (void)doc.AddMember(rapidjson::StringRef(ws_message_json_keys::kMessage),
                 JSONStringValue(message), allocator);
   return ws_message_json_helpers::SerializeDocumentToJSON(doc);
 }
@@ -188,20 +188,20 @@ std::string CreateGetUserValueUpdateMessage(sup::dto::uint64 request_id,
                                             const sup::dto::AnyValue& value)
 {
   rapidjson::Document doc;
-  doc.SetObject();
+  (void)doc.SetObject();
   auto& allocator = doc.GetAllocator();
   const auto value_str = sup::dto::ValuesToJSONString(value);
   const auto type_str = sup::dto::AnyTypeToJSONString(value.GetType());
 
-  doc.AddMember(rapidjson::StringRef(ws_message_json_keys::kUpdate),
+  (void)doc.AddMember(rapidjson::StringRef(ws_message_json_keys::kUpdate),
                 static_cast<sup::dto::uint32>(UpdateMessageType::kGetUserValue),
                 allocator);
-  doc.AddMember(rapidjson::StringRef(ws_message_json_keys::kRequestId), request_id, allocator);
-  doc.AddMember(rapidjson::StringRef(ws_message_json_keys::kDescription),
+  (void)doc.AddMember(rapidjson::StringRef(ws_message_json_keys::kRequestId), request_id, allocator);
+  (void)doc.AddMember(rapidjson::StringRef(ws_message_json_keys::kDescription),
                 JSONStringValue(description), allocator);
-  doc.AddMember(rapidjson::StringRef(ws_message_json_keys::kValue),
+  (void)doc.AddMember(rapidjson::StringRef(ws_message_json_keys::kValue),
                 JSONStringValue(value_str), allocator);
-  doc.AddMember(rapidjson::StringRef(ws_message_json_keys::kType),
+  (void)doc.AddMember(rapidjson::StringRef(ws_message_json_keys::kType),
                 JSONStringValue(type_str), allocator);
   return ws_message_json_helpers::SerializeDocumentToJSON(doc);
 }
@@ -211,24 +211,24 @@ std::string CreateGetUserChoiceUpdateMessage(sup::dto::uint64 request_id,
                                              const sup::dto::AnyValue& metadata)
 {
   rapidjson::Document doc;
-  doc.SetObject();
+  (void)doc.SetObject();
   auto& allocator = doc.GetAllocator();
   const auto value_str = sup::dto::ValuesToJSONString(metadata);
   const auto type_str = sup::dto::AnyTypeToJSONString(metadata.GetType());
 
-  doc.AddMember(rapidjson::StringRef(ws_message_json_keys::kUpdate),
+  (void)doc.AddMember(rapidjson::StringRef(ws_message_json_keys::kUpdate),
                 static_cast<sup::dto::uint32>(UpdateMessageType::kGetUserChoice),
                 allocator);
-  doc.AddMember(rapidjson::StringRef(ws_message_json_keys::kRequestId), request_id, allocator);
+  (void)doc.AddMember(rapidjson::StringRef(ws_message_json_keys::kRequestId), request_id, allocator);
   rapidjson::Value choices_array{rapidjson::kArrayType};
   for (const auto& choice : choices)
   {
-    choices_array.PushBack(JSONStringValue(choice), allocator);
+    (void)choices_array.PushBack(JSONStringValue(choice), allocator);
   }
-  doc.AddMember(rapidjson::StringRef(ws_message_json_keys::kChoices), choices_array, allocator);
-  doc.AddMember(rapidjson::StringRef(ws_message_json_keys::kValue),
+  (void)doc.AddMember(rapidjson::StringRef(ws_message_json_keys::kChoices), choices_array, allocator);
+  (void)doc.AddMember(rapidjson::StringRef(ws_message_json_keys::kValue),
                 JSONStringValue(value_str), allocator);
-  doc.AddMember(rapidjson::StringRef(ws_message_json_keys::kType),
+  (void)doc.AddMember(rapidjson::StringRef(ws_message_json_keys::kType),
                 JSONStringValue(type_str), allocator);
   return ws_message_json_helpers::SerializeDocumentToJSON(doc);
 }
@@ -236,13 +236,13 @@ std::string CreateGetUserChoiceUpdateMessage(sup::dto::uint64 request_id,
 std::string CreateUserInputCancelledMessage(sup::dto::uint64 request_id)
 {
   rapidjson::Document doc;
-  doc.SetObject();
+  (void)doc.SetObject();
   auto& allocator = doc.GetAllocator();
 
-  doc.AddMember(rapidjson::StringRef(ws_message_json_keys::kUpdate),
+  (void)doc.AddMember(rapidjson::StringRef(ws_message_json_keys::kUpdate),
                 static_cast<sup::dto::uint32>(UpdateMessageType::kUserInputCancelled),
                 allocator);
-  doc.AddMember(rapidjson::StringRef(ws_message_json_keys::kRequestId), request_id, allocator);
+  (void)doc.AddMember(rapidjson::StringRef(ws_message_json_keys::kRequestId), request_id, allocator);
   return ws_message_json_helpers::SerializeDocumentToJSON(doc);
 }
 
@@ -250,19 +250,19 @@ std::string CreateGetUserValueReplyMessage(sup::dto::uint64 request_id, bool ok,
                                            const sup::dto::AnyValue& value)
 {
   rapidjson::Document doc;
-  doc.SetObject();
+  (void)doc.SetObject();
   auto& allocator = doc.GetAllocator();
   const auto value_str = sup::dto::ValuesToJSONString(value);
   const auto type_str = sup::dto::AnyTypeToJSONString(value.GetType());
 
-  doc.AddMember(rapidjson::StringRef(ws_message_json_keys::kUpdate),
+  (void)doc.AddMember(rapidjson::StringRef(ws_message_json_keys::kUpdate),
                 static_cast<sup::dto::uint32>(UpdateMessageType::kGetUserValue),
                 allocator);
-  doc.AddMember(rapidjson::StringRef(ws_message_json_keys::kRequestId), request_id, allocator);
-  doc.AddMember(rapidjson::StringRef(ws_message_json_keys::kOk), ok, allocator);
-  doc.AddMember(rapidjson::StringRef(ws_message_json_keys::kValue),
+  (void)doc.AddMember(rapidjson::StringRef(ws_message_json_keys::kRequestId), request_id, allocator);
+  (void)doc.AddMember(rapidjson::StringRef(ws_message_json_keys::kOk), ok, allocator);
+  (void)doc.AddMember(rapidjson::StringRef(ws_message_json_keys::kValue),
                 JSONStringValue(value_str), allocator);
-  doc.AddMember(rapidjson::StringRef(ws_message_json_keys::kType),
+  (void)doc.AddMember(rapidjson::StringRef(ws_message_json_keys::kType),
                 JSONStringValue(type_str), allocator);
   return ws_message_json_helpers::SerializeDocumentToJSON(doc);
 }
@@ -270,41 +270,41 @@ std::string CreateGetUserValueReplyMessage(sup::dto::uint64 request_id, bool ok,
 std::string CreateGetUserChoiceReplyMessage(sup::dto::uint64 request_id, int choice)
 {
   rapidjson::Document doc;
-  doc.SetObject();
+  (void)doc.SetObject();
   auto& allocator = doc.GetAllocator();
 
-  doc.AddMember(rapidjson::StringRef(ws_message_json_keys::kUpdate),
+  (void)doc.AddMember(rapidjson::StringRef(ws_message_json_keys::kUpdate),
                 static_cast<sup::dto::uint32>(UpdateMessageType::kGetUserChoice),
                 allocator);
-  doc.AddMember(rapidjson::StringRef(ws_message_json_keys::kRequestId), request_id, allocator);
-  doc.AddMember(rapidjson::StringRef(ws_message_json_keys::kChoice), choice, allocator);
+  (void)doc.AddMember(rapidjson::StringRef(ws_message_json_keys::kRequestId), request_id, allocator);
+  (void)doc.AddMember(rapidjson::StringRef(ws_message_json_keys::kChoice), choice, allocator);
   return ws_message_json_helpers::SerializeDocumentToJSON(doc);
 }
 
 std::string CreateGetNumberOfJobsRequestMessage(sup::dto::uint64 request_id)
 {
   rapidjson::Document doc;
-  doc.SetObject();
+  (void)doc.SetObject();
   auto& allocator = doc.GetAllocator();
 
-  doc.AddMember(rapidjson::StringRef(ws_message_json_keys::kRequest),
+  (void)doc.AddMember(rapidjson::StringRef(ws_message_json_keys::kRequest),
                 static_cast<sup::dto::uint32>(ClientMessageType::kGetNumberOfJobs),
                 allocator);
-  doc.AddMember(rapidjson::StringRef(ws_message_json_keys::kRequestId), request_id, allocator);
+  (void)doc.AddMember(rapidjson::StringRef(ws_message_json_keys::kRequestId), request_id, allocator);
   return ws_message_json_helpers::SerializeDocumentToJSON(doc);
 }
 
 std::string CreateGetJobInfoRequestMessage(sup::dto::uint64 request_id, sup::dto::uint32 job_index)
 {
   rapidjson::Document doc;
-  doc.SetObject();
+  (void)doc.SetObject();
   auto& allocator = doc.GetAllocator();
 
-  doc.AddMember(rapidjson::StringRef(ws_message_json_keys::kRequest),
+  (void)doc.AddMember(rapidjson::StringRef(ws_message_json_keys::kRequest),
                 static_cast<sup::dto::uint32>(ClientMessageType::kGetJobInfo),
                 allocator);
-  doc.AddMember(rapidjson::StringRef(ws_message_json_keys::kRequestId), request_id, allocator);
-  doc.AddMember(rapidjson::StringRef(ws_message_json_keys::kJobIndex), job_index, allocator);
+  (void)doc.AddMember(rapidjson::StringRef(ws_message_json_keys::kRequestId), request_id, allocator);
+  (void)doc.AddMember(rapidjson::StringRef(ws_message_json_keys::kJobIndex), job_index, allocator);
   return ws_message_json_helpers::SerializeDocumentToJSON(doc);
 }
 
@@ -313,15 +313,15 @@ std::string CreateEditBreakpointRequestMessage(sup::dto::uint32 job_index,
                                                bool active)
 {
   rapidjson::Document doc;
-  doc.SetObject();
+  (void)doc.SetObject();
   auto& allocator = doc.GetAllocator();
 
-  doc.AddMember(rapidjson::StringRef(ws_message_json_keys::kRequest),
+  (void)doc.AddMember(rapidjson::StringRef(ws_message_json_keys::kRequest),
                 static_cast<sup::dto::uint32>(ClientMessageType::kEditBreakPoint),
                 allocator);
-  doc.AddMember(rapidjson::StringRef(ws_message_json_keys::kJobIndex), job_index, allocator);
-  doc.AddMember(rapidjson::StringRef(ws_message_json_keys::kInstructionId), instruction_id, allocator);
-  doc.AddMember(rapidjson::StringRef(ws_message_json_keys::kActive), active, allocator);
+  (void)doc.AddMember(rapidjson::StringRef(ws_message_json_keys::kJobIndex), job_index, allocator);
+  (void)doc.AddMember(rapidjson::StringRef(ws_message_json_keys::kInstructionId), instruction_id, allocator);
+  (void)doc.AddMember(rapidjson::StringRef(ws_message_json_keys::kActive), active, allocator);
   return ws_message_json_helpers::SerializeDocumentToJSON(doc);
 }
 
@@ -329,14 +329,14 @@ std::string CreateSendJobCommandRequestMessage(sup::dto::uint32 job_index,
                                                sup::oac_tree::JobCommand command)
 {
   rapidjson::Document doc;
-  doc.SetObject();
+  (void)doc.SetObject();
   auto& allocator = doc.GetAllocator();
 
-  doc.AddMember(rapidjson::StringRef(ws_message_json_keys::kRequest),
+  (void)doc.AddMember(rapidjson::StringRef(ws_message_json_keys::kRequest),
                 static_cast<sup::dto::uint32>(ClientMessageType::kSendCommand),
                 allocator);
-  doc.AddMember(rapidjson::StringRef(ws_message_json_keys::kJobIndex), job_index, allocator);
-  doc.AddMember(rapidjson::StringRef(ws_message_json_keys::kCommand),
+  (void)doc.AddMember(rapidjson::StringRef(ws_message_json_keys::kJobIndex), job_index, allocator);
+  (void)doc.AddMember(rapidjson::StringRef(ws_message_json_keys::kCommand),
                 static_cast<sup::dto::uint32>(command),
                 allocator);
   return ws_message_json_helpers::SerializeDocumentToJSON(doc);
@@ -346,14 +346,14 @@ std::string CreateGetNumberOfJobsReplyMessage(sup::dto::uint64 request_id,
                                               sup::dto::uint32 number_of_jobs)
 {
   rapidjson::Document doc;
-  doc.SetObject();
+  (void)doc.SetObject();
   auto& allocator = doc.GetAllocator();
 
-  doc.AddMember(rapidjson::StringRef(ws_message_json_keys::kRequest),
+  (void)doc.AddMember(rapidjson::StringRef(ws_message_json_keys::kRequest),
                 static_cast<sup::dto::uint32>(ClientMessageType::kGetNumberOfJobs),
                 allocator);
-  doc.AddMember(rapidjson::StringRef(ws_message_json_keys::kRequestId), request_id, allocator);
-  doc.AddMember(rapidjson::StringRef(ws_message_json_keys::kNumberOfJobs), number_of_jobs, allocator);
+  (void)doc.AddMember(rapidjson::StringRef(ws_message_json_keys::kRequestId), request_id, allocator);
+  (void)doc.AddMember(rapidjson::StringRef(ws_message_json_keys::kNumberOfJobs), number_of_jobs, allocator);
   return ws_message_json_helpers::SerializeDocumentToJSON(doc);
 }
 
@@ -361,20 +361,20 @@ std::string CreateGetJobInfoReplyMessage(sup::dto::uint64 request_id, sup::dto::
                                          const sup::oac_tree::JobInfo& job_info)
 {
   rapidjson::Document doc;
-  doc.SetObject();
+  (void)doc.SetObject();
   auto& allocator = doc.GetAllocator();
   auto job_info_any = sup::oac_tree::utils::ToAnyValue(job_info);
   const auto job_info_val_str = sup::dto::ValuesToJSONString(job_info_any);
   const auto job_info_type_str = sup::dto::AnyTypeToJSONString(job_info_any.GetType());
 
-  doc.AddMember(rapidjson::StringRef(ws_message_json_keys::kRequest),
+  (void)doc.AddMember(rapidjson::StringRef(ws_message_json_keys::kRequest),
                 static_cast<sup::dto::uint32>(ClientMessageType::kGetJobInfo),
                 allocator);
-  doc.AddMember(rapidjson::StringRef(ws_message_json_keys::kRequestId), request_id, allocator);
-  doc.AddMember(rapidjson::StringRef(ws_message_json_keys::kJobIndex), job_index, allocator);
-  doc.AddMember(rapidjson::StringRef(ws_message_json_keys::kValue),
+  (void)doc.AddMember(rapidjson::StringRef(ws_message_json_keys::kRequestId), request_id, allocator);
+  (void)doc.AddMember(rapidjson::StringRef(ws_message_json_keys::kJobIndex), job_index, allocator);
+  (void)doc.AddMember(rapidjson::StringRef(ws_message_json_keys::kValue),
                 JSONStringValue(job_info_val_str), allocator);
-  doc.AddMember(rapidjson::StringRef(ws_message_json_keys::kType),
+  (void)doc.AddMember(rapidjson::StringRef(ws_message_json_keys::kType),
                 JSONStringValue(job_info_type_str), allocator);
   return ws_message_json_helpers::SerializeDocumentToJSON(doc);
 }

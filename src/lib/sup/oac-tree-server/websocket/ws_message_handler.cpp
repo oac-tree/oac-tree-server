@@ -66,6 +66,17 @@ void HandlePutValueUpdate(const rapidjson::Document& doc, sup::oac_tree::IJobInf
 void HandleMessageUpdate(const rapidjson::Document& doc, sup::oac_tree::IJobInfoIO& job_info_io);
 void HandleLogUpdate(const rapidjson::Document& doc, sup::oac_tree::IJobInfoIO& job_info_io);
 
+// User input dispatch helpers, extracted to keep HandleClientJobMessage / HandleUserInputReply
+// simple. Each validates the relevant fields and ignores the message if they are missing.
+void DispatchUserValueRequest(const rapidjson::Document& doc, const ClientInputCallbacks& callbacks);
+void DispatchUserChoiceRequest(const rapidjson::Document& doc, const ClientInputCallbacks& callbacks);
+void DispatchUserInputCancelled(const rapidjson::Document& doc,
+                                const ClientInputCallbacks& callbacks);
+void HandleUserValueReply(const rapidjson::Document& doc, sup::dto::uint64 request_id,
+                          InputRequestServer& request_server);
+void HandleUserChoiceReply(const rapidjson::Document& doc, sup::dto::uint64 request_id,
+                           InputRequestServer& request_server);
+
 using ConcreteRequestHandler = std::function<std::string(const rapidjson::Document&, IJobManager&)>;
 
 const std::vector<ConcreteRequestHandler>& GetConcreteRequestHandlers();
@@ -80,7 +91,7 @@ std::string HandleSendJobCommandRequest(const rapidjson::Document& doc, IJobMana
 void HandleUpdateMessage(const std::string& msg, sup::oac_tree::IJobInfoIO& job_info_io)
 {
   rapidjson::Document doc;
-  doc.Parse(msg.c_str());
+  (void)doc.Parse(msg.c_str());
 
   if (doc.HasParseError() || !doc.IsObject())
   {
@@ -103,7 +114,7 @@ void HandleClientJobMessage(const std::string& msg, sup::oac_tree::IJobInfoIO& j
                             const ClientInputCallbacks& callbacks)
 {
   rapidjson::Document doc;
-  doc.Parse(msg.c_str());
+  (void)doc.Parse(msg.c_str());
 
   if (doc.HasParseError() || !doc.IsObject())
   {
@@ -117,64 +128,14 @@ void HandleClientJobMessage(const std::string& msg, sup::oac_tree::IJobInfoIO& j
   switch (static_cast<UpdateMessageType>(update_type))
   {
   case UpdateMessageType::kGetUserValue:
-  {
-    if (!doc.HasMember(kRequestId) || !doc[kRequestId].IsUint64()
-        || !doc.HasMember(kDescription) || !doc[kDescription].IsString()
-        || !doc.HasMember(kValue) || !doc.HasMember(kType))
-    {
-      return;
-    }
-    sup::dto::AnyValue value{};
-    if (!ParseAnyValue(doc[kValue], doc[kType], value))
-    {
-      return;
-    }
-    if (callbacks.on_value_request)
-    {
-      callbacks.on_value_request(doc[kRequestId].GetUint64(), value, doc[kDescription].GetString());
-    }
+    DispatchUserValueRequest(doc, callbacks);
     break;
-  }
   case UpdateMessageType::kGetUserChoice:
-  {
-    if (!doc.HasMember(kRequestId) || !doc[kRequestId].IsUint64()
-        || !doc.HasMember(kChoices) || !doc[kChoices].IsArray()
-        || !doc.HasMember(kValue) || !doc.HasMember(kType))
-    {
-      return;
-    }
-    std::vector<std::string> options;
-    for (const auto& choice : doc[kChoices].GetArray())
-    {
-      if (!choice.IsString())
-      {
-        return;
-      }
-      options.emplace_back(choice.GetString());
-    }
-    sup::dto::AnyValue metadata{};
-    if (!ParseAnyValue(doc[kValue], doc[kType], metadata))
-    {
-      return;
-    }
-    if (callbacks.on_choice_request)
-    {
-      callbacks.on_choice_request(doc[kRequestId].GetUint64(), options, metadata);
-    }
+    DispatchUserChoiceRequest(doc, callbacks);
     break;
-  }
   case UpdateMessageType::kUserInputCancelled:
-  {
-    if (!doc.HasMember(kRequestId) || !doc[kRequestId].IsUint64())
-    {
-      return;
-    }
-    if (callbacks.on_cancelled)
-    {
-      callbacks.on_cancelled(doc[kRequestId].GetUint64());
-    }
+    DispatchUserInputCancelled(doc, callbacks);
     break;
-  }
   default:
   {
     // Any other (one-way) update is forwarded to the IJobInfoIO, just like HandleUpdateMessage.
@@ -191,7 +152,7 @@ void HandleClientJobMessage(const std::string& msg, sup::oac_tree::IJobInfoIO& j
 std::string HandleJobManagerMessage(const std::string& msg, IJobManager& job_manager)
 {
   rapidjson::Document doc;
-  doc.Parse(msg.c_str());
+  (void)doc.Parse(msg.c_str());
 
   if (doc.HasParseError() || !doc.IsObject())
   {
@@ -213,7 +174,7 @@ std::string HandleJobManagerMessage(const std::string& msg, IJobManager& job_man
 void HandleJobManagerReply(const std::string& msg, MessageReplyHandler& reply_handler)
 {
   rapidjson::Document doc;
-  doc.Parse(msg.c_str());
+  (void)doc.Parse(msg.c_str());
 
   if (doc.HasParseError() || !doc.IsObject())
   {
@@ -230,7 +191,7 @@ void HandleJobManagerReply(const std::string& msg, MessageReplyHandler& reply_ha
 void HandleUserInputReply(const std::string& msg, InputRequestServer& request_server)
 {
   rapidjson::Document doc;
-  doc.Parse(msg.c_str());
+  (void)doc.Parse(msg.c_str());
 
   if (doc.HasParseError() || !doc.IsObject())
   {
@@ -245,35 +206,22 @@ void HandleUserInputReply(const std::string& msg, InputRequestServer& request_se
   auto request_id = doc[kRequestId].GetUint64();
   if (update_type == UpdateMessageType::kGetUserValue)
   {
-    if (!doc.HasMember(kOk) || !doc[kOk].IsBool()
-        || !doc.HasMember(kValue) || !doc.HasMember(kType))
-    {
-      return;
-    }
-    sup::dto::AnyValue value{};
-    if (!ParseAnyValue(doc[kValue], doc[kType], value))
-    {
-      return;
-    }
-    auto reply = sup::oac_tree::CreateUserValueReply(doc[kOk].GetBool(), value);
-    request_server.SetClientReply(request_id, reply);
+    HandleUserValueReply(doc, request_id, request_server);
   }
   else if (update_type == UpdateMessageType::kGetUserChoice)
   {
-    if (!doc.HasMember(kChoice) || !doc[kChoice].IsInt())
-    {
-      return;
-    }
-    auto choice = doc[kChoice].GetInt();
-    auto reply = sup::oac_tree::CreateUserChoiceReply(choice >= 0, choice);
-    request_server.SetClientReply(request_id, reply);
+    HandleUserChoiceReply(doc, request_id, request_server);
+  }
+  else
+  {
+    // Other update types are not user input replies and carry no reply to deliver.
   }
 }
 
 std::optional<sup::dto::uint32> ParseNumberOfJobsReply(const std::string& reply)
 {
   rapidjson::Document doc;
-  doc.Parse(reply.c_str());
+  (void)doc.Parse(reply.c_str());
 
   if (doc.HasParseError() || !doc.IsObject())
   {
@@ -289,7 +237,7 @@ std::optional<sup::dto::uint32> ParseNumberOfJobsReply(const std::string& reply)
 std::optional<sup::oac_tree::JobInfo> ParseJobInfoReply(const std::string& reply)
 {
   rapidjson::Document doc;
-  doc.Parse(reply.c_str());
+  (void)doc.Parse(reply.c_str());
 
   if (doc.HasParseError() || !doc.IsObject()
       || !doc.HasMember(kValue) || !doc.HasMember(kType))
@@ -451,6 +399,98 @@ void HandleLogUpdate(const rapidjson::Document& doc, sup::oac_tree::IJobInfoIO& 
   }
   job_info_io.Log(doc[kSeverity].GetInt(), doc[kMessage].GetString());
   return;
+}
+
+void DispatchUserValueRequest(const rapidjson::Document& doc, const ClientInputCallbacks& callbacks)
+{
+  if (!doc.HasMember(kRequestId) || !doc[kRequestId].IsUint64()
+      || !doc.HasMember(kDescription) || !doc[kDescription].IsString()
+      || !doc.HasMember(kValue) || !doc.HasMember(kType))
+  {
+    return;
+  }
+  sup::dto::AnyValue value{};
+  if (!ParseAnyValue(doc[kValue], doc[kType], value))
+  {
+    return;
+  }
+  if (callbacks.on_value_request)
+  {
+    callbacks.on_value_request(doc[kRequestId].GetUint64(), value, doc[kDescription].GetString());
+  }
+}
+
+void DispatchUserChoiceRequest(const rapidjson::Document& doc, const ClientInputCallbacks& callbacks)
+{
+  if (!doc.HasMember(kRequestId) || !doc[kRequestId].IsUint64()
+      || !doc.HasMember(kChoices) || !doc[kChoices].IsArray()
+      || !doc.HasMember(kValue) || !doc.HasMember(kType))
+  {
+    return;
+  }
+  const auto& choices = doc[kChoices];
+  std::vector<std::string> options;
+  for (const auto& choice : choices.GetArray())
+  {
+    if (!choice.IsString())
+    {
+      return;
+    }
+    options.push_back(choice.GetString());
+  }
+  sup::dto::AnyValue metadata{};
+  if (!ParseAnyValue(doc[kValue], doc[kType], metadata))
+  {
+    return;
+  }
+  if (callbacks.on_choice_request)
+  {
+    callbacks.on_choice_request(doc[kRequestId].GetUint64(), options, metadata);
+  }
+}
+
+void DispatchUserInputCancelled(const rapidjson::Document& doc,
+                                const ClientInputCallbacks& callbacks)
+{
+  if (!doc.HasMember(kRequestId) || !doc[kRequestId].IsUint64())
+  {
+    return;
+  }
+  if (callbacks.on_cancelled)
+  {
+    callbacks.on_cancelled(doc[kRequestId].GetUint64());
+  }
+}
+
+void HandleUserValueReply(const rapidjson::Document& doc, sup::dto::uint64 request_id,
+                          InputRequestServer& request_server)
+{
+  if (!doc.HasMember(kOk) || !doc[kOk].IsBool()
+      || !doc.HasMember(kValue) || !doc.HasMember(kType))
+  {
+    return;
+  }
+  sup::dto::AnyValue value{};
+  if (!ParseAnyValue(doc[kValue], doc[kType], value))
+  {
+    return;
+  }
+  auto reply = sup::oac_tree::CreateUserValueReply(doc[kOk].GetBool(), value);
+  // A stale or duplicate reply (id mismatch / already answered) is intentionally ignored.
+  (void)request_server.SetClientReply(request_id, reply);
+}
+
+void HandleUserChoiceReply(const rapidjson::Document& doc, sup::dto::uint64 request_id,
+                           InputRequestServer& request_server)
+{
+  if (!doc.HasMember(kChoice) || !doc[kChoice].IsInt())
+  {
+    return;
+  }
+  auto choice = doc[kChoice].GetInt();
+  auto reply = sup::oac_tree::CreateUserChoiceReply(choice >= 0, choice);
+  // A stale or duplicate reply (id mismatch / already answered) is intentionally ignored.
+  (void)request_server.SetClientReply(request_id, reply);
 }
 
 const std::vector<ConcreteRequestHandler>& GetConcreteRequestHandlers()

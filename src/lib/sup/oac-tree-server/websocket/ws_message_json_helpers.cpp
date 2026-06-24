@@ -36,7 +36,7 @@ std::string SerializeDocumentToJSON(const rapidjson::Document& doc)
 {
   rapidjson::StringBuffer buffer;
   rapidjson::Writer<rapidjson::StringBuffer> writer(buffer);
-  doc.Accept(writer);
+  (void)doc.Accept(writer);
   return buffer.GetString();
 }
 
