@@ -51,6 +51,9 @@ public:
     IdGuard(MessageReplyHandler& handler, sup::dto::uint64 id);
     ~IdGuard();
 
+    IdGuard(const IdGuard& other) = delete;
+    IdGuard& operator=(const IdGuard& other) = delete;
+
     sup::dto::uint64 GetId() const;
 
   private:

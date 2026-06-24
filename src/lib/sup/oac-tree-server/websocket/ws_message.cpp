@@ -38,7 +38,7 @@ namespace
 rapidjson::Value JSONStringValue(const std::string& str)
 {
   rapidjson::Value result;
-  (void)result.SetString(rapidjson::StringRef(str));
+  (void)result.SetString(str.c_str(), static_cast<rapidjson::SizeType>(str.size()));
   return result;
 }
 }  // unnamed namespace
@@ -50,7 +50,7 @@ namespace oac_tree_server
 
 std::string CreateServerPrefix(const std::string& host_name, unsigned short port)
 {
-  return host_name + ":" + std::to_string(port);
+  return host_name + ":" + std::to_string(static_cast<unsigned int>(port));
 }
 
 std::string CreateInfoEndpoint(const std::string& server_prefix)

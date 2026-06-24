@@ -48,7 +48,7 @@ namespace oac_tree_server
 class AutomationServer : public IJobManager
 {
 public:
-  AutomationServer(IServerProtocolFactory& protocol_factory);
+  explicit AutomationServer(IServerProtocolFactory& protocol_factory);
   virtual ~AutomationServer();
 
   void AddJob(std::unique_ptr<sup::oac_tree::Procedure> proc);

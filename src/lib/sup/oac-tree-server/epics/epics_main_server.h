@@ -42,7 +42,7 @@ class EPICSMainServer final : public IMainServer
 {
 public:
   explicit EPICSMainServer(const std::string& service_name, IJobManager& job_manager);
-  ~EPICSMainServer();
+  ~EPICSMainServer() override;
 
   // No copy or move
   EPICSMainServer(const EPICSMainServer& other) = delete;

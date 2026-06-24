@@ -86,7 +86,7 @@ std::optional<std::string> MessageReplyHandler::WaitForReply(sup::dto::uint64 me
     if (m_cv.wait_for(lk, timeout, [&]{ return iter->second.has_value(); }))
     {
       std::optional<std::string> reply = std::move(iter->second);
-      m_replies.erase(iter);
+      (void)m_replies.erase(iter);
       return reply;
     }
   }

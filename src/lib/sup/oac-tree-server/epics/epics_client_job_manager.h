@@ -40,7 +40,7 @@ namespace oac_tree_server
 class EPICSClientJobManager final : public IClientJobManager
 {
 public:
-  EPICSClientJobManager(const std::string& service_name);
+  explicit EPICSClientJobManager(const std::string& service_name);
  ~EPICSClientJobManager() override;
 
   // No copy or move

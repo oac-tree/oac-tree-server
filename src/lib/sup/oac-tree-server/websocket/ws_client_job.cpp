@@ -195,7 +195,7 @@ WSClientJob::WSClientJob(IJobManager &job_manager, sup::dto::uint32 job_idx,
   , m_impl{std::make_unique<WSClientJobImpl>(job_manager, job_idx, job_info_io, std::move(context))}
 {}
 
-WSClientJob::~WSClientJob() = default;
+WSClientJob::~WSClientJob() {}
 
 WSClientJob::WSClientJob(WSClientJob&& other) noexcept
   : IClientJob{}

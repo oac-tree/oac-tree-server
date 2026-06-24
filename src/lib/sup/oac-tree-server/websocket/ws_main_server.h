@@ -45,7 +45,7 @@ public:
   using WsServer = SimpleWeb::SocketServer<SimpleWeb::WS>;
 
   explicit WSMainServer(unsigned short port);
-  ~WSMainServer();
+  ~WSMainServer() override;
 
   // No copy or move
   WSMainServer(const WSMainServer& other) = delete;
