@@ -76,6 +76,8 @@ void HandleUserValueReply(const rapidjson::Document& doc, sup::dto::uint64 reque
                           InputRequestServer& request_server);
 void HandleUserChoiceReply(const rapidjson::Document& doc, sup::dto::uint64 request_id,
                            InputRequestServer& request_server);
+bool HasUserChoiceFields(const rapidjson::Document& doc);
+bool ExtractChoices(const rapidjson::Value& choices_array, std::vector<std::string>& options);
 
 using ConcreteRequestHandler = std::function<std::string(const rapidjson::Document&, IJobManager&)>;
 
@@ -420,23 +422,36 @@ void DispatchUserValueRequest(const rapidjson::Document& doc, const ClientInputC
   }
 }
 
-void DispatchUserChoiceRequest(const rapidjson::Document& doc, const ClientInputCallbacks& callbacks)
+bool HasUserChoiceFields(const rapidjson::Document& doc)
 {
-  if (!doc.HasMember(kRequestId) || !doc[kRequestId].IsUint64()
-      || !doc.HasMember(kChoices) || !doc[kChoices].IsArray()
-      || !doc.HasMember(kValue) || !doc.HasMember(kType))
-  {
-    return;
-  }
-  const auto& choices = doc[kChoices];
-  std::vector<std::string> options;
-  for (const auto& choice : choices.GetArray())
+  return doc.HasMember(kRequestId) && doc[kRequestId].IsUint64()
+         && doc.HasMember(kChoices) && doc[kChoices].IsArray()
+         && doc.HasMember(kValue) && doc.HasMember(kType);
+}
+
+bool ExtractChoices(const rapidjson::Value& choices_array, std::vector<std::string>& options)
+{
+  for (const auto& choice : choices_array.GetArray())
   {
     if (!choice.IsString())
     {
-      return;
+      return false;
     }
     options.push_back(choice.GetString());
+  }
+  return true;
+}
+
+void DispatchUserChoiceRequest(const rapidjson::Document& doc, const ClientInputCallbacks& callbacks)
+{
+  if (!HasUserChoiceFields(doc))
+  {
+    return;
+  }
+  std::vector<std::string> options;
+  if (!ExtractChoices(doc[kChoices], options))
+  {
+    return;
   }
   sup::dto::AnyValue metadata{};
   if (!ParseAnyValue(doc[kValue], doc[kType], metadata))

@@ -63,7 +63,7 @@ EPICSClientJob::EPICSClientJob(IJobManager& job_manager, sup::dto::uint32 job_id
   , m_impl{std::make_unique<EPICSClientJobImpl>(job_manager, job_idx, factory_func, job_info_io)}
 {}
 
-EPICSClientJob::~EPICSClientJob() {}
+EPICSClientJob::~EPICSClientJob() { m_impl.reset(); }
 
 EPICSClientJob::EPICSClientJob(EPICSClientJob&& other) noexcept
   : IClientJob{}
