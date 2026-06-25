@@ -452,7 +452,3 @@ where the `command` field an integer representing the command:
 | 4     | Halt      |
 
 Again, there is no reply message from the server. The client will receive an update message for the job status if this command was handled successfully.
-
-## Open issues
-
-* Handle user input messages.

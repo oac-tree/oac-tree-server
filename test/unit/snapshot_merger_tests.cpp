@@ -29,6 +29,7 @@
 #include <gtest/gtest.h>
 
 using ::testing::Exactly;
+using ::testing::Return;
 using ::testing::_;
 
 using namespace sup::oac_tree_server;
@@ -123,4 +124,24 @@ TEST(SnapshotMergerTest, NonCachedUpdatesAreForwarded)
   merger.PutValue(value, "desc");
   merger.Message("hi");
   merger.Log(3, "log");
+}
+
+TEST(SnapshotMergerTest, InitInterruptTickAndUserInputForwarded)
+{
+  ::testing::StrictMock<UnitTestHelper::MockJobInfoIO> target;
+  SnapshotMerger merger{target};
+
+  EXPECT_CALL(target, InitNumberOfInstructions(7u)).Times(Exactly(1));
+  EXPECT_CALL(target, ProcedureTicked()).Times(Exactly(1));
+  EXPECT_CALL(target, Interrupt(9u)).Times(Exactly(1));
+  EXPECT_CALL(target, GetUserValue(1u, _, std::string{"d"})).Times(Exactly(1)).WillOnce(Return(true));
+  EXPECT_CALL(target, GetUserChoice(2u, _, _)).Times(Exactly(1)).WillOnce(Return(3));
+
+  merger.InitNumberOfInstructions(7u);
+  merger.ProcedureTicked();
+  merger.Interrupt(9u);
+  sup::dto::AnyValue value{sup::dto::SignedInteger32Type, 0};
+  EXPECT_TRUE(merger.GetUserValue(1u, value, "d"));
+  const std::vector<std::string> options{"a", "b"};
+  EXPECT_EQ(merger.GetUserChoice(2u, options, sup::dto::AnyValue{}), 3);
 }

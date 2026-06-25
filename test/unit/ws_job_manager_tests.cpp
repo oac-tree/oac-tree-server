@@ -33,6 +33,7 @@
 
 #include <atomic>
 #include <chrono>
+#include <exception>
 #include <thread>
 
 using ::testing::Exactly;
@@ -178,6 +179,25 @@ TEST(WSServerProtocolFactoryTest, GetServerIdReportsLocalhostAndPort)
   const auto port = g_next_test_port.fetch_add(1u);
   auto factory = utils::CreateWSServerProtocolFactory(port);
   EXPECT_EQ(factory->GetServerId(), kTestHost + ":" + std::to_string(port));
+}
+
+TEST(WSMainServerBindTest, SecondServerOnSamePortFailsToStartInsteadOfHanging)
+{
+  using StrictMockJobManager = ::testing::StrictMock<UnitTestHelper::MockJobManager>;
+  const auto port = g_next_test_port.fetch_add(1u);
+
+  StrictMockJobManager job_manager_1;
+  auto factory_1 = utils::CreateWSServerProtocolFactory(port);
+  // The first server binds and starts listening on the port.
+  auto main_server_1 = factory_1->CreateMainServer(job_manager_1);
+
+  // A second server on the same port cannot bind; CreateMainServer must throw (and not hang
+  // forever waiting for a listening callback that never fires).
+  StrictMockJobManager job_manager_2;
+  auto factory_2 = utils::CreateWSServerProtocolFactory(port);
+  EXPECT_THROW((void)factory_2->CreateMainServer(job_manager_2), std::exception);
+
+  main_server_1.reset();
 }
 
 TEST(WSJobManagerErrorTest, RequestsThrowWhenNotConnected)
