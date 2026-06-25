@@ -221,6 +221,52 @@ TEST(WsCreateJSONMessageTest, CreateUserInputCancelledMessage)
   EXPECT_EQ(doc[ws_message_json_keys::kRequestId].GetUint64(), 34u);
 }
 
+TEST(WsCreateJSONMessageTest, CreateJobSnapshotMessage)
+{
+  JobSnapshot snapshot{};
+  snapshot.job_state = sup::oac_tree::JobState::kRunning;
+  snapshot.current_breakpoint = 8u;
+  snapshot.instructions.push_back(InstructionStateEntry{
+      0u, sup::oac_tree::InstructionState{false, sup::oac_tree::ExecutionStatus::NOT_STARTED}});
+  snapshot.instructions.push_back(InstructionStateEntry{
+      1u, sup::oac_tree::InstructionState{true, sup::oac_tree::ExecutionStatus::SUCCESS}});
+  const sup::dto::AnyValue var_value{sup::dto::Float64Type, 6.5};
+  snapshot.variables.push_back(VariableStateEntry{0u, true, var_value});
+  snapshot.variables.push_back(VariableStateEntry{1u, false, sup::dto::AnyValue{}});
+
+  auto json = CreateJobSnapshotMessage(snapshot);
+  auto doc = ParseJson(json);
+
+  ASSERT_FALSE(doc.HasParseError());
+  ASSERT_TRUE(doc.IsObject());
+  ASSERT_TRUE(doc.HasMember(ws_message_json_keys::kUpdate));
+  ASSERT_TRUE(doc.HasMember(ws_message_json_keys::kState));
+  ASSERT_TRUE(doc.HasMember(ws_message_json_keys::kId));
+  EXPECT_EQ(doc[ws_message_json_keys::kUpdate].GetUint(),
+            static_cast<sup::dto::uint32>(UpdateMessageType::kJobSnapshot));
+  EXPECT_EQ(doc[ws_message_json_keys::kState].GetUint(),
+            static_cast<sup::dto::uint32>(sup::oac_tree::JobState::kRunning));
+  EXPECT_EQ(doc[ws_message_json_keys::kId].GetUint(), 8u);
+
+  ASSERT_TRUE(doc.HasMember(ws_message_json_keys::kInstructions));
+  ASSERT_TRUE(doc[ws_message_json_keys::kInstructions].IsArray());
+  ASSERT_EQ(doc[ws_message_json_keys::kInstructions].Size(), 2u);
+  const auto& instr1 = doc[ws_message_json_keys::kInstructions][1];
+  EXPECT_EQ(instr1[ws_message_json_keys::kId].GetUint(), 1u);
+  EXPECT_TRUE(instr1[ws_message_json_keys::kBreakpoint].GetBool());
+  EXPECT_EQ(instr1[ws_message_json_keys::kState].GetUint(),
+            static_cast<sup::dto::uint32>(sup::oac_tree::ExecutionStatus::SUCCESS));
+
+  ASSERT_TRUE(doc.HasMember(ws_message_json_keys::kVariables));
+  ASSERT_TRUE(doc[ws_message_json_keys::kVariables].IsArray());
+  ASSERT_EQ(doc[ws_message_json_keys::kVariables].Size(), 2u);
+  const auto& var0 = doc[ws_message_json_keys::kVariables][0];
+  EXPECT_EQ(var0[ws_message_json_keys::kId].GetUint(), 0u);
+  EXPECT_TRUE(var0[ws_message_json_keys::kConnected].GetBool());
+  EXPECT_TRUE(var0[ws_message_json_keys::kValue].IsString());
+  EXPECT_TRUE(var0[ws_message_json_keys::kType].IsString());
+}
+
 TEST(WsCreateJSONMessageTest, CreateGetUserValueReplyMessage)
 {
   const sup::dto::AnyValue value{sup::dto::SignedInteger32Type, 7};

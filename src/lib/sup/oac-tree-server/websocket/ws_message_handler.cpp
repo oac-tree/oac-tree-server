@@ -51,6 +51,15 @@ bool ParseAnyValue(const rapidjson::Value& value_entry,
                    const rapidjson::Value& type_entry,
                    sup::dto::AnyValue& value);
 
+// Job snapshot parsing helpers.
+bool HasValidSnapshotHeader(const rapidjson::Document& doc);
+bool ParseSnapshotInstructionEntry(const rapidjson::Value& entry, InstructionStateEntry& result);
+bool ParseSnapshotVariableEntry(const rapidjson::Value& entry, VariableStateEntry& result);
+bool ParseSnapshotInstructionArray(const rapidjson::Value& array,
+                                   std::vector<InstructionStateEntry>& result);
+bool ParseSnapshotVariableArray(const rapidjson::Value& array,
+                                std::vector<VariableStateEntry>& result);
+
 using ConcreteUpdateHandler = std::function<void(const rapidjson::Document&,
                                               sup::oac_tree::IJobInfoIO&)>;
 
@@ -261,6 +270,27 @@ std::optional<sup::oac_tree::JobInfo> ParseJobInfoReply(const std::string& reply
   }
 }
 
+std::optional<JobSnapshot> ParseJobSnapshotMessage(const std::string& msg)
+{
+  rapidjson::Document doc;
+  (void)doc.Parse(msg.c_str());
+
+  if (!HasValidSnapshotHeader(doc))
+  {
+    return std::nullopt;
+  }
+
+  JobSnapshot snapshot{};
+  snapshot.job_state = static_cast<sup::oac_tree::JobState>(doc[kState].GetUint());
+  snapshot.current_breakpoint = doc[kId].GetUint();
+  if (!ParseSnapshotInstructionArray(doc[kInstructions], snapshot.instructions)
+      || !ParseSnapshotVariableArray(doc[kVariables], snapshot.variables))
+  {
+    return std::nullopt;
+  }
+  return snapshot;
+}
+
 namespace
 {
 bool ParseAnyValue(const rapidjson::Value& value_entry,
@@ -291,6 +321,82 @@ bool ParseAnyValue(const rapidjson::Value& value_entry,
   {
     return false;
   }
+}
+
+bool HasValidSnapshotHeader(const rapidjson::Document& doc)
+{
+  return !doc.HasParseError() && doc.IsObject()
+         && doc.HasMember(kState) && doc[kState].IsUint()
+         && doc.HasMember(kId) && doc[kId].IsUint()
+         && doc.HasMember(kInstructions) && doc[kInstructions].IsArray()
+         && doc.HasMember(kVariables) && doc[kVariables].IsArray();
+}
+
+bool ParseSnapshotInstructionEntry(const rapidjson::Value& entry, InstructionStateEntry& result)
+{
+  if (!entry.IsObject()
+      || !entry.HasMember(kId) || !entry[kId].IsUint()
+      || !entry.HasMember(kBreakpoint) || !entry[kBreakpoint].IsBool()
+      || !entry.HasMember(kState) || !entry[kState].IsUint())
+  {
+    return false;
+  }
+  result.id = entry[kId].GetUint();
+  result.state = sup::oac_tree::InstructionState{
+    entry[kBreakpoint].GetBool(),
+    static_cast<sup::oac_tree::ExecutionStatus>(entry[kState].GetUint())
+  };
+  return true;
+}
+
+bool ParseSnapshotVariableEntry(const rapidjson::Value& entry, VariableStateEntry& result)
+{
+  if (!entry.IsObject()
+      || !entry.HasMember(kId) || !entry[kId].IsUint()
+      || !entry.HasMember(kConnected) || !entry[kConnected].IsBool()
+      || !entry.HasMember(kValue) || !entry.HasMember(kType))
+  {
+    return false;
+  }
+  sup::dto::AnyValue value{};
+  if (!ParseAnyValue(entry[kValue], entry[kType], value))
+  {
+    return false;
+  }
+  result.id = entry[kId].GetUint();
+  result.connected = entry[kConnected].GetBool();
+  result.value = value;
+  return true;
+}
+
+bool ParseSnapshotInstructionArray(const rapidjson::Value& array,
+                                   std::vector<InstructionStateEntry>& result)
+{
+  for (const auto& entry : array.GetArray())
+  {
+    InstructionStateEntry instr_entry{};
+    if (!ParseSnapshotInstructionEntry(entry, instr_entry))
+    {
+      return false;
+    }
+    result.push_back(instr_entry);
+  }
+  return true;
+}
+
+bool ParseSnapshotVariableArray(const rapidjson::Value& array,
+                                std::vector<VariableStateEntry>& result)
+{
+  for (const auto& entry : array.GetArray())
+  {
+    VariableStateEntry var_entry{};
+    if (!ParseSnapshotVariableEntry(entry, var_entry))
+    {
+      return false;
+    }
+    result.push_back(var_entry);
+  }
+  return true;
 }
 
 const std::vector<ConcreteUpdateHandler>& GetConcreteUpdateHandlers()

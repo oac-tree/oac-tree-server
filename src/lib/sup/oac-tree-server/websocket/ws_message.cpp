@@ -41,6 +41,17 @@ rapidjson::Value JSONStringValue(const std::string& str)
   (void)result.SetString(str.c_str(), static_cast<rapidjson::SizeType>(str.size()));
   return result;
 }
+
+// Copying variant: stores a copy of the string in the document allocator instead of referencing the
+// source buffer. Required when the source string does not outlive serialization, e.g. a temporary
+// computed inside a loop.
+rapidjson::Value JSONStringValueCopy(const std::string& str,
+                                     rapidjson::Document::AllocatorType& allocator)
+{
+  rapidjson::Value result;
+  (void)result.SetString(str.c_str(), static_cast<rapidjson::SizeType>(str.size()), allocator);
+  return result;
+}
 }  // unnamed namespace
 
 namespace sup
@@ -243,6 +254,81 @@ std::string CreateUserInputCancelledMessage(sup::dto::uint64 request_id)
                 static_cast<sup::dto::uint32>(UpdateMessageType::kUserInputCancelled),
                 allocator);
   (void)doc.AddMember(rapidjson::StringRef(ws_message_json_keys::kRequestId), request_id, allocator);
+  return ws_message_json_helpers::SerializeDocumentToJSON(doc);
+}
+
+namespace
+{
+rapidjson::Value CreateSnapshotInstructionEntry(const InstructionStateEntry& entry,
+                                                rapidjson::Document::AllocatorType& allocator)
+{
+  rapidjson::Value instr_obj{rapidjson::kObjectType};
+  (void)instr_obj.AddMember(rapidjson::StringRef(ws_message_json_keys::kId),
+                entry.id, allocator);
+  (void)instr_obj.AddMember(rapidjson::StringRef(ws_message_json_keys::kBreakpoint),
+                entry.state.m_breakpoint_set, allocator);
+  (void)instr_obj.AddMember(rapidjson::StringRef(ws_message_json_keys::kState),
+                static_cast<sup::dto::uint32>(entry.state.m_execution_status), allocator);
+  return instr_obj;
+}
+
+rapidjson::Value CreateSnapshotVariableEntry(const VariableStateEntry& entry,
+                                             rapidjson::Document::AllocatorType& allocator)
+{
+  const auto value_str = sup::dto::ValuesToJSONString(entry.value);
+  const auto type_str = sup::dto::AnyTypeToJSONString(entry.value.GetType());
+  rapidjson::Value var_obj{rapidjson::kObjectType};
+  (void)var_obj.AddMember(rapidjson::StringRef(ws_message_json_keys::kId),
+                entry.id, allocator);
+  (void)var_obj.AddMember(rapidjson::StringRef(ws_message_json_keys::kConnected),
+                entry.connected, allocator);
+  (void)var_obj.AddMember(rapidjson::StringRef(ws_message_json_keys::kValue),
+                JSONStringValueCopy(value_str, allocator), allocator);
+  (void)var_obj.AddMember(rapidjson::StringRef(ws_message_json_keys::kType),
+                JSONStringValueCopy(type_str, allocator), allocator);
+  return var_obj;
+}
+
+rapidjson::Value CreateSnapshotInstructionArray(
+  const std::vector<InstructionStateEntry>& instructions,
+  rapidjson::Document::AllocatorType& allocator)
+{
+  rapidjson::Value instructions_array{rapidjson::kArrayType};
+  for (const auto& entry : instructions)
+  {
+    (void)instructions_array.PushBack(CreateSnapshotInstructionEntry(entry, allocator), allocator);
+  }
+  return instructions_array;
+}
+
+rapidjson::Value CreateSnapshotVariableArray(const std::vector<VariableStateEntry>& variables,
+                                             rapidjson::Document::AllocatorType& allocator)
+{
+  rapidjson::Value variables_array{rapidjson::kArrayType};
+  for (const auto& entry : variables)
+  {
+    (void)variables_array.PushBack(CreateSnapshotVariableEntry(entry, allocator), allocator);
+  }
+  return variables_array;
+}
+}  // unnamed namespace
+
+std::string CreateJobSnapshotMessage(const JobSnapshot& snapshot)
+{
+  rapidjson::Document doc;
+  (void)doc.SetObject();
+  auto& allocator = doc.GetAllocator();
+
+  (void)doc.AddMember(rapidjson::StringRef(ws_message_json_keys::kUpdate),
+                static_cast<sup::dto::uint32>(UpdateMessageType::kJobSnapshot), allocator);
+  (void)doc.AddMember(rapidjson::StringRef(ws_message_json_keys::kState),
+                static_cast<sup::dto::uint32>(snapshot.job_state), allocator);
+  (void)doc.AddMember(rapidjson::StringRef(ws_message_json_keys::kId),
+                snapshot.current_breakpoint, allocator);
+  (void)doc.AddMember(rapidjson::StringRef(ws_message_json_keys::kInstructions),
+                CreateSnapshotInstructionArray(snapshot.instructions, allocator), allocator);
+  (void)doc.AddMember(rapidjson::StringRef(ws_message_json_keys::kVariables),
+                CreateSnapshotVariableArray(snapshot.variables, allocator), allocator);
   return ws_message_json_helpers::SerializeDocumentToJSON(doc);
 }
 

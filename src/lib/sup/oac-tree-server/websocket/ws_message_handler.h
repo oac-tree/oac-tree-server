@@ -25,6 +25,7 @@
 
 #include <sup/oac-tree-server/base/input_request_server.h>
 #include <sup/oac-tree-server/base/message_reply_handler.h>
+#include <sup/oac-tree-server/websocket/ws_message.h>
 
 #include <sup/oac-tree-server/i_job_manager.h>
 
@@ -96,6 +97,12 @@ std::optional<sup::dto::uint32> ParseNumberOfJobsReply(const std::string& reply)
  * @brief Parses the JSON reply message for job information and returns the value.
  */
 std::optional<sup::oac_tree::JobInfo> ParseJobInfoReply(const std::string& reply);
+
+/**
+ * @brief Parses a JSON job snapshot message (update type kJobSnapshot) into a JobSnapshot. Returns
+ * nullopt if the message is malformed.
+ */
+std::optional<JobSnapshot> ParseJobSnapshotMessage(const std::string& msg);
 
 }  // namespace oac_tree_server
 

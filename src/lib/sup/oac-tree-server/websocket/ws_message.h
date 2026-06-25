@@ -51,6 +51,7 @@ enum class UpdateMessageType : sup::dto::uint32
   kGetUserValue,
   kGetUserChoice,
   kUserInputCancelled,
+  kJobSnapshot,
 };
 
 enum class ClientMessageType : sup::dto::uint32
@@ -84,6 +85,8 @@ constexpr auto kNumberOfJobs = "n_jobs";
 constexpr auto kChoices = "choices";
 constexpr auto kChoice = "choice";
 constexpr auto kOk = "ok";
+constexpr auto kInstructions = "instructions";
+constexpr auto kVariables = "variables";
 constexpr auto kEmptyJson = "";
 
 }  // namespace ws_message_json_keys
@@ -93,6 +96,31 @@ namespace endpoints
 constexpr auto kJobManagerEndpoint = "/info";
 constexpr auto kJobEndpointPrefix = "/job/";
 }
+
+// Single instruction entry in a job snapshot. The id is the instruction index in the procedure.
+struct InstructionStateEntry
+{
+  sup::dto::uint32 id;
+  sup::oac_tree::InstructionState state;
+};
+
+// Single variable entry in a job snapshot. The id is the variable index in the workspace.
+struct VariableStateEntry
+{
+  sup::dto::uint32 id;
+  bool connected;
+  sup::dto::AnyValue value;
+};
+
+// Full current state of a job, sent to a client that connects to an already-running job so that it
+// does not miss updates that were published before it connected.
+struct JobSnapshot
+{
+  sup::oac_tree::JobState job_state;
+  sup::dto::uint32 current_breakpoint;
+  std::vector<InstructionStateEntry> instructions;
+  std::vector<VariableStateEntry> variables;
+};
 
 std::string CreateServerPrefix(const std::string& host_name, unsigned short port);
 std::string CreateInfoEndpoint(const std::string& server_prefix);
@@ -118,6 +146,7 @@ std::string CreateGetUserChoiceUpdateMessage(sup::dto::uint64 request_id,
                                              const std::vector<std::string>& choices,
                                              const sup::dto::AnyValue& metadata);
 std::string CreateUserInputCancelledMessage(sup::dto::uint64 request_id);
+std::string CreateJobSnapshotMessage(const JobSnapshot& snapshot);
 
 // Factory functions for user input replies sent from client back to server.
 std::string CreateGetUserValueReplyMessage(sup::dto::uint64 request_id, bool ok,

@@ -341,6 +341,73 @@ TEST(ReplyParsingTest, ParseJobInfo_UnparsableValue)
   EXPECT_FALSE(ParseJobInfoReply(R"({"value": "x", "type": "not-a-type"})").has_value());
 }
 
+TEST(JobSnapshotParsingTest, RoundTrip)
+{
+  JobSnapshot snapshot{};
+  snapshot.job_state = JobState::kPaused;
+  snapshot.current_breakpoint = 3u;
+  snapshot.instructions.push_back(
+      InstructionStateEntry{0u, InstructionState{false, ExecutionStatus::NOT_STARTED}});
+  snapshot.instructions.push_back(
+      InstructionStateEntry{1u, InstructionState{true, ExecutionStatus::SUCCESS}});
+  const sup::dto::AnyValue var_value{sup::dto::SignedInteger32Type, 42};
+  snapshot.variables.push_back(VariableStateEntry{0u, true, var_value});
+  // A never-updated variable is represented with default (empty) value and type.
+  snapshot.variables.push_back(VariableStateEntry{1u, false, sup::dto::AnyValue{}});
+
+  auto result = ParseJobSnapshotMessage(CreateJobSnapshotMessage(snapshot));
+  ASSERT_TRUE(result.has_value());
+  const auto& parsed = result.value();
+  EXPECT_EQ(parsed.job_state, snapshot.job_state);
+  EXPECT_EQ(parsed.current_breakpoint, snapshot.current_breakpoint);
+
+  ASSERT_EQ(parsed.instructions.size(), snapshot.instructions.size());
+  for (std::size_t i = 0; i < snapshot.instructions.size(); ++i)
+  {
+    EXPECT_EQ(parsed.instructions[i].id, snapshot.instructions[i].id);
+    EXPECT_EQ(parsed.instructions[i].state, snapshot.instructions[i].state);
+  }
+
+  ASSERT_EQ(parsed.variables.size(), snapshot.variables.size());
+  for (std::size_t i = 0; i < snapshot.variables.size(); ++i)
+  {
+    EXPECT_EQ(parsed.variables[i].id, snapshot.variables[i].id);
+    EXPECT_EQ(parsed.variables[i].connected, snapshot.variables[i].connected);
+    EXPECT_EQ(parsed.variables[i].value, snapshot.variables[i].value);
+  }
+}
+
+TEST(JobSnapshotParsingTest, EmptyArrays)
+{
+  JobSnapshot snapshot{};
+  snapshot.job_state = JobState::kInitial;
+  snapshot.current_breakpoint = 0xFFFFFFFFu;
+
+  auto result = ParseJobSnapshotMessage(CreateJobSnapshotMessage(snapshot));
+  ASSERT_TRUE(result.has_value());
+  EXPECT_EQ(result.value().job_state, JobState::kInitial);
+  EXPECT_EQ(result.value().current_breakpoint, 0xFFFFFFFFu);
+  EXPECT_TRUE(result.value().instructions.empty());
+  EXPECT_TRUE(result.value().variables.empty());
+}
+
+TEST(JobSnapshotParsingTest, InvalidJson)
+{
+  EXPECT_FALSE(ParseJobSnapshotMessage("not json").has_value());
+}
+
+TEST(JobSnapshotParsingTest, MissingFields)
+{
+  EXPECT_FALSE(ParseJobSnapshotMessage(R"({"other": 1})").has_value());
+}
+
+TEST(JobSnapshotParsingTest, MalformedInstructionEntry)
+{
+  const std::string msg =
+      R"({"update":10,"state":3,"id":0,"instructions":[{"id":0,"breakpoint":false}],"variables":[]})";
+  EXPECT_FALSE(ParseJobSnapshotMessage(msg).has_value());
+}
+
 TEST(JobManagerReplyHandlerTest, ValidReplyIsDelegated)
 {
   MessageReplyHandler handler;

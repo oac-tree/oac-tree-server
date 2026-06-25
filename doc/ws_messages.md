@@ -33,6 +33,7 @@ The `update` field in the message structures holds an integer value that describ
 | 7     | get user value           |
 | 8     | get user choice          |
 | 9     | user input cancelled     |
+| 10    | job snapshot             |
 
 The following subsections specify the fields in each of the different types of JSON messages.
 
@@ -220,6 +221,30 @@ Message to client:
 ```
 
 This message signals that the user input request with the given `req_id` is cancelled and no longer expects a reply. It is published when the request was answered (by any client) or when the request was interrupted on the server side. Clients that are still showing a dialog for this `req_id` should dismiss it. There is no reply to this message.
+
+### Job snapshot
+
+When a client connects to a job endpoint while the job is already running, it would otherwise only receive updates published after it connected and would have no knowledge of the instruction/variable states that changed earlier. To address this, the server sends a single job snapshot message to each client right after it connects. The snapshot conveys the full current state of the job: job state, current breakpoint, and the latest state of every instruction and variable.
+
+```json
+{
+  "update": 10,
+  "state": 3,
+  "id": 8,
+  "instructions": [
+    { "id": 0, "breakpoint": false, "state": 3 },
+    { "id": 1, "breakpoint": true, "state": 1 }
+  ],
+  "variables": [
+    { "id": 0, "connected": true, "value": <JSON rep>, "type": <JSON rep> },
+    { "id": 1, "connected": false, "value": <JSON rep>, "type": <JSON rep> }
+  ]
+}
+```
+
+The `state` field encodes the job state and the `id` field encodes the current breakpoint instruction, both exactly as in the `job state update` and `current breakpoint` messages (the `id` is the maximum value of a 32 bit unsigned integer when no breakpoint is currently hit). The `instructions` array holds one entry per instruction, with `id`, `breakpoint` and `state` fields encoded as in the `instruction state update` message. The `variables` array holds one entry per variable, with `id`, `connected`, `value` and `type` fields encoded as in the `variable updated` message. Instructions and variables that have not been updated yet appear with their default state (instructions: not started and no breakpoint; variables: not connected with an empty value and type).
+
+Because a client may already receive live update messages before (or interleaved with) the snapshot, it must treat the snapshot only as a baseline and give precedence to update messages: an entry conveyed by an update message must never be overwritten by the snapshot. This guarantees the client never misses a state change, while tolerating duplicate or out-of-order delivery of the snapshot relative to live updates.
 
 ## Client side requests
 
@@ -430,5 +455,4 @@ Again, there is no reply message from the server. The client will receive an upd
 
 ## Open issues
 
-* Get current state of job, instructions and variables. This is required when a client connects to a job that was already running.
 * Handle user input messages.
