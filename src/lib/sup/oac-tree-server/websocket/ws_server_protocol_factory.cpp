@@ -22,6 +22,7 @@
 
 #include "ws_server_protocol_factory.h"
 
+#include "job_state_cache.h"
 #include "ws_job_info_io.h"
 #include "ws_main_server.h"
 #include "ws_message.h"
@@ -74,7 +75,6 @@ std::unique_ptr<IMainServer> WSServerProtocolFactory::CreateMainServer(IJobManag
 std::unique_ptr<sup::oac_tree::IJobInfoIO> WSServerProtocolFactory::CreateJobInfoIO(
   sup::dto::uint32 job_idx, sup::dto::uint32 n_vars)
 {
-  (void)n_vars;
   if (!m_main_server)
   {
     throw InvalidOperationException("Main server was already created");
@@ -88,6 +88,16 @@ std::unique_ptr<sup::oac_tree::IJobInfoIO> WSServerProtocolFactory::CreateJobInf
       connection->send(message);
     }
   };
+  // The cache holds the latest job state and is shared between the WSJobInfoIO (which updates it on
+  // the job execution thread) and the endpoint's on_open handler (which reads a snapshot from it on
+  // the server's io_service thread), so it must outlive both.
+  auto cache = std::make_shared<JobStateCache>(n_vars);
+  // Send the current job state to each client right after it connects, so that a client joining an
+  // already-running job receives the state of updates that were published before it connected.
+  endpoint.on_open =
+    [cache](std::shared_ptr<WSMainServer::WsServer::Connection> connection) {
+      connection->send(cache->BuildSnapshotMessage());
+    };
   // The request server is shared between the WSJobInfoIO (which waits for replies on the job
   // execution thread) and the endpoint's message handler (which delivers client replies from the
   // server's io_service thread), so it must outlive both.
@@ -97,7 +107,7 @@ std::unique_ptr<sup::oac_tree::IJobInfoIO> WSServerProtocolFactory::CreateJobInf
                      std::shared_ptr<WSMainServer::WsServer::InMessage> in_message) {
       HandleUserInputReply(in_message->string(), *request_server);
     };
-  return std::make_unique<WSJobInfoIO>(publisher, request_server, m_resend_interval);
+  return std::make_unique<WSJobInfoIO>(publisher, cache, request_server, m_resend_interval);
 }
 
 }  // namespace oac_tree_server

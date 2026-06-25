@@ -21,7 +21,9 @@
  ******************************************************************************/
 
 #include <sup/oac-tree-server/websocket/ws_job_info_io.h>
+#include <sup/oac-tree-server/websocket/job_state_cache.h>
 #include <sup/oac-tree-server/websocket/ws_message.h>
+#include <sup/oac-tree-server/websocket/ws_message_handler.h>
 
 #include <sup/oac-tree-server/base/input_request_server.h>
 
@@ -50,9 +52,10 @@ protected:
   WSJobInfoIOTest()
     : m_published_messages{}
     , m_mutex{}
+    , m_cache{std::make_shared<JobStateCache>(4u)}
     , m_request_server{std::make_shared<InputRequestServer>()}
-    , m_job_info_io{[this](std::string msg) { RecordMessage(std::move(msg)); }, m_request_server,
-                    std::chrono::milliseconds{50}}
+    , m_job_info_io{[this](std::string msg) { RecordMessage(std::move(msg)); }, m_cache,
+                    m_request_server, std::chrono::milliseconds{50}}
   {}
 
   void RecordMessage(std::string msg)
@@ -85,6 +88,7 @@ protected:
 
   std::vector<std::string> m_published_messages;
   std::mutex m_mutex;
+  std::shared_ptr<JobStateCache> m_cache;
   std::shared_ptr<InputRequestServer> m_request_server;
   WSJobInfoIO m_job_info_io;
 };
@@ -130,6 +134,27 @@ TEST_F(WSJobInfoIOTest, JobStateUpdated)
 
   ASSERT_EQ(m_published_messages.size(), 1u);
   EXPECT_EQ(m_published_messages[0], CreateJobStateUpdateMessage(JobState::kRunning));
+}
+
+TEST_F(WSJobInfoIOTest, CacheableUpdatesReachSnapshot)
+{
+  m_job_info_io.InitNumberOfInstructions(2u);
+  m_job_info_io.JobStateUpdated(JobState::kRunning);
+  m_job_info_io.InstructionStateUpdated(1u, InstructionState{true, ExecutionStatus::SUCCESS});
+  m_job_info_io.BreakpointInstructionUpdated(1u);
+  const sup::dto::AnyValue var_value{sup::dto::Float64Type, 3.14};
+  m_job_info_io.VariableUpdated(0u, var_value, true);
+
+  auto snapshot = ParseJobSnapshotMessage(m_cache->BuildSnapshotMessage());
+  ASSERT_TRUE(snapshot.has_value());
+  EXPECT_EQ(snapshot->job_state, JobState::kRunning);
+  EXPECT_EQ(snapshot->current_breakpoint, 1u);
+  ASSERT_EQ(snapshot->instructions.size(), 2u);
+  EXPECT_TRUE(snapshot->instructions[1].state.m_breakpoint_set);
+  EXPECT_EQ(snapshot->instructions[1].state.m_execution_status, ExecutionStatus::SUCCESS);
+  ASSERT_EQ(snapshot->variables.size(), 4u);
+  EXPECT_TRUE(snapshot->variables[0].connected);
+  EXPECT_EQ(snapshot->variables[0].value, var_value);
 }
 
 TEST_F(WSJobInfoIOTest, PutValue)

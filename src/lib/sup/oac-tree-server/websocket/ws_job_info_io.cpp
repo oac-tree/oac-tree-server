@@ -22,6 +22,7 @@
 
 #include "ws_job_info_io.h"
 
+#include "job_state_cache.h"
 #include "periodic_resender.h"
 
 #include <sup/oac-tree-server/websocket/ws_message.h>
@@ -38,9 +39,11 @@ namespace oac_tree_server
 {
 using sup::oac_tree::InstructionState;
 
-WSJobInfoIO::WSJobInfoIO(Publisher publisher, std::shared_ptr<InputRequestServer> request_server,
+WSJobInfoIO::WSJobInfoIO(Publisher publisher, std::shared_ptr<JobStateCache> cache,
+                         std::shared_ptr<InputRequestServer> request_server,
                          std::chrono::milliseconds resend_interval)
   : m_publisher{std::move(publisher)}
+  , m_cache{std::move(cache)}
   , m_request_server{std::move(request_server)}
   , m_resend_interval{resend_interval}
 {}
@@ -49,27 +52,31 @@ WSJobInfoIO::~WSJobInfoIO() = default;
 
 void WSJobInfoIO::InitNumberOfInstructions(sup::dto::uint32 n_instr)
 {
-  (void)n_instr;
+  m_cache->SetInstructionCount(n_instr);
 }
 
 void WSJobInfoIO::InstructionStateUpdated(sup::dto::uint32 instr_idx, InstructionState state)
 {
+  m_cache->SetInstructionState(instr_idx, state);
   m_publisher(CreateInstructionStateUpdateMessage(instr_idx, state));
 }
 
 void WSJobInfoIO::BreakpointInstructionUpdated(sup::dto::uint32 instr_idx)
 {
+  m_cache->SetCurrentBreakpoint(instr_idx);
   m_publisher(CreateBreakpointInstructionUpdateMessage(instr_idx));
 }
 
 void WSJobInfoIO::VariableUpdated(sup::dto::uint32 var_idx, const sup::dto::AnyValue& value,
                                   bool connected)
 {
+  m_cache->SetVariable(var_idx, value, connected);
   m_publisher(CreateVariableStateUpdateMessage(var_idx, connected, value));
 }
 
 void WSJobInfoIO::JobStateUpdated(sup::oac_tree::JobState state)
 {
+  m_cache->SetJobState(state);
   m_publisher(CreateJobStateUpdateMessage(state));
 }
 

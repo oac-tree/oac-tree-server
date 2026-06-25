@@ -37,6 +37,8 @@ namespace sup
 {
 namespace oac_tree_server
 {
+class JobStateCache;
+
 /**
  * @brief Implementation of IJobInfoIO that delegates its calls to a websocket endpoint.
  */
@@ -44,7 +46,8 @@ class WSJobInfoIO : public sup::oac_tree::IJobInfoIO
 {
 public:
   using Publisher = std::function<void(std::string message)>;
-  WSJobInfoIO(Publisher publisher, std::shared_ptr<InputRequestServer> request_server,
+  WSJobInfoIO(Publisher publisher, std::shared_ptr<JobStateCache> cache,
+              std::shared_ptr<InputRequestServer> request_server,
               std::chrono::milliseconds resend_interval);
   virtual ~WSJobInfoIO();
 
@@ -85,6 +88,7 @@ private:
                                                          const std::string& message);
 
   Publisher m_publisher;
+  std::shared_ptr<JobStateCache> m_cache;
   std::shared_ptr<InputRequestServer> m_request_server;
   std::chrono::milliseconds m_resend_interval;
 };
