@@ -42,7 +42,9 @@ using namespace sup::oac_tree_server;
 
 namespace
 {
-constexpr unsigned short kTestWSPortBase = 35791u;
+// Below the OS ephemeral port range (typically 32768-60999) so the fixed server ports cannot
+// collide with ephemeral source ports used by client connections.
+constexpr unsigned short kTestWSPortBase = 20000u;
 const std::string kTestHost = "localhost";
 std::atomic<unsigned short> g_next_test_port{kTestWSPortBase};
 }
@@ -139,7 +141,7 @@ TEST_F(WSJobManagerTest, TwoClients)
   EXPECT_EQ(new_client_mgr->GetNumberOfJobs(), n_jobs);
 
   // after destroying the first client, the second one should still be able to get the number of jobs
-  m_client_mgr.release();
+  m_client_mgr.reset();
   EXPECT_EQ(new_client_mgr->GetNumberOfJobs(), n_jobs);
 }
 
@@ -201,7 +203,8 @@ WSJobManagerTest::WSJobManagerTest()
 
 WSJobManagerTest::~WSJobManagerTest()
 {
-  m_client_mgr.release();
-  m_main_server.release();
-  m_server_factory.release();
+  // Destroy in dependency order: the client first (disconnects), then the server and its factory.
+  m_client_mgr.reset();
+  m_main_server.reset();
+  m_server_factory.reset();
 }

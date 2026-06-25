@@ -50,7 +50,9 @@ using sup::oac_tree::JobState;
 
 namespace
 {
-constexpr unsigned short kTestWSPortBase = 36211u;
+// Below the OS ephemeral port range (typically 32768-60999) so the fixed server ports cannot
+// collide with ephemeral source ports used by client connections.
+constexpr unsigned short kTestWSPortBase = 22000u;
 const std::string kTestHost = "localhost";
 std::atomic<unsigned short> g_next_test_port{kTestWSPortBase};
 
@@ -297,8 +299,10 @@ WSUserInputE2ETest::WSUserInputE2ETest()
 
 WSUserInputE2ETest::~WSUserInputE2ETest()
 {
-  m_client_job.release();
-  m_main_server.release();
-  m_server_job_info_io.release();
-  m_server_factory.release();
+  // Destroy in dependency order: the client first (disconnects), then the server, then the objects
+  // it referenced. The client io_context (m_context) is destroyed last by the fixture's RAII.
+  m_client_job.reset();
+  m_main_server.reset();
+  m_server_job_info_io.reset();
+  m_server_factory.reset();
 }

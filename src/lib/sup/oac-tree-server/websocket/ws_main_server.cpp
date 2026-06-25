@@ -44,7 +44,17 @@ WSMainServer::WSMainServer(unsigned short port)
   m_server.config.port = port;
 }
 
-WSMainServer::~WSMainServer() = default;
+WSMainServer::~WSMainServer()
+{
+  // Stop the server before the worker future is destroyed: m_server.start() runs the io_context
+  // until stopped, so without this the future's destructor would block joining a thread that never
+  // returns. stop() is a no-op if the server was never started.
+  m_server.stop();
+  if (m_server_thread.valid())
+  {
+    m_server_thread.wait();
+  }
+}
 
 unsigned short WSMainServer::GetPort() const
 {
@@ -107,13 +117,28 @@ void WSMainServer::Start()
   }
   // Start server and receive assigned port when server is listening for requests
   std::promise<unsigned short> server_port;
+  auto server_port_future = server_port.get_future();
   m_server_thread = std::async(std::launch::async, [this, &server_port]() {
-    // Start server
-    m_server.start([&server_port](unsigned short port) {
-      server_port.set_value(port);
-    });
+    // The listening callback fulfills the promise with the bound port. If start() fails before the
+    // callback runs (e.g. the port cannot be bound), the promise would otherwise never be set and
+    // Start() would block forever; propagate the failure as an exception instead.
+    bool port_set = false;
+    try
+    {
+      m_server.start([&server_port, &port_set](unsigned short port) {
+        port_set = true;
+        server_port.set_value(port);
+      });
+    }
+    catch (...)
+    {
+      if (!port_set)
+      {
+        server_port.set_exception(std::current_exception());
+      }
+    }
   });
-  std::cout << "Server listening on port " << server_port.get_future().get() << std::endl
+  std::cout << "Server listening on port " << server_port_future.get() << std::endl
             << std::endl;
 }
 
