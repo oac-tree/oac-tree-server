@@ -4,6 +4,7 @@ target_sources(oac-tree-server
   ws_client_input_delegator.cpp
   ws_client_job_manager.cpp
   ws_client_job.cpp
+  job_state_cache.cpp
   ws_job_info_io.cpp
   ws_job_manager.cpp
   ws_main_server.cpp
