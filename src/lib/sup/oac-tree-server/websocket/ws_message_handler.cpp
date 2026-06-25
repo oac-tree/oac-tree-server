@@ -81,6 +81,7 @@ void DispatchUserValueRequest(const rapidjson::Document& doc, const ClientInputC
 void DispatchUserChoiceRequest(const rapidjson::Document& doc, const ClientInputCallbacks& callbacks);
 void DispatchUserInputCancelled(const rapidjson::Document& doc,
                                 const ClientInputCallbacks& callbacks);
+void DispatchJobSnapshot(const std::string& msg, const ClientInputCallbacks& callbacks);
 void HandleUserValueReply(const rapidjson::Document& doc, sup::dto::uint64 request_id,
                           InputRequestServer& request_server);
 void HandleUserChoiceReply(const rapidjson::Document& doc, sup::dto::uint64 request_id,
@@ -146,6 +147,9 @@ void HandleClientJobMessage(const std::string& msg, sup::oac_tree::IJobInfoIO& j
     break;
   case UpdateMessageType::kUserInputCancelled:
     DispatchUserInputCancelled(doc, callbacks);
+    break;
+  case UpdateMessageType::kJobSnapshot:
+    DispatchJobSnapshot(msg, callbacks);
     break;
   default:
   {
@@ -580,6 +584,19 @@ void DispatchUserInputCancelled(const rapidjson::Document& doc,
   if (callbacks.on_cancelled)
   {
     callbacks.on_cancelled(doc[kRequestId].GetUint64());
+  }
+}
+
+void DispatchJobSnapshot(const std::string& msg, const ClientInputCallbacks& callbacks)
+{
+  if (!callbacks.on_snapshot)
+  {
+    return;
+  }
+  auto snapshot = ParseJobSnapshotMessage(msg);
+  if (snapshot.has_value())
+  {
+    callbacks.on_snapshot(snapshot.value());
   }
 }
 

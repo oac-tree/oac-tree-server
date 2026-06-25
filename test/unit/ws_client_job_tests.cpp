@@ -506,3 +506,55 @@ WSClientJobWebSocketTest::~WSClientJobWebSocketTest()
   m_server_factory.reset();
 }
 
+// A client connecting to an already-running job must receive its current state via the snapshot the
+// server sends on connect, even though those updates were published before the client connected.
+TEST(WSClientJobSnapshotTest, ClientConnectingToRunningJobReceivesSnapshot)
+{
+  using StrictMockJobManager = ::testing::StrictMock<UnitTestHelper::MockJobManager>;
+
+  const auto test_port = g_next_test_port.fetch_add(1u);
+  const auto job_info = BuildJobInfo();
+  StrictMockJobManager job_manager;
+
+  auto server_factory = utils::CreateWSServerProtocolFactory(test_port);
+  auto server_job_info_io = server_factory->CreateJobInfoIO(0u, job_info.GetNumberOfVariables());
+  auto main_server = server_factory->CreateMainServer(job_manager);
+
+  // Publish job state BEFORE any client connects. InitNumberOfInstructions sizes the cache so the
+  // instruction state is retained.
+  const auto job_state = JobState::kRunning;
+  const sup::dto::uint32 instr_idx = 2u;
+  const InstructionState instr_state{true, ExecutionStatus::SUCCESS};
+  const sup::dto::uint32 bp_idx = 3u;
+  const sup::dto::uint32 var_idx = 1u;
+  const sup::dto::AnyValue var_value{sup::dto::UnsignedInteger64Type, 42u};
+  server_job_info_io->InitNumberOfInstructions(job_info.GetNumberOfInstructions());
+  server_job_info_io->JobStateUpdated(job_state);
+  server_job_info_io->InstructionStateUpdated(instr_idx, instr_state);
+  server_job_info_io->BreakpointInstructionUpdated(bp_idx);
+  server_job_info_io->VariableUpdated(var_idx, var_value, true);
+
+  EXPECT_CALL(job_manager, GetServerPrefix())
+      .Times(Exactly(1))
+      .WillOnce(Return(kTestHost + ":" + std::to_string(test_port)));
+  EXPECT_CALL(job_manager, GetNumberOfJobs()).Times(Exactly(1)).WillOnce(Return(1u));
+  EXPECT_CALL(job_manager, GetJobInfo(0u)).Times(Exactly(1)).WillOnce(Return(job_info));
+
+  RecordingJobInfoIO client_io;
+  auto context = std::make_shared<WSClientContext>();
+  auto client_job = std::make_unique<WSClientJob>(job_manager, 0u, client_io, context);
+  ASSERT_TRUE(client_job->WaitForConnection(std::chrono::milliseconds(1000)));
+
+  // No further server publishes: the client must observe the pre-connection state purely from the
+  // snapshot sent on connect.
+  EXPECT_TRUE(client_io.WaitForJobState(job_state, 1.0));
+  EXPECT_TRUE(client_io.WaitForInstructionState(instr_idx, instr_state, 1.0));
+  EXPECT_TRUE(client_io.WaitForBreakpointInstruction(bp_idx, 1.0));
+  EXPECT_TRUE(client_io.WaitForVariableValue(var_idx, var_value, true, 1.0));
+
+  client_job.reset();
+  main_server.reset();
+  server_job_info_io.reset();
+  server_factory.reset();
+}
+

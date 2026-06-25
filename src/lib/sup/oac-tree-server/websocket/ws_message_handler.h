@@ -59,6 +59,7 @@ struct ClientInputCallbacks
   std::function<void(sup::dto::uint64 id, const std::vector<std::string>& options,
                      const sup::dto::AnyValue& metadata)> on_choice_request{};
   std::function<void(sup::dto::uint64 id)> on_cancelled{};
+  std::function<void(const JobSnapshot& snapshot)> on_snapshot{};
 };
 
 /**

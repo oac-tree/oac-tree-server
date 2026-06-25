@@ -26,6 +26,7 @@
 #include "ws_client_input_delegator.h"
 #include "ws_message.h"
 #include "ws_message_handler.h"
+#include "snapshot_merger.h"
 
 #include <sup/oac-tree-server/exceptions.h>
 
@@ -63,6 +64,8 @@ private:
   sup::dto::uint32 m_job_idx;
   std::unique_ptr<sup::oac_tree::JobInfo> m_job_info;
   sup::oac_tree::IJobInfoIO& m_job_info_io;
+  // Decorates m_job_info_io so a job snapshot does not overwrite already-received live updates.
+  SnapshotMerger m_snapshot_merger;
   WSClientInputDelegator m_input_delegator;
   std::shared_ptr<WSClientContext> m_context;
   WsClient m_client;
@@ -78,6 +81,7 @@ WSClientJobImpl::WSClientJobImpl(IJobManager &job_manager, sup::dto::uint32 job_
   , m_job_idx{job_idx}
   , m_job_info{}
   , m_job_info_io{job_info_io}
+  , m_snapshot_merger{job_info_io}
   , m_input_delegator{job_info_io}
   , m_context{std::move(context)}
   , m_client{CreateJobEndpoint(m_job_manager.GetServerPrefix(), job_idx)}
@@ -132,7 +136,11 @@ WSClientJobImpl::WSClientJobImpl(IJobManager &job_manager, sup::dto::uint32 job_
       };
     callbacks.on_cancelled =
       [this](sup::dto::uint64 id) { m_input_delegator.Cancel(id); };
-    HandleClientJobMessage(in_message->string(), m_job_info_io, callbacks);
+    callbacks.on_snapshot =
+      [this](const JobSnapshot& snapshot) { m_snapshot_merger.ApplySnapshot(snapshot); };
+    // Route live updates through the merger so it records what has been delivered; the snapshot is
+    // then applied only for entries not yet seen.
+    HandleClientJobMessage(in_message->string(), m_snapshot_merger, callbacks);
   };
   m_client.on_error = [this](std::shared_ptr<WsClient::Connection> connection,
                              const SimpleWeb::error_code &ec) {

@@ -32,6 +32,7 @@ target_sources(${unit-tests}
     oac_tree_protocol_tests.cpp
     output_entry_tests.cpp
     protocol_client_server_tests.cpp
+    snapshot_merger_tests.cpp
     unit_test_helper.cpp
     ws_client_input_delegator_tests.cpp
     ws_client_job_tests.cpp
