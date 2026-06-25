@@ -55,10 +55,10 @@ void HandleUpdateMessage(const std::string& msg, sup::oac_tree::IJobInfoIO& job_
 struct ClientInputCallbacks
 {
   std::function<void(sup::dto::uint64 id, const sup::dto::AnyValue& value,
-                     const std::string& description)> on_value_request;
+                     const std::string& description)> on_value_request{};
   std::function<void(sup::dto::uint64 id, const std::vector<std::string>& options,
-                     const sup::dto::AnyValue& metadata)> on_choice_request;
-  std::function<void(sup::dto::uint64 id)> on_cancelled;
+                     const sup::dto::AnyValue& metadata)> on_choice_request{};
+  std::function<void(sup::dto::uint64 id)> on_cancelled{};
 };
 
 /**
