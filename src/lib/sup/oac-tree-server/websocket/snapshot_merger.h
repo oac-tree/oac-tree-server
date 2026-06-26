@@ -28,7 +28,6 @@
 #include <sup/dto/anyvalue.h>
 #include <sup/dto/basic_scalar_types.h>
 
-#include <set>
 #include <string>
 #include <vector>
 
@@ -88,8 +87,10 @@ private:
   sup::oac_tree::IJobInfoIO& m_target;
   bool m_job_state_seen;
   bool m_breakpoint_seen;
-  std::set<sup::dto::uint32> m_seen_instructions;
-  std::set<sup::dto::uint32> m_seen_variables;
+  // Per-id flags marking which instructions/variables have been delivered by a live update. Indexed
+  // by id (dense, 0-based) for O(1) access; grown lazily as ids are encountered.
+  std::vector<bool> m_seen_instructions;
+  std::vector<bool> m_seen_variables;
 };
 
 }  // namespace oac_tree_server

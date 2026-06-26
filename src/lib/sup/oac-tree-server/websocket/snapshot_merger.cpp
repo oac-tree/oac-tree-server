@@ -24,6 +24,25 @@
 
 #include "ws_message.h"
 
+#include <cstddef>
+
+namespace
+{
+bool IsSeen(const std::vector<bool>& seen, sup::dto::uint32 idx)
+{
+  return (idx < seen.size()) && seen[idx];
+}
+
+void MarkSeen(std::vector<bool>& seen, sup::dto::uint32 idx)
+{
+  if (idx >= seen.size())
+  {
+    seen.resize(static_cast<std::size_t>(idx) + 1U, false);
+  }
+  seen[idx] = true;
+}
+}  // unnamed namespace
+
 namespace sup
 {
 namespace oac_tree_server
@@ -54,15 +73,17 @@ void SnapshotMerger::ApplySnapshot(const JobSnapshot& snapshot)
   }
   for (const auto& entry : snapshot.instructions)
   {
-    if (m_seen_instructions.insert(entry.id).second)
+    if (!IsSeen(m_seen_instructions, entry.id))
     {
+      MarkSeen(m_seen_instructions, entry.id);
       m_target.InstructionStateUpdated(entry.id, entry.state);
     }
   }
   for (const auto& entry : snapshot.variables)
   {
-    if (m_seen_variables.insert(entry.id).second)
+    if (!IsSeen(m_seen_variables, entry.id))
     {
+      MarkSeen(m_seen_variables, entry.id);
       m_target.VariableUpdated(entry.id, entry.value, entry.connected);
     }
   }
@@ -75,7 +96,7 @@ void SnapshotMerger::InitNumberOfInstructions(sup::dto::uint32 n_instr)
 
 void SnapshotMerger::InstructionStateUpdated(sup::dto::uint32 instr_idx, InstructionState state)
 {
-  (void)m_seen_instructions.insert(instr_idx);
+  MarkSeen(m_seen_instructions, instr_idx);
   m_target.InstructionStateUpdated(instr_idx, state);
 }
 
@@ -88,7 +109,7 @@ void SnapshotMerger::BreakpointInstructionUpdated(sup::dto::uint32 instr_idx)
 void SnapshotMerger::VariableUpdated(sup::dto::uint32 var_idx, const sup::dto::AnyValue& value,
                                      bool connected)
 {
-  (void)m_seen_variables.insert(var_idx);
+  MarkSeen(m_seen_variables, var_idx);
   m_target.VariableUpdated(var_idx, value, connected);
 }
 
