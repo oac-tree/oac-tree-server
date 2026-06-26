@@ -82,6 +82,12 @@ void DispatchUserChoiceRequest(const rapidjson::Document& doc, const ClientInput
 void DispatchUserInputCancelled(const rapidjson::Document& doc,
                                 const ClientInputCallbacks& callbacks);
 void DispatchJobSnapshot(const std::string& msg, const ClientInputCallbacks& callbacks);
+// Dispatches the client-control messages (user input requests/cancellation and job snapshot) to the
+// matching callback. Returns true if the message was such a control message, false if it is an
+// ordinary one-way update that should be forwarded to the IJobInfoIO.
+bool DispatchClientControlMessage(sup::dto::uint32 update_type, const std::string& msg,
+                                  const rapidjson::Document& doc,
+                                  const ClientInputCallbacks& callbacks);
 void HandleUserValueReply(const rapidjson::Document& doc, sup::dto::uint64 request_id,
                           InputRequestServer& request_server);
 void HandleUserChoiceReply(const rapidjson::Document& doc, sup::dto::uint64 request_id,
@@ -137,30 +143,15 @@ void HandleClientJobMessage(const std::string& msg, sup::oac_tree::IJobInfoIO& j
     return;
   }
   auto update_type = doc[kUpdate].GetUint();
-  switch (static_cast<UpdateMessageType>(update_type))
+  if (DispatchClientControlMessage(update_type, msg, doc, callbacks))
   {
-  case UpdateMessageType::kGetUserValue:
-    DispatchUserValueRequest(doc, callbacks);
-    break;
-  case UpdateMessageType::kGetUserChoice:
-    DispatchUserChoiceRequest(doc, callbacks);
-    break;
-  case UpdateMessageType::kUserInputCancelled:
-    DispatchUserInputCancelled(doc, callbacks);
-    break;
-  case UpdateMessageType::kJobSnapshot:
-    DispatchJobSnapshot(msg, callbacks);
-    break;
-  default:
-  {
-    // Any other (one-way) update is forwarded to the IJobInfoIO, just like HandleUpdateMessage.
-    const auto& concrete_handlers = GetConcreteUpdateHandlers();
-    if (update_type < concrete_handlers.size())
-    {
-      concrete_handlers[update_type](doc, job_info_io);
-    }
-    break;
+    return;
   }
+  // Any other (one-way) update is forwarded to the IJobInfoIO, just like HandleUpdateMessage.
+  const auto& concrete_handlers = GetConcreteUpdateHandlers();
+  if (update_type < concrete_handlers.size())
+  {
+    concrete_handlers[update_type](doc, job_info_io);
   }
 }
 
@@ -597,6 +588,29 @@ void DispatchJobSnapshot(const std::string& msg, const ClientInputCallbacks& cal
   if (snapshot.has_value())
   {
     callbacks.on_snapshot(snapshot.value());
+  }
+}
+
+bool DispatchClientControlMessage(sup::dto::uint32 update_type, const std::string& msg,
+                                  const rapidjson::Document& doc,
+                                  const ClientInputCallbacks& callbacks)
+{
+  switch (static_cast<UpdateMessageType>(update_type))
+  {
+  case UpdateMessageType::kGetUserValue:
+    DispatchUserValueRequest(doc, callbacks);
+    return true;
+  case UpdateMessageType::kGetUserChoice:
+    DispatchUserChoiceRequest(doc, callbacks);
+    return true;
+  case UpdateMessageType::kUserInputCancelled:
+    DispatchUserInputCancelled(doc, callbacks);
+    return true;
+  case UpdateMessageType::kJobSnapshot:
+    DispatchJobSnapshot(msg, callbacks);
+    return true;
+  default:
+    return false;
   }
 }
 
