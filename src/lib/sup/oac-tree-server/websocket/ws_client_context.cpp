@@ -33,6 +33,12 @@ WSClientContext::WSClientContext()
   : m_io_context{std::make_shared<asio::io_context>()}
   , m_thread{}
 {
+  // The io_context is run by a SINGLE thread. Downstream components rely on this: per-connection
+  // asio handlers (on_open/on_message/on_close/on_error) are therefore dispatched serially and
+  // never overlap, so message-handling collaborators such as WSClientJob's SnapshotMerger are not
+  // synchronized. Running the io_context on multiple threads would break that guarantee (handlers
+  // for a connection could run concurrently) and require adding synchronization (e.g. per-
+  // connection strands) in those downstream components.
   m_thread = std::thread([io_context = m_io_context]() {
     // The work guard prevents run() from returning while there are temporarily no async operations
     // pending (e.g. before the first connection is established). It is released when the thread

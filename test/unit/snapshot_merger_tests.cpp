@@ -111,6 +111,22 @@ TEST(SnapshotMergerTest, LiveUpdatesAfterSnapshotAreForwarded)
   merger.JobStateUpdated(JobState::kSucceeded);
 }
 
+TEST(SnapshotMergerTest, SecondSnapshotIsIgnored)
+{
+  ::testing::StrictMock<UnitTestHelper::MockJobInfoIO> target;
+  SnapshotMerger merger{target};
+
+  // The first snapshot establishes the baseline and forwards every entry once.
+  EXPECT_CALL(target, JobStateUpdated(_)).Times(Exactly(1));
+  EXPECT_CALL(target, BreakpointInstructionUpdated(_)).Times(Exactly(1));
+  EXPECT_CALL(target, InstructionStateUpdated(_, _)).Times(Exactly(2));
+  EXPECT_CALL(target, VariableUpdated(_, _, _)).Times(Exactly(2));
+
+  merger.ApplySnapshot(MakeSnapshot());
+  // A second snapshot is redundant and must not forward anything (StrictMock catches extra calls).
+  merger.ApplySnapshot(MakeSnapshot());
+}
+
 TEST(SnapshotMergerTest, NonCachedUpdatesAreForwarded)
 {
   ::testing::StrictMock<UnitTestHelper::MockJobInfoIO> target;

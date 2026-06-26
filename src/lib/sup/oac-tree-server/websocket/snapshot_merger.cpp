@@ -51,6 +51,7 @@ using sup::oac_tree::InstructionState;
 
 SnapshotMerger::SnapshotMerger(sup::oac_tree::IJobInfoIO& target)
   : m_target{target}
+  , m_snapshot_applied{false}
   , m_job_state_seen{false}
   , m_breakpoint_seen{false}
   , m_seen_instructions{}
@@ -61,21 +62,24 @@ SnapshotMerger::~SnapshotMerger() = default;
 
 void SnapshotMerger::ApplySnapshot(const JobSnapshot& snapshot)
 {
+  // Only the first snapshot establishes the baseline; later ones are redundant because live updates
+  // are authoritative from here on.
+  if (m_snapshot_applied)
+  {
+    return;
+  }
   if (!m_job_state_seen)
   {
-    m_job_state_seen = true;
     m_target.JobStateUpdated(snapshot.job_state);
   }
   if (!m_breakpoint_seen)
   {
-    m_breakpoint_seen = true;
     m_target.BreakpointInstructionUpdated(snapshot.current_breakpoint);
   }
   for (const auto& entry : snapshot.instructions)
   {
     if (!IsSeen(m_seen_instructions, entry.id))
     {
-      MarkSeen(m_seen_instructions, entry.id);
       m_target.InstructionStateUpdated(entry.id, entry.state);
     }
   }
@@ -83,10 +87,15 @@ void SnapshotMerger::ApplySnapshot(const JobSnapshot& snapshot)
   {
     if (!IsSeen(m_seen_variables, entry.id))
     {
-      MarkSeen(m_seen_variables, entry.id);
       m_target.VariableUpdated(entry.id, entry.value, entry.connected);
     }
   }
+  // From now on updates delegate directly; release the per-id tracking flags.
+  m_snapshot_applied = true;
+  m_seen_instructions.clear();
+  m_seen_instructions.shrink_to_fit();
+  m_seen_variables.clear();
+  m_seen_variables.shrink_to_fit();
 }
 
 void SnapshotMerger::InitNumberOfInstructions(sup::dto::uint32 n_instr)
@@ -96,26 +105,38 @@ void SnapshotMerger::InitNumberOfInstructions(sup::dto::uint32 n_instr)
 
 void SnapshotMerger::InstructionStateUpdated(sup::dto::uint32 instr_idx, InstructionState state)
 {
-  MarkSeen(m_seen_instructions, instr_idx);
+  if (!m_snapshot_applied)
+  {
+    MarkSeen(m_seen_instructions, instr_idx);
+  }
   m_target.InstructionStateUpdated(instr_idx, state);
 }
 
 void SnapshotMerger::BreakpointInstructionUpdated(sup::dto::uint32 instr_idx)
 {
-  m_breakpoint_seen = true;
+  if (!m_snapshot_applied)
+  {
+    m_breakpoint_seen = true;
+  }
   m_target.BreakpointInstructionUpdated(instr_idx);
 }
 
 void SnapshotMerger::VariableUpdated(sup::dto::uint32 var_idx, const sup::dto::AnyValue& value,
                                      bool connected)
 {
-  MarkSeen(m_seen_variables, var_idx);
+  if (!m_snapshot_applied)
+  {
+    MarkSeen(m_seen_variables, var_idx);
+  }
   m_target.VariableUpdated(var_idx, value, connected);
 }
 
 void SnapshotMerger::JobStateUpdated(sup::oac_tree::JobState state)
 {
-  m_job_state_seen = true;
+  if (!m_snapshot_applied)
+  {
+    m_job_state_seen = true;
+  }
   m_target.JobStateUpdated(state);
 }
 

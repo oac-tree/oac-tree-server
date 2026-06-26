@@ -85,10 +85,14 @@ public:
 
 private:
   sup::oac_tree::IJobInfoIO& m_target;
+  // Once the snapshot has been applied, the baseline is established and every later update is
+  // delegated directly; no further tracking is needed and the seen-flags below are released.
+  bool m_snapshot_applied;
   bool m_job_state_seen;
   bool m_breakpoint_seen;
-  // Per-id flags marking which instructions/variables have been delivered by a live update. Indexed
-  // by id (dense, 0-based) for O(1) access; grown lazily as ids are encountered.
+  // Per-id flags marking which instructions/variables have been delivered by a live update before
+  // the snapshot. Indexed by id (dense, 0-based) for O(1) access; grown lazily as ids are
+  // encountered and cleared once the snapshot is applied.
   std::vector<bool> m_seen_instructions;
   std::vector<bool> m_seen_variables;
 };
