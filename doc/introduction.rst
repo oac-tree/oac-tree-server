@@ -41,11 +41,12 @@ Key Features of *oac-tree-server*
   1. Start, pause, reset, or halt jobs.
   2. Set or remove breakpoints on specific instructions.
 
-+ **EPICS Integration**:
++ **Network Transport**:
 
-  The server integrates with EPICS (Experimental Physics and Industrial Control System) for client-server communication.
+  The server supports two network transports:
 
-  It uses EPICS PVs (Process Variables) to publish job states, instruction statuses, and variable values.
+  - **WebSocket** (primary): a JSON-based protocol that exposes per-job state streams and a single control/info endpoint. See :ref:`WebSocket API` for the full wire-format specification.
+  - **EPICS**: publishes job state, instruction statuses, and variable values as EPICS PVs (Process Variables), and exposes control and info over EPICS RPC.
 
 Architecture of *oac-tree-server*
 =================================
@@ -66,8 +67,29 @@ Architecture of *oac-tree-server*
    - Commands include starting, pausing, or resetting jobs, as well as modifying breakpoints.
 
 4. **Input Handling**:
+
    - The server supports user input requests during job execution.
    - Input requests are published via dedicated input servers, and clients can respond with the required data.
+
+Server-side architecture
+------------------------
+
+The following diagram shows the main server-side components and their relationships.
+
+.. figure:: automation_server.png
+   :alt: Automation server architecture diagram
+
+   The ``AutomationServer`` (implementing ``IJobManager``) owns one ``LocalJob`` per hosted procedure. Each job is coupled to a transport-specific ``IJobInfoIO`` that forwards execution events — instruction/variable state changes, log and output messages, and user-input requests — to the network layer. The ``IServerProtocolFactory`` abstracts the transport choice (WebSocket or EPICS) and is responsible for creating both the per-job ``IJobInfoIO`` objects and the ``IMainServer`` that exposes the control and info interface to remote clients.
+
+Client-side architecture
+------------------------
+
+The following diagram shows the main client-side components and their relationships.
+
+.. figure:: automation_client.png
+   :alt: Automation client architecture diagram
+
+   The ``AutomationClientStack`` (implementing ``IJobManager``) provides a symmetric API to the server side. It wraps info and control RPC protocol clients and reconstructs live job state from the stream of update messages received over the network. The same ``IJobManager`` interface is therefore usable on both server and client, allowing higher-level code to remain transport-agnostic.
 
 Benefits of *oac-tree-server*
 =============================
@@ -77,5 +99,4 @@ Benefits of *oac-tree-server*
 + Real-time access to job information and statuses.
 + Modular and extensible architecture for serving multiple jobs.
 
-In summary, the *oac-tree-server* is a powerful framework for serving and managing *oac-tree* procedures, providing both information and control interfaces to ensure efficient and reliable automation.
-
+The *oac-tree-server* is designed to be the backbone of distributed *oac-tree* deployments, where procedures run on a central server and one or more clients observe and control them remotely.

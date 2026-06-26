@@ -14,6 +14,7 @@ Welcome to oac-tree-server's documentation!
 
    introduction
    application
+   ws_messages
 
 Indices and tables
 ==================
