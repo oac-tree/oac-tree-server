@@ -87,14 +87,16 @@ std::string JobStateCache::BuildSnapshotMessage() const
     std::lock_guard<std::mutex> lk{m_mtx};
     snapshot.job_state = m_job_state;
     snapshot.current_breakpoint = m_current_breakpoint;
-    snapshot.instructions.reserve(m_instructions.size());
-    for (std::size_t idx = 0; idx < m_instructions.size(); ++idx)
+    const std::size_t n_instr = m_instructions.size();
+    snapshot.instructions.reserve(n_instr);
+    for (std::size_t idx = 0; idx < n_instr; ++idx)
     {
       snapshot.instructions.push_back(
         InstructionStateEntry{static_cast<sup::dto::uint32>(idx), m_instructions[idx]});
     }
-    snapshot.variables.reserve(m_variables.size());
-    for (std::size_t idx = 0; idx < m_variables.size(); ++idx)
+    const std::size_t n_vars = m_variables.size();
+    snapshot.variables.reserve(n_vars);
+    for (std::size_t idx = 0; idx < n_vars; ++idx)
     {
       snapshot.variables.push_back(VariableStateEntry{
         static_cast<sup::dto::uint32>(idx), m_variables[idx].connected, m_variables[idx].value});

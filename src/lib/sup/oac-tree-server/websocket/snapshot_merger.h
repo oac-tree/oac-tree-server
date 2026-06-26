@@ -28,6 +28,7 @@
 #include <sup/dto/anyvalue.h>
 #include <sup/dto/basic_scalar_types.h>
 
+#include <cstdint>
 #include <string>
 #include <vector>
 
@@ -92,9 +93,10 @@ private:
   bool m_breakpoint_seen;
   // Per-id flags marking which instructions/variables have been delivered by a live update before
   // the snapshot. Indexed by id (dense, 0-based) for O(1) access; grown lazily as ids are
-  // encountered and cleared once the snapshot is applied.
-  std::vector<bool> m_seen_instructions;
-  std::vector<bool> m_seen_variables;
+  // encountered and cleared once the snapshot is applied. std::uint8_t (not bool) avoids the
+  // std::vector<bool> specialization.
+  std::vector<std::uint8_t> m_seen_instructions;
+  std::vector<std::uint8_t> m_seen_variables;
 };
 
 }  // namespace oac_tree_server

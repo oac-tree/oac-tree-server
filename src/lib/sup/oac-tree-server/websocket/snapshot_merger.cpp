@@ -25,21 +25,22 @@
 #include "ws_message.h"
 
 #include <cstddef>
+#include <cstdint>
 
 namespace
 {
-bool IsSeen(const std::vector<bool>& seen, sup::dto::uint32 idx)
+bool IsSeen(const std::vector<std::uint8_t>& seen, sup::dto::uint32 idx)
 {
-  return (idx < seen.size()) && seen[idx];
+  return (idx < seen.size()) && (seen[idx] != 0U);
 }
 
-void MarkSeen(std::vector<bool>& seen, sup::dto::uint32 idx)
+void MarkSeen(std::vector<std::uint8_t>& seen, sup::dto::uint32 idx)
 {
   if (idx >= seen.size())
   {
-    seen.resize(static_cast<std::size_t>(idx) + 1U, false);
+    seen.resize(static_cast<std::size_t>(idx) + 1U, 0U);
   }
-  seen[idx] = true;
+  seen[idx] = 1U;
 }
 }  // unnamed namespace
 
