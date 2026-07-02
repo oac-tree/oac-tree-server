@@ -77,6 +77,7 @@ TEST_F(WSJobManagerTest, GetNumberOfJobs)
 
   EXPECT_CALL(m_job_manager, GetNumberOfJobs()).Times(Exactly(1)).WillOnce(Return(n_jobs));
   EXPECT_TRUE(m_client_mgr->WaitForConnection(std::chrono::milliseconds(1000)));
+  EXPECT_TRUE(IsConnected(*m_client_mgr));
   EXPECT_EQ(m_client_mgr->GetNumberOfJobs(), n_jobs);
 }
 
@@ -92,6 +93,7 @@ TEST_F(WSJobManagerTest, GetJobInfo)
 
   EXPECT_CALL(m_job_manager, GetJobInfo(job_id)).Times(Exactly(1)).WillOnce(Return(job_info));
   EXPECT_TRUE(m_client_mgr->WaitForConnection(std::chrono::milliseconds(1000)));
+  EXPECT_TRUE(IsConnected(*m_client_mgr));
   EXPECT_EQ(m_client_mgr->GetJobInfo(job_id), job_info);
 }
 
@@ -108,6 +110,7 @@ TEST_F(WSJobManagerTest, EditBreakpoint)
     EXPECT_CALL(m_job_manager, GetNumberOfJobs()).Times(Exactly(1)).WillOnce(Return(n_jobs));
   }
   EXPECT_TRUE(m_client_mgr->WaitForConnection(std::chrono::milliseconds(1000)));
+  EXPECT_TRUE(IsConnected(*m_client_mgr));
   m_client_mgr->EditBreakpoint(job_id, instr_id, true);
   EXPECT_EQ(m_client_mgr->GetNumberOfJobs(), n_jobs);
 }
@@ -125,6 +128,7 @@ TEST_F(WSJobManagerTest, SendJobCommand)
     EXPECT_CALL(m_job_manager, GetNumberOfJobs()).Times(Exactly(1)).WillOnce(Return(n_jobs));
   }
   EXPECT_TRUE(m_client_mgr->WaitForConnection(std::chrono::milliseconds(1000)));
+  EXPECT_TRUE(IsConnected(*m_client_mgr));
   m_client_mgr->SendJobCommand(job_id, command);
   EXPECT_EQ(m_client_mgr->GetNumberOfJobs(), n_jobs);
 }
@@ -139,6 +143,7 @@ TEST_F(WSJobManagerTest, TwoClients)
 
   auto new_client_mgr = utils::CreateWSClientJobManager(kTestHost, m_test_port);
   EXPECT_TRUE(new_client_mgr->WaitForConnection(std::chrono::milliseconds(1000)));
+  EXPECT_TRUE(IsConnected(*m_client_mgr));
   EXPECT_EQ(new_client_mgr->GetNumberOfJobs(), n_jobs);
 
   // after destroying the first client, the second one should still be able to get the number of jobs
@@ -158,6 +163,7 @@ TEST_F(WSJobManagerTest, CreateJobReturnsClientJob)
   EXPECT_CALL(m_job_manager, GetNumberOfJobs()).Times(Exactly(1)).WillOnce(Return(1u));
   EXPECT_CALL(m_job_manager, GetJobInfo(0u)).Times(Exactly(1)).WillOnce(Return(job_info));
   EXPECT_TRUE(m_client_mgr->WaitForConnection(std::chrono::milliseconds(1000)));
+  EXPECT_TRUE(IsConnected(*m_client_mgr));
 
   UnitTestHelper::TestJobInfoIO job_info_io;
   auto job = m_client_mgr->CreateJob(0u, job_info_io);

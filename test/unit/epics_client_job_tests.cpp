@@ -105,6 +105,7 @@ TEST_F(EPICSClientJobTests, JobCommands)
 {
   // Query information about the server and its job
   ASSERT_EQ(m_client_mgr->GetNumberOfJobs(), 1u);
+  EXPECT_TRUE(IsConnected(*m_client_mgr));
   sup::dto::uint32 job_id{0};
   auto job_0 = m_client_mgr->CreateJob(job_id, m_job_info_io);
 

@@ -68,6 +68,8 @@ protected:
   IClientJobManager() = default;
 };
 
+bool IsConnected(IClientJobManager& client_mgr);
+
 }  // namespace oac_tree_server
 
 }  // namespace sup

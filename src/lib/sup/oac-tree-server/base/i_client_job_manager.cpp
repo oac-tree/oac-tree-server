@@ -29,6 +29,11 @@ namespace oac_tree_server
 
 IClientJobManager::~IClientJobManager() = default;
 
+bool IsConnected(IClientJobManager& client_mgr)
+{
+  return client_mgr.WaitForConnection(std::chrono::milliseconds(0));
+}
+
 }  // namespace oac_tree_server
 
 }  // namespace sup
