@@ -51,7 +51,7 @@ public:
   /**
    * @brief Push new PV update to queue.
    *
-   * @param name Name of AnyValue to update.
+   * @param channel Name of AnyValue to update.
    * @param value Value for update.
    */
   void Push(const std::string& channel, const sup::dto::AnyValue& value);

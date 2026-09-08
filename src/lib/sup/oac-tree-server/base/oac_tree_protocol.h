@@ -32,6 +32,7 @@
 
 namespace sup
 {
+//! @brief Namespace for the oac-tree server (comment added to satisfy Doxygen)
 namespace oac_tree_server
 {
 
